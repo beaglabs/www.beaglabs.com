@@ -69,7 +69,7 @@ export function ProfilePreview() {
             {/* Floating Elements */}
             <div className="absolute -top-4 -right-4 bg-card border border-border rounded-2xl p-4 shadow-xl">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-primary animate-pulse" />
+                <div className="w-3 h-3 rounded-full bg-accent animate-pulse" />
                 <span className="text-sm font-medium">Online on Gardens</span>
               </div>
             </div>

@@ -8,42 +8,48 @@ const comparisonData = [
     gardens: true,
     discord: false,
     signal: true,
-    telegram: "partial"
+    telegram: "partial",
+    revolt: false
   },
   {
     feature: "No metadata collection",
     gardens: true,
     discord: false,
     signal: false,
-    telegram: false
+    telegram: false,
+    revolt: true
   },
   {
     feature: "Community & group features",
     gardens: true,
     discord: true,
     signal: false,
-    telegram: true
+    telegram: true,
+    revolt: true
   },
   {
     feature: "Public shareable profiles",
     gardens: true,
     discord: true,
     signal: false,
-    telegram: true
+    telegram: true,
+    revolt: true
   },
   {
     feature: "Decentralized architecture",
     gardens: true,
     discord: false,
     signal: false,
-    telegram: false
+    telegram: false,
+    revolt: false
   },
   {
     feature: "Open source",
     gardens: true,
     discord: false,
     signal: true,
-    telegram: "partial"
+    telegram: "partial",
+    revolt: true
   },
 ]
 
@@ -103,6 +109,9 @@ export function Comparison() {
                 <th className="text-center py-4 px-4">
                   <span className="font-normal text-muted-foreground">Telegram</span>
                 </th>
+                <th className="text-center py-4 px-4">
+                  <span className="font-normal text-muted-foreground">Stoat/Revolt</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -127,6 +136,11 @@ export function Comparison() {
                   <td className="py-4 px-4">
                     <div className="flex justify-center">
                       <StatusIcon value={row.telegram} />
+                    </div>
+                  </td>
+                  <td className="py-4 px-4">
+                    <div className="flex justify-center">
+                      <StatusIcon value={row.revolt} />
                     </div>
                   </td>
                 </tr>

@@ -17,7 +17,7 @@ export default function Home() {
       <HowItWorks />
       <ProfilePreview />
       <Comparison />
-      <Testimonials />
+      {/* <Testimonials /> */}
       <CTASection />
       <Footer />
     </main>

@@ -1,17 +1,12 @@
 import type { Metadata, Viewport } from 'next'
-import { Roboto, Inter } from 'next/font/google'
+import localFont from 'next/font/local'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const roboto = Roboto({ 
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+const generalSans = localFont({
+  src: './GeneralSans-Variable.ttf',
   variable: '--font-sans',
-});
-
-const inter = Inter({ 
-  subsets: ["latin"],
-  variable: '--font-serif',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -48,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${roboto.variable} ${inter.variable} font-sans antialiased`}>
+      <body className={`${generalSans.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>
