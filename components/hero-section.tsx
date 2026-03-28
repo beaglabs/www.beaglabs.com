@@ -1,12 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { TextScramble } from "./text-scramble"
 
 export function HeroSection() {
-  const [email, setEmail] = useState("")
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const slides = [
@@ -85,24 +84,39 @@ export function HeroSection() {
             {slides[currentSlide].description}
           </p>
 
-          {/* Email signup */}
+          {/* Download buttons */}
           <div className="mb-12">
-            <div className="flex max-w-md">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="flex-1 bg-transparent border border-[#F5E6C8]/30 px-4 py-3 font-mono text-sm text-[#F5E6C8] placeholder:text-[#F5E6C8]/30 focus:outline-none focus:border-[#F5E6C8]/60 transition-colors"
-              />
-              <button className="bg-[#F5E6C8] text-[#141414] px-6 py-3 font-mono text-sm font-semibold tracking-wider flex items-center gap-2 hover:bg-[#F5E6C8]/90 transition-colors">
-                ENTER
-                <ArrowRight className="w-4 h-4" />
-              </button>
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md">
+              {/* Google Play */}
+              <a
+                href="https://play.google.com/store"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 border border-[#F5E6C8]/30 px-5 py-3 hover:border-[#F5E6C8]/60 hover:bg-[#F5E6C8]/5 transition-all group"
+              >
+                <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3.18 23.76c.3.17.64.24.99.2l12.6-11.53L13.5 9.2 3.18 23.76zM20.7 10.17l-2.87-1.66-3.43 3.14 3.43 3.14 2.9-1.68c.83-.48.83-1.66-.03-2.14zM2.08 1.05C1.77 1.38 1.6 1.9 1.6 2.58v18.86c0 .68.17 1.2.5 1.52l.08.08 10.57-10.57v-.25L2.08 1.05zM13.5 14.8l3.27-2.99-3.27-2.99-10.3 9.42 10.3-3.44z"/>
+                </svg>
+                <div>
+                  <div className="font-mono text-[10px] tracking-[0.2em] text-[#F5E6C8]/50">GET IT ON</div>
+                  <div className="font-mono text-sm font-semibold tracking-wider text-[#F5E6C8]">GOOGLE PLAY</div>
+                </div>
+              </a>
+
+              {/* App Store — coming soon */}
+              <div className="flex items-center gap-3 border border-[#F5E6C8]/15 px-5 py-3 opacity-50 cursor-not-allowed relative">
+                <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                <div>
+                  <div className="font-mono text-[10px] tracking-[0.2em] text-[#F5E6C8]/50">COMING SOON</div>
+                  <div className="font-mono text-sm font-semibold tracking-wider text-[#F5E6C8]">APP STORE</div>
+                </div>
+                <span className="absolute -top-2 -right-2 bg-[#F5E6C8]/10 border border-[#F5E6C8]/20 font-mono text-[9px] tracking-wider px-1.5 py-0.5 text-[#F5E6C8]/60">
+                  SOON
+                </span>
+              </div>
             </div>
-            <p className="font-mono text-xs text-[#F5E6C8]/40 mt-3 tracking-wide">
-              [ BY SIGNING UP, YOU AGREE TO OUR PRIVACY POLICY ]
-            </p>
           </div>
 
           {/* Navigation */}
@@ -175,7 +189,7 @@ export function HeroSection() {
 
       {/* Bottom archive label */}
       <div className="absolute bottom-8 left-8 font-mono text-xs tracking-[0.2em] text-[#F5E6C8]/40">
-        <div>[ BETA 2026 ]</div>
+        <div>[ 2026 ]</div>
         <div>SECURE COMMUNITY PROTOCOL</div>
       </div>
     </section>

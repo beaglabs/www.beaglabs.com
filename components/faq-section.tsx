@@ -7,18 +7,18 @@ import { TextScramble } from "./text-scramble"
 const faqs = [
   {
     id: "launch",
-    question: "When does Gardens launch?",
-    answer: "Gardens is developed by a small team in their spare time, so there's no ETA on a public launch. You can check out the Beta program if you're interested in trying it early.",
+    question: "Is Gardens available now?",
+    answer: "Yes — Gardens is live. Download it on Android via Google Play. iOS support is coming soon.",
   },
   {
     id: "devices",
-    question: "Which devices will Gardens support?",
-    answer: "Gardens will support iOS, Android, Windows, macOS, and Linux. Web access is planned for a future release. All platforms use the same MLS encryption protocol.",
+    question: "Which devices does Gardens support?",
+    answer: "Gardens is currently available on Android. iOS, Windows, macOS, and Linux are on the roadmap. All platforms use the same MLS encryption protocol.",
   },
   {
     id: "pricing",
-    question: "How expensive will Gardens Plus be?",
-    answer: "Gardens core features will always be free. Gardens Plus pricing is still being determined, but we're committed to keeping it accessible. Beta testers get extended free access.",
+    question: "How much does Gardens cost?",
+    answer: "Gardens core features are free. We're committed to keeping it accessible.",
   },
   {
     id: "security",
