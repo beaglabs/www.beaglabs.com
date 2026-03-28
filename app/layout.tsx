@@ -18,21 +18,27 @@ export const metadata: Metadata = {
   description: 'Secure, encrypted messaging for affinity groups. Built with Message Layer Security (MLS) for end-to-end encrypted group conversations.',
   generator: 'v0.app',
   icons: {
-    icon: [
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
+  openGraph: {
+    title: 'Gardens - MLS Encrypted Messaging for Communities',
+    description: 'Secure, encrypted messaging for affinity groups. Built with Message Layer Security (MLS) for end-to-end encrypted group conversations.',
+    images: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/og-image.png',
+        width: 1456,
+        height: 816,
+        alt: 'Gardens - MLS Encrypted Messaging for Communities',
       },
     ],
-    apple: '/apple-icon.png',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gardens - MLS Encrypted Messaging for Communities',
+    description: 'Secure, encrypted messaging for affinity groups. Built with Message Layer Security (MLS) for end-to-end encrypted group conversations.',
+    images: ['/og-image.png'],
   },
 }
 
