@@ -19,12 +19,10 @@ export function FooterCTA() {
         </h2>
 
         <div className="flex items-center justify-center gap-4 mb-8 flex-wrap">
-          <Image
-            src="/images/gardens-logo.png"
-            alt="Gardens"
-            width={32}
-            height={32}
-          />
+          <span className="relative flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500" />
+          </span>
           <span className="font-mono text-sm text-[#F5E6C8]/70">Gardens</span>
           <span className="font-mono text-xs text-[#F5E6C8]/40 ml-8">Roadmap</span>
           <a
@@ -53,8 +51,8 @@ export function Footer() {
               <Image
                 src="/images/gardens-logo.png"
                 alt="Gardens"
-                width={36}
-                height={36}
+                width={64}
+                height={64}
               />
               <span className="font-mono text-lg font-semibold text-[#F5E6C8]">
                 Gardens

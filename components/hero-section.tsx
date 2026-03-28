@@ -94,9 +94,7 @@ export function HeroSection() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 border border-[#F5E6C8]/30 px-5 py-3 hover:border-[#F5E6C8]/60 hover:bg-[#F5E6C8]/5 transition-all group"
               >
-                <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3.18 23.76c.3.17.64.24.99.2l12.6-11.53L13.5 9.2 3.18 23.76zM20.7 10.17l-2.87-1.66-3.43 3.14 3.43 3.14 2.9-1.68c.83-.48.83-1.66-.03-2.14zM2.08 1.05C1.77 1.38 1.6 1.9 1.6 2.58v18.86c0 .68.17 1.2.5 1.52l.08.08 10.57-10.57v-.25L2.08 1.05zM13.5 14.8l3.27-2.99-3.27-2.99-10.3 9.42 10.3-3.44z"/>
-                </svg>
+                <svg role="img" className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Google Play</title><path d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594zM1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924zm12.207 10.065l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973zm0 2.067l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21z"/></svg>
                 <div>
                   <div className="font-mono text-[10px] tracking-[0.2em] text-[#F5E6C8]/50">GET IT ON</div>
                   <div className="font-mono text-sm font-semibold tracking-wider text-[#F5E6C8]">GOOGLE PLAY</div>
