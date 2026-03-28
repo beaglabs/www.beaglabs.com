@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { TextScramble } from "./text-scramble"
 
 export function FooterCTA() {
@@ -74,6 +75,9 @@ export function Footer() {
             <span className="font-mono text-xs text-[#F5E6C8]/30">
               [ PRIVATE ]
             </span>
+            <Link href="/privacy" className="font-mono text-xs text-[#F5E6C8]/30 hover:text-[#F5E6C8]/60 transition-colors">
+              PRIVACY POLICY
+            </Link>
           </div>
           <p className="font-mono text-xs text-[#F5E6C8]/30">
             &copy; Gardens Software, 2026
