@@ -1,18 +1,22 @@
-import type { Metadata, Viewport } from 'next'
-import localFont from 'next/font/local'
+import type { Metadata } from 'next'
+import { JetBrains_Mono, IBM_Plex_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const generalSans = localFont({
-  src: './GeneralSans-Variable.ttf',
-  variable: '--font-sans',
-  display: 'swap',
+const jetbrainsMono = JetBrains_Mono({ 
+  subsets: ["latin"],
+  variable: '--font-mono'
+});
+const ibmPlexMono = IBM_Plex_Mono({ 
+  subsets: ["latin"],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans'
 });
 
 export const metadata: Metadata = {
-  title: 'Gardens - Private Community Chat',
-  description: 'The metadata-impossible chat platform. Build thriving communities with end-to-end encryption, powered by P2Panda.',
-  generator: 'Gardens',
+  title: 'Gardens - MLS Encrypted Messaging for Communities',
+  description: 'Secure, encrypted messaging for affinity groups. Built with Message Layer Security (MLS) for end-to-end encrypted group conversations.',
+  generator: 'v0.app',
   icons: {
     icon: [
       {
@@ -32,18 +36,14 @@ export const metadata: Metadata = {
   },
 }
 
-export const viewport: Viewport = {
-  themeColor: '#1a2f1c',
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${generalSans.variable} font-sans antialiased`}>
+    <html lang="en">
+      <body className={`${ibmPlexMono.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>

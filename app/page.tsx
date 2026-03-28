@@ -1,24 +1,21 @@
-import { Header } from "@/components/header"
-import { Hero } from "@/components/hero"
-import { Features } from "@/components/features"
-import { HowItWorks } from "@/components/how-it-works"
-import { ProfilePreview } from "@/components/profile-preview"
-import { Comparison } from "@/components/comparison"
-import { Testimonials } from "@/components/testimonials"
-import { CTASection } from "@/components/cta-section"
-import { Footer } from "@/components/footer"
+import { HeroSection } from "@/components/hero-section"
+import { FeaturesSection } from "@/components/features-section"
+import { ProtocolSection } from "@/components/protocol-section"
+import { PlusSection } from "@/components/plus-section"
+import { QualitySection } from "@/components/quality-section"
+import { FAQSection } from "@/components/faq-section"
+import { FooterCTA, Footer } from "@/components/footer-cta"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <Header />
-      <Hero />
-      <Features />
-      <HowItWorks />
-      <ProfilePreview />
-      <Comparison />
-      {/* <Testimonials /> */}
-      <CTASection />
+    <main className="bg-[#141414]">
+      <HeroSection />
+      <FeaturesSection />
+      <ProtocolSection />
+      <PlusSection />
+      <QualitySection />
+      <FAQSection />
+      <FooterCTA />
       <Footer />
     </main>
   )
