@@ -19,7 +19,7 @@ const sections = [
       {
         label: "Account identifiers",
         detail:
-          "An email address or phone number used only for account recovery and security notifications. We do not use it for marketing.",
+          "A random UUID generated for your account. We do not use an email address or phone number as your account identifier.",
       },
       {
         label: "Public keys",
@@ -27,9 +27,14 @@ const sections = [
           "Your MLS public key material, stored on our servers solely to enable encrypted group key exchanges. Your private keys never leave your device.",
       },
       {
+        label: "Device-stored credentials",
+        detail:
+          "Your BEP39 recovery phrase, biometrics, and passphrase are stored on your device only and are never uploaded to Gardens servers.",
+      },
+      {
         label: "Ciphertext",
         detail:
-          "Encrypted message payloads are transiently relayed by our servers. We cannot read them. They are deleted from relay infrastructure as soon as delivery is confirmed.",
+          "Encrypted message payloads are transiently relayed by our servers. We cannot read them. We do not currently support guaranteed deletion tied to delivery confirmation.",
       },
       {
         label: "Minimal metadata",
@@ -42,12 +47,13 @@ const sections = [
     id: "what-we-never-collect",
     title: "What We Never Collect",
     items: [
-      "Message content — all messages are end-to-end encrypted with MLS",
+      "Plaintext content — all messages are end-to-end encrypted with MLS",
       "Contact lists or social graphs",
       "Location data of any kind",
       "Advertising identifiers or tracking pixels",
       "Behavioral profiles or usage analytics linked to your identity",
       "Data from third parties about you",
+      "Your biometric templates or passphrase (these remain on-device)",
     ],
   },
   {
@@ -68,14 +74,14 @@ const sections = [
       {
         label: "Law enforcement",
         detail:
-          "Only when compelled by a valid legal process under applicable law. Because we cannot decrypt your messages, any compelled disclosure is limited to the minimal metadata described above. We publish a transparency report.",
+          "If we receive legal process, including a subpoena, we can only disclose data we actually possess. We cannot provide message content, decryption keys, BEP39 recovery phrases, biometrics, or passphrases because we do not have access to them in any form. In practice, our architecture leaves us with no useful message data to produce.",
       },
     ],
   },
   {
     id: "retention",
     title: "Data Retention",
-    content: `We retain your account identifier and public key material for as long as your account is active. Connection metadata is deleted after 90 days. Encrypted message payloads are deleted from our relay infrastructure upon confirmed delivery, or within 30 days if undelivered. You may request full account deletion at any time; we will purge all associated data within 30 days.`,
+    content: `We retain your account UUID and public key material for as long as your account is active. Connection metadata is deleted after 90 days. Encrypted message payloads are retained only as required for relay operations, and we do not currently offer a guaranteed deletion timeline tied to delivery status. You may request full account deletion at any time; we will purge all associated data within 30 days.`,
   },
   {
     id: "your-rights",
@@ -95,11 +101,6 @@ const sections = [
     id: "security",
     title: "Security",
     content: `We apply defense-in-depth: TLS in transit, encryption at rest for all stored data, strict access controls with hardware security keys for all engineers, regular independent security audits, and a public vulnerability disclosure program. Our MLS implementation is open-source and subject to external review.`,
-  },
-  {
-    id: "children",
-    title: "Children",
-    content: `Gardens is not directed at children under 13. We do not knowingly collect information from children under 13. If you believe a child has provided us with personal information, contact us immediately and we will delete it.`,
   },
   {
     id: "changes",
@@ -138,7 +139,7 @@ export default function PrivacyPage() {
           <div className="flex items-center gap-6 font-mono text-xs text-[#F5E6C8]/40">
             <span>EFFECTIVE: MARCH 28, 2026</span>
             <span className="text-[#F5E6C8]/20">|</span>
-            <span>LAST UPDATED: MARCH 28, 2026</span>
+            <span>LAST UPDATED: MARCH 30, 2026</span>
           </div>
         </div>
 
