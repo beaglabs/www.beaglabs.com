@@ -78,6 +78,9 @@ export function Footer() {
             <Link href="/privacy" className="font-mono text-xs text-[#F5E6C8]/30 hover:text-[#F5E6C8]/60 transition-colors">
               PRIVACY POLICY
             </Link>
+            <Link href="/terms" className="font-mono text-xs text-[#F5E6C8]/30 hover:text-[#F5E6C8]/60 transition-colors">
+              TERMS OF SERVICE
+            </Link>
           </div>
           <p className="font-mono text-xs text-[#F5E6C8]/30">
             &copy; Gardens Software, 2026
