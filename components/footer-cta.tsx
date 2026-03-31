@@ -81,6 +81,9 @@ export function Footer() {
             <Link href="/terms" className="font-mono text-xs text-[#F5E6C8]/30 hover:text-[#F5E6C8]/60 transition-colors">
               TERMS OF SERVICE
             </Link>
+            <Link href="/delete-account" className="font-mono text-xs text-[#F5E6C8]/30 hover:text-[#F5E6C8]/60 transition-colors">
+              DELETE ACCOUNT
+            </Link>
           </div>
           <p className="font-mono text-xs text-[#F5E6C8]/30">
             &copy; Gardens Software, 2026

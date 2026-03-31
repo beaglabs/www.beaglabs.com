@@ -95,7 +95,7 @@ const sections = [
       "Restriction — restrict processing while a dispute is resolved",
     ],
     footer:
-      "To exercise any of these rights, contact privacy@usegardens.com. We will respond within 30 days.",
+      "To exercise any of these rights, visit /delete-account or contact privacy@usegardens.com. We will respond within 30 days.",
   },
   {
     id: "security",
