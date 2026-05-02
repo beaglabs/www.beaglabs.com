@@ -14,30 +14,30 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Gardens - MLS Encrypted Messaging for Communities',
-  description: 'Secure, encrypted messaging for affinity groups. Built with Message Layer Security (MLS) for end-to-end encrypted group conversations.',
+  title: 'Gardens - Software Supply Chain Security Analysis',
+  description: 'Dependency risk analysis via GitHub Actions and VS Code Extension. Comprehensive security scanning for NPM, Rust, Maven, Python, and Docker.',
   generator: 'v0.app',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Gardens - MLS Encrypted Messaging for Communities',
-    description: 'Secure, encrypted messaging for affinity groups. Built with Message Layer Security (MLS) for end-to-end encrypted group conversations.',
+    title: 'Gardens - Software Supply Chain Security Analysis',
+    description: 'Dependency risk analysis via GitHub Actions and VS Code Extension. Comprehensive security scanning for NPM, Rust, Maven, Python, and Docker.',
     images: [
       {
         url: '/og-image.png',
         width: 1456,
         height: 816,
-        alt: 'Gardens - MLS Encrypted Messaging for Communities',
+        alt: 'Gardens - Software Supply Chain Security Analysis',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Gardens - MLS Encrypted Messaging for Communities',
-    description: 'Secure, encrypted messaging for affinity groups. Built with Message Layer Security (MLS) for end-to-end encrypted group conversations.',
+    title: 'Gardens - Software Supply Chain Security Analysis',
+    description: 'Dependency risk analysis via GitHub Actions and VS Code Extension. Comprehensive security scanning for NPM, Rust, Maven, Python, and Docker.',
     images: ['/og-image.png'],
   },
 }

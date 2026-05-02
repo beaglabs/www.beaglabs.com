@@ -8,7 +8,7 @@ import { FooterCTA, Footer } from "@/components/footer-cta"
 
 export default function Home() {
   return (
-    <main className="bg-[#141414]">
+    <main className="bg-white">
       <HeroSection />
       <FeaturesSection />
       <ProtocolSection />

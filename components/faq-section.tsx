@@ -6,47 +6,47 @@ import { TextScramble } from "./text-scramble"
 
 const faqs = [
   {
-    id: "launch",
-    question: "Is Gardens available now?",
-    answer: "Yes — Gardens is live. Download it on Android via Google Play. iOS support is coming soon.",
-  },
-  {
-    id: "devices",
-    question: "Which devices does Gardens support?",
-    answer: "Gardens is currently available on Android. iOS, Windows, macOS, and Linux are on the roadmap. All platforms use the same MLS encryption protocol.",
+    id: "trial",
+    question: "How does the 7-day free trial work?",
+    answer: "Sign up and get full access to all SSCS features for 7 days — no credit card required. Cancel anytime before the trial ends and pay nothing.",
   },
   {
     id: "pricing",
     question: "How much does Gardens cost?",
-    answer: "Gardens core features are free. We're committed to keeping it accessible.",
+    answer: "Gardens is $2,400 per month for unlimited repositories, users, and scans. The 7-day free trial lets you evaluate everything before committing.",
+  },
+  {
+    id: "languages",
+    question: "Which package managers are supported?",
+    answer: "We support NPM (with lifecycle hook analysis), Rust Cargo, Maven, Python PyPI, and Docker. More ecosystems are added regularly based on customer demand.",
   },
   {
     id: "security",
-    question: "How secure is MLS encryption?",
-    answer: "MLS (Message Layer Security) is an IETF standard (RFC 9420) designed for secure group messaging. It provides forward secrecy, post-compromise security, and scalable group operations.",
+    question: "How does the NPM lifecycle hook protection work?",
+    answer: "Our agent intercepts NPM install hooks (preinstall, postinstall, pre/post publish) and runs static analysis before allowing execution. Malicious or suspicious scripts are flagged and blocked automatically.",
   },
 ]
 
 export function FAQSection() {
-  const [openFaq, setOpenFaq] = useState<string | null>("launch")
+  const [openFaq, setOpenFaq] = useState<string | null>("trial")
 
   return (
-    <section className="bg-[#0f0f0f] py-32 px-8 lg:px-16">
+    <section className="bg-white py-32 px-8 lg:px-16">
       <div className="max-w-3xl mx-auto">
         {/* Section header */}
         <div className="mb-16 text-center">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="w-12 h-px bg-[#F5E6C8]/30" />
-            <span className="font-mono text-sm tracking-[0.3em] text-[#F5E6C8]/50">
+            <div className="w-12 h-px bg-black/30" />
+            <span className="font-mono text-sm tracking-[0.3em] text-black/50">
               DOCUMENTATION
             </span>
-            <div className="w-12 h-px bg-[#F5E6C8]/30" />
+            <div className="w-12 h-px bg-black/30" />
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-[#F5E6C8] tracking-tight">
+          <h2 className="text-4xl lg:text-5xl font-bold text-black tracking-tight">
             <TextScramble text="FAQ" scrambleOnHover autoStart={false} />
           </h2>
-          <p className="text-[#F5E6C8]/50 font-mono text-sm mt-4">
-            Everything you need to know about Gardens.
+          <p className="text-black/50 font-mono text-sm mt-4">
+            Everything you need to know about SSCS.
           </p>
         </div>
 
@@ -55,8 +55,8 @@ export function FAQSection() {
           {faqs.map((faq, index) => (
             <div
               key={faq.id}
-              className={`border-b border-[#F5E6C8]/10 ${
-                openFaq === faq.id ? "bg-[#141414]" : ""
+              className={`border-b border-black/10 ${
+                openFaq === faq.id ? "bg-neutral-50" : ""
               }`}
             >
               <button
@@ -64,15 +64,15 @@ export function FAQSection() {
                 className="w-full py-6 px-6 flex items-center justify-between text-left group"
               >
                 <div className="flex items-center gap-4">
-                  <span className="font-mono text-xs text-[#F5E6C8]/30">
+                  <span className="font-mono text-xs text-black/30">
                     0{index + 1}
                   </span>
-                  <span className="font-mono text-sm text-[#F5E6C8] group-hover:text-[#F5E6C8]/80 transition-colors">
+                  <span className="font-mono text-sm text-black group-hover:text-black/80 transition-colors">
                     {faq.question}
                   </span>
                 </div>
                 <ChevronRight
-                  className={`w-4 h-4 text-[#F5E6C8]/50 transition-transform shrink-0 ${
+                  className={`w-4 h-4 text-black/50 transition-transform shrink-0 ${
                     openFaq === faq.id ? "rotate-90" : ""
                   }`}
                 />
@@ -80,7 +80,7 @@ export function FAQSection() {
               
               {openFaq === faq.id && (
                 <div className="px-6 pb-6 pl-16">
-                  <p className="text-[#F5E6C8]/60 font-mono text-sm leading-relaxed">
+                  <p className="text-black/60 font-mono text-sm leading-relaxed">
                     {faq.answer}
                   </p>
                 </div>
