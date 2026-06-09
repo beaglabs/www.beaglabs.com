@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Gardens",
+  title: "Terms of Service — Beag Labs",
   description:
     "Gardens terms of service, including in-app purchases and ad-related terms.",
 }
@@ -117,16 +117,16 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <main className="bg-[#141414] min-h-screen">
-      <div className="border-b border-[#F5E6C8]/10">
+    <main className="bg-black min-h-screen">
+      <div className="border-b border-[#b3ddbb]/10">
         <div className="max-w-4xl mx-auto px-8 py-6 flex items-center justify-between">
           <Link
             href="/"
-            className="font-mono text-sm text-[#F5E6C8]/60 hover:text-[#F5E6C8] transition-colors"
+            className="font-mono text-sm text-[#b3ddbb]/60 hover:text-[#b3ddbb] transition-colors"
           >
-            ← GARDENS
+            ← BEAG LABS
           </Link>
-          <span className="font-mono text-xs text-[#F5E6C8]/30">
+          <span className="font-mono text-xs text-[#b3ddbb]/30">
             TERMS OF SERVICE
           </span>
         </div>
@@ -134,29 +134,29 @@ export default function TermsPage() {
 
       <div className="max-w-4xl mx-auto px-8 py-20">
         <div className="mb-16">
-          <div className="font-mono text-xs text-[#F5E6C8]/40 mb-4 tracking-widest">
+          <div className="font-mono text-xs text-[#b3ddbb]/40 mb-4 tracking-widest">
             LEGAL / TERMS
           </div>
-          <h1 className="text-4xl lg:text-5xl font-bold text-[#F5E6C8] tracking-tight mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold text-[#b3ddbb] tracking-tight mb-6">
             Terms of Service
           </h1>
-          <div className="flex items-center gap-6 font-mono text-xs text-[#F5E6C8]/40">
+          <div className="flex items-center gap-6 font-mono text-xs text-[#b3ddbb]/40">
             <span>EFFECTIVE: MARCH 30, 2026</span>
-            <span className="text-[#F5E6C8]/20">|</span>
+            <span className="text-[#b3ddbb]/20">|</span>
             <span>LAST UPDATED: MARCH 30, 2026</span>
           </div>
         </div>
 
-        <div className="border border-[#F5E6C8]/20 bg-[#1a1a1a] p-8 mb-16 relative">
-          <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#F5E6C8]/40" />
-          <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#F5E6C8]/40" />
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#F5E6C8]/40" />
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#F5E6C8]/40" />
-          <p className="font-mono text-sm text-[#F5E6C8]/80 leading-relaxed">
-            <span className="text-[#F5E6C8] font-semibold">Summary:</span>{" "}
+        <div className="border border-[#b3ddbb]/20 bg-[#050505] p-8 mb-16 relative">
+          <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#b3ddbb]/40" />
+          <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#b3ddbb]/40" />
+          <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#b3ddbb]/40" />
+          <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#b3ddbb]/40" />
+          <p className="font-mono text-sm text-[#b3ddbb]/80 leading-relaxed">
+            <span className="text-[#b3ddbb] font-semibold">Summary:</span>{" "}
             Gardens offers a free ad-supported experience and optional in-app
             purchases, including a one-time{" "}
-            <span className="text-[#F5E6C8] font-semibold">
+            <span className="text-[#b3ddbb] font-semibold">
               $15 remove ads for life
             </span>{" "}
             offer.
@@ -164,7 +164,7 @@ export default function TermsPage() {
         </div>
 
         <div className="mb-16">
-          <div className="font-mono text-xs text-[#F5E6C8]/40 mb-4 tracking-widest">
+          <div className="font-mono text-xs text-[#b3ddbb]/40 mb-4 tracking-widest">
             TABLE OF CONTENTS
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -172,9 +172,9 @@ export default function TermsPage() {
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="font-mono text-xs text-[#F5E6C8]/50 hover:text-[#F5E6C8] transition-colors flex items-center gap-3"
+                className="font-mono text-xs text-[#b3ddbb]/50 hover:text-[#b3ddbb] transition-colors flex items-center gap-3"
               >
-                <span className="text-[#F5E6C8]/20">
+                <span className="text-[#b3ddbb]/20">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 {section.title.toUpperCase()}
@@ -187,17 +187,17 @@ export default function TermsPage() {
           {sections.map((section, i) => (
             <section key={section.id} id={section.id}>
               <div className="flex items-baseline gap-4 mb-6">
-                <span className="font-mono text-xs text-[#F5E6C8]/20">
+                <span className="font-mono text-xs text-[#b3ddbb]/20">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h2 className="font-mono text-lg font-semibold text-[#F5E6C8] tracking-wide uppercase">
+                <h2 className="font-mono text-lg font-semibold text-[#b3ddbb] tracking-wide uppercase">
                   {section.title}
                 </h2>
               </div>
 
-              <div className="pl-8 border-l border-[#F5E6C8]/10 space-y-4">
+              <div className="pl-8 border-l border-[#b3ddbb]/10 space-y-4">
                 {section.content && (
-                  <p className="font-mono text-sm text-[#F5E6C8]/60 leading-relaxed">
+                  <p className="font-mono text-sm text-[#b3ddbb]/60 leading-relaxed">
                     {section.content}
                   </p>
                 )}
@@ -207,24 +207,24 @@ export default function TermsPage() {
                     {section.items.map((item, j) =>
                       typeof item === "string" ? (
                         <li key={j} className="flex items-start gap-3">
-                          <span className="font-mono text-xs text-[#F5E6C8]/30 mt-0.5">
+                          <span className="font-mono text-xs text-[#b3ddbb]/30 mt-0.5">
                             —
                           </span>
-                          <span className="font-mono text-sm text-[#F5E6C8]/60">
+                          <span className="font-mono text-sm text-[#b3ddbb]/60">
                             {item}
                           </span>
                         </li>
                       ) : (
                         <li key={j} className="space-y-1">
                           <div className="flex items-start gap-3">
-                            <span className="font-mono text-xs text-[#F5E6C8]/30 mt-0.5">
+                            <span className="font-mono text-xs text-[#b3ddbb]/30 mt-0.5">
                               —
                             </span>
-                            <span className="font-mono text-sm text-[#F5E6C8] font-medium">
+                            <span className="font-mono text-sm text-[#b3ddbb] font-medium">
                               {item.label}
                             </span>
                           </div>
-                          <p className="font-mono text-xs text-[#F5E6C8]/50 leading-relaxed ml-6">
+                          <p className="font-mono text-xs text-[#b3ddbb]/50 leading-relaxed ml-6">
                             {item.detail}
                           </p>
                         </li>
@@ -237,17 +237,17 @@ export default function TermsPage() {
           ))}
         </div>
 
-        <div className="mt-24 pt-8 border-t border-[#F5E6C8]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-24 pt-8 border-t border-[#b3ddbb]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <span className="font-mono text-xs text-[#F5E6C8]/30">
+            <span className="font-mono text-xs text-[#b3ddbb]/30">
               [ SECURE ]
             </span>
-            <span className="font-mono text-xs text-[#F5E6C8]/30">
+            <span className="font-mono text-xs text-[#b3ddbb]/30">
               [ PRIVATE ]
             </span>
           </div>
-          <p className="font-mono text-xs text-[#F5E6C8]/30">
-            &copy; Gardens Software, 2026
+          <p className="font-mono text-xs text-[#b3ddbb]/30">
+            &copy; Beag Labs, 2026
           </p>
         </div>
       </div>

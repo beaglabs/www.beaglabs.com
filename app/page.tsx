@@ -1,22 +1,17 @@
+import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
-import { FeaturesSection } from "@/components/features-section"
-import { ProtocolSection } from "@/components/protocol-section"
-import { PlusSection } from "@/components/plus-section"
-import { QualitySection } from "@/components/quality-section"
-import { FAQSection } from "@/components/faq-section"
-import { FooterCTA, Footer } from "@/components/footer-cta"
+import { CapabilitiesSection } from "@/components/capabilities-section"
+import { ApproachSection } from "@/components/approach-section"
+import { SiteFooter } from "@/components/site-footer"
 
 export default function Home() {
   return (
-    <main className="bg-white">
+    <main className="bg-white text-[#0a0a0a]">
+      <Navbar />
       <HeroSection />
-      <FeaturesSection />
-      <ProtocolSection />
-      <PlusSection />
-      <QualitySection />
-      <FAQSection />
-      <FooterCTA />
-      <Footer />
+      <CapabilitiesSection />
+      <ApproachSection />
+      <SiteFooter />
     </main>
   )
 }
