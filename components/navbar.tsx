@@ -10,7 +10,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/Untitled design(18).png"
+              src="/logo.png"
               alt="Beag Labs"
               width={28}
               height={28}

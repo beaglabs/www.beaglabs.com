@@ -9,7 +9,7 @@ export function SiteFooter() {
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <Image
-              src="/Untitled design(18).png"
+              src="/logo.png"
               alt="Beag Labs"
               width={24}
               height={24}
