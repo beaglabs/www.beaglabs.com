@@ -17,6 +17,18 @@ export function Navbar() {
           {/* Nav links */}
           <div className="flex items-center gap-8">
             <Link
+              href="/blog"
+              className="text-xs text-[#555] hover:text-[#111] transition-colors duration-200"
+            >
+              Blog
+            </Link>
+            <Link
+              href="/research"
+              className="text-xs text-[#555] hover:text-[#111] transition-colors duration-200"
+            >
+              Research
+            </Link>
+            <Link
               href="#services"
               className="text-xs text-[#555] hover:text-[#111] transition-colors duration-200"
             >
