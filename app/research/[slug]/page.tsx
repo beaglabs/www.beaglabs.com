@@ -5,6 +5,8 @@ import { GET_RESEARCH_PAPER } from '@/lib/hygraph/queries'
 import type { ResearchPaperResponse } from '@/lib/hygraph/types'
 import { BlogLayout } from '@/components/blog/blog-layout'
 import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
+import { MathBlockRenderer } from '@/components/blog/math-block'
+import { MermaidBlockRenderer } from '@/components/blog/mermaid-block'
 import { ResearchAuthorList } from '@/components/blog/research-author-list'
 
 interface ResearchPaperPageProps {
@@ -112,6 +114,13 @@ export default async function ResearchPaperPage({
           className="w-full rounded-lg mb-10"
         />
       )}
+
+      {paper.mathBlocks.map((block, i) => (
+        <MathBlockRenderer key={i} block={block} />
+      ))}
+      {paper.mermaidBlocks.map((block, i) => (
+        <MermaidBlockRenderer key={i} block={block} />
+      ))}
 
       <MarkdownRenderer>{paper.body.markdown}</MarkdownRenderer>
     </BlogLayout>

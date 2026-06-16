@@ -5,6 +5,8 @@ import { GET_BLOG_POST } from '@/lib/hygraph/queries'
 import type { BlogPostResponse } from '@/lib/hygraph/types'
 import { BlogLayout } from '@/components/blog/blog-layout'
 import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
+import { MathBlockRenderer } from '@/components/blog/math-block'
+import { MermaidBlockRenderer } from '@/components/blog/mermaid-block'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -92,6 +94,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           className="w-full rounded-lg mb-10"
         />
       )}
+
+      {post.mathBlocks.map((block, i) => (
+        <MathBlockRenderer key={i} block={block} />
+      ))}
+      {post.mermaidBlocks.map((block, i) => (
+        <MermaidBlockRenderer key={i} block={block} />
+      ))}
 
       <MarkdownRenderer>{post.body.markdown}</MarkdownRenderer>
 

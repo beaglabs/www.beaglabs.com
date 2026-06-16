@@ -1,9 +1,21 @@
+export interface MathBlock {
+  label?: string | null
+  latex: string
+}
+
+export interface MermaidBlock {
+  label?: string | null
+  diagram: string
+}
+
 export interface BlogPost {
   id: string
   slug: string
   title: string
   excerpt: string
   body: { markdown: string }
+  mathBlocks: MathBlock[]
+  mermaidBlocks: MermaidBlock[]
   coverImage?: {
     url: string
     width: number
@@ -22,6 +34,8 @@ export interface ResearchPaper {
   title: string
   abstract: string
   body: { markdown: string }
+  mathBlocks: MathBlock[]
+  mermaidBlocks: MermaidBlock[]
   coverImage?: {
     url: string
     width: number

@@ -18,6 +18,14 @@ const BLOG_POST_FULL_FIELDS = `
   body {
     markdown
   }
+  mathBlocks {
+    label
+    latex
+  }
+  mermaidBlocks {
+    label
+    diagram
+  }
   seoTitle
   seoDescription
 `
@@ -36,6 +44,14 @@ const RESEARCH_PAPER_FULL_FIELDS = `
   ${RESEARCH_PAPER_CARD_FIELDS}
   body {
     markdown
+  }
+  mathBlocks {
+    label
+    latex
+  }
+  mermaidBlocks {
+    label
+    diagram
   }
   coverImage {
     url
