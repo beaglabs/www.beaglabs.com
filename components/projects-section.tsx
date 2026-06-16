@@ -45,7 +45,7 @@ export function ProjectsSection() {
                 />
                 <div>
                   <div className="font-mono text-[9px] tracking-[0.2em] text-[#8B7355] uppercase mb-5 font-medium">
-                    Active &mdash; 2026
+                    Active — 2026
                   </div>
                   <h3 className="text-2xl lg:text-[28px] font-medium text-[#111] tracking-[-0.02em] mb-4">
                     Chaveta
