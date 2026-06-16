@@ -25,8 +25,8 @@ export function BlocksRenderer({
   mermaidBlocks,
 }: BlocksRendererProps) {
   // Split the markdown at marker positions, interleaving rendered blocks
-  // Match [math:N] and [mermaid:N] markers (Hygraph strips HTML comments)
-  const markerRegex = /\[(math|mermaid):(\d+)\]/g
+  // Match [math:N] and \[math:N] (Hygraph escapes [ as \[ in markdown)
+  const markerRegex = /\\?\[(math|mermaid):(\d+)\]/g
   const parts: React.ReactNode[] = []
   let lastIndex = 0
   let match: RegExpExecArray | null
