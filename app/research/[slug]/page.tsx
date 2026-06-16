@@ -115,10 +115,10 @@ export default async function ResearchPaperPage({
         />
       )}
 
-      {paper.mathBlock.map((block, i) => (
+      {(paper.mathBlock ?? []).map((block, i) => (
         <MathBlockRenderer key={i} block={block} />
       ))}
-      {paper.mermaidBlock.map((block, i) => (
+      {(paper.mermaidBlock ?? []).map((block, i) => (
         <MermaidBlockRenderer key={i} block={block} />
       ))}
 
