@@ -1,5 +1,3 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
 
@@ -81,7 +79,7 @@ export function SiteFooter() {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-[rgba(0,0,0,0.06)] flex flex-col lg:flex-row items-center justify-between gap-4">
           <p className="font-mono text-[10px] tracking-[0.15em] text-[#999]">
-            &copy; 2026 BEAG LABS. ALL RIGHTS RESERVED.
+            &copy; {new Date().getFullYear()} BEAG LABS. ALL RIGHTS RESERVED.
           </p>
           <a
             href="https://github.com/beaglabs"
