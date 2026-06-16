@@ -126,14 +126,30 @@ interface MarkdownRendererProps {
   children: string
 }
 
+/**
+ * Hygraph's Rich Text → Markdown converter escapes backslashes and underscores
+ * inside text nodes (\\ → \\\\, _ → \\_). Undo this inside LaTeX math blocks
+ * so KaTeX receives correct syntax.
+ */
+function unescapeMath(markdown: string): string {
+  return markdown
+    .replace(/\$\$([\s\S]*?)\$\$/g, (_: string, math: string) =>
+      '$$' + math.replace(/\\\\/g, '\\').replace(/\\_/g, '_') + '$$'
+    )
+    .replace(/\$([^$]+?)\$/g, (_: string, math: string) =>
+      '$' + math.replace(/\\\\/g, '\\').replace(/\\_/g, '_') + '$'
+    )
+}
+
 export function MarkdownRenderer({ children }: MarkdownRendererProps) {
+  const fixed = unescapeMath(children)
   return (
     <ReactMarkdown
       remarkPlugins={[remarkMath]}
       rehypePlugins={[rehypeKatex]}
       components={components}
     >
-      {children}
+      {fixed}
     </ReactMarkdown>
   )
 }
