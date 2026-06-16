@@ -67,7 +67,7 @@ export default async function ResearchPaperPage({
   }
 
   const paper = data.researchPaper
-  const toc = extractHeadings(paper.body)
+  const toc = extractHeadings(paper.body.markdown)
 
   return (
     <BlogLayout toc={toc} isDraft={isDraft}>
@@ -113,7 +113,7 @@ export default async function ResearchPaperPage({
         />
       )}
 
-      <MarkdownRenderer>{paper.body}</MarkdownRenderer>
+      <MarkdownRenderer>{paper.body.markdown}</MarkdownRenderer>
     </BlogLayout>
   )
 }

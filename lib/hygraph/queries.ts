@@ -15,7 +15,9 @@ const BLOG_POST_CARD_FIELDS = `
 
 const BLOG_POST_FULL_FIELDS = `
   ${BLOG_POST_CARD_FIELDS}
-  body
+  body {
+    markdown
+  }
   seoTitle
   seoDescription
 `
@@ -32,7 +34,9 @@ const RESEARCH_PAPER_CARD_FIELDS = `
 
 const RESEARCH_PAPER_FULL_FIELDS = `
   ${RESEARCH_PAPER_CARD_FIELDS}
-  body
+  body {
+    markdown
+  }
   coverImage {
     url
     width

@@ -63,7 +63,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const post = data.blogPost
-  const toc = extractHeadings(post.body)
+  const toc = extractHeadings(post.body.markdown)
 
   return (
     <BlogLayout toc={toc} isDraft={isDraft}>
@@ -93,7 +93,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         />
       )}
 
-      <MarkdownRenderer>{post.body}</MarkdownRenderer>
+      <MarkdownRenderer>{post.body.markdown}</MarkdownRenderer>
 
       {post.tags.length > 0 && (
         <div className="mt-12 pt-6 border-t border-[rgba(0,0,0,0.06)]">

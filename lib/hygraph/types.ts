@@ -3,7 +3,7 @@ export interface BlogPost {
   slug: string
   title: string
   excerpt: string
-  body: string
+  body: { markdown: string }
   coverImage?: {
     url: string
     width: number
@@ -21,7 +21,7 @@ export interface ResearchPaper {
   slug: string
   title: string
   abstract: string
-  body: string
+  body: { markdown: string }
   coverImage?: {
     url: string
     width: number

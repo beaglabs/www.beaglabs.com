@@ -1,5 +1,4 @@
 const HYGRAPH_ENDPOINT = process.env.HYGRAPH_ENDPOINT
-const HYGRAPH_PREVIEW_ENDPOINT = process.env.HYGRAPH_PREVIEW_ENDPOINT
 const HYGRAPH_TOKEN = process.env.HYGRAPH_TOKEN
 const HYGRAPH_PREVIEW_TOKEN = process.env.HYGRAPH_PREVIEW_TOKEN
 
@@ -8,13 +7,21 @@ export async function fetchHygraph<T>(
   variables?: Record<string, unknown>,
   draft = false
 ): Promise<T> {
-  const endpoint = draft ? HYGRAPH_PREVIEW_ENDPOINT : HYGRAPH_ENDPOINT
+  if (!HYGRAPH_ENDPOINT || !HYGRAPH_TOKEN) {
+    throw new Error(
+      'Missing Hygraph environment variables. Set HYGRAPH_ENDPOINT and HYGRAPH_TOKEN in .env.local'
+    )
+  }
+
+  // CDN Content API uses ?stage=DRAFT query param for preview
+  const endpoint = draft
+    ? `${HYGRAPH_ENDPOINT}?stage=DRAFT`
+    : HYGRAPH_ENDPOINT
   const token = draft ? HYGRAPH_PREVIEW_TOKEN : HYGRAPH_TOKEN
 
-  if (!endpoint || !token) {
-    const mode = draft ? 'preview' : 'published'
+  if (draft && !HYGRAPH_PREVIEW_TOKEN) {
     throw new Error(
-      `Missing Hygraph ${mode} environment variables. Set HYGRAPH_${draft ? 'PREVIEW_' : ''}ENDPOINT and HYGRAPH_${draft ? 'PREVIEW_' : ''}TOKEN in .env.local`
+      'Missing HYGRAPH_PREVIEW_TOKEN. Create a permanent auth token in Hygraph with Draft + Published stage access, then add it to .env.local'
     )
   }
 
