@@ -132,12 +132,19 @@ interface MarkdownRendererProps {
  * so KaTeX receives correct syntax.
  */
 function unescapeMath(markdown: string): string {
+  // Hygraph's markdown converter escapes \ and _ inside text.
+  // Undo this inside $...$ and $$...$$ math blocks so KaTeX gets clean LaTeX.
+  // NOTE: In replace() CALLBACK returns, $ has NO special meaning.
+  //       In replace() STRING replacements, $$ = literal $.
+  const fixMath = (math: string) =>
+    math.replace(/\\\\/g, '\\').replace(/\\_/g, '_')
+
   return markdown
     .replace(/\$\$([\s\S]*?)\$\$/g, (_: string, math: string) =>
-      '$$' + math.replace(/\\\\/g, '\\').replace(/\\_/g, '_') + '$$'
+      '$$' + fixMath(math) + '$$'
     )
-    .replace(/\$([^$]+?)\$/g, (_: string, math: string) =>
-      '$' + math.replace(/\\\\/g, '\\').replace(/\\_/g, '_') + '$'
+    .replace(/\$([^$\n]+?)\$/g, (_: string, math: string) =>
+      '$' + fixMath(math) + '$'
     )
 }
 
