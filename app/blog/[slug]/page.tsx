@@ -95,10 +95,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         />
       )}
 
-      {post.mathBlocks.map((block, i) => (
+      {post.mathBlock.map((block, i) => (
         <MathBlockRenderer key={i} block={block} />
       ))}
-      {post.mermaidBlocks.map((block, i) => (
+      {post.mermaidBlock.map((block, i) => (
         <MermaidBlockRenderer key={i} block={block} />
       ))}
 

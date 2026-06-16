@@ -14,8 +14,8 @@ export interface BlogPost {
   title: string
   excerpt: string
   body: { markdown: string }
-  mathBlocks: MathBlock[]
-  mermaidBlocks: MermaidBlock[]
+  mathBlock: MathBlock[]
+  mermaidBlock: MermaidBlock[]
   coverImage?: {
     url: string
     width: number
@@ -34,8 +34,8 @@ export interface ResearchPaper {
   title: string
   abstract: string
   body: { markdown: string }
-  mathBlocks: MathBlock[]
-  mermaidBlocks: MermaidBlock[]
+  mathBlock: MathBlock[]
+  mermaidBlock: MermaidBlock[]
   coverImage?: {
     url: string
     width: number

@@ -18,11 +18,11 @@ const BLOG_POST_FULL_FIELDS = `
   body {
     markdown
   }
-  mathBlocks {
+  mathBlock {
     label
     latex
   }
-  mermaidBlocks {
+  mermaidBlock {
     label
     diagram
   }
@@ -45,11 +45,11 @@ const RESEARCH_PAPER_FULL_FIELDS = `
   body {
     markdown
   }
-  mathBlocks {
+  mathBlock {
     label
     latex
   }
-  mermaidBlocks {
+  mermaidBlock {
     label
     diagram
   }
