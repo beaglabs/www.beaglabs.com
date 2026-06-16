@@ -5,8 +5,7 @@ import { GET_BLOG_POST } from '@/lib/hygraph/queries'
 import type { BlogPostResponse } from '@/lib/hygraph/types'
 import { BlogLayout } from '@/components/blog/blog-layout'
 import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
-import { MathBlockRenderer } from '@/components/blog/math-block'
-import { MermaidBlockRenderer } from '@/components/blog/mermaid-block'
+import { BlocksRenderer } from '@/components/blog/blocks-renderer'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -95,14 +94,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         />
       )}
 
-      {(post.mathBlock ?? []).map((block, i) => (
-        <MathBlockRenderer key={i} block={block} />
-      ))}
-      {(post.mermaidBlock ?? []).map((block, i) => (
-        <MermaidBlockRenderer key={i} block={block} />
-      ))}
-
-      <MarkdownRenderer>{post.body.markdown}</MarkdownRenderer>
+      <BlocksRenderer
+        markdown={post.body.markdown}
+        mathBlocks={post.mathBlock ?? []}
+        mermaidBlocks={post.mermaidBlock ?? []}
+      />
 
       {post.tags.length > 0 && (
         <div className="mt-12 pt-6 border-t border-[rgba(0,0,0,0.06)]">

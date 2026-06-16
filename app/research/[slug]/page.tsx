@@ -5,8 +5,7 @@ import { GET_RESEARCH_PAPER } from '@/lib/hygraph/queries'
 import type { ResearchPaperResponse } from '@/lib/hygraph/types'
 import { BlogLayout } from '@/components/blog/blog-layout'
 import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
-import { MathBlockRenderer } from '@/components/blog/math-block'
-import { MermaidBlockRenderer } from '@/components/blog/mermaid-block'
+import { BlocksRenderer } from '@/components/blog/blocks-renderer'
 import { ResearchAuthorList } from '@/components/blog/research-author-list'
 
 interface ResearchPaperPageProps {
@@ -115,14 +114,11 @@ export default async function ResearchPaperPage({
         />
       )}
 
-      {(paper.mathBlock ?? []).map((block, i) => (
-        <MathBlockRenderer key={i} block={block} />
-      ))}
-      {(paper.mermaidBlock ?? []).map((block, i) => (
-        <MermaidBlockRenderer key={i} block={block} />
-      ))}
-
-      <MarkdownRenderer>{paper.body.markdown}</MarkdownRenderer>
+      <BlocksRenderer
+        markdown={paper.body.markdown}
+        mathBlocks={paper.mathBlock ?? []}
+        mermaidBlocks={paper.mermaidBlock ?? []}
+      />
     </BlogLayout>
   )
 }
