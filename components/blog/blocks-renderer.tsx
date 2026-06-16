@@ -13,54 +13,120 @@ interface BlocksRendererProps {
  * Interleaves math and mermaid blocks into the markdown body.
  *
  * Place markers in the body to position blocks:
- *   [math:0]  — inserts mathBlocks[0] here
- *   [mermaid:0] — inserts mermaidBlocks[0] here
+ *   [math:0]     — inserts mathBlocks[0] here
+ *   [mermaid:0]  — inserts mermaidBlocks[0] here
  *
- * The marker is replaced with the rendered block. Everything else is
- * rendered as standard markdown.
+ * Adjacent markers (no text between them) render side-by-side in a flex row.
+ * Hygraph escapes [ as \\[ in markdown — both forms are matched.
  */
 export function BlocksRenderer({
   markdown,
   mathBlocks,
   mermaidBlocks,
 }: BlocksRendererProps) {
-  // Split the markdown at marker positions, interleaving rendered blocks
-  // Match [math:N] and \[math:N] (Hygraph escapes [ as \[ in markdown)
   const markerRegex = /\\?\[(math|mermaid):(\d+)\]/g
-  const parts: React.ReactNode[] = []
+
+  // Collect segments: { type: 'md'|'block', content }
+  interface Segment {
+    type: 'md' | 'block'
+    content: string
+    blockType?: 'math' | 'mermaid'
+    blockIndex?: number
+  }
+  const segments: Segment[] = []
   let lastIndex = 0
   let match: RegExpExecArray | null
-  let partKey = 0
 
   while ((match = markerRegex.exec(markdown)) !== null) {
-    // Render markdown segment before this marker
     const before = markdown.slice(lastIndex, match.index)
-    if (before.trim()) {
-      parts.push(<MarkdownRenderer key={`md-${partKey++}`}>{before}</MarkdownRenderer>)
-    }
+    segments.push({ type: 'md', content: before })
 
-    const type = match[1]
-    const idx = parseInt(match[2], 10)
-
-    if (type === 'math' && mathBlocks[idx]) {
-      parts.push(<MathBlockRenderer key={`math-${idx}`} block={mathBlocks[idx]} />)
-    } else if (type === 'mermaid' && mermaidBlocks[idx]) {
-      parts.push(<MermaidBlockRenderer key={`mermaid-${idx}`} block={mermaidBlocks[idx]} />)
-    }
+    segments.push({
+      type: 'block',
+      content: match[0],
+      blockType: match[1] as 'math' | 'mermaid',
+      blockIndex: parseInt(match[2], 10),
+    })
 
     lastIndex = match.index + match[0].length
   }
 
-  // Render remaining markdown after last marker
+  // Trailing markdown
   const after = markdown.slice(lastIndex)
-  if (after.trim()) {
-    parts.push(<MarkdownRenderer key={`md-${partKey++}`}>{after}</MarkdownRenderer>)
+  if (after) {
+    segments.push({ type: 'md', content: after })
   }
 
-  // If no markers at all, render the whole body as-is
-  if (parts.length === 0) {
+  // No markers at all — render markdown as-is
+  if (segments.every((s) => s.type === 'md')) {
     return <MarkdownRenderer>{markdown}</MarkdownRenderer>
   }
+
+  // Render segments, grouping consecutive blocks into side-by-side rows
+  const parts: React.ReactNode[] = []
+  let partKey = 0
+  let pendingBlocks: React.ReactNode[] = []
+
+  const flushPending = () => {
+    if (pendingBlocks.length === 0) return
+    if (pendingBlocks.length === 1) {
+      parts.push(pendingBlocks[0])
+    } else {
+      parts.push(
+        <div
+          key={`side-${partKey++}`}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6 my-8"
+        >
+          {pendingBlocks.map((b, i) => (
+            <div key={i} className="min-w-0">
+              {b}
+            </div>
+          ))}
+        </div>
+      )
+    }
+    pendingBlocks = []
+  }
+
+  for (const seg of segments) {
+    if (seg.type === 'md') {
+      flushPending()
+      if (seg.content.trim()) {
+        parts.push(
+          <MarkdownRenderer key={`md-${partKey++}`}>
+            {seg.content}
+          </MarkdownRenderer>
+        )
+      }
+    } else {
+      let block: React.ReactNode = null
+      if (
+        seg.blockType === 'math' &&
+        seg.blockIndex !== undefined &&
+        mathBlocks[seg.blockIndex]
+      ) {
+        block = (
+          <MathBlockRenderer
+            key={`math-${seg.blockIndex}`}
+            block={mathBlocks[seg.blockIndex]}
+          />
+        )
+      } else if (
+        seg.blockType === 'mermaid' &&
+        seg.blockIndex !== undefined &&
+        mermaidBlocks[seg.blockIndex]
+      ) {
+        block = (
+          <MermaidBlockRenderer
+            key={`mermaid-${seg.blockIndex}`}
+            block={mermaidBlocks[seg.blockIndex]}
+          />
+        )
+      }
+      if (block) pendingBlocks.push(block)
+    }
+  }
+  flushPending()
 
   return <>{parts}</>
 }
