@@ -1,6 +1,6 @@
 "use client"
 
-import { Dithering } from "@paper-design/shaders-react"
+import Image from "next/image"
 
 export function HeroSection() {
   return (
@@ -58,25 +58,16 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right column — dithering visual */}
-          <div className="hidden lg:block relative h-[520px]">
-            <div className="absolute inset-0 overflow-hidden">
-              <Dithering
-                colorBack="#0a0a0a"
-                colorFront="#FF5F1F"
-                shape="warp"
-                type="4x4"
-                size={3}
-                speed={0.4}
-                scale={1.2}
-                style={{ width: "100%", height: "100%" }}
-              />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[12rem] font-bold tracking-[-0.05em] text-white mix-blend-difference select-none">
-                B_
-              </span>
-            </div>
+          {/* Right column — logo */}
+          <div className="hidden lg:flex items-center justify-center relative h-[520px]">
+            <Image
+              src="/logo.png"
+              alt="Beag Labs"
+              width={400}
+              height={400}
+              className="w-[320px] h-[320px] object-contain"
+              priority
+            />
           </div>
         </div>
       </div>
