@@ -9,7 +9,7 @@ interface ResearchDoiLinkProps {
 }
 
 export function ResearchDoiLink({ doi, title }: ResearchDoiLinkProps) {
-  const href = `https://doi.org/10.5281/${doi}`
+  const href = `https://doi.org/${doi}`
 
   return (
     <div className="flex items-center gap-3 pt-4 border-t border-[rgba(0,0,0,0.06)]">
