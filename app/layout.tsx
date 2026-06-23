@@ -16,14 +16,14 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
   title: 'Beag Labs — Applied AI Research',
-  description: 'Applied AI research lab and consulting studio. We advance the frontier of artificial intelligence through dataset generation, fine-tuning, robotics, and model curation.',
+  description: 'We advance the frontier of artificial intelligence through applied research.',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
   },
   openGraph: {
     title: 'Beag Labs — Applied AI Research',
-    description: 'Applied AI research lab and consulting studio. We advance the frontier of artificial intelligence through dataset generation, fine-tuning, robotics, and model curation.',
+    description: 'We advance the frontier of artificial intelligence through applied research.',
     url: 'https://beaglabs.com',
     siteName: 'Beag Labs',
     images: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Beag Labs — Applied AI Research',
-    description: 'Applied AI research lab and consulting studio.',
+    description: 'We advance the frontier of artificial intelligence through applied research.',
     images: ['/og-image.png'],
   },
 }
