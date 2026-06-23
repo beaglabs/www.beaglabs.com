@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "gleap-sdk-setup": {
+      "source": "GleapSDK/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/gleap-sdk-setup/SKILL.md",
+      "computedHash": "b485958544263328d4eb989c81b5adb83e6cbee8bac8406632f97e7d4f50bf81"
+    },
+    "migrate-from-intercom": {
+      "source": "GleapSDK/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/migrate-from-intercom/SKILL.md",
+      "computedHash": "25aa8f000bc84fcaf4907dad680beeda2a2f9ba1abe268c0563cccfbdb67df39"
+    }
+  }
+}

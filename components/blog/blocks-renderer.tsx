@@ -1,12 +1,14 @@
 import { MarkdownRenderer } from './markdown-renderer'
 import { MathBlockRenderer } from './math-block'
 import { MermaidBlockRenderer } from './mermaid-block'
-import type { MathBlock, MermaidBlock } from '@/lib/hygraph/types'
+import { TableBlockRenderer } from './table-block'
+import type { MathBlock, MermaidBlock, TableBlock } from '@/lib/hygraph/types'
 
 interface BlocksRendererProps {
   markdown: string
   mathBlocks: MathBlock[]
   mermaidBlocks: MermaidBlock[]
+  tableBlocks: TableBlock[]
 }
 
 /**
@@ -23,14 +25,15 @@ export function BlocksRenderer({
   markdown,
   mathBlocks,
   mermaidBlocks,
+  tableBlocks,
 }: BlocksRendererProps) {
-  const markerRegex = /\\?\[(math|mermaid):(\d+)\]/g
+  const markerRegex = /\\?\[(math|mermaid|table):(\d+)\]/g
 
   // Collect segments: { type: 'md'|'block', content }
   interface Segment {
     type: 'md' | 'block'
     content: string
-    blockType?: 'math' | 'mermaid'
+    blockType?: 'math' | 'mermaid' | 'table'
     blockIndex?: number
   }
   const segments: Segment[] = []
@@ -44,7 +47,7 @@ export function BlocksRenderer({
     segments.push({
       type: 'block',
       content: match[0],
-      blockType: match[1] as 'math' | 'mermaid',
+      blockType: match[1] as 'math' | 'mermaid' | 'table',
       blockIndex: parseInt(match[2], 10),
     })
 
@@ -120,6 +123,17 @@ export function BlocksRenderer({
           <MermaidBlockRenderer
             key={`mermaid-${seg.blockIndex}`}
             block={mermaidBlocks[seg.blockIndex]}
+          />
+        )
+      } else if (
+        seg.blockType === 'table' &&
+        seg.blockIndex !== undefined &&
+        tableBlocks[seg.blockIndex]
+      ) {
+        block = (
+          <TableBlockRenderer
+            key={`table-${seg.blockIndex}`}
+            block={tableBlocks[seg.blockIndex]}
           />
         )
       }

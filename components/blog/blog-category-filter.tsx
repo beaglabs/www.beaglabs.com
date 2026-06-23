@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import posthog from 'posthog-js'
 
 const CATEGORIES = [
   { value: '', label: 'All' },
@@ -32,6 +35,7 @@ export function BlogCategoryFilter({
                 ? 'bg-[#111] text-white'
                 : 'text-[#555] hover:text-[#111] bg-[#f5f5f5] hover:bg-[#eee]'
             }`}
+            onClick={() => posthog.capture('blog_category_filtered', { category: cat.label })}
           >
             {cat.label}
           </Link>

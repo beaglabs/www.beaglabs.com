@@ -3,21 +3,20 @@ import Link from "next/link"
 
 const footerColumns = [
   {
-    title: "Products",
+    title: "Services",
     links: [
       { label: "Dataset Generation", href: "#services" },
-      { label: "Robotics", href: "#services" },
+      { label: "Forward Deployed ML", href: "#services" },
       { label: "Fine-Tuning", href: "#services" },
-      { label: "SLM Curation", href: "#services" },
+      { label: "Domain-Model Curation", href: "#services" },
     ],
   },
   {
     title: "Resources",
     links: [
       { label: "Projects", href: "/projects" },
-      { label: "Research", href: "#" },
+      { label: "Research", href: "/research" },
       { label: "GitHub", href: "https://github.com/beaglabs" },
-      { label: "Contact", href: "https://cal.com/comradelemoncake/meet-the-founder" },
     ],
   },
   {
@@ -25,6 +24,7 @@ const footerColumns = [
     links: [
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms of Service", href: "/terms-of-service" },
+      { label: "Imprint", href: "/imprint" },
     ],
   },
 ]

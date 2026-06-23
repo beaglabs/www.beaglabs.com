@@ -8,6 +8,12 @@ export interface MermaidBlock {
   diagram: string
 }
 
+export interface TableBlock {
+  label?: string | null
+  headers: string
+  rows: string
+}
+
 export interface BlogPost {
   id: string
   slug: string
@@ -16,6 +22,7 @@ export interface BlogPost {
   body: { markdown: string }
   mathBlock: MathBlock[]
   mermaidBlock: MermaidBlock[]
+  tableBlock: TableBlock[]
   coverImage?: {
     url: string
     width: number
@@ -36,6 +43,7 @@ export interface ResearchPaper {
   body: { markdown: string }
   mathBlock: MathBlock[]
   mermaidBlock: MermaidBlock[]
+  tableBlock: TableBlock[]
   coverImage?: {
     url: string
     width: number
@@ -44,6 +52,7 @@ export interface ResearchPaper {
   authors: string[]
   publishedAt: string
   doi?: string | null
+  seoImage?: string | null
   seoTitle?: string | null
   seoDescription?: string | null
 }

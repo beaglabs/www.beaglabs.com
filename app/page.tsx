@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
 import { CapabilitiesSection } from "@/components/capabilities-section"
-import { ProjectsSection } from "@/components/projects-section"
+import { GleapCTA } from "@/components/gleap-provider"
 import { SiteFooter } from "@/components/site-footer"
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
       <Navbar />
       <HeroSection />
       <CapabilitiesSection />
-      <ProjectsSection />
+      <GleapCTA />
       <SiteFooter />
     </main>
   )

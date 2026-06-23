@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import posthog from "posthog-js"
 
 export function HeroSection() {
   return (
@@ -43,6 +44,7 @@ export function HeroSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 text-sm font-medium text-white bg-[#111] hover:bg-[#333] px-7 py-3.5 rounded-full transition-colors duration-200"
+                onClick={() => posthog.capture('engagement_cta_clicked', { location: 'hero' })}
               >
                 Start an engagement
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -52,6 +54,7 @@ export function HeroSection() {
               <a
                 href="/projects"
                 className="text-sm font-medium text-[#555] hover:text-[#111] transition-colors duration-200"
+                onClick={() => posthog.capture('projects_link_clicked', { location: 'hero' })}
               >
                 View projects →
               </a>

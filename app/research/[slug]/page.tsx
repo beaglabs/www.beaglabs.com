@@ -7,6 +7,8 @@ import { BlogLayout } from '@/components/blog/blog-layout'
 import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
 import { BlocksRenderer } from '@/components/blog/blocks-renderer'
 import { ResearchAuthorList } from '@/components/blog/research-author-list'
+import { PostTracker } from '@/components/blog/post-tracker'
+import { ResearchDoiLink } from '@/components/blog/research-doi-link'
 
 interface ResearchPaperPageProps {
   params: Promise<{ slug: string }>
@@ -72,6 +74,10 @@ export default async function ResearchPaperPage({
 
   return (
     <BlogLayout toc={toc} isDraft={isDraft}>
+      <PostTracker
+        eventName="research_paper_viewed"
+        properties={{ slug, title: paper.title, doi: paper.doi ?? undefined }}
+      />
       <header className="mb-10">
         <p className="text-xs text-[#999] mb-3">
           <time dateTime={paper.publishedAt}>
@@ -86,29 +92,20 @@ export default async function ResearchPaperPage({
           {paper.title}
         </h1>
         <ResearchAuthorList authors={paper.authors} />
-
-        {paper.doi && (
-          <a
-            href={`https://doi.org/${paper.doi}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-3 font-mono text-xs text-[#8B7355] hover:text-[#6b5740] underline underline-offset-2"
-          >
-            DOI: {paper.doi}
-          </a>
-        )}
       </header>
 
-      <div className="bg-[#f5f5f5] border-l-[3px] border-l-[#8B7355] p-6 rounded-r-lg mb-10">
+      <div className="bg-[#f5f5f5] border-l-[3px] border-l-[#8B7355] p-6 rounded-r-lg mb-6">
         <h2 className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">
           Abstract
         </h2>
-        <p className="text-sm text-[#555] leading-relaxed">{paper.abstract}</p>
+        <p className="text-sm text-[#555] leading-relaxed mb-4">{paper.abstract}</p>
+
+        {paper.doi && <ResearchDoiLink doi={paper.doi} title={paper.title} />}
       </div>
 
-      {paper.coverImage && (
+      {(paper.coverImage || paper.seoImage) && (
         <img
-          src={paper.coverImage.url}
+          src={paper.coverImage?.url || paper.seoImage!}
           alt={paper.title}
           className="w-full rounded-lg mb-10"
         />
@@ -118,6 +115,7 @@ export default async function ResearchPaperPage({
         markdown={paper.body.markdown}
         mathBlocks={paper.mathBlock ?? []}
         mermaidBlocks={paper.mermaidBlock ?? []}
+        tableBlocks={paper.tableBlock ?? []}
       />
     </BlogLayout>
   )

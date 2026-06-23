@@ -2,8 +2,6 @@ import { fetchHygraph } from '@/lib/hygraph/client'
 import { GET_RESEARCH_PAPERS } from '@/lib/hygraph/queries'
 import type { ResearchPapersResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
-import { Navbar } from '@/components/navbar'
-import { SiteFooter } from '@/components/site-footer'
 
 const PAPERS_PER_PAGE = 9
 
@@ -29,28 +27,24 @@ export default async function ResearchPage({
   )
 
   return (
-    <>
-      <Navbar />
-      <main className="max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-[-0.03em] text-[#111] mb-2">
-            Research
-          </h1>
-          <p className="text-[#555]">
-            Papers, technical deep-dives, and research findings.
-          </p>
-        </div>
-        <BlogList
-          papers={data.researchPapers}
-          emptyMessage="No papers published yet."
-        />
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          basePath="/research"
-        />
-      </main>
-      <SiteFooter />
-    </>
+    <main className="max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold tracking-[-0.03em] text-[#111] mb-2">
+          Research
+        </h1>
+        <p className="text-[#555]">
+          Papers, technical deep-dives, and research findings.
+        </p>
+      </div>
+      <BlogList
+        papers={data.researchPapers}
+        emptyMessage="No papers published yet."
+      />
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        basePath="/research"
+      />
+    </main>
   )
 }

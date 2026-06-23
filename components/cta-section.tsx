@@ -1,5 +1,7 @@
 "use client"
 
+import posthog from "posthog-js"
+
 export function CTASection() {
   return (
     <section id="contact" className="relative bg-white py-32 px-6 lg:px-8 border-t border-[#E5E7EB]">
@@ -23,6 +25,7 @@ export function CTASection() {
             <a
               href="mailto:contact@beaglabs.com"
               className="inline-flex items-center gap-3 font-mono text-xs tracking-wide text-white bg-[#0a0a0a] px-7 py-4 hover:bg-[#FF5F1F] transition-colors"
+              onClick={() => posthog.capture('contact_email_clicked', { location: 'cta_section' })}
             >
               CONTACT US
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

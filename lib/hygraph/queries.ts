@@ -26,6 +26,11 @@ const BLOG_POST_FULL_FIELDS = `
     label
     diagram
   }
+  tableBlock {
+    label
+    headers
+    rows
+  }
   seoTitle
   seoDescription
 `
@@ -38,6 +43,7 @@ const RESEARCH_PAPER_CARD_FIELDS = `
   authors
   publishedAt
   doi
+  seoImage
 `
 
 const RESEARCH_PAPER_FULL_FIELDS = `
@@ -53,6 +59,11 @@ const RESEARCH_PAPER_FULL_FIELDS = `
     label
     diagram
   }
+  tableBlock {
+    label
+    headers
+    rows
+  }
   coverImage {
     url
     width
@@ -60,6 +71,7 @@ const RESEARCH_PAPER_FULL_FIELDS = `
   }
   seoTitle
   seoDescription
+  seoImage
 `
 
 // --- Blog queries ---

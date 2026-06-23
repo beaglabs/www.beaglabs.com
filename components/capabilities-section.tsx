@@ -8,8 +8,8 @@ const services = [
   },
   {
     id: "02",
-    title: "Robotics",
-    description: "Perception, planning, and control systems. We bring AI out of the cloud and into physical environments with production-grade reliability.",
+    title: "Forward Deployed ML",
+    description: "On-site or remote machine learning engineering and research. We embed with your team to build models that work in the real world, not just in the lab.",
   },
   {
     id: "03",
@@ -18,7 +18,7 @@ const services = [
   },
   {
     id: "04",
-    title: "SLM Curation",
+    title: "Domain-Model Curation",
     description: "Evaluation, selection, and deployment of efficient small language models. Right-sized intelligence for your specific use case.",
   },
 ]

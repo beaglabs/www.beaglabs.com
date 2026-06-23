@@ -6,6 +6,8 @@ import type { BlogPostResponse } from '@/lib/hygraph/types'
 import { BlogLayout } from '@/components/blog/blog-layout'
 import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
 import { BlocksRenderer } from '@/components/blog/blocks-renderer'
+import { PostTracker } from '@/components/blog/post-tracker'
+import { PostTags } from '@/components/blog/post-tags'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -68,6 +70,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <BlogLayout toc={toc} isDraft={isDraft}>
+      <PostTracker
+        eventName="blog_post_viewed"
+        properties={{ slug, title: post.title, category: post.category }}
+      />
       <header className="mb-8">
         <p className="text-xs text-[#999] mb-3">
           <time dateTime={post.publishedAt}>
@@ -98,23 +104,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         markdown={post.body.markdown}
         mathBlocks={post.mathBlock ?? []}
         mermaidBlocks={post.mermaidBlock ?? []}
+        tableBlocks={post.tableBlock ?? []}
       />
 
-      {post.tags.length > 0 && (
-        <div className="mt-12 pt-6 border-t border-[rgba(0,0,0,0.06)]">
-          <div className="flex items-center gap-2 flex-wrap">
-            {post.tags.map((tag) => (
-              <a
-                key={tag}
-                href={`/blog/tag/${encodeURIComponent(tag)}`}
-                className="text-xs text-[#555] hover:text-[#111] bg-[#f5f5f5] hover:bg-[#eee] px-2.5 py-1 rounded-full transition-colors"
-              >
-                {tag}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      <PostTags tags={post.tags} />
     </BlogLayout>
   )
 }
