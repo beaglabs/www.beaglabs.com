@@ -67,8 +67,8 @@ export function GleapCTA() {
 
 export function GleapProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    if (!gleapReady && typeof window !== 'undefined') {
-      Gleap.initialize(process.env.NEXT_PUBLIC_GLEAP_API_KEY || '')
+    if (!gleapReady && typeof window !== 'undefined' && process.env.NEXT_PUBLIC_GLEAP_API_KEY) {
+      Gleap.initialize(process.env.NEXT_PUBLIC_GLEAP_API_KEY)
       gleapReady = true
     }
   }, [])
