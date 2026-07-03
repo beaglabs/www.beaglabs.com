@@ -1,0 +1,16 @@
+{"type":"server-started","port":56251,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:56251/?key=04c51cb41803f281d69ff8eea52da9172420ab6ac7640a548601ac2bd225b1de","screen_dir":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content","state_dir":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/state","idle_timeout_ms":14400000}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/enterprise-homepage-directions.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/palantir-orange-dither-direction.html"}
+{"source":"user-event","type":"click","text":"A\n      \n        All Dark\n        Commit the entire homepage to the darker Palantir-style system.","choice":"all-dark","id":null,"timestamp":1783059361497}
+{"source":"user-event","type":"click","text":"A\n      \n        All Dark\n        Commit the entire homepage to the darker Palantir-style system.","choice":"all-dark","id":null,"timestamp":1783059362360}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/palantir-orange-dither-direction-v2.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/palantir-orange-dither-fullwidth-hero.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/palantir-orange-dither-white-hero.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/palantir-orange-dither-white-hero-clean.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/cult-dither-beag-hero.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/bg-media-beag-hero.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/bg-media-beag-hero-cycling.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/bg-media-beag-hero-cycling-real-assets.html"}
+{"type":"screen-updated","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/bg-media-beag-hero-cycling-real-assets.html"}
+{"type":"screen-added","file":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/42569-1783058089/content/beag-full-homepage-wireframe.html"}
+{"type":"server-stopped","reason":"idle timeout"}

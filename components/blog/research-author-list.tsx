@@ -6,12 +6,12 @@ interface ResearchAuthorListProps {
 
 export function ResearchAuthorList({ authors }: ResearchAuthorListProps) {
   return (
-    <p className="font-mono text-sm text-[#555]">
+    <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-[#666]">
       {authors.map((author, i) => (
         <span key={author}>
           <Link
             href={`/research/authors/${encodeURIComponent(author)}`}
-            className="hover:text-[#111] hover:underline underline-offset-2 transition-colors"
+            className="transition-colors hover:text-[#111] hover:underline underline-offset-2"
           >
             {author}
           </Link>

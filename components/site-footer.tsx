@@ -3,20 +3,20 @@ import Link from "next/link"
 
 const footerColumns = [
   {
-    title: "Services",
+    title: "Capabilities",
     links: [
-      { label: "Dataset Generation", href: "#services" },
-      { label: "Forward Deployed ML", href: "#services" },
-      { label: "Fine-Tuning", href: "#services" },
-      { label: "Domain-Model Curation", href: "#services" },
+      { label: "Dataset Generation", href: "#capabilities" },
+      { label: "Forward Deployed ML", href: "#capabilities" },
+      { label: "Model Adaptation", href: "#capabilities" },
+      { label: "Evaluation Systems", href: "#capabilities" },
     ],
   },
   {
-    title: "Resources",
+    title: "Work",
     links: [
-      { label: "Projects", href: "/projects" },
       { label: "Research", href: "/research" },
       { label: "GitHub", href: "https://github.com/beaglabs" },
+      { label: "Contact", href: "https://cal.com/comradelemoncake/meet-the-founder" },
     ],
   },
   {
@@ -31,13 +31,11 @@ const footerColumns = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-white py-16 px-6 lg:px-8 border-t border-[rgba(0,0,0,0.06)]">
-      <div className="max-w-7xl mx-auto">
-        {/* Top: Logo + Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
-          {/* Logo column */}
-          <div className="lg:col-span-4">
-            <div className="flex items-center gap-3 mb-4">
+    <footer className="border-t border-[rgba(0,0,0,0.08)] bg-[#f6f4ef] px-6 py-14 lg:px-9 lg:py-16">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_repeat(3,1fr)] lg:gap-7">
+          <div>
+            <div className="mb-4 flex items-center gap-3">
               <Image
                 src="/logo.png"
                 alt="Beag Labs"
@@ -45,27 +43,27 @@ export function SiteFooter() {
                 height={24}
                 className="w-6 h-6"
               />
-              <span className="text-sm font-medium tracking-[-0.01em] text-[#111]">
+              <span className="text-[13px] font-bold tracking-[0.08em] text-[#111]">
                 Beag Labs
               </span>
             </div>
-            <p className="text-sm text-[#555] leading-relaxed max-w-xs">
-              Applied AI research lab and consulting studio.
+            <p className="max-w-[250px] text-[14px] leading-[1.7] text-[#555]">
+              Applied AI research and deployment for technically demanding
+              domains.
             </p>
           </div>
 
-          {/* Link columns */}
           {footerColumns.map((col) => (
-            <div key={col.title} className="lg:col-span-2">
-              <h4 className="text-[13px] font-medium text-[#111] mb-4">
+            <div key={col.title}>
+              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
                 {col.title}
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2.5 text-[14px] text-[#444]">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[13px] text-[#555] hover:text-[#111] transition-colors duration-200"
+                      className="transition-colors duration-200 hover:text-[#111]"
                     >
                       {link.label}
                     </Link>
@@ -76,8 +74,7 @@ export function SiteFooter() {
           ))}
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-8 border-t border-[rgba(0,0,0,0.06)] flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[rgba(0,0,0,0.08)] pt-8 lg:flex-row">
           <p className="font-mono text-[10px] tracking-[0.15em] text-[#999]">
             &copy; {new Date().getFullYear()} BEAG LABS. ALL RIGHTS RESERVED.
           </p>

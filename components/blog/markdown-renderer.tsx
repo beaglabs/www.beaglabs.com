@@ -6,7 +6,7 @@ import type { Components } from 'react-markdown'
 const components: Components = {
   h1: ({ children, ...props }) => (
     <h1
-      className="text-3xl font-bold tracking-[-0.03em] text-[#111] mt-12 mb-6"
+      className="mt-14 mb-6 text-[34px] font-bold tracking-[-0.045em] text-[#111]"
       {...props}
     >
       {children}
@@ -14,7 +14,7 @@ const components: Components = {
   ),
   h2: ({ children, ...props }) => (
     <h2
-      className="text-2xl font-bold tracking-[-0.02em] text-[#111] mt-10 mb-4"
+      className="mt-12 mb-4 text-[28px] font-bold tracking-[-0.04em] text-[#111]"
       {...props}
     >
       {children}
@@ -22,21 +22,21 @@ const components: Components = {
   ),
   h3: ({ children, ...props }) => (
     <h3
-      className="text-xl font-semibold tracking-[-0.01em] text-[#111] mt-8 mb-3"
+      className="mt-10 mb-3 text-[22px] font-semibold tracking-[-0.03em] text-[#111]"
       {...props}
     >
       {children}
     </h3>
   ),
   p: ({ children, ...props }) => (
-    <p className="text-base leading-relaxed text-[#333] mb-5" {...props}>
+    <p className="mb-5 text-[16px] leading-[1.82] text-[#333]" {...props}>
       {children}
     </p>
   ),
   a: ({ children, href, ...props }) => (
     <a
       href={href}
-      className="text-[#8B7355] hover:text-[#6b5740] underline underline-offset-2"
+      className="text-[#C7661D] underline underline-offset-2 transition-colors hover:text-[#a95314]"
       {...props}
     >
       {children}
@@ -47,7 +47,7 @@ const components: Components = {
     if (isInline) {
       return (
         <code
-          className="font-mono text-sm bg-[#f5f5f5] text-[#555] px-1.5 py-0.5 rounded"
+          className="rounded bg-[#f0ece6] px-1.5 py-0.5 font-mono text-sm text-[#555]"
           {...props}
         >
           {children}
@@ -56,7 +56,7 @@ const components: Components = {
     }
     return (
       <code
-        className={`font-mono text-sm block bg-[#f5f5f5] text-[#333] p-4 rounded-lg overflow-x-auto ${className || ''}`}
+        className={`block overflow-x-auto rounded-[20px] bg-[#f1ede7] p-5 font-mono text-sm text-[#333] ${className || ''}`}
         {...props}
       >
         {children}
@@ -70,20 +70,20 @@ const components: Components = {
   ),
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="border-l-2 border-l-[#8B7355] pl-4 italic text-[#555] mb-5"
+      className="mb-6 border-l-[3px] border-l-[#C7661D] pl-5 italic text-[#555]"
       {...props}
     >
       {children}
     </blockquote>
   ),
   ul: ({ children, ...props }) => (
-    <ul className="list-disc pl-6 mb-5 space-y-1 text-[#333]" {...props}>
+    <ul className="mb-5 list-disc space-y-2 pl-6 text-[#333]" {...props}>
       {children}
     </ul>
   ),
   ol: ({ children, ...props }) => (
     <ol
-      className="list-decimal pl-6 mb-5 space-y-1 text-[#333]"
+      className="mb-5 list-decimal space-y-2 pl-6 text-[#333]"
       {...props}
     >
       {children}
@@ -93,20 +93,20 @@ const components: Components = {
     <img
       src={src}
       alt={alt || ''}
-      className="w-full rounded-lg my-8"
+      className="my-8 w-full rounded-[24px] border border-[rgba(17,17,17,0.08)]"
       {...props}
     />
   ),
   table: ({ children, ...props }) => (
-    <div className="overflow-x-auto mb-5">
-      <table className="w-full text-sm border-collapse" {...props}>
+    <div className="mb-6 overflow-x-auto rounded-[20px] border border-[rgba(17,17,17,0.08)]">
+      <table className="w-full border-collapse text-sm" {...props}>
         {children}
       </table>
     </div>
   ),
   th: ({ children, ...props }) => (
     <th
-      className="border border-[rgba(0,0,0,0.06)] px-4 py-2 text-left font-semibold bg-[#f5f5f5] text-[#111]"
+      className="border border-[rgba(0,0,0,0.06)] bg-[#f0ece6] px-4 py-3 text-left font-semibold text-[#111]"
       {...props}
     >
       {children}
@@ -114,7 +114,7 @@ const components: Components = {
   ),
   td: ({ children, ...props }) => (
     <td
-      className="border border-[rgba(0,0,0,0.06)] px-4 py-2 text-[#333]"
+      className="border border-[rgba(0,0,0,0.06)] px-4 py-3 text-[#333]"
       {...props}
     >
       {children}

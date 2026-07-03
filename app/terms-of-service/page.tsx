@@ -1,5 +1,4 @@
-import { Navbar } from "@/components/navbar"
-import { SiteFooter } from "@/components/site-footer"
+import { LegalPageShell } from "@/components/legal-page-shell"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -9,18 +8,12 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="bg-white text-[#0a0a0a]">
-      <Navbar />
-      <section className="pt-28 pb-20 px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold tracking-[-0.03em] text-[#111] mb-8">
-            Terms of Service
-          </h1>
-          <p className="text-sm text-[#999] mb-12">
-            Last updated: June 2026
-          </p>
-
-          <div className="prose prose-sm prose-neutral max-w-none space-y-8">
+    <LegalPageShell
+      eyebrow="Policy"
+      title="Terms of Service"
+      updatedAt="June 2026"
+      intro="The legal terms governing how Beag Labs provides research, consulting, and technical delivery services."
+    >
             <section>
               <h2 className="text-xl font-semibold text-[#111] mb-4">1. Acceptance of Terms</h2>
               <p className="text-[#555] leading-relaxed">
@@ -83,14 +76,9 @@ export default function TermsPage() {
             <section>
               <h2 className="text-xl font-semibold text-[#111] mb-4">8. Contact</h2>
               <p className="text-[#555] leading-relaxed">
-                For questions about these terms, contact us through the Gleap chat widget on our website or at
-                legal@beaglabs.com.
+                For questions about these terms, contact us at legal@beaglabs.com.
               </p>
             </section>
-          </div>
-        </div>
-      </section>
-      <SiteFooter />
-    </main>
+    </LegalPageShell>
   )
 }

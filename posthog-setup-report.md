@@ -1,20 +1,17 @@
 # PostHog post-wizard report
 
-The wizard has completed a deep integration of PostHog analytics into the Beag Labs website. The setup includes client-side initialization via `instrumentation-client.ts` (Next.js 15.3+ pattern), a server-side PostHog client in `lib/posthog-server.ts`, a reverse proxy via Next.js rewrites in `next.config.mjs`, and 11 event captures across 8 files covering the full visitor journey from content discovery to engagement CTAs. New client components (`PostTracker`, `PostTags`, `ResearchDoiLink`, `ProjectCardLink`) were created to enable event tracking from server-rendered pages without converting them to full client components.
+The wizard has completed a deep integration of PostHog analytics into the Beag Labs website. The setup includes client-side initialization via `instrumentation-client.ts` (Next.js 15.3+ pattern), a server-side PostHog client in `lib/posthog-server.ts`, a reverse proxy via Next.js rewrites in `next.config.mjs`, and event captures across the site covering the visitor journey from content discovery to engagement CTAs. New client components (`PostTracker`, `PostTags`, `ResearchDoiLink`) were created to enable event tracking from server-rendered pages without converting them to full client components.
 
 | Event Name | Description | File |
 |---|---|---|
 | `engagement_cta_clicked` | User clicks the primary "Start an engagement" CTA in the hero section linking to cal.com. | `components/hero-section.tsx` |
-| `projects_link_clicked` | User clicks the secondary "View projects" link in the hero section. | `components/hero-section.tsx` |
 | `contact_cta_clicked` | User clicks the "Contact" button in the navbar linking to cal.com. | `components/navbar.tsx` |
 | `contact_email_clicked` | User clicks the "CONTACT US" email CTA in the contact section. | `components/cta-section.tsx` |
-| `gleap_cta_opened` | User clicks the "Ask about Forward Deployed ML Engineering" button that opens the Gleap chat widget. | `components/gleap-provider.tsx` |
 | `blog_post_viewed` | User views a blog post article page, marking top-of-funnel content engagement. | `app/blog/[slug]/page.tsx` |
 | `research_paper_viewed` | User views a research paper page, indicating high-intent engagement with Beag Labs' research output. | `app/research/[slug]/page.tsx` |
 | `research_pdf_downloaded` | User clicks the "Download PDF" / DOI link on a research paper to access the full paper. | `app/research/[slug]/page.tsx` |
 | `blog_tag_clicked` | User clicks a tag on a blog post to explore related content. | `app/blog/[slug]/page.tsx` |
 | `blog_category_filtered` | User selects a blog category filter to narrow their content browsing. | `components/blog/blog-category-filter.tsx` |
-| `project_card_clicked` | User clicks the Chaveta project card to navigate to the external project site. | `app/projects/page.tsx` |
 
 ## Next steps
 

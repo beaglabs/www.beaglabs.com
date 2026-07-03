@@ -36,11 +36,11 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
   }, [headings])
 
   return (
-    <nav className="sticky top-24">
-      <h4 className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-3">
+    <nav className="sticky top-28 rounded-[24px] border border-[rgba(17,17,17,0.08)] bg-[rgba(255,255,255,0.72)] p-5 backdrop-blur-sm">
+      <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
         On this page
       </h4>
-      <ul className="space-y-1.5 border-l border-[rgba(0,0,0,0.06)]">
+      <ul className="space-y-1.5 border-l border-[rgba(0,0,0,0.08)]">
         {headings.map((heading) => (
           <li
             key={heading.id}
@@ -48,9 +48,9 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
           >
             <a
               href={`#${heading.id}`}
-              className={`block text-xs py-0.5 border-l-2 -ml-[1px] transition-colors ${
+              className={`-ml-[1px] block border-l-2 py-0.5 text-[12px] leading-[1.45] transition-colors ${
                 activeId === heading.id
-                  ? 'border-l-[#8B7355] text-[#111] font-medium'
+                  ? 'border-l-[#C7661D] font-medium text-[#111]'
                   : 'border-l-transparent text-[#555] hover:text-[#111]'
               }`}
             >

@@ -9,7 +9,7 @@ export default function ResearchLayout({
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#FAFAF9]">
+      <div className="min-h-screen bg-[#f6f4ef] pt-16">
         {children}
       </div>
       <SiteFooter />

@@ -8,38 +8,38 @@ interface BlogCardProps {
 export function BlogCard({ post }: BlogCardProps) {
   return (
     <Link href={`/blog/${post.slug}`}>
-      <article className="group bg-white rounded-lg border border-[rgba(0,0,0,0.06)] border-l-[3px] border-l-[#8B7355] overflow-hidden hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+      <article className="group overflow-hidden rounded-[24px] border border-[rgba(17,17,17,0.1)] bg-[rgba(255,255,255,0.76)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white">
         {post.coverImage && (
           <div className="aspect-video overflow-hidden">
             <img
               src={post.coverImage.url}
               alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           </div>
         )}
-        <div className="p-6">
-          <span className="inline-block text-xs font-medium text-[#8B7355] bg-[#8B7355]/10 px-2 py-0.5 rounded-full mb-3">
+        <div className="p-6 lg:p-7">
+          <span className="mb-4 inline-block rounded-full bg-[#f3ede5] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#C7661D]">
             {post.category}
           </span>
-          <h3 className="text-lg font-bold tracking-[-0.02em] text-[#111] mb-2 group-hover:text-[#8B7355] transition-colors">
+          <h3 className="mb-3 text-[24px] leading-[1.08] tracking-[-0.03em] text-[#111] transition-colors group-hover:text-[#C7661D]">
             {post.title}
           </h3>
-          <p className="text-sm text-[#555] line-clamp-2 mb-3 leading-relaxed">
+          <p className="mb-4 line-clamp-3 text-[14px] leading-[1.75] text-[#555]">
             {post.excerpt}
           </p>
-          <div className="flex items-center gap-3 text-xs text-[#999]">
+          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#888]">
             <time dateTime={post.publishedAt}>
               {new Date(post.publishedAt).toLocaleDateString('en-US', {
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
+                month: 'short',
+                day: '2-digit',
               })}
             </time>
             {post.tags.length > 0 && (
               <>
                 <span aria-hidden="true">·</span>
-                <span className="truncate">{post.tags.slice(0, 3).join(', ')}</span>
+                <span className="truncate">{post.tags.slice(0, 2).join(' / ')}</span>
               </>
             )}
           </div>

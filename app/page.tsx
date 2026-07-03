@@ -1,16 +1,24 @@
 import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
 import { CapabilitiesSection } from "@/components/capabilities-section"
-import { GleapCTA } from "@/components/gleap-provider"
+import { CapabilityTracksStrip } from "@/components/capability-tracks-strip"
+import { FeaturedWorkSection } from "@/components/featured-work-section"
+import { ResearchPreviewSection } from "@/components/research-preview-section"
+import { EngagementModelSection } from "@/components/engagement-model-section"
+import { FinalCTASection } from "@/components/final-cta-section"
 import { SiteFooter } from "@/components/site-footer"
 
 export default function Home() {
   return (
-    <main className="bg-white text-[#0a0a0a]">
+    <main className="bg-background text-foreground">
       <Navbar />
       <HeroSection />
+      <CapabilityTracksStrip />
       <CapabilitiesSection />
-      <GleapCTA />
+      <FeaturedWorkSection />
+      <ResearchPreviewSection />
+      <EngagementModelSection />
+      <FinalCTASection />
       <SiteFooter />
     </main>
   )

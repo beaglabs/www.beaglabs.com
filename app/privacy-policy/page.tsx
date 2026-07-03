@@ -1,5 +1,4 @@
-import { Navbar } from "@/components/navbar"
-import { SiteFooter } from "@/components/site-footer"
+import { LegalPageShell } from "@/components/legal-page-shell"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -9,23 +8,17 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="bg-white text-[#0a0a0a]">
-      <Navbar />
-      <section className="pt-28 pb-20 px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold tracking-[-0.03em] text-[#111] mb-8">
-            Privacy Policy
-          </h1>
-          <p className="text-sm text-[#999] mb-12">
-            Last updated: June 2026
-          </p>
-
-          <div className="prose prose-sm prose-neutral max-w-none space-y-8">
+    <LegalPageShell
+      eyebrow="Policy"
+      title="Privacy Policy"
+      updatedAt="June 2026"
+      intro="How Beag Labs collects, uses, and retains information across the site, contact flows, and analytics systems."
+    >
             <section>
               <h2 className="text-xl font-semibold text-[#111] mb-4">1. Information We Collect</h2>
               <p className="text-[#555] leading-relaxed">
                 We collect information you provide directly, including name, email address, and messages
-                sent through our Gleap chat widget. We also collect standard web analytics data via PostHog,
+                sent through our contact and scheduling flows. We also collect standard web analytics data via PostHog,
                 including page views, session duration, and interaction events. We do not sell your personal data.
               </p>
             </section>
@@ -45,7 +38,6 @@ export default function PrivacyPage() {
                 We use the following third-party services:
               </p>
               <ul className="list-disc pl-6 text-[#555] leading-relaxed mt-2 space-y-1">
-                <li><strong>Gleap</strong> — Customer feedback and chat widget. Subject to Gleap&apos;s privacy policy.</li>
                 <li><strong>PostHog</strong> — Product analytics. Self-hosted or EU-hosted where applicable.</li>
                 <li><strong>Vercel</strong> — Hosting and deployment. Standard server logs collected.</li>
               </ul>
@@ -63,7 +55,7 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-semibold text-[#111] mb-4">5. Data Retention</h2>
               <p className="text-[#555] leading-relaxed">
                 We retain personal data only as long as necessary for the purposes described in this policy.
-                Analytics data is retained for 24 months. Chat transcripts are retained for 12 months.
+                Analytics data is retained for 24 months. Inquiry messages are retained only as long as needed to respond and maintain business records.
               </p>
             </section>
 
@@ -71,8 +63,7 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-semibold text-[#111] mb-4">6. Your Rights</h2>
               <p className="text-[#555] leading-relaxed">
                 You have the right to access, correct, or delete your personal data. You may also object to
-                processing or request data portability. To exercise these rights, contact us through the Gleap
-                chat widget on our website.
+                processing or request data portability. To exercise these rights, contact us at privacy@beaglabs.com.
               </p>
             </section>
 
@@ -95,14 +86,9 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-xl font-semibold text-[#111] mb-4">9. Contact</h2>
               <p className="text-[#555] leading-relaxed">
-                For privacy-related inquiries, contact us at privacy@beaglabs.com or through the Gleap chat
-                widget on our website.
+                For privacy-related inquiries, contact us at privacy@beaglabs.com.
               </p>
             </section>
-          </div>
-        </div>
-      </section>
-      <SiteFooter />
-    </main>
+    </LegalPageShell>
   )
 }

@@ -19,7 +19,7 @@ export function BlogCategoryFilter({
   currentCategory,
 }: BlogCategoryFilterProps) {
   return (
-    <div className="flex items-center gap-2 flex-wrap mb-8">
+    <div className="flex flex-wrap items-center gap-2.5">
       {CATEGORIES.map((cat) => {
         const isActive = cat.value === (currentCategory || '')
         const href = cat.value
@@ -30,10 +30,10 @@ export function BlogCategoryFilter({
           <Link
             key={cat.value}
             href={href}
-            className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+            className={`rounded-full px-4 py-2 text-[12px] uppercase tracking-[0.08em] transition-colors ${
               isActive
                 ? 'bg-[#111] text-white'
-                : 'text-[#555] hover:text-[#111] bg-[#f5f5f5] hover:bg-[#eee]'
+                : 'border border-[rgba(17,17,17,0.12)] bg-[rgba(255,255,255,0.72)] text-[#555] hover:bg-white hover:text-[#111]'
             }`}
             onClick={() => posthog.capture('blog_category_filtered', { category: cat.label })}
           >

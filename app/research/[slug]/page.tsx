@@ -78,27 +78,27 @@ export default async function ResearchPaperPage({
         eventName="research_paper_viewed"
         properties={{ slug, title: paper.title, doi: paper.doi ?? undefined }}
       />
-      <header className="mb-10">
-        <p className="text-xs text-[#999] mb-3">
+      <header className="mb-10 border-b border-[rgba(0,0,0,0.08)] pb-8">
+        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#C7661D]">
           <time dateTime={paper.publishedAt}>
             {new Date(paper.publishedAt).toLocaleDateString('en-US', {
               year: 'numeric',
-              month: 'long',
-              day: 'numeric',
+              month: 'short',
+              day: '2-digit',
             })}
           </time>
         </p>
-        <h1 className="text-3xl font-bold tracking-[-0.03em] text-[#111] mb-4">
+        <h1 className="mb-4 text-[42px] font-bold tracking-[-0.05em] text-[#111] lg:text-[54px]">
           {paper.title}
         </h1>
         <ResearchAuthorList authors={paper.authors} />
       </header>
 
-      <div className="bg-[#f5f5f5] border-l-[3px] border-l-[#8B7355] p-6 rounded-r-lg mb-6">
-        <h2 className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">
+      <div className="mb-8 rounded-[24px] border border-[rgba(17,17,17,0.08)] bg-[#f1ede7] p-6 lg:p-7">
+        <h2 className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
           Abstract
         </h2>
-        <p className="text-sm text-[#555] leading-relaxed mb-4">{paper.abstract}</p>
+        <p className="mb-4 text-[16px] leading-[1.82] text-[#555]">{paper.abstract}</p>
 
         {paper.doi && <ResearchDoiLink doi={paper.doi} title={paper.title} />}
       </div>
@@ -107,7 +107,7 @@ export default async function ResearchPaperPage({
         <img
           src={paper.coverImage?.url || paper.seoImage!}
           alt={paper.title}
-          className="w-full rounded-lg mb-10"
+          className="mb-10 w-full rounded-[24px] border border-[rgba(17,17,17,0.08)]"
         />
       )}
 

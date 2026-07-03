@@ -12,12 +12,12 @@ export function ResearchDoiLink({ doi, title }: ResearchDoiLinkProps) {
   const href = `https://doi.org/${doi}`
 
   return (
-    <div className="flex items-center gap-3 pt-4 border-t border-[rgba(0,0,0,0.06)]">
+    <div className="flex flex-wrap items-center gap-3 border-t border-[rgba(0,0,0,0.08)] pt-4">
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#8B7355] hover:bg-[#6b5740] rounded-lg transition-colors"
+        className="inline-flex items-center gap-2 rounded-full bg-[#111] px-4 py-2 text-[12px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-[#2a2a2a]"
         onClick={() => posthog.capture('research_pdf_downloaded', { doi, title })}
       >
         <Download className="w-4 h-4" />
@@ -27,7 +27,7 @@ export function ResearchDoiLink({ doi, title }: ResearchDoiLinkProps) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-mono text-xs text-[#999] hover:text-[#8B7355] underline underline-offset-2 transition-colors"
+        className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#777] underline underline-offset-2 transition-colors hover:text-[#C7661D]"
       >
         DOI: {doi}
       </a>

@@ -1,67 +1,77 @@
-"use client"
-
 const services = [
   {
     id: "01",
     title: "Dataset Generation",
-    description: "High-fidelity synthetic and curated datasets engineered for your domain. We build the data pipelines that make better models possible.",
+    description:
+      "High-fidelity synthetic generation and curation pipelines shaped to real operating conditions, edge cases, and domain constraints.",
+    label: "Data",
   },
   {
     id: "02",
     title: "Forward Deployed ML",
-    description: "On-site or remote machine learning engineering and research. We embed with your team to build models that work in the real world, not just in the lab.",
+    description:
+      "Embedded technical work inside active research and operational workflows, where models must survive contact with reality.",
+    label: "Deployment",
   },
   {
     id: "03",
-    title: "Fine-Tuning",
-    description: "Foundation model specialization for your domain. We deliver models that understand your data, your constraints, and your infrastructure requirements.",
+    title: "Model Adaptation",
+    description:
+      "Fine-tuning and system adaptation for specialized terminology, structured reasoning, and domain-specific performance targets.",
+    label: "Adaptation",
   },
   {
     id: "04",
-    title: "Domain-Model Curation",
-    description: "Evaluation, selection, and deployment of efficient small language models. Right-sized intelligence for your specific use case.",
+    title: "Evaluation Systems",
+    description:
+      "Benchmarks, protocol design, and review loops that make model behavior visible, testable, and actionable for operators.",
+    label: "Evaluation",
   },
 ]
 
 export function CapabilitiesSection() {
   return (
-    <section id="services" className="relative bg-white py-24 lg:py-28 px-6 lg:px-8 border-t border-[rgba(0,0,0,0.06)]">
-      <div className="max-w-7xl mx-auto">
-        {/* Section header */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
-          <div className="lg:col-span-4">
-            <div className="font-mono text-[9px] tracking-[0.2em] text-[#8B7355] uppercase mb-5 font-medium">
+    <section
+      id="capabilities"
+      className="border-t border-[rgba(0,0,0,0.08)] bg-[#f6f4ef] px-6 py-24 lg:px-9 lg:py-28"
+    >
+      <div className="mx-auto max-w-[1440px]">
+        <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+          <div>
+            <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
               Capabilities
             </div>
-            <h2 className="text-[28px] lg:text-[32px] font-medium text-[#111] tracking-[-0.02em] leading-[1.2]">
-              Research-driven
-              <br />
-              AI services
+            <h2 className="max-w-[430px] text-[34px] font-bold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
+              Research-led systems for technically difficult domains.
             </h2>
           </div>
-          <div className="lg:col-span-5 lg:col-start-7 flex items-end">
-            <p className="text-[15px] text-[#555] leading-[1.75]">
-              Every engagement is grounded in rigorous methodology. We don&apos;t apply off-the-shelf solutions — we engineer systems tailored to your problem space, your data, and your operational constraints.
+          <div>
+            <p className="max-w-[480px] text-[17px] leading-[1.72] text-[#4e4e4e]">
+              The homepage keeps the work specific and enterprise-readable. No
+              vague AI claims, no decorative feature sprawl, and no generic
+              consultancy language.
             </p>
           </div>
         </div>
 
-        {/* Service grid — 2x2 with subtle separators */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[rgba(0,0,0,0.06)] border border-[rgba(0,0,0,0.06)]">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {services.map((service) => (
             <div
               key={service.title}
-              className="bg-white p-10 group hover:bg-[#FAFAF9] transition-colors duration-200"
+              className="border border-[rgba(17,17,17,0.1)] bg-[rgba(255,255,255,0.72)] p-8 backdrop-blur-sm transition-colors duration-200 hover:bg-white lg:p-10"
             >
-              <div className="flex items-start justify-between mb-8">
-                <span className="font-mono text-[11px] text-[#999]">
+              <div className="mb-8 flex items-start justify-between gap-6">
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
+                  {service.label}
+                </span>
+                <span className="font-mono text-[11px] text-[#8c8c8c]">
                   {service.id}
                 </span>
               </div>
-              <h3 className="text-[16px] font-medium text-[#111] mb-3 tracking-[-0.01em]">
+              <h3 className="mb-3 text-[24px] leading-[1.08] tracking-[-0.03em] text-[#111]">
                 {service.title}
               </h3>
-              <p className="text-[13px] text-[#555] leading-[1.75]">
+              <p className="text-[14px] leading-[1.75] text-[#555] lg:text-[15px]">
                 {service.description}
               </p>
             </div>
