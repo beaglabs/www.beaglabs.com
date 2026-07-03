@@ -34,11 +34,13 @@ export function EngagementModelSection() {
             Engagement Model
           </div>
           <h2 className="mb-4 max-w-[470px] text-[34px] font-bold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
-            A simple process section that makes the work legible.
+            How we work.
           </h2>
           <p className="max-w-[430px] text-[17px] leading-[1.72] text-[#4e4e4e]">
-            This keeps the homepage enterprise-credible by showing how Beag
-            Labs works, not just what it claims.
+            Every engagement follows the same structure: define the domain
+            from first principles, build the data the model actually needs,
+            adapt to the operating context, and deploy with the team that
+            owns the outcome.
           </p>
         </div>
 

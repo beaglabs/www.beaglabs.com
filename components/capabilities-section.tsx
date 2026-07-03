@@ -47,9 +47,9 @@ export function CapabilitiesSection() {
           </div>
           <div>
             <p className="max-w-[480px] text-[17px] leading-[1.72] text-[#4e4e4e]">
-              The homepage keeps the work specific and enterprise-readable. No
-              vague AI claims, no decorative feature sprawl, and no generic
-              consultancy language.
+              Every engagement begins with the dataset. We construct evaluation
+              surfaces that expose model failure modes, then build the tooling
+              to close the gap between benchmark scores and operational reality.
             </p>
           </div>
         </div>

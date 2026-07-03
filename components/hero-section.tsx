@@ -35,7 +35,7 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(0,0,0,0.1)_100%)]" />
       </div>
 
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-[1440px] grid-cols-1 items-end gap-10 px-6 py-24 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)] lg:px-9 lg:py-14">
+      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-[1440px] grid-cols-1 items-end gap-10 px-6 py-24 lg:px-9 lg:py-14">
         <div className="max-w-[760px] self-center pt-10 lg:pt-0">
           <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.28em] text-[#C7661D]">
             Applied AI For High-Context Technical Environments
@@ -80,20 +80,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="flex h-full items-end justify-end">
-          <div className="mb-2 w-full max-w-[292px] rounded-[24px] border border-[rgba(17,17,17,0.1)] bg-[rgba(255,255,255,0.64)] p-5 backdrop-blur-md">
-            <div className="mb-2 text-[10px] uppercase tracking-[0.14em] text-[#6f6f6f]">
-              Hero Motion
-            </div>
-            <div className="mb-3 max-w-[240px] text-[22px] leading-[1.12] text-[#111]">
-              Three real worlds, one research and deployment story.
-            </div>
-            <div className="text-[13px] leading-[1.65] text-[#555]">
-              The page opens on flocking behavior, Earth-scale systems, and
-              robotics work without resorting to fake product UI.
-            </div>
-          </div>
-        </div>
+        
       </div>
     </section>
   )
