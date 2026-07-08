@@ -16,3 +16,17 @@ node_modules/
 .next/
 .DS_Store
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

@@ -34,7 +34,7 @@ export default function ImprintPage() {
                 Represented By
               </h2>
               <div className="space-y-1 text-[#555] leading-relaxed">
-                <p>J.D. Bohrmann</p>
+                <p>J.D. Bohrman</p>
               </div>
             </section>
 
