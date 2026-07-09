@@ -18,7 +18,7 @@ export interface BlogPost {
   id: string
   slug: string
   title: string
-  excerpt: string
+  exerpt: string
   body: { markdown: string }
   mathBlock: MathBlock[]
   mermaidBlock: MermaidBlock[]

@@ -2,7 +2,7 @@ const BLOG_POST_CARD_FIELDS = `
   id
   slug
   title
-  excerpt
+  exerpt
   category
   tags
   publishedAt

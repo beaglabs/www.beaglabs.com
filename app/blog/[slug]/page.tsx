@@ -49,10 +49,10 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 
   return {
     title: data.blogPost.seoTitle || data.blogPost.title,
-    description: data.blogPost.seoDescription || data.blogPost.excerpt,
+    description: data.blogPost.seoDescription || data.blogPost.exerpt,
     openGraph: {
       title: `${data.blogPost.seoTitle || data.blogPost.title} — Beag Labs`,
-      description: data.blogPost.seoDescription || data.blogPost.excerpt,
+      description: data.blogPost.seoDescription || data.blogPost.exerpt,
       type: 'article' as const,
       publishedTime: data.blogPost.publishedAt,
       images: ogImage
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     twitter: {
       card: 'summary_large_image' as const,
       title: `${data.blogPost.seoTitle || data.blogPost.title} — Beag Labs`,
-      description: data.blogPost.seoDescription || data.blogPost.excerpt,
+      description: data.blogPost.seoDescription || data.blogPost.exerpt,
       images: ogImage ? [ogImage] : [],
     },
   }
@@ -107,7 +107,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {post.title}
         </h1>
         <p className="max-w-[680px] text-[18px] leading-[1.75] text-[#555]">
-          {post.excerpt}
+          {post.exerpt}
         </p>
       </header>
 

@@ -26,7 +26,7 @@ export function BlogCard({ post }: BlogCardProps) {
             {post.title}
           </h3>
           <p className="mb-4 line-clamp-3 text-[14px] leading-[1.75] text-[#555]">
-            {post.excerpt}
+            {post.exerpt}
           </p>
           <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#888]">
             <time dateTime={post.publishedAt}>
