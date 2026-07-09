@@ -79,9 +79,11 @@ export async function subscribeToNewsletter(email: string) {
 
 export async function trackCookbookDownloaded(email: string) {
   try {
-    await getTrackClient().identify(email, {
-      cookbook_downloaded: true,
-      cookbook_downloaded_at: new Date().toISOString(),
+    await getTrackClient().track(email, {
+      name: 'cookbook_downloaded',
+      data: {
+        downloaded_at: new Date().toISOString(),
+      },
     })
     return true
   } catch (err) {

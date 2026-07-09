@@ -52,12 +52,12 @@ export function EmailCapture() {
           placeholder="you@company.com"
           required
           disabled={status === "loading"}
-          className="min-w-0 flex-1 border-[3px] border-[#111] bg-white px-5 py-4 text-[14px] text-[#111] placeholder-[#999] outline-none ring-0 transition-shadow focus:shadow-[0_0_0_3px_#FF5F1F] disabled:opacity-50"
+          className="min-w-0 flex-1 border-[3px] border-[#111] bg-white px-5 py-4 text-[16px] text-[#111] placeholder-[#999] outline-none ring-0 transition-shadow focus:shadow-[0_0_0_3px_#FF5F1F] disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className="nb-btn-orange shrink-0 bg-[#FF5F1F] px-8 py-4 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] disabled:opacity-50"
+          className="nb-btn-orange shrink-0 bg-[#FF5F1F] px-8 py-4 text-[14px] font-extrabold uppercase tracking-[0.06em] text-[#111] disabled:opacity-50"
         >
           {status === "loading" ? "Sending..." : "Get Your Free Copy"}
         </button>

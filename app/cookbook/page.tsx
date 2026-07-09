@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { SiteFooter } from "@/components/site-footer"
 import { EmailCapture } from "@/components/cookbook/email-capture"
@@ -51,34 +50,35 @@ export default function CookbookPage() {
     <main className="bg-[#FAFAF9] text-[#111]">
       <Navbar />
 
-      <section className="relative border-b-[3px] border-[#111] bg-[#FAFAF9] pt-[calc(4rem+2.375rem)]">
-        <div className="mx-auto max-w-[1440px] px-6 py-24 lg:px-9 lg:py-28">
+      <section className="relative flex min-h-[calc(100vh-3rem)] flex-col justify-center border-b-[3px] border-[#111] bg-[#FAFAF9] pt-[calc(3rem+2.375rem)]">
+        <div className="mx-auto flex max-w-[1440px] flex-col items-center px-6 py-10 text-center lg:px-9 lg:py-14">
           <span className="nb-label mb-6 inline-block">New</span>
 
-          <h1 className="mb-2 max-w-[900px] text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#111] sm:text-[60px] lg:text-[72px]">
-            ML Cookbook
+          <h1 className="mb-2 text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#111] sm:text-[60px] lg:text-[72px]">
+            The ML Engineer&rsquo;s
           </h1>
-          <h1 className="mb-6 max-w-[900px] text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#FF5F1F] sm:text-[60px] lg:text-[72px]">
-            2026
+          <h1 className="mb-2 text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#111] sm:text-[60px] lg:text-[72px]">
+            Cookbook
+          </h1>
+          <h1 className="mb-6 text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#FF5F1F] sm:text-[60px] lg:text-[72px]">
+            2026 Edition
           </h1>
 
           <p className="mb-2 max-w-[700px] text-[20px] font-extrabold leading-tight tracking-[-0.02em] text-[#111]">
-            {recipes.length} Modern Training Recipes Every AI Engineer Should Know
+            {recipes.length} recipes — GRPO, Flow Matching, World Models, and everything in between
           </p>
 
           <p className="mb-8 max-w-[650px] text-[15px] leading-[1.65] text-[#555]">
-            A practical collection of state-of-the-art training recipes across{" "}
-            {parts.length} domains: language models, vision, 3D generation,
-            speech, robotics, agents, and synthetic data. Each recipe includes
-            the training pipeline, compute requirements, open-source
-            implementations, and key papers.
+            A cookbook of modern training methodologies for AI engineers who build. Centered on the
+            recipes that actually matter right now — spanning{" "}
+            {parts.length} domains — with pipeline diagrams, compute estimates, and paper references.
           </p>
 
-          <div className="mb-8 max-w-[520px]">
+          <div className="mb-8 w-full max-w-[600px]">
             <EmailCapture />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             {["GRPO", "DAPO", "On-Policy Distillation", "RLVR", "Flow Matching", "World Models", "Tool-Use RL"].map(
               (tag) => (
                 <span key={tag} className="nb-chip text-[10px]">
@@ -141,7 +141,7 @@ export default function CookbookPage() {
 
       <section className="nb-section-divider bg-[#FF5F1F]">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9">
-          <div className="mx-auto max-w-[600px] text-center">
+          <div className="mx-auto max-w-[720px] text-center">
             <h2 className="mb-4 text-[32px] font-extrabold leading-[1.1] tracking-[-0.04em] text-[#111] sm:text-[40px]">
               Get Your Free Copy
             </h2>
@@ -149,7 +149,7 @@ export default function CookbookPage() {
               {recipes.length} training recipes with pipeline diagrams, compute
               estimates, and paper references. Delivered as a PDF to your inbox.
             </p>
-            <div className="mx-auto max-w-[480px]">
+            <div className="mx-auto w-full max-w-[600px]">
               <EmailCapture />
             </div>
           </div>
