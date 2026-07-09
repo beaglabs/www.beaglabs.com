@@ -7,8 +7,9 @@ import { SignOutButton } from "./sign-out-button"
 import { OrgPicker } from "./org-picker"
 
 export const metadata: Metadata = {
-  title: "Model Training — Beag Labs",
+  title: "Model Training",
   description: "Train domain-specific models on your data.",
+  robots: { index: false, follow: false },
 }
 
 const navItems = [

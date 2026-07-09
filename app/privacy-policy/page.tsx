@@ -2,8 +2,31 @@ import { LegalPageShell } from "@/components/legal-page-shell"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Beag Labs",
-  openGraph: { title: "Privacy Policy — Beag Labs" },
+  title: "Privacy Policy",
+  description:
+    "How Beag Labs collects, uses, and protects your data across our site, services, and analytics systems.",
+  openGraph: {
+    title: "Privacy Policy — Beag Labs",
+    description:
+      "How Beag Labs collects, uses, and protects your data across our site, services, and analytics systems.",
+    url: "https://beaglabs.com/privacy",
+    siteName: "Beag Labs",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Beag Labs — Privacy Policy",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy — Beag Labs",
+    description:
+      "How Beag Labs collects, uses, and protects your data across our site, services, and analytics systems.",
+    images: ["/og-image.png"],
+  },
 }
 
 export default function PrivacyPage() {

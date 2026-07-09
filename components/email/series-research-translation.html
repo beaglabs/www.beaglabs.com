@@ -1,0 +1,169 @@
+{% capture content %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:32px 32px 28px 32px;border-bottom:3px solid #111111;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-bottom:6px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;background-color:#FF5F1F;color:#111111;border:3px solid #111111;padding:3px 8px;">
+                  Research Translation
+                </td>
+                <td style="width:6px;">&nbsp;</td>
+                <td style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;background-color:#111111;color:#FAFAF9;border:3px solid #111111;padding:3px 8px;">
+                  {{paper_keyword}}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-title" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:34px;font-weight:800;letter-spacing:-0.055em;color:#111111;line-height:1;padding-bottom:4px;padding-top:8px;">
+            {{paper_title}}
+        </tr>
+        <tr>
+          <td style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:400;color:#999999;padding-bottom:16px;">
+            {{authors}} · {{venue}}
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;line-height:1.7;color:#111111;padding-bottom:8px;">
+            Why Anyone Should Care
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:16px;">
+            {{why_care}}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 0 12px 0;border-bottom:2px solid #EEEEEE;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width:40px;height:3px;background-color:#FF5F1F;border:1px solid #111111;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;line-height:1.7;color:#111111;padding-top:16px;padding-bottom:8px;">
+            The Intuition
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:16px;">
+            {{intuition}}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 0 12px 0;border-bottom:2px solid #EEEEEE;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width:40px;height:3px;background-color:#FF5F1F;border:1px solid #111111;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;line-height:1.7;color:#111111;padding-top:16px;padding-bottom:8px;">
+            Where It Fits
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 0 16px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #111111;background-color:#FFFFFF;">
+              <tr>
+                <td style="padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#555555;line-height:2;">
+SFT<br>
+<span style="color:#999999;">↓</span><br>
+RL<br>
+<span style="color:#999999;">↓</span><br>
+<span style="color:#FF5F1F;font-weight:700;">{{technique}} ← You are here</span><br>
+<span style="color:#999999;">↓</span><br>
+Deployment
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;line-height:1.7;color:#111111;padding-bottom:8px;">
+            Can You Use It Today?
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #111111;background-color:#FFFFFF;">
+              <tr>
+                <td style="padding:12px 16px;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;">Open Source?</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;padding-bottom:8px;">{{oss_status}}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;">Compute Needed</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;padding-bottom:8px;">{{compute}}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;">Datasets</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;padding-bottom:8px;">{{datasets}}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;">Repos</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;">{{repos}}</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 0 12px 0;border-bottom:2px solid #EEEEEE;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width:40px;height:3px;background-color:#FF5F1F;border:1px solid #111111;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;line-height:1.7;color:#111111;padding-top:16px;padding-bottom:6px;">
+            Beag Labs Take
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            {{beag_take}}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top:16px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="{{paper_url}}" target="_blank" class="beag-btn" style="display:inline-block;padding:14px 40px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Read the Paper →
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+        <tr>
+          <td style="padding-top:16px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="https://cal.com/lemoncake/meet-the-founder" target="_blank" class="beag-btn" style="display:inline-block;padding:14px 40px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Schedule a Demo →
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+{% endcapture %}
+{% assign series_label = 'Research Translation' %}
+{% assign preheader = '{{paper_title}} — translated for engineers, not academics.' %}
+{% include 'layout' %}

@@ -1,0 +1,115 @@
+{% capture content %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:32px 32px 28px 32px;border-bottom:3px solid #111111;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-bottom:6px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;background-color:#FF5F1F;color:#111111;border:3px solid #111111;padding:3px 8px;">
+                  Day 12
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-title" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:38px;font-weight:800;letter-spacing:-0.055em;color:#111111;line-height:1;padding-bottom:12px;">
+            How Frontier Labs Actually Compress Huge Models
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            The biggest model isn't the one that ships. GPT-4 might be 1.8T parameters, but what you actually interact with is a compressed distil.
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            The gold standard today is <strong>on-policy distillation</strong>:
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #111111;background-color:#FFFFFF;">
+              <tr>
+                <td style="padding:16px;border-bottom:2px solid #EEEEEE;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">1. Teacher Correction</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">
+                    The student generates a response. The teacher (frontier model) grades it and produces a corrected version. Student learns from its own mistakes — not from generic teacher outputs.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px;border-bottom:2px solid #EEEEEE;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">2. Student Rollouts</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">
+                    The student explores multiple completions. The teacher scores each one. High-scoring rollouts become training data. This is distillation + RL combined.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">3. Iterative Distillation</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">
+                    Repeat the cycle: distill → student improves → student generates better rollouts → distill again. Each iteration compresses more knowledge into fewer parameters.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            This is how DeepSeek turned R1 (671B) into a 7B model that beats GPT-4 on math. The Cookbook has the full on-policy distillation pipeline at Recipe #15 with compute estimates for every scale.
+          </td>
+        </tr>
+        <tr>
+          <td align="left">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="{{distillation_url | default: 'https://beaglabs.com/cookbook#distillation'}}" target="_blank" class="beag-btn" style="display:inline-block;padding:14px 40px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Recipe #15 → On-Policy Distillation
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- DEMO CTA -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:24px 32px 0 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding:20px;border:3px solid #111111;background-color:#111111;box-shadow:5px 5px 0px 0px #FF5F1F;">
+            <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:800;line-height:1.3;color:#FAFAF9;letter-spacing:-0.03em;padding-bottom:6px;">
+              Make your CFO smile
+            </div>
+            <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;line-height:1.6;color:#999999;padding-bottom:16px;">
+              Beag Labs exists to make your CFO smile when he sees your inference spend. Let us handle the complexities of training SOTA domain models while you catch a dub with leadership.
+            </div>
+            <table role="presentation" cellpadding="0" cellspacing="0" align="left">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="https://cal.com/lemoncake/meet-the-founder" target="_blank" style="display:inline-block;padding:12px 32px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Schedule a Demo
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+{% endcapture %}
+{% assign series_label = 'Onboarding' %}
+{% assign preheader = 'On-policy distillation — how frontier labs compress 1.8T parameters into models that run on your laptop.' %}
+{% include 'layout' %}

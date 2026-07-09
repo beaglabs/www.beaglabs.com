@@ -11,6 +11,13 @@ const footerColumns = [
     ],
   },
   {
+    title: "Resources",
+    links: [
+      { label: "Blog", href: "/blog" },
+      { label: "Cookbook", href: "/cookbook" },
+    ],
+  },
+  {
     title: "Company",
     links: [
       { label: "Research", href: "/research" },
@@ -32,7 +39,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t-[3px] border-[#111] bg-[#FAFAF9] px-6 py-14 lg:px-9 lg:py-16">
       <div className="mx-auto max-w-[1440px]">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_repeat(3,1fr)] lg:gap-7">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_repeat(4,1fr)] lg:gap-7">
           <div>
             <div className="mb-4 flex items-center gap-3">
               <Image

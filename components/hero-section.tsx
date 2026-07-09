@@ -2,11 +2,32 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useState, FormEvent } from "react"
 import { LiquidMetal } from "@paper-design/shaders-react"
 
 const MemoizedLiquidMetal = React.memo(LiquidMetal)
 
 export function HeroSection() {
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle")
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    setStatus("loading")
+    try {
+      const res = await fetch("/api/cookbook/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      if (res.ok) setStatus("success")
+      else setStatus("idle")
+    } catch {
+      setStatus("idle")
+    }
+  }
+
   return (
     <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9] pt-[calc(4rem+2.375rem)]">
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-[1440px] grid-cols-1 items-center gap-10 px-6 py-24 lg:grid-cols-[1fr_minmax(320px,480px)] lg:gap-16 lg:px-9 lg:py-14">
@@ -26,25 +47,34 @@ export function HeroSection() {
           </h1>
 
           <p className="mb-10 max-w-[650px] text-[18px] leading-[1.65] text-[#404040] font-medium">
-            Deploy our domain-adapted models to your infrastructure, train your own models, or hire us to build a custom model for your use case using SOTA methods. Save hundreds of thousands in compute spend and get your models to production faster than ever before.
+            Deploy domain-adapted models on your infrastructure, train custom models, or hire us to build one using SOTA methods. Slash compute costs and ship to production faster.
           </p>
 
-          <div className="mb-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="/models"
-              className="nb-btn inline-flex items-center gap-2 bg-[#111] px-8 py-4 text-[12px] uppercase text-white"
-            >
-              See the models <span className="text-lg">&rarr;</span>
-            </Link>
-            <a
-              href="https://cal.com/comradelemoncake/meet-the-founder"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nb-btn-outline inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
-            >
-              Talk to us
-            </a>
-          </div>
+          {status === "success" ? (
+            <div className="mb-8 max-w-[600px] border-[3px] border-[#111] bg-[#FFF3E6] p-5 text-center">
+              <p className="text-[14px] font-extrabold text-[#111]">Check your inbox</p>
+              <p className="mt-1 text-[11px] text-[#555]">The cookbook is on its way.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="mb-8 flex w-full max-w-[600px] gap-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+                disabled={status === "loading"}
+                className="min-w-0 flex-1 border-[3px] border-[#111] bg-white px-4 py-3 text-[14px] font-medium text-[#111] placeholder:text-[#999] focus:outline-none focus:border-[#FF5F1F] disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="nb-btn inline-flex items-center gap-2 bg-[#111] px-6 py-3 text-[11px] uppercase text-white whitespace-nowrap disabled:opacity-50"
+              >
+                {status === "loading" ? "Sending..." : "Get the 2026 ML Training Cookbook"}
+              </button>
+            </form>
+          )}
 
           <div className="flex flex-wrap gap-3">
             {["Custom Models", "On-Prem Deploy", "13x Cheaper Than GPT"].map((chip) => (

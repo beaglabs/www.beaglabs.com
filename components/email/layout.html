@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <title>{{subject}}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+    .beag-btn {
+      display: inline-block; padding: 14px 40px; background-color: #FF5F1F;
+      color: #111111 !important; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.08em; text-decoration: none; border: 3px solid #111111;
+    }
+    @media only screen and (max-width: 480px) {
+      .beag-title { font-size: 26px !important; }
+      .beag-body { font-size: 15px !important; }
+      .beag-btn { padding: 12px 28px !important; font-size: 12px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#FAFAF9;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAFAF9;">
+    <tr><td align="center" style="padding:0;">
+      <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">{{preheader}}</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background-color:#FAFAF9;">
+        <tr><td style="padding:0;">
+
+          <!-- HEADER -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding:24px 32px 0 32px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="left" style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#999999;">
+                      Beag Labs
+                    </td>
+                    <td align="right" style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#999999;">
+                      {{series_label}}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <!-- CONTENT -->
+          {{content}}
+
+          <!-- FOOTER -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding:28px 32px 24px 32px;border-top:3px solid #111111;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#111111;padding-bottom:4px;">
+                      Beag Labs
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;line-height:1.6;color:#555555;">
+                      Training infrastructure for small teams shipping AI.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding-top:10px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td style="padding-right:12px;">
+                            <a href="https://beaglabs.com" target="_blank" style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#FF5F1F;text-decoration:none;">beaglabs.com</a>
+                          </td>
+                          <td style="padding-right:12px;">
+                            <a href="https://x.com/beaglabs" target="_blank" style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#FF5F1F;text-decoration:none;">X / Twitter</a>
+                          </td>
+                          <td>
+                            <a href="https://beaglabs.com/blog" target="_blank" style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#FF5F1F;text-decoration:none;">Blog</a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding-top:12px;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:9px;color:#999999;line-height:1.5;">
+                      You received this email because you subscribed to the Beag Labs newsletter at beaglabs.com.
+                      <br />
+                      <a href="{{unsubscribe_url}}" target="_blank" style="color:#999999;text-decoration:underline;">Unsubscribe</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

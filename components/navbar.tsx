@@ -27,10 +27,10 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
             Capabilities
           </Link>
           <Link
-            href="/login"
+            href="/cookbook"
             className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#111] border-b-2 border-transparent transition-all hover:border-[#FF5F1F]"
           >
-            Sign In
+            Cookbook
           </Link>
           <a
             href="https://cal.com/comradelemoncake/meet-the-founder"

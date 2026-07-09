@@ -46,10 +46,30 @@ export async function generateMetadata({ params }: ResearchPaperPageProps) {
     return { title: 'Not Found' }
   }
 
+  const ogImage =
+    data.researchPaper.seoImage || data.researchPaper.coverImage?.url || null
+
   return {
     title: data.researchPaper.seoTitle || data.researchPaper.title,
     description:
       data.researchPaper.seoDescription || data.researchPaper.abstract,
+    openGraph: {
+      title: `${data.researchPaper.seoTitle || data.researchPaper.title} — Beag Labs`,
+      description:
+        data.researchPaper.seoDescription || data.researchPaper.abstract,
+      type: 'article' as const,
+      publishedTime: data.researchPaper.publishedAt,
+      images: ogImage
+        ? [{ url: ogImage, width: 1200, height: 630 }]
+        : [],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: `${data.researchPaper.seoTitle || data.researchPaper.title} — Beag Labs`,
+      description:
+        data.researchPaper.seoDescription || data.researchPaper.abstract,
+      images: ogImage ? [ogImage] : [],
+    },
   }
 }
 

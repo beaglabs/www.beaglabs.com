@@ -4,14 +4,29 @@ import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 
 export const metadata: Metadata = {
-  title: "Models — Beag Labs",
+  title: "Models",
   description:
-    "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare classification. Small language models trained for your domain, deployed on your infrastructure.",
+    "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare. Small models trained for your domain, deployed on your infrastructure — no vendor lock-in.",
   openGraph: {
     title: "Models — Beag Labs",
     description:
-      "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare classification. Small language models trained for your domain, deployed on your infrastructure.",
+      "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare. Small models trained for your domain, deployed on your infrastructure — no vendor lock-in.",
     url: "https://beaglabs.com/models",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Beag Labs — Models",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Models — Beag Labs",
+    description:
+      "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare. Small models trained for your domain, deployed on your infrastructure — no vendor lock-in.",
+    images: ["/og-image.png"],
   },
 }
 

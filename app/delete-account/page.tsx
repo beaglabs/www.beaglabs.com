@@ -2,9 +2,16 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: "Delete Account — Beag Labs",
+  title: "Delete Account",
   description:
     "How to permanently delete your Gardens account and what data is removed.",
+  openGraph: {
+    title: "Delete Account — Beag Labs",
+    description:
+      "How to permanently delete your Gardens account and what data is removed.",
+    url: "https://beaglabs.com/delete-account",
+    siteName: "Beag Labs",
+  },
 }
 
 const deletedData = [

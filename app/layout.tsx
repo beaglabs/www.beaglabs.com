@@ -14,15 +14,20 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
-  title: 'Beag Labs — Classification & Extraction Models, Deployed on Your Infrastructure',
-  description: 'Train classification, extraction, and relevance models on your proprietary data. Deploy on-prem or air-gapped. You own the model.',
+  title: {
+    template: '%s — Beag Labs',
+    default: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
+  },
+  description:
+    'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Beag Labs — Classification & Extraction Models, Deployed on Your Infrastructure',
-    description: 'Train classification, extraction, and relevance models on your proprietary data. Deploy on-prem or air-gapped. You own the model.',
+    title: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
+    description:
+      'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
     url: 'https://beaglabs.com',
     siteName: 'Beag Labs',
     images: [
@@ -30,7 +35,7 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Custom AI Models',
+        alt: 'Beag Labs — Domain AI, Deployed Anywhere',
       },
     ],
     locale: 'en_US',
@@ -38,9 +43,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Beag Labs — Classification & Extraction Models, Deployed on Your Infrastructure',
-    description: 'Train classification, extraction, and relevance models on your proprietary data. Deploy on-prem or air-gapped. You own the model.',
+    title: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
+    description:
+      'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
     images: ['/og-image.png'],
+    creator: '@beaglabs',
   },
 }
 

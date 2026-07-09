@@ -45,9 +45,26 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     return { title: 'Not Found' }
   }
 
+  const ogImage = data.blogPost.coverImage?.url
+
   return {
     title: data.blogPost.seoTitle || data.blogPost.title,
     description: data.blogPost.seoDescription || data.blogPost.excerpt,
+    openGraph: {
+      title: `${data.blogPost.seoTitle || data.blogPost.title} — Beag Labs`,
+      description: data.blogPost.seoDescription || data.blogPost.excerpt,
+      type: 'article' as const,
+      publishedTime: data.blogPost.publishedAt,
+      images: ogImage
+        ? [{ url: ogImage, width: data.blogPost.coverImage!.width, height: data.blogPost.coverImage!.height }]
+        : [],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: `${data.blogPost.seoTitle || data.blogPost.title} — Beag Labs`,
+      description: data.blogPost.seoDescription || data.blogPost.excerpt,
+      images: ogImage ? [ogImage] : [],
+    },
   }
 }
 

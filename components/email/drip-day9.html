@@ -1,0 +1,112 @@
+{% capture content %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:32px 32px 28px 32px;border-bottom:3px solid #111111;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-bottom:6px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;background-color:#FF5F1F;color:#111111;border:3px solid #111111;padding:3px 8px;">
+                  Day 9
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-title" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:38px;font-weight:800;letter-spacing:-0.055em;color:#111111;line-height:1;padding-bottom:12px;">
+            Reasoning Isn't Magic
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            The biggest shift in LLM training over the past year: teaching models to <em>reason</em>, not just <em>respond</em>.
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            The mechanism is surprisingly straightforward:
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #111111;background-color:#FFFFFF;">
+              <tr>
+                <td style="padding:16px;border-bottom:2px solid #EEEEEE;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">Outcome Supervision → Old Way</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">
+                    Reward is assigned at the final answer. The model learns to get the right answer by any means necessary — including shortcuts, cheats, and memorization. Works fine for simple tasks. Fails on multi-step reasoning.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">Process Supervision → New Way</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">
+                    Reward is given at each reasoning step. The model learns to follow valid reasoning chains, not just reach correct answers. This is what powers models like o1, R1, and Gemini Thinking. The cost is human-labeled step-by-step rewards — or synthetic PRMs.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            DeepSeek-R1 showed you can bootstrap process supervision without human labels — just use the model's own chain-of-thought as training signal. The result is a model that visibly "reasons" before answering.
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:12px;">
+            Recipe #22 in the Cookbook walks through the full Process Reward Model training pipeline.
+          </td>
+        </tr>
+        <tr>
+          <td align="left">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="{{process_supervision_url | default: 'https://beaglabs.com/cookbook#process-supervision'}}" target="_blank" class="beag-btn" style="display:inline-block;padding:14px 40px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Recipe #22 → Process Reward Models
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- DEMO CTA -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:24px 32px 0 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding:20px;border:3px solid #111111;background-color:#111111;box-shadow:5px 5px 0px 0px #FF5F1F;">
+            <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:800;line-height:1.3;color:#FAFAF9;letter-spacing:-0.03em;padding-bottom:6px;">
+              Make your CFO smile
+            </div>
+            <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;line-height:1.6;color:#999999;padding-bottom:16px;">
+              Beag Labs exists to make your CFO smile when he sees your inference spend. Let us handle the complexities of training SOTA domain models while you catch a dub with leadership.
+            </div>
+            <table role="presentation" cellpadding="0" cellspacing="0" align="left">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="https://cal.com/lemoncake/meet-the-founder" target="_blank" style="display:inline-block;padding:12px 32px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Schedule a Demo
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+{% endcapture %}
+{% assign series_label = 'Onboarding' %}
+{% assign preheader = 'Process supervision vs outcome supervision — the mechanism behind reasoning models.' %}
+{% include 'layout' %}

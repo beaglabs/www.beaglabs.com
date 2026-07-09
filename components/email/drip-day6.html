@@ -1,0 +1,121 @@
+{% capture content %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:32px 32px 28px 32px;border-bottom:3px solid #111111;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-bottom:6px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;background-color:#FF5F1F;color:#111111;border:3px solid #111111;padding:3px 8px;">
+                  Day 6
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-title" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:38px;font-weight:800;letter-spacing:-0.055em;color:#111111;line-height:1;padding-bottom:12px;">
+            Why Everyone Suddenly Cares About Synthetic Data
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            Human data is running out. The internet has been scraped. Labels are expensive. Every frontier lab is now investing heavily in synthetic data pipelines.
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            Three methods dominate:
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:12px 16px;border:2px solid #111111;background-color:#FFFFFF;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">Self-Instruct</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">Seed a model with task templates, sample diverse instructions, filter by quality. The original bootstrap method from Stanford. Simple, effective, saturates quickly.</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:12px 16px;border:2px solid #111111;background-color:#FFFFFF;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">Evol-Instruct</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">Take existing instructions and prompt the model to make them harder: add constraints, deepen reasoning, require multiple steps. WizardLM showed this beats static datasets by miles.</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 0 16px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:12px 16px;border:2px solid #111111;background-color:#FFFFFF;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5F1F;padding-bottom:4px;">Data Flywheels</div>
+                  <div style="font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.5;">The model generates data → trains on it → gets better → generates better data. This is the recursive loop that made DeepSeek and Alibaba's Qwen so effective on limited budgets.</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="beag-body" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:#333333;padding-bottom:8px;">
+            The Cookbook covers all three with ready-to-run pipelines. If you're training on a budget, synthetic data is your best lever.
+          </td>
+        </tr>
+        <tr>
+          <td align="left">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="{{synthetic_data_url | default: 'https://beaglabs.com/cookbook#synthetic-data'}}" target="_blank" class="beag-btn" style="display:inline-block;padding:14px 40px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Cookbook → Part 07: Synthetic Data
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- DEMO CTA -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:24px 32px 0 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding:20px;border:3px solid #111111;background-color:#111111;box-shadow:5px 5px 0px 0px #FF5F1F;">
+            <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:800;line-height:1.3;color:#FAFAF9;letter-spacing:-0.03em;padding-bottom:6px;">
+              Make your CFO smile
+            </div>
+            <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;line-height:1.6;color:#999999;padding-bottom:16px;">
+              Beag Labs exists to make your CFO smile when he sees your inference spend. Let us handle the complexities of training SOTA domain models while you catch a dub with leadership.
+            </div>
+            <table role="presentation" cellpadding="0" cellspacing="0" align="left">
+              <tr>
+                <td align="center" style="border:3px solid #111111;box-shadow:4px 4px 0px 0px #111111;">
+                  <a href="https://cal.com/lemoncake/meet-the-founder" target="_blank" style="display:inline-block;padding:12px 32px;background-color:#FF5F1F;color:#111111;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border:3px solid #111111;">
+                    Schedule a Demo
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+{% endcapture %}
+{% assign series_label = 'Onboarding' %}
+{% assign preheader = 'Self-Instruct, Evol-Instruct, Data Flywheels — how frontier labs generate infinite training data.' %}
+{% include 'layout' %}
