@@ -39,15 +39,15 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
 
   return (
     <figure className="my-8">
-      <div className="overflow-x-auto rounded-lg border border-[rgba(0,0,0,0.06)]">
-        <table className="w-full text-sm border-collapse">
+      <div className="overflow-x-auto rounded-[20px] border-[3px] border-[#111] shadow-[4px_4px_0px_0px_#111]">
+        <table className="w-full border-collapse text-sm">
           {headers.length > 0 && (
             <thead>
-              <tr className="bg-[#fafafa]">
+              <tr>
                 {headers.map((h, i) => (
                   <th
                     key={i}
-                    className="px-4 py-3 text-left text-xs font-semibold text-[#555] uppercase tracking-wider border-b-2 border-b-[#8B7355]/20"
+                    className="border-b-[3px] border-[#111] bg-[#FF5F1F] px-4 py-3 text-left text-xs font-bold text-[#111] uppercase tracking-wider"
                   >
                     {h}
                   </th>
@@ -56,7 +56,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                   (_, i) => (
                     <th
                       key={`empty-${i}`}
-                      className="px-4 py-3 border-b-2 border-b-[#8B7355]/20"
+                      className="border-b-[3px] border-[#111] bg-[#FF5F1F] px-4 py-3"
                     />
                   )
                 )}
@@ -86,7 +86,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                   {row.map((cell, ci) => (
                     <td
                       key={ci}
-                      className="px-4 py-2.5 text-[#333] border-t border-[rgba(0,0,0,0.04)]"
+                      className="border-b border-[rgba(17,17,17,0.12)] px-4 py-2.5 text-[#333]"
                     >
                       {cell}
                     </td>
@@ -95,7 +95,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                     (_, i) => (
                       <td
                         key={`empty-${i}`}
-                        className="px-4 py-2.5 border-t border-[rgba(0,0,0,0.04)]"
+                        className="border-b border-[rgba(17,17,17,0.12)] px-4 py-2.5"
                       />
                     )
                   )}

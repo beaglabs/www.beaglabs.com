@@ -1,7 +1,16 @@
 import ReactMarkdown from 'react-markdown'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
 import type { Components } from 'react-markdown'
+import { MermaidBlockRenderer } from './mermaid-block'
+
+function extractText(children: React.ReactNode): string {
+  if (typeof children === 'string') return children
+  if (typeof children === 'number') return String(children)
+  if (Array.isArray(children)) return children.map(extractText).join('')
+  if (children && typeof children === 'object' && 'props' in children) {
+    return extractText((children as React.ReactElement).props.children)
+  }
+  return ''
+}
 
 const components: Components = {
   h1: ({ children, ...props }) => (
@@ -54,6 +63,10 @@ const components: Components = {
         </code>
       )
     }
+    const language = className?.replace('language-', '') || ''
+    if (language === 'mermaid') {
+      return <MermaidBlockRenderer block={{ diagram: extractText(children), label: null }} />
+    }
     return (
       <code
         className={`block overflow-x-auto rounded-[20px] border-[3px] border-[#111] bg-[#fafaf9] p-5 font-mono text-sm text-[#333] shadow-[4px_4px_0px_0px_#111] ${className || ''}`}
@@ -63,11 +76,17 @@ const components: Components = {
       </code>
     )
   },
-  pre: ({ children, ...props }) => (
-    <pre className="mb-5" {...props}>
-      {children}
-    </pre>
-  ),
+  pre: ({ children, ...props }) => {
+    if (
+      children &&
+      typeof children === 'object' &&
+      'props' in children &&
+      (children as React.ReactElement).props?.className?.includes('language-mermaid')
+    ) {
+      return <>{children}</>
+    }
+    return <pre className="mb-5" {...props}>{children}</pre>
+  },
   blockquote: ({ children, ...props }) => (
     <blockquote
       className="mb-6 border-l-[3px] border-l-[#FF5F1F] pl-5 italic text-[#555]"
@@ -129,8 +148,6 @@ interface MarkdownRendererProps {
 export function MarkdownRenderer({ children }: MarkdownRendererProps) {
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkMath]}
-      rehypePlugins={[rehypeKatex]}
       components={components}
     >
       {children}
