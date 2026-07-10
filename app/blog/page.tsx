@@ -39,7 +39,7 @@ export default async function BlogPage({
   )
 
   return (
-    <main className="bg-[#FAFAF9] px-6 py-14 lg:px-9 lg:py-16">
+    <main className="px-6 py-14 lg:px-9 lg:py-16">
       <div className="mx-auto max-w-[1440px]">
         <div className="mb-14 border-b-[3px] border-[#111] pb-10">
           <span className="nb-label mb-5 inline-block">

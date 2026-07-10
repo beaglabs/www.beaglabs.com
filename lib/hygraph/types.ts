@@ -28,7 +28,7 @@ export interface BlogPost {
     width: number
     height: number
   } | null
-  category: 'Case Study' | 'Project Update' | 'Tutorial' | 'Opinion'
+  category: string
   tags: string[]
   publishedAt: string
   updatedAt?: string

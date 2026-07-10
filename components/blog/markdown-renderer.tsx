@@ -6,7 +6,7 @@ import type { Components } from 'react-markdown'
 const components: Components = {
   h1: ({ children, ...props }) => (
     <h1
-      className="mt-14 mb-6 text-[34px] font-bold tracking-[-0.045em] text-[#111]"
+      className="mt-14 mb-6 text-[34px] font-extrabold tracking-[-0.045em] text-[#111]"
       {...props}
     >
       {children}
@@ -14,7 +14,7 @@ const components: Components = {
   ),
   h2: ({ children, ...props }) => (
     <h2
-      className="mt-12 mb-4 text-[28px] font-bold tracking-[-0.04em] text-[#111]"
+      className="mt-12 mb-4 text-[28px] font-extrabold tracking-[-0.04em] text-[#111]"
       {...props}
     >
       {children}
@@ -22,7 +22,7 @@ const components: Components = {
   ),
   h3: ({ children, ...props }) => (
     <h3
-      className="mt-10 mb-3 text-[22px] font-semibold tracking-[-0.03em] text-[#111]"
+      className="mt-10 mb-3 text-[22px] font-bold tracking-[-0.03em] text-[#111]"
       {...props}
     >
       {children}
@@ -36,7 +36,7 @@ const components: Components = {
   a: ({ children, href, ...props }) => (
     <a
       href={href}
-      className="text-[#C7661D] underline underline-offset-2 transition-colors hover:text-[#a95314]"
+      className="font-bold text-[#FF5F1F] underline underline-offset-2 transition-colors hover:text-[#d44d12]"
       {...props}
     >
       {children}
@@ -47,7 +47,7 @@ const components: Components = {
     if (isInline) {
       return (
         <code
-          className="rounded bg-[#f0ece6] px-1.5 py-0.5 font-mono text-sm text-[#555]"
+          className="rounded border-2 border-[#111] bg-[#fafaf9] px-1.5 py-0.5 font-mono text-sm text-[#555]"
           {...props}
         >
           {children}
@@ -56,7 +56,7 @@ const components: Components = {
     }
     return (
       <code
-        className={`block overflow-x-auto rounded-[20px] bg-[#f1ede7] p-5 font-mono text-sm text-[#333] ${className || ''}`}
+        className={`block overflow-x-auto rounded-[20px] border-[3px] border-[#111] bg-[#fafaf9] p-5 font-mono text-sm text-[#333] shadow-[4px_4px_0px_0px_#111] ${className || ''}`}
         {...props}
       >
         {children}
@@ -70,7 +70,7 @@ const components: Components = {
   ),
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="mb-6 border-l-[3px] border-l-[#C7661D] pl-5 italic text-[#555]"
+      className="mb-6 border-l-[3px] border-l-[#FF5F1F] pl-5 italic text-[#555]"
       {...props}
     >
       {children}
@@ -93,12 +93,12 @@ const components: Components = {
     <img
       src={src}
       alt={alt || ''}
-      className="my-8 w-full rounded-[24px] border border-[rgba(17,17,17,0.08)]"
+      className="my-8 w-full rounded-[24px] border-[3px] border-[#111] shadow-[6px_6px_0px_0px_#111]"
       {...props}
     />
   ),
   table: ({ children, ...props }) => (
-    <div className="mb-6 overflow-x-auto rounded-[20px] border border-[rgba(17,17,17,0.08)]">
+    <div className="mb-6 overflow-x-auto rounded-[20px] border-[3px] border-[#111] shadow-[4px_4px_0px_0px_#111]">
       <table className="w-full border-collapse text-sm" {...props}>
         {children}
       </table>
@@ -106,7 +106,7 @@ const components: Components = {
   ),
   th: ({ children, ...props }) => (
     <th
-      className="border border-[rgba(0,0,0,0.06)] bg-[#f0ece6] px-4 py-3 text-left font-semibold text-[#111]"
+      className="border-b-[3px] border-[#111] bg-[#FF5F1F] px-4 py-3 text-left font-bold text-[#111]"
       {...props}
     >
       {children}
@@ -114,7 +114,7 @@ const components: Components = {
   ),
   td: ({ children, ...props }) => (
     <td
-      className="border border-[rgba(0,0,0,0.06)] px-4 py-3 text-[#333]"
+      className="border-b border-[rgba(17,17,17,0.12)] px-4 py-3 text-[#333]"
       {...props}
     >
       {children}

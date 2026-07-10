@@ -154,8 +154,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         eventName="blog_post_viewed"
         properties={{ slug, title: post.title, category: post.category }}
       />
-      <header className="mb-10 border-b border-[rgba(0,0,0,0.08)] pb-8">
-        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#C7661D]">
+      <header className="mb-10 border-b-[3px] border-[#111] pb-8">
+        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#FF5F1F] font-bold">
           <time dateTime={post.publishedAt}>
             {new Date(post.publishedAt).toLocaleDateString('en-US', {
               year: 'numeric',
@@ -166,10 +166,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <span aria-hidden="true"> · </span>
           <span>{post.category}</span>
         </p>
-        <h1 className="mb-4 text-[42px] font-bold tracking-[-0.05em] text-[#111] lg:text-[54px]">
+        <h1 className="mb-4 text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
           {post.title}
         </h1>
-        <p className="max-w-[680px] text-[18px] leading-[1.75] text-[#555]">
+        <p className="max-w-[680px] text-[18px] leading-[1.75] text-[#404040] font-medium">
           {post.exerpt}
         </p>
       </header>
@@ -178,7 +178,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <img
           src={post.coverImage.url}
           alt={post.title}
-          className="mb-10 w-full rounded-[24px] border border-[rgba(17,17,17,0.08)]"
+          className="mb-10 w-full rounded-[24px] border-[3px] border-[#111] shadow-[6px_6px_0px_0px_#111]"
         />
       )}
 

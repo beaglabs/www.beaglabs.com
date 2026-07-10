@@ -9,7 +9,7 @@ export default function BlogLayout({
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#f6f4ef] pt-16">
+      <div className="min-h-screen bg-[#FAFAF9] pt-16">
         {children}
       </div>
       <SiteFooter />

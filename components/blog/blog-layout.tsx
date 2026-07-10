@@ -25,7 +25,7 @@ export function BlogLayout({
       {isDraft && <DraftBanner />}
       <div className="px-6 py-14 lg:px-9 lg:py-16">
         <div className="mx-auto flex max-w-[1440px] gap-10 xl:gap-14">
-          <article className="min-w-0 max-w-[840px] flex-1 rounded-[28px] border border-[rgba(17,17,17,0.08)] bg-[rgba(255,255,255,0.72)] px-6 py-8 backdrop-blur-sm sm:px-8 lg:px-10 lg:py-10">
+          <article className="min-w-0 max-w-[840px] flex-1 rounded-[28px] border-[3px] border-[#111] bg-white px-6 py-8 shadow-[6px_6px_0px_0px_#111] sm:px-8 lg:px-10 lg:py-10">
             {children}
           </article>
           {toc && toc.length > 0 && (
