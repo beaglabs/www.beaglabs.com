@@ -1,5 +1,6 @@
+import type { Metadata } from 'next'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_BLOG_POSTS_BY_CATEGORY } from '@/lib/hygraph/queries'
+import { GET_BLOG_POSTS_BY_CATEGORY, GET_ALL_BLOG_CATEGORIES } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
@@ -9,6 +10,27 @@ const POSTS_PER_PAGE = 9
 interface CategoryPageProps {
   params: Promise<{ category: string }>
   searchParams: Promise<{ page?: string }>
+}
+
+export async function generateStaticParams() {
+  try {
+    const data = await fetchHygraph<{ blogPosts: { category: string }[] }>(GET_ALL_BLOG_CATEGORIES)
+    const categories = [...new Set(data.blogPosts.map((p) => p.category))]
+    return categories.map((category) => ({ category }))
+  } catch {
+    return []
+  }
+}
+
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const { category } = await params
+  return {
+    title: `${category} — Beag Labs Blog`,
+    description: `Articles in the ${category} category from Beag Labs. Project updates, case studies, and tutorials on applied AI systems.`,
+    alternates: {
+      canonical: `https://www.beaglabs.com/blog/category/${encodeURIComponent(category)}`,
+    },
+  }
 }
 
 export default async function BlogCategoryPage({

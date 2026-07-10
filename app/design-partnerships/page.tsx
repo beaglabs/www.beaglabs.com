@@ -4,33 +4,17 @@ import Link from "next/link"
 import { DomainModelDiagram } from "@/components/domain-model-diagram"
 import { IntegrationPipelineDiagram } from "@/components/integration-pipeline-diagram"
 import { SiteFooter } from "@/components/site-footer"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Design Partnerships",
   description:
     "The Domain Intelligence Pilot: a 12-week engagement that builds a custom AI model for your organization. Natural-language querying and analysis across your data systems — deployed in your environment.",
-  openGraph: {
-    title: "Design Partnerships — Beag Labs",
-    description:
-      "12-week Domain Intelligence Pilot: discovery, data integration, domain modeling, and deployment in your secure environment. Turn your proprietary data into an AI that answers questions, not just queries.",
-    url: "https://beaglabs.com/design-partnerships",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — Design Partnerships",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Design Partnerships — Beag Labs",
-    description:
-      "12-week Domain Intelligence Pilot: discovery, data integration, domain modeling, and deployment in your secure environment. Turn your proprietary data into an AI that answers questions, not just queries.",
-    images: ["/og-image.png"],
-  },
-}
+  path: "/design-partnerships",
+  label: "Pilot Program",
+  ogDescription:
+    "12-week Domain Intelligence Pilot: discovery, data integration, domain modeling, and deployment in your secure environment. Turn your proprietary data into an AI that answers questions, not just queries.",
+})
 
 const deliverables = [
   {

@@ -1,90 +1,87 @@
-"use client"
-
-import { useState } from "react"
-import { ChevronRight } from "lucide-react"
-import { TextScramble } from "./text-scramble"
-
 const faqs = [
   {
-    id: "trial",
-    question: "How does the 7-day free trial work?",
-    answer: "Sign up and get full access to all SSCS features for 7 days — no credit card required. Cancel anytime before the trial ends and pay nothing.",
+    question: "What is Beag Labs?",
+    answer:
+      "Beag Labs is a small model foundry that builds domain-specific classification and extraction models trained on your proprietary data. Unlike frontier API providers, Beag Labs models are deployed on your own infrastructure — on-prem, air-gapped, or in your VPC — with no data leakage and no vendor lock-in. You own the trained model weights.",
   },
   {
-    id: "pricing",
-    question: "How much does Gardens cost?",
-    answer: "Gardens is $2,400 per month for unlimited repositories, users, and scans. The 7-day free trial lets you evaluate everything before committing.",
+    question: "What is a small model foundry?",
+    answer:
+      "A small model foundry is a platform that trains and deploys small language models (SLMs) — typically 500M to 5B parameters — specialized for a specific domain or task. Instead of sending data to a large general-purpose API, a foundry produces compact models you run on your own hardware. This cuts compute costs dramatically while matching or exceeding frontier-model accuracy on domain-specific tasks.",
   },
   {
-    id: "languages",
-    question: "Which package managers are supported?",
-    answer: "We support NPM (with lifecycle hook analysis), Rust Cargo, Maven, Python PyPI, and Docker. More ecosystems are added regularly based on customer demand.",
+    question: "Can I deploy Beag Labs models on-premises or air-gapped?",
+    answer:
+      "Yes. Every model Beag Labs trains is exported as ONNX and deployed on infrastructure you control — cloud, on-premises, or fully air-gapped environments. There are no runtime API calls to Beag Labs. Your inference data never leaves your environment, and you own the model weights outright.",
   },
   {
-    id: "security",
-    question: "How does the NPM lifecycle hook protection work?",
-    answer: "Our agent intercepts NPM install hooks (preinstall, postinstall, pre/post publish) and runs static analysis before allowing execution. Malicious or suspicious scripts are flagged and blocked automatically.",
+    question: "Does Beag Labs train on my data or share it with third parties?",
+    answer:
+      "No. Beag Labs never trains foundation models on your proprietary data, and your data never leaves your environment during inference. The custom models built for you are yours — not absorbed into a shared model. Data connectors (Gmail, GitHub, HubSpot, Notion, or CSV upload) operate within your environment.",
+  },
+  {
+    question: "What types of models does Beag Labs build?",
+    answer:
+      "Beag Labs builds four domain model families: Compliance SLMs (NIST 800-53 control classification), Security SLMs (CVE, OWASP, MITRE ATT&CK mapping), Legal SLMs (e-discovery, contract clause extraction), and Healthcare SLMs (clinical document triage, adverse event classification). All models handle classification, extraction, and relevance tasks.",
+  },
+  {
+    question: "How is Beag Labs different from calling an LLM API like OpenAI or Anthropic?",
+    answer:
+      "Frontier API providers charge per-token for every inference, expose your data to their servers, and lock you into their platform. Beag Labs trains a compact model you own and deploy on your own hardware, which can be up to 13x cheaper than per-token API pricing at scale. There are no API dependencies at runtime, no data leakage, and no vendor lock-in.",
+  },
+  {
+    question: "How long does it take to build and deploy a custom model?",
+    answer:
+      "From raw data to a deployed model typically takes under 24 hours. The pipeline uses frontier models for intelligent auto-labeling, then surfaces only the 2-5% of edge cases for human review via a disagreement engine. After review, the model is fine-tuned and exported as ONNX for immediate deployment.",
   },
 ]
 
-export function FAQSection() {
-  const [openFaq, setOpenFaq] = useState<string | null>("trial")
+export function FaqSection() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
 
   return (
-    <section className="bg-white py-32 px-8 lg:px-16">
-      <div className="max-w-3xl mx-auto">
-        {/* Section header */}
-        <div className="mb-16 text-center">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="w-12 h-px bg-black/30" />
-            <span className="font-mono text-sm tracking-[0.3em] text-black/50">
-              DOCUMENTATION
-            </span>
-            <div className="w-12 h-px bg-black/30" />
+    <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <div className="mx-auto max-w-[1440px]">
+        <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+          <div>
+            <span className="nb-label mb-5 inline-block">FAQ</span>
+            <h2 className="max-w-[460px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+              Common questions about domain-specific AI.
+            </h2>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-black tracking-tight">
-            <TextScramble text="FAQ" scrambleOnHover autoStart={false} />
-          </h2>
-          <p className="text-black/50 font-mono text-sm mt-4">
-            Everything you need to know about SSCS.
-          </p>
+          <div>
+            <p className="max-w-[480px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+              Everything you need to know about how Beag Labs trains, deploys,
+              and secures small models for regulated and data-sensitive
+              environments.
+            </p>
+          </div>
         </div>
 
-        {/* FAQ items */}
-        <div className="space-y-0">
-          {faqs.map((faq, index) => (
-            <div
-              key={faq.id}
-              className={`border-b border-black/10 ${
-                openFaq === faq.id ? "bg-neutral-50" : ""
-              }`}
-            >
-              <button
-                onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}
-                className="w-full py-6 px-6 flex items-center justify-between text-left group"
-              >
-                <div className="flex items-center gap-4">
-                  <span className="font-mono text-xs text-black/30">
-                    0{index + 1}
-                  </span>
-                  <span className="font-mono text-sm text-black group-hover:text-black/80 transition-colors">
-                    {faq.question}
-                  </span>
-                </div>
-                <ChevronRight
-                  className={`w-4 h-4 text-black/50 transition-transform shrink-0 ${
-                    openFaq === faq.id ? "rotate-90" : ""
-                  }`}
-                />
-              </button>
-              
-              {openFaq === faq.id && (
-                <div className="px-6 pb-6 pl-16">
-                  <p className="text-black/60 font-mono text-sm leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </div>
-              )}
+        <div className="mx-auto max-w-[900px] divide-y-[3px] divide-[#111] border-y-[3px] border-[#111]">
+          {faqs.map((faq) => (
+            <div key={faq.question} className="bg-white px-6 py-7 lg:px-8 lg:py-8">
+              <h3 className="mb-3 text-[20px] font-extrabold leading-[1.2] tracking-[-0.02em] text-[#111] lg:text-[22px]">
+                {faq.question}
+              </h3>
+              <p className="text-[15px] leading-[1.7] text-[#444] lg:text-[16px]">
+                {faq.answer}
+              </p>
             </div>
           ))}
         </div>

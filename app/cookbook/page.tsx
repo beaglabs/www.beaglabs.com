@@ -6,34 +6,17 @@ import { SampleRecipe } from "@/components/cookbook/sample-recipe"
 import { parts } from "@/data/cookbook/parts"
 import { recipes } from "@/data/cookbook/recipes"
 import { getRecipesByPart } from "@/data/cookbook/recipes"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "ML Cookbook 2026",
   description:
     "100 modern training recipes every AI engineer should know. A practical collection across language models, vision, 3D, speech, robotics, agents, and synthetic data.",
-  openGraph: {
-    title: "ML Cookbook 2026 — Beag Labs",
-    description:
-      "100 modern training recipes every AI engineer should know. GRPO, Flow Matching, World Models, and more — with pipeline diagrams, compute estimates, and paper references.",
-    url: "https://beaglabs.com/cookbook",
-    siteName: "Beag Labs",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs ML Cookbook 2026",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "ML Cookbook 2026 — Beag Labs",
-    description:
-      "100 modern training recipes every AI engineer should know. GRPO, Flow Matching, World Models, and more — with pipeline diagrams, compute estimates, and paper references.",
-    images: ["/og-image.png"],
-  },
-}
+  path: "/cookbook",
+  label: "Cookbook",
+  ogDescription:
+    "100 modern training recipes every AI engineer should know. GRPO, Flow Matching, World Models, and more — with pipeline diagrams, compute estimates, and paper references.",
+})
 
 const partEmojis: Record<string, string> = {
   "language-models": "01",

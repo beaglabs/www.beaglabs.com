@@ -1,17 +1,26 @@
 import { notFound } from 'next/navigation'
 import { draftMode } from 'next/headers'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_RESEARCH_PAPER } from '@/lib/hygraph/queries'
+import { GET_RESEARCH_PAPER, GET_ALL_RESEARCH_SLUGS } from '@/lib/hygraph/queries'
 import type { ResearchPaperResponse } from '@/lib/hygraph/types'
 import { BlogLayout } from '@/components/blog/blog-layout'
-import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
 import { BlocksRenderer } from '@/components/blog/blocks-renderer'
 import { ResearchAuthorList } from '@/components/blog/research-author-list'
 import { PostTracker } from '@/components/blog/post-tracker'
 import { ResearchDoiLink } from '@/components/blog/research-doi-link'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 
 interface ResearchPaperPageProps {
   params: Promise<{ slug: string }>
+}
+
+export async function generateStaticParams() {
+  try {
+    const data = await fetchHygraph<{ researchPapers: { slug: string }[] }>(GET_ALL_RESEARCH_SLUGS)
+    return data.researchPapers.map((paper) => ({ slug: paper.slug }))
+  } catch {
+    return []
+  }
 }
 
 function extractHeadings(markdown: string) {
@@ -48,17 +57,23 @@ export async function generateMetadata({ params }: ResearchPaperPageProps) {
 
   const ogImage =
     data.researchPaper.seoImage || data.researchPaper.coverImage?.url || null
+  const canonicalUrl = `https://www.beaglabs.com/research/${slug}`
 
   return {
     title: data.researchPaper.seoTitle || data.researchPaper.title,
     description:
       data.researchPaper.seoDescription || data.researchPaper.abstract,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${data.researchPaper.seoTitle || data.researchPaper.title} — Beag Labs`,
       description:
         data.researchPaper.seoDescription || data.researchPaper.abstract,
       type: 'article' as const,
       publishedTime: data.researchPaper.publishedAt,
+      modifiedTime: data.researchPaper.updatedAt,
+      url: canonicalUrl,
       images: ogImage
         ? [{ url: ogImage, width: 1200, height: 630 }]
         : [],
@@ -91,9 +106,55 @@ export default async function ResearchPaperPage({
 
   const paper = data.researchPaper
   const toc = extractHeadings(paper.body.markdown)
+  const canonicalUrl = `https://www.beaglabs.com/research/${slug}`
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: paper.title,
+    description: paper.seoDescription || paper.abstract,
+    abstract: paper.abstract,
+    datePublished: paper.publishedAt,
+    dateModified: paper.updatedAt || paper.publishedAt,
+    author: paper.authors.map((name) => ({
+      '@type': 'Person',
+      name,
+    })),
+    publisher: {
+      '@type': 'Organization',
+      name: 'Beag Labs',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.beaglabs.com/favicon.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    ...(paper.doi ? { sameAs: `https://doi.org/${paper.doi}` } : {}),
+    ...(paper.coverImage || paper.seoImage
+      ? {
+          image: {
+            '@type': 'ImageObject',
+            url: paper.coverImage?.url || paper.seoImage!,
+          },
+        }
+      : {}),
+    proficiencyLevel: 'Expert',
+  }
 
   return (
     <BlogLayout toc={toc} isDraft={isDraft}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Breadcrumbs items={[
+        { name: 'Home', url: '/' },
+        { name: 'Research', url: '/research' },
+        { name: paper.title, url: `/research/${slug}` },
+      ]} />
       <PostTracker
         eventName="research_paper_viewed"
         properties={{ slug, title: paper.title, doi: paper.doi ?? undefined }}

@@ -2,34 +2,15 @@ import { Navbar } from "@/components/navbar"
 import { SiteFooter } from "@/components/site-footer"
 import Link from "next/link"
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Imprint",
   description:
     "Legal disclosure and contact information for Beag Labs, the company behind domain-specific AI solutions.",
-  openGraph: {
-    title: "Imprint — Beag Labs",
-    description:
-      "Legal disclosure and contact information for Beag Labs, the company behind domain-specific AI solutions.",
-    url: "https://beaglabs.com/imprint",
-    siteName: "Beag Labs",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — Imprint",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Imprint — Beag Labs",
-    description:
-      "Legal disclosure and contact information for Beag Labs, the company behind domain-specific AI solutions.",
-    images: ["/og-image.png"],
-  },
-}
+  path: "/imprint",
+  label: "Legal",
+})
 
 export default function ImprintPage() {
   return (

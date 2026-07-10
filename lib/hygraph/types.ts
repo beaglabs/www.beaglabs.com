@@ -31,6 +31,7 @@ export interface BlogPost {
   category: 'Case Study' | 'Project Update' | 'Tutorial' | 'Opinion'
   tags: string[]
   publishedAt: string
+  updatedAt?: string
   seoTitle?: string | null
   seoDescription?: string | null
 }
@@ -51,6 +52,7 @@ export interface ResearchPaper {
   } | null
   authors: string[]
   publishedAt: string
+  updatedAt?: string
   doi?: string | null
   seoImage?: string | null
   seoTitle?: string | null

@@ -1,5 +1,6 @@
+import type { Metadata } from 'next'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_RESEARCH_PAPERS_BY_AUTHOR } from '@/lib/hygraph/queries'
+import { GET_RESEARCH_PAPERS_BY_AUTHOR, GET_ALL_RESEARCH_AUTHORS } from '@/lib/hygraph/queries'
 import type { ResearchPapersResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 
@@ -8,6 +9,27 @@ const PAPERS_PER_PAGE = 9
 interface AuthorPageProps {
   params: Promise<{ author: string }>
   searchParams: Promise<{ page?: string }>
+}
+
+export async function generateStaticParams() {
+  try {
+    const data = await fetchHygraph<{ researchPapers: { authors: string[] }[] }>(GET_ALL_RESEARCH_AUTHORS)
+    const authors = [...new Set(data.researchPapers.flatMap((p) => p.authors))]
+    return authors.map((author) => ({ author }))
+  } catch {
+    return []
+  }
+}
+
+export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
+  const { author } = await params
+  return {
+    title: `${author} — Beag Labs Research`,
+    description: `Research papers by ${author} at Beag Labs.`,
+    alternates: {
+      canonical: `https://www.beaglabs.com/research/authors/${encodeURIComponent(author)}`,
+    },
+  }
 }
 
 export default async function ResearchAuthorPage({

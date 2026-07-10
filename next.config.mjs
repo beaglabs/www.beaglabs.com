@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ["@takumi-rs/core"],
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -27,7 +28,6 @@ const nextConfig = {
       },
     ]
   },
-  skipTrailingSlashRedirect: true,
 }
 
 export default nextConfig

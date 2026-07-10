@@ -1,16 +1,25 @@
 import { notFound } from 'next/navigation'
 import { draftMode } from 'next/headers'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_BLOG_POST } from '@/lib/hygraph/queries'
+import { GET_BLOG_POST, GET_ALL_BLOG_SLUGS } from '@/lib/hygraph/queries'
 import type { BlogPostResponse } from '@/lib/hygraph/types'
 import { BlogLayout } from '@/components/blog/blog-layout'
-import { MarkdownRenderer } from '@/components/blog/markdown-renderer'
 import { BlocksRenderer } from '@/components/blog/blocks-renderer'
 import { PostTracker } from '@/components/blog/post-tracker'
 import { PostTags } from '@/components/blog/post-tags'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
+}
+
+export async function generateStaticParams() {
+  try {
+    const data = await fetchHygraph<{ blogPosts: { slug: string }[] }>(GET_ALL_BLOG_SLUGS)
+    return data.blogPosts.map((post) => ({ slug: post.slug }))
+  } catch {
+    return []
+  }
 }
 
 function extractHeadings(markdown: string) {
@@ -46,15 +55,21 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   }
 
   const ogImage = data.blogPost.coverImage?.url
+  const canonicalUrl = `https://www.beaglabs.com/blog/${slug}`
 
   return {
     title: data.blogPost.seoTitle || data.blogPost.title,
     description: data.blogPost.seoDescription || data.blogPost.exerpt,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${data.blogPost.seoTitle || data.blogPost.title} — Beag Labs`,
       description: data.blogPost.seoDescription || data.blogPost.exerpt,
       type: 'article' as const,
       publishedTime: data.blogPost.publishedAt,
+      modifiedTime: data.blogPost.updatedAt,
+      url: canonicalUrl,
       images: ogImage
         ? [{ url: ogImage, width: data.blogPost.coverImage!.width, height: data.blogPost.coverImage!.height }]
         : [],
@@ -84,9 +99,57 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const post = data.blogPost
   const toc = extractHeadings(post.body.markdown)
+  const canonicalUrl = `https://www.beaglabs.com/blog/${slug}`
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.seoDescription || post.exerpt,
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt || post.publishedAt,
+    author: {
+      '@type': 'Organization',
+      name: 'Beag Labs',
+      url: 'https://www.beaglabs.com',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Beag Labs',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.beaglabs.com/favicon.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    ...(post.coverImage
+      ? {
+          image: {
+            '@type': 'ImageObject',
+            url: post.coverImage.url,
+            width: post.coverImage.width,
+            height: post.coverImage.height,
+          },
+        }
+      : {}),
+    articleSection: post.category,
+    keywords: post.tags.join(', '),
+  }
 
   return (
     <BlogLayout toc={toc} isDraft={isDraft}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Breadcrumbs items={[
+        { name: 'Home', url: '/' },
+        { name: 'Blog', url: '/blog' },
+        { name: post.title, url: `/blog/${slug}` },
+      ]} />
       <PostTracker
         eventName="blog_post_viewed"
         properties={{ slug, title: post.title, category: post.category }}

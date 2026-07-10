@@ -1,0 +1,31 @@
+# Beag Labs
+
+> Small Model Foundry. Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.
+
+Beag Labs is a small model foundry that builds custom small language models (SLMs, 500M-5B parameters) for classification, extraction, and relevance tasks in regulated and data-sensitive environments. Unlike frontier API providers, Beag Labs trains models you own and deploy on your own infrastructure — on-premises, air-gapped, or in your VPC — with no runtime API calls, no data leakage, and no vendor lock-in.
+
+The platform pipeline: (1) connect data via OAuth connectors (Gmail, GitHub, HubSpot, Notion) or CSV upload, (2) frontier models auto-label your data, (3) a disagreement engine surfaces only the 2-5% of edge cases for human review, (4) the model is fine-tuned and exported as ONNX for deployment anywhere. From raw data to deployed model typically takes under 24 hours.
+
+Beag Labs offers four domain model families: Compliance SLMs (NIST 800-53), Security SLMs (CVE, OWASP, MITRE ATT&CK), Legal SLMs (e-discovery, contract review), and Healthcare SLMs (HIPAA, clinical triage). Custom models are also available.
+
+Pricing is engagement-based: hire Beag Labs to build a model, or use the platform to train one yourself. See /pricing.md for details.
+
+## For LLMs
+
+- [llms-full.txt](https://beaglabs.com/llms-full.txt): Full expanded context including technology details, differentiators, and engagement models.
+
+## Key Pages
+
+- [Homepage](https://beaglabs.com/)
+- [Model Catalog](https://beaglabs.com/models)
+- [Pricing](https://beaglabs.com/pricing.md)
+- [Blog](https://beaglabs.com/blog)
+- [Research Papers](https://beaglabs.com/research)
+- [Design Partnerships](https://beaglabs.com/design-partnerships)
+- [2026 ML Training Cookbook](https://beaglabs.com/cookbook)
+- [Book a Call](https://cal.com/comradelemoncake/meet-the-founder)
+
+## Optional
+
+- [Privacy Policy](https://beaglabs.com/privacy-policy)
+- [Terms of Service](https://beaglabs.com/terms-of-service)

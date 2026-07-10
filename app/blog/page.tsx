@@ -1,8 +1,22 @@
+import type { Metadata } from 'next'
 import { fetchHygraph } from '@/lib/hygraph/client'
 import { GET_BLOG_POSTS } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
+
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: 'Project updates, case studies, and tutorials documenting how Beag Labs approaches applied AI systems in practice.',
+  alternates: {
+    canonical: 'https://www.beaglabs.com/blog',
+  },
+  openGraph: {
+    title: 'Blog — Beag Labs',
+    description: 'Project updates, case studies, and tutorials documenting how Beag Labs approaches applied AI systems in practice.',
+    url: 'https://www.beaglabs.com/blog',
+  },
+}
 
 const POSTS_PER_PAGE = 9
 

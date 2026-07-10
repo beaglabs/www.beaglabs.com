@@ -4,33 +4,17 @@ import Link from "next/link"
 
 import { Navbar } from "@/components/navbar"
 import { SiteFooter } from "@/components/site-footer"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Invest",
   description:
     "Small models, deployed anywhere. Beag Labs builds domain-specific AI that runs on your infrastructure at a fraction of the cost.",
-  openGraph: {
-    title: "Invest — Beag Labs",
-    description:
-      "Small models, deployed anywhere. Beag Labs builds domain-specific AI that runs on your infrastructure at a fraction of the cost. Purpose-built models for compliance, legal, healthcare, and security — no cloud lock-in.",
-    url: "https://beaglabs.com/raise",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — Invest",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Invest — Beag Labs",
-    description:
-      "Small models, deployed anywhere. Beag Labs builds domain-specific AI that runs on your infrastructure at a fraction of the cost. Purpose-built models for compliance, legal, healthcare, and security — no cloud lock-in.",
-    images: ["/og-image.png"],
-  },
-}
+  path: "/raise",
+  label: "Invest",
+  ogDescription:
+    "Small models, deployed anywhere. Beag Labs builds domain-specific AI that runs on your infrastructure at a fraction of the cost. Purpose-built models for compliance, legal, healthcare, and security — no cloud lock-in.",
+})
 
 const problemCards = [
   {

@@ -13,13 +13,16 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://beaglabs.com'),
+  metadataBase: new URL('https://www.beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
     default: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
   },
   description:
     'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
@@ -28,7 +31,7 @@ export const metadata: Metadata = {
     title: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
     description:
       'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
-    url: 'https://beaglabs.com',
+    url: 'https://www.beaglabs.com',
     siteName: 'Beag Labs',
     images: [
       {
@@ -51,6 +54,25 @@ export const metadata: Metadata = {
   },
 }
 
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Beag Labs',
+  url: 'https://www.beaglabs.com',
+  logo: 'https://www.beaglabs.com/favicon.png',
+  description:
+    'Small Model Foundry. Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC.',
+  sameAs: ['https://x.com/beaglabs'],
+  knowsAbout: [
+    'Small language models',
+    'Domain-specific AI',
+    'On-premises AI deployment',
+    'Fine-tuning',
+    'Data labeling',
+    'Model distillation',
+  ],
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,6 +81,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         {children}
         <Analytics />
       </body>

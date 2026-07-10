@@ -1,101 +1,18 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
+import { modelFamilies as models } from "@/data/models/models"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Models",
   description:
     "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare. Small models trained for your domain, deployed on your infrastructure — no vendor lock-in.",
-  openGraph: {
-    title: "Models — Beag Labs",
-    description:
-      "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare. Small models trained for your domain, deployed on your infrastructure — no vendor lock-in.",
-    url: "https://beaglabs.com/models",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — Models",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Models — Beag Labs",
-    description:
-      "Pre-packaged SLMs and LoRAs for compliance, security, legal, and healthcare. Small models trained for your domain, deployed on your infrastructure — no vendor lock-in.",
-    images: ["/og-image.png"],
-  },
-}
-
-const models = [
-  {
-    name: "Compliance SLMs",
-    status: "In Training",
-    statusColor: "bg-[#FF5F1F]",
-    target: "NIST 800-53",
-    description:
-      "Purpose-built small language models and LoRAs for classifying documents against NIST 800-53 controls. Maps policies, procedures, and evidence to control families with human-expert accuracy at a fraction of frontier API cost.",
-    capabilities: [
-      "NIST 800-53 control classification",
-      "Policy-to-control mapping",
-      "Evidence sufficiency scoring",
-      "Gap analysis flagging",
-    ],
-    bg: "#FFF3E6",
-    borderColor: "#FF5F1F",
-  },
-  {
-    name: "Security SLMs",
-    status: "On Deck",
-    statusColor: "bg-[#4488FF]",
-    target: "CVE, OWASP, MITRE ATT&CK",
-    description:
-      "Security-focused SLMs for vulnerability triage, threat report classification, and security advisory categorization. Maps findings to CVE, OWASP Top 10, and MITRE ATT&CK frameworks.",
-    capabilities: [
-      "Vulnerability severity triage",
-      "CVE-to-OWASP mapping",
-      "Threat report classification",
-      "MITRE ATT&CK technique labeling",
-    ],
-    bg: "#E6F2FF",
-    borderColor: "#4488FF",
-  },
-  {
-    name: "Legal SLMs",
-    status: "Planned",
-    statusColor: "bg-[#8B7355]",
-    target: "E-Discovery, Contract Review",
-    description:
-      "Legal document classification and extraction models for e-discovery relevance, privilege review, contract clause extraction, and regulatory filing categorization. Built for law firms and in-house legal teams.",
-    capabilities: [
-      "E-discovery relevance classification",
-      "Privilege review triage",
-      "Contract clause extraction",
-      "Regulatory filing categorization",
-    ],
-    bg: "#FFF9E6",
-    borderColor: "#8B7355",
-  },
-  {
-    name: "Healthcare SLMs",
-    status: "Planned",
-    statusColor: "bg-[#00AA55]",
-    target: "HIPAA, FDA, Clinical Trials",
-    description:
-      "Healthcare-specific models for clinical document triage, adverse event classification, prior authorization extraction, and FDA submission categorization. Deployable in HIPAA-compliant environments.",
-    capabilities: [
-      "Clinical document triage",
-      "Adverse event classification",
-      "Prior authorization extraction",
-      "FDA submission categorization",
-    ],
-    bg: "#E6FFF2",
-    borderColor: "#00AA55",
-  },
-]
+  path: "/models",
+  label: "Model Catalog",
+})
 
 const approach = [
   {
@@ -116,8 +33,34 @@ const approach = [
 ]
 
 export default function ModelsPage() {
+  const servicesJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: models.map((model, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Service',
+        name: model.name,
+        description: model.description,
+        url: `https://www.beaglabs.com/models/${model.slug}`,
+        provider: {
+          '@type': 'Organization',
+          name: 'Beag Labs',
+          url: 'https://www.beaglabs.com',
+        },
+        serviceType: 'Small Language Model Training and Deployment',
+        areaServed: 'Worldwide',
+      },
+    })),
+  }
+
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
+      />
       <AnnouncementBanner />
       <Navbar bannerHeight={38} />
 
@@ -136,9 +79,10 @@ export default function ModelsPage() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {models.map((model) => (
-              <div
-                key={model.name}
-                className="nb-card group p-8 lg:p-10"
+              <Link
+                key={model.slug}
+                href={`/models/${model.slug}`}
+                className="nb-card group block p-8 lg:p-10 transition-transform hover:-translate-y-1"
                 style={{ background: model.bg }}
               >
                 <div className="mb-5 flex items-center justify-between gap-4 flex-wrap">
@@ -179,7 +123,11 @@ export default function ModelsPage() {
                     ))}
                   </ul>
                 </div>
-              </div>
+
+                <div className="mt-6 text-[12px] font-extrabold uppercase tracking-[0.12em] text-[#FF5F1F] group-hover:text-[#C7661D]">
+                  Learn more &rarr;
+                </div>
+              </Link>
             ))}
           </div>
         </div>

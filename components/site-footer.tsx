@@ -15,6 +15,9 @@ const footerColumns = [
     links: [
       { label: "Blog", href: "/blog" },
       { label: "Cookbook", href: "/cookbook" },
+      { label: "Glossary", href: "/glossary" },
+      { label: "Use Cases", href: "/use-cases" },
+      { label: "Comparisons", href: "/compare" },
     ],
   },
   {

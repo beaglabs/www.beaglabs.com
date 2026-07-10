@@ -1,0 +1,97 @@
+# Beag Labs — Full Context for LLMs
+
+> Small Model Foundry. Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.
+
+## What Beag Labs Does
+
+Beag Labs is a small model foundry that builds custom small language models (SLMs, 500M-5B parameters) for classification, extraction, and relevance tasks in regulated and data-sensitive environments. Unlike frontier API providers (OpenAI, Anthropic, Google), Beag Labs trains models you own and deploy on your own infrastructure — on-premises, air-gapped, or in your VPC — with no runtime API calls, no data leakage, and no vendor lock-in.
+
+## How It Works
+
+The platform pipeline:
+
+1. **Connect data** — OAuth connectors (Gmail, GitHub, HubSpot, Notion) or CSV upload. Data stays in your environment.
+2. **Auto-label** — Frontier models (GPT-4, Claude) generate initial labels on your data.
+3. **Disagreement engine** — The system surfaces only the 2-5% of edge cases where frontier models disagree, for human review. This minimizes labeling cost while maintaining quality.
+4. **Fine-tune** — A small language model (500M-5B parameters) is fine-tuned on the labeled data.
+5. **Export as ONNX** — The trained model is exported as ONNX format for deployment anywhere: cloud, on-prem, or fully air-gapped.
+
+From raw data to deployed model typically takes under 24 hours.
+
+## Domain Model Families
+
+- **Compliance SLMs** — NIST 800-53 control classification, policy-to-control mapping, evidence sufficiency scoring, gap analysis flagging. Status: In Training.
+- **Security SLMs** — Vulnerability severity triage, CVE-to-OWASP mapping, threat report classification, MITRE ATT&CK technique labeling. Status: On Deck.
+- **Legal SLMs** — E-discovery relevance classification, privilege review triage, contract clause extraction, regulatory filing categorization. Status: Planned.
+- **Healthcare SLMs** — Clinical document triage, adverse event classification, prior authorization extraction, FDA submission categorization. Status: Planned.
+
+All domain models are fine-tuned on your proprietary data before delivery. You own the trained model weights.
+
+## Key Differentiators
+
+- **Up to 13x cheaper** than per-token frontier API pricing at production scale, because you run inference on your own hardware with no API calls.
+- **No data leakage** — Your data never leaves your environment during inference. No runtime API calls to Beag Labs or any third party.
+- **You own the model** — Exported as ONNX. No vendor lock-in, no API dependency, no subscription required to run inference.
+- **Air-gapped deployment** — Models work in fully disconnected environments. No internet access needed at runtime.
+- **Under 24 hours** from raw data to deployed model.
+
+## Pricing
+
+Beag Labs offers two engagement models:
+
+### Done-For-You (Custom Model Build)
+Beag Labs designs the labeling schema, runs the intelligent labeling pipeline, co-reviews edge cases with your team, trains the model, and ships a deployable ONNX export. Price: Custom, engagement-based. Timeline: Under 24 hours after schema alignment.
+
+### Platform (Train It Yourself)
+Use the Beag Labs platform to run the training pipeline yourself with your own data. Full access to data connectors, labeling, training, and export pipeline. Price: Custom, contact us.
+
+See https://beaglabs.com/pricing.md for full pricing details.
+
+## Engagement Models
+
+Beag Labs also offers a **Domain Intelligence Pilot** — a 12-week engagement that builds a custom AI model for your organization through discovery workshops, data integration, domain modeling, and deployment in your secure environment.
+
+See https://beaglabs.com/design-partnerships for details.
+
+## Technology
+
+- **Model size:** 500M-5B parameters (small language models)
+- **Export format:** ONNX (Open Neural Network Exchange)
+- **Data connectors:** Gmail, GitHub, HubSpot, Notion (OAuth), CSV upload
+- **Labeling:** Frontier model auto-labeling + disagreement engine for human review of edge cases
+- **Deployment:** On-premises, air-gapped, VPC, or any infrastructure that runs ONNX
+
+## Research
+
+Beag Labs publishes research papers and technical deep-dives on operational AI systems, data, and evaluation at https://beaglabs.com/research
+
+## 2026 ML Training Cookbook
+
+A collection of 100+ modern training recipes every AI engineer should know, covering language models, vision, 3D, speech, robotics, agents, and synthetic data. Available at https://beaglabs.com/cookbook
+
+## Key Pages
+
+- [Homepage](https://beaglabs.com/)
+- [Model Catalog](https://beaglabs.com/models)
+- [Pricing](https://beaglabs.com/pricing.md)
+- [Blog](https://beaglabs.com/blog)
+- [Research Papers](https://beaglabs.com/research)
+- [Design Partnerships](https://beaglabs.com/design-partnerships)
+- [2026 ML Training Cookbook](https://beaglabs.com/cookbook)
+- [Book a Call](https://cal.com/comradelemoncake/meet-the-founder)
+
+## Contact
+
+- Book a call: https://cal.com/comradelemoncake/meet-the-founder
+- GitHub: https://github.com/beaglabs
+- X/Twitter: https://x.com/beaglabs
+
+## Optional
+
+- [Privacy Policy](https://beaglabs.com/privacy-policy)
+- [Terms of Service](https://beaglabs.com/terms-of-service)
+- [Imprint](https://beaglabs.com/imprint)
+
+---
+
+_Last updated: 2026-07-10_

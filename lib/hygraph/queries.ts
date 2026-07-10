@@ -6,6 +6,7 @@ const BLOG_POST_CARD_FIELDS = `
   category
   tags
   publishedAt
+  updatedAt
   coverImage {
     url
     width
@@ -42,6 +43,7 @@ const RESEARCH_PAPER_CARD_FIELDS = `
   abstract
   authors
   publishedAt
+  updatedAt
   doi
   seoImage
 `
@@ -149,6 +151,26 @@ export const GET_ALL_BLOG_TAGS = `
   query GetAllBlogTags {
     blogPosts {
       tags
+    }
+  }
+`
+
+// --- Lightweight slug-only queries (sitemap, etc.) ---
+
+export const GET_ALL_BLOG_SLUGS = `
+  query GetAllBlogSlugs {
+    blogPosts(orderBy: publishedAt_DESC) {
+      slug
+      publishedAt
+    }
+  }
+`
+
+export const GET_ALL_RESEARCH_SLUGS = `
+  query GetAllResearchSlugs {
+    researchPapers(orderBy: publishedAt_DESC) {
+      slug
+      publishedAt
     }
   }
 `

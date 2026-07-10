@@ -1,5 +1,6 @@
+import type { Metadata } from 'next'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_BLOG_POSTS_BY_TAG } from '@/lib/hygraph/queries'
+import { GET_BLOG_POSTS_BY_TAG, GET_ALL_BLOG_TAGS } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 
@@ -8,6 +9,27 @@ const POSTS_PER_PAGE = 9
 interface TagPageProps {
   params: Promise<{ tag: string }>
   searchParams: Promise<{ page?: string }>
+}
+
+export async function generateStaticParams() {
+  try {
+    const data = await fetchHygraph<{ blogPosts: { tags: string[] }[] }>(GET_ALL_BLOG_TAGS)
+    const tags = [...new Set(data.blogPosts.flatMap((p) => p.tags))]
+    return tags.map((tag) => ({ tag }))
+  } catch {
+    return []
+  }
+}
+
+export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
+  const { tag } = await params
+  return {
+    title: `#${tag} — Beag Labs Blog`,
+    description: `Articles tagged "${tag}" from Beag Labs. Project updates, case studies, and tutorials on applied AI systems.`,
+    alternates: {
+      canonical: `https://www.beaglabs.com/blog/tag/${encodeURIComponent(tag)}`,
+    },
+  }
 }
 
 export default async function BlogTagPage({

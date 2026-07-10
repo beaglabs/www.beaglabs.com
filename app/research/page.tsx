@@ -1,7 +1,21 @@
+import type { Metadata } from 'next'
 import { fetchHygraph } from '@/lib/hygraph/client'
 import { GET_RESEARCH_PAPERS } from '@/lib/hygraph/queries'
 import type { ResearchPapersResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
+
+export const metadata: Metadata = {
+  title: 'Research',
+  description: 'Papers, technical deep-dives, and research findings from active work across operational AI systems, data, and evaluation.',
+  alternates: {
+    canonical: 'https://www.beaglabs.com/research',
+  },
+  openGraph: {
+    title: 'Research — Beag Labs',
+    description: 'Papers, technical deep-dives, and research findings from active work across operational AI systems, data, and evaluation.',
+    url: 'https://www.beaglabs.com/research',
+  },
+}
 
 const PAPERS_PER_PAGE = 9
 

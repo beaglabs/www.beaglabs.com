@@ -6,6 +6,7 @@ import { CapabilityTracksStrip } from "@/components/capability-tracks-strip"
 import { FeaturedWorkSection } from "@/components/featured-work-section"
 
 import { EngagementModelSection } from "@/components/engagement-model-section"
+import { FaqSection } from "@/components/faq-section"
 import { FinalCTASection } from "@/components/final-cta-section"
 import { SiteFooter } from "@/components/site-footer"
 
@@ -19,6 +20,7 @@ export default function Home() {
       <CapabilitiesSection />
       <FeaturedWorkSection />
       <EngagementModelSection />
+      <FaqSection />
       <FinalCTASection />
       <SiteFooter />
     </main>

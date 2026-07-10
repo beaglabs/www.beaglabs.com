@@ -1,33 +1,14 @@
 import { LegalPageShell } from "@/components/legal-page-shell"
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms of Service",
   description:
     "The legal terms governing how Beag Labs provides research, consulting, and technical delivery services.",
-  openGraph: {
-    title: "Terms of Service — Beag Labs",
-    description:
-      "The legal terms governing how Beag Labs provides research, consulting, and technical delivery services.",
-    url: "https://beaglabs.com/terms",
-    siteName: "Beag Labs",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — Terms of Service",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Terms of Service — Beag Labs",
-    description:
-      "The legal terms governing how Beag Labs provides research, consulting, and technical delivery services.",
-    images: ["/og-image.png"],
-  },
-}
+  path: "/terms-of-service",
+  label: "Legal",
+})
 
 export default function TermsPage() {
   return (
