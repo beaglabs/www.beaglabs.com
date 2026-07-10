@@ -16,9 +16,7 @@ const BLOG_POST_CARD_FIELDS = `
 
 const BLOG_POST_FULL_FIELDS = `
   ${BLOG_POST_CARD_FIELDS}
-  body {
-    markdown
-  }
+  body
   mathBlock {
     label
     latex

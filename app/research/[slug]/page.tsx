@@ -110,7 +110,7 @@ export default async function ResearchPaperPage({
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'TechArticle',
+    '@type': 'ScholarlyArticle',
     headline: paper.title,
     description: paper.seoDescription || paper.abstract,
     abstract: paper.abstract,

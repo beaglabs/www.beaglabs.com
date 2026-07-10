@@ -98,7 +98,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const post = data.blogPost
-  const toc = extractHeadings(post.body.markdown)
+  const toc = extractHeadings(post.body)
   const canonicalUrl = `https://www.beaglabs.com/blog/${slug}`
 
   const jsonLd = {
@@ -183,7 +183,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       )}
 
       <BlocksRenderer
-        markdown={post.body.markdown}
+        markdown={post.body}
         mathBlocks={post.mathBlock ?? []}
         mermaidBlocks={post.mermaidBlock ?? []}
         tableBlocks={post.tableBlock ?? []}
