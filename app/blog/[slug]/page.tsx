@@ -8,6 +8,7 @@ import { BlocksRenderer } from '@/components/blog/blocks-renderer'
 import { PostTracker } from '@/components/blog/post-tracker'
 import { PostTags } from '@/components/blog/post-tags'
 import { Breadcrumbs } from '@/components/breadcrumbs'
+import { ogImageUrl } from '@/lib/seo'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -54,8 +55,12 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     return { title: 'Not Found' }
   }
 
-  const ogImage = data.blogPost.coverImage?.url
   const canonicalUrl = `https://www.beaglabs.com/blog/${slug}`
+  const ogUrl = ogImageUrl({
+    title: data.blogPost.title,
+    description: data.blogPost.seoDescription || data.blogPost.exerpt,
+    label: data.blogPost.category,
+  })
 
   return {
     title: data.blogPost.seoTitle || data.blogPost.title,
@@ -70,15 +75,13 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       publishedTime: data.blogPost.publishedAt,
       modifiedTime: data.blogPost.updatedAt,
       url: canonicalUrl,
-      images: ogImage
-        ? [{ url: ogImage, width: data.blogPost.coverImage!.width, height: data.blogPost.coverImage!.height }]
-        : [],
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: data.blogPost.title }],
     },
     twitter: {
       card: 'summary_large_image' as const,
       title: `${data.blogPost.seoTitle || data.blogPost.title} — Beag Labs`,
       description: data.blogPost.seoDescription || data.blogPost.exerpt,
-      images: ogImage ? [ogImage] : [],
+      images: [ogUrl],
     },
   }
 }

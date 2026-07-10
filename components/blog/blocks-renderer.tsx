@@ -12,7 +12,7 @@ interface BlocksRendererProps {
 }
 
 /**
- * Interleaves math and mermaid blocks into the markdown body.
+ * Interleaves math, mermaid, and table blocks into the markdown body.
  *
  * Place markers in the body to position blocks:
  *   [math:0]     — inserts mathBlocks[0] here

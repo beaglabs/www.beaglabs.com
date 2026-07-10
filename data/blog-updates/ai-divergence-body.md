@@ -16,21 +16,15 @@ The Stanford HAI Artificial Intelligence Index confirms this trend. The 2025 rep
 
 ## Where the Money Goes
 
-The MSCI AI Exposure Index provides a revealing snapshot of where AI revenue actually flows. Approximately **92% of AI industry revenue** is concentrated in just 6 companies: NVIDIA, Microsoft, Google, Amazon, Meta, and Apple. The next tier — AMD, Intel, IBM, Salesforce — accounts for perhaps another 5%. The vast ecosystem of AI startups, API providers, and application layer companies competes for the remaining 3%.
+The MSCI AI Exposure Index provides a revealing snapshot of where AI revenue actually flows. Approximately 92% of AI industry revenue is concentrated in just six companies: NVIDIA, Microsoft, Google, Amazon, Meta, and Apple. The next tier — AMD, Intel, IBM, Salesforce — accounts for perhaps another 5%. The vast ecosystem of AI startups, API providers, and application layer companies competes for the remaining 3%. The revenue concentration is so extreme that the top six firms capture nearly the entire market, leaving thousands of companies to fight over scraps.
 
-| Tier | Companies | Revenue Share |
-|------|-----------|--------------|
-| Top 6 | NVIDIA, Microsoft, Google, Amazon, Meta, Apple | 92% |
-| Second tier | AMD, Intel, IBM, Salesforce | ~5% |
-| Everyone else | AI startups, API providers, application layer | ~3% |
+This is not an accident. The AI stack has a natural monopoly structure at each layer.
 
-This is not an accident. The AI stack has a natural monopoly structure at each layer:
+At the hardware layer, NVIDIA controls approximately 80-90% of the AI GPU market. Creating a competitive alternative requires years of design, billions in capital, and access to the same advanced fabrication nodes that are themselves capacity-constrained. AMD's MI300X and Intel's Gaudi 3 have yet to meaningfully erode NVIDIA's CUDA moat, which locks developers into the ecosystem through years of tooling, libraries, and optimization.
 
-- **Hardware**: NVIDIA controls approximately 80-90% of the AI GPU market. Creating a competitive alternative requires years of design, billions in capital, and access to the same advanced fabrication nodes that are themselves capacity-constrained.
+At the cloud platform layer, AWS, Azure, and GCP together control over 65% of cloud infrastructure. AI workloads require dense GPU clusters, specialized networking, and high-bandwidth interconnects that only the hyperscalers can provide at scale. Even if a startup could afford the GPUs, they cannot replicate the networking fabric, the datacenter cooling infrastructure, or the global Points of Presence that make inference low-latency worldwide.
 
-- **Cloud platforms**: AWS, Azure, and GCP together control over 65% of cloud infrastructure. AI workloads require dense GPU clusters, specialized networking, and high-bandwidth interconnects that only the hyperscalers can provide at scale.
-
-- **Frontier models**: OpenAI, Anthropic, and Google DeepMind control access to the largest and most capable models. Training a competitive frontier model now costs $500 million to $1+ billion, creating a prohibitive barrier to entry.
+At the frontier model layer, OpenAI, Anthropic, and Google DeepMind control access to the largest and most capable models. Training a competitive frontier model now costs $500 million to $1+ billion, creating a prohibitive barrier to entry. The cost of training has doubled every 12-18 months since GPT-3, and there is no sign of deceleration.
 
 Each layer of concentration reinforces the others. NVIDIA's GPU dominance shapes which models can be trained. The hyperscalers' cloud dominance shapes how models are deployed. The frontier model labs' API dominance shapes how applications are built. Capital flows from each layer to the next in the circular pattern described in our first article.
 
@@ -42,15 +36,13 @@ The new jobs — AI engineers, prompt specialists, model trainers — are concen
 
 More concerning is the "hollowing out" of middle-skill occupations. The polarization effect means that workers at the top of the income distribution benefit from AI (higher productivity, higher wages) while workers at the bottom are somewhat insulated (many physical-service jobs are harder to automate). Workers in the middle — the administrative, analytical, and creative professionals who formed the backbone of the knowledge economy — face the greatest displacement risk.
 
-The Stanford HAI index found that AI-related job postings grew by 200% from 2021 to 2024, but the skills required shifted dramatically toward AI-specific expertise. A writer or analyst displaced from their role cannot simply "learn AI" and return to the workforce at the same wage level.
+The Stanford HAI index found that AI-related job postings grew by 200% from 2021 to 2024, but the skills required shifted dramatically toward AI-specific expertise. A writer or analyst displaced from their role cannot simply "learn AI" and return to the workforce at the same wage level. The skills gap is not just about technical proficiency — it is about the structural shift in what types of labor are valued.
 
 ## What Reskilling Actually Costs
 
 Corporate and government commitments to AI reskilling are dramatically insufficient relative to the scale of the disruption. A 2025 analysis found that for every $1 of AI valuation gains (increased market capitalization of AI companies), approximately $0.02 is spent on worker reskilling and transition support.
 
-At NVIDIA's valuation increase of roughly $2 trillion over two years, that implies approximately $40 billion in reskilling spending. Actual spending is below $1 billion globally.
-
-The mismatch is not trivial — it is structural. The companies generating AI-driven profits have no incentive to fund the retraining of displaced workers in other sectors. And governments, facing tight budgets and competing priorities, have not stepped in to fill the gap at anywhere near the required scale.
+At NVIDIA's valuation increase of roughly $2 trillion over two years, that implies approximately $40 billion in reskilling spending. Actual spending is below $1 billion globally. The mismatch is not trivial — it is structural. The companies generating AI-driven profits have no incentive to fund the retraining of displaced workers in other sectors. And governments, facing tight budgets and competing priorities, have not stepped in to fill the gap at anywhere near the required scale.
 
 ## The Concentration Spiral
 
@@ -58,7 +50,7 @@ The AI industry's wealth concentration creates a self-reinforcing dynamic. Capit
 
 This concentration is not inherently illegal or even unusual by technology industry standards. But the rate of concentration — and the scale of the wealth being accumulated at the top — is historically extraordinary. The AI industry is on track to generate trillions in market value while employing fewer than 50,000 people directly.
 
-For comparison, the automotive industry employs approximately 10 million people globally. The retail industry employs over 150 million. The AI industry's productivity gains accrue to a tiny fraction of that workforce.
+For comparison, the automotive industry employs approximately 10 million people globally. The retail industry employs over 150 million. The AI industry's productivity gains accrue to a tiny fraction of that workforce. The result is an unprecedented divergence between the value being created and the number of people who share in it.
 
 The great AI divergence is not a future possibility. It is happening now. And the data suggests it will accelerate before it slows.
 

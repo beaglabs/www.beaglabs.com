@@ -65,7 +65,11 @@ const components: Components = {
     }
     const language = className?.replace('language-', '') || ''
     if (language === 'mermaid') {
-      return <MermaidBlockRenderer block={{ diagram: extractText(children), label: null }} />
+      return (
+        <div className="mermaid-render-wrapper">
+          <MermaidBlockRenderer block={{ diagram: extractText(children), label: null }} />
+        </div>
+      )
     }
     return (
       <code
@@ -81,11 +85,11 @@ const components: Components = {
       children &&
       typeof children === 'object' &&
       'props' in children &&
-      (children as React.ReactElement).props?.className?.includes('language-mermaid')
+      (children as React.ReactElement).props?.className === 'mermaid-render-wrapper'
     ) {
       return <>{children}</>
     }
-    return <pre className="mb-5" {...props}>{children}</pre>
+    return <pre className="mb-5">{children}</pre>
   },
   blockquote: ({ children, ...props }) => (
     <blockquote
@@ -116,29 +120,6 @@ const components: Components = {
       {...props}
     />
   ),
-  table: ({ children, ...props }) => (
-    <div className="mb-6 overflow-x-auto rounded-[20px] border-[3px] border-[#111] shadow-[4px_4px_0px_0px_#111]">
-      <table className="w-full border-collapse text-sm" {...props}>
-        {children}
-      </table>
-    </div>
-  ),
-  th: ({ children, ...props }) => (
-    <th
-      className="border-b-[3px] border-[#111] bg-[#FF5F1F] px-4 py-3 text-left font-bold text-[#111]"
-      {...props}
-    >
-      {children}
-    </th>
-  ),
-  td: ({ children, ...props }) => (
-    <td
-      className="border-b border-[rgba(17,17,17,0.12)] px-4 py-3 text-[#333]"
-      {...props}
-    >
-      {children}
-    </td>
-  ),
 }
 
 interface MarkdownRendererProps {
@@ -147,9 +128,7 @@ interface MarkdownRendererProps {
 
 export function MarkdownRenderer({ children }: MarkdownRendererProps) {
   return (
-    <ReactMarkdown
-      components={components}
-    >
+    <ReactMarkdown components={components}>
       {children}
     </ReactMarkdown>
   )
