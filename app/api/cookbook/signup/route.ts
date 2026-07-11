@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { identifyCustomer, sendCookbookEmail, trackCookbookDownloaded, subscribeToNewsletter } from '@/lib/customerio'
+import { identifyCustomer, sendCookbookEmail, trackCookbookDownloaded } from '@/lib/customerio'
 import { getPostHogClient } from '@/lib/posthog-server'
 
 const bodySchema = z.object({

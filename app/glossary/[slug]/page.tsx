@@ -107,110 +107,113 @@ export default async function GlossaryTermPage({
 
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(definedTermJsonLd),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd),
+        }}
+      />
+
       <AnnouncementBanner />
       <Navbar bannerHeight={38} />
 
       <section className="px-6 pt-32 pb-20 lg:px-9 lg:pt-36 lg:pb-24">
-        <div className="mx-auto max-w-3xl">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(definedTermJsonLd),
-            }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(breadcrumbJsonLd),
-            }}
-          />
-
+        <div className="mx-auto max-w-[1440px]">
           <Breadcrumbs items={breadcrumbItems} />
 
-          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
-            {term.category}
-          </p>
+          <div className="mx-auto max-w-[840px]">
+            <div className="nb-card bg-white p-8 lg:p-12">
+              <span className="nb-label mb-5 inline-block">
+                {term.category}
+              </span>
 
-          <h1 className="mb-6 text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-            {term.term}
-          </h1>
+              <h1 className="mb-4 text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
+                {term.term}
+              </h1>
 
-          <p className="mb-10 text-[18px] leading-[1.75] text-[#404040] font-medium">
-            {term.shortDefinition}
-          </p>
-
-          <div className="nb-section-divider mb-10" />
-
-          <div className="mb-12">
-            <h2 className="mb-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
-              Definition
-            </h2>
-            <div className="space-y-5">
-              {term.definition.map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="text-[16px] leading-[1.82] text-[#404040] font-medium"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-12">
-            <h2 className="mb-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
-              Key Points
-            </h2>
-            <ul className="space-y-3">
-              {term.keyPoints.map((point, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-3 text-[15px] leading-[1.7] text-[#404040] font-medium"
-                >
-                  <span className="mt-[7px] h-[6px] w-[6px] shrink-0 rounded-full bg-[#FF5F1F]" />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {term.exampleUseCase && (
-            <div className="mb-12 rounded-[16px] border border-[rgba(17,17,17,0.08)] bg-[#f1ede7] p-6 lg:p-7">
-              <h2 className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
-                Example Use Case
-              </h2>
-              <p className="text-[15px] leading-[1.82] text-[#555]">
-                {term.exampleUseCase}
+              <p className="mb-8 max-w-[680px] text-[17px] leading-[1.65] font-medium text-[#404040]">
+                {term.shortDefinition}
               </p>
-            </div>
-          )}
 
-          {related.length > 0 && (
-            <div>
-              <h2 className="mb-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
-                Related Terms
-              </h2>
-              <div className="flex flex-wrap gap-3">
-                {related.map((rel) => (
-                  <Link
-                    key={rel.slug}
-                    href={`/glossary/${rel.slug}`}
-                    className="nb-card inline-block bg-white px-4 py-2 text-[13px] font-bold tracking-[-0.01em] text-[#111]"
-                  >
-                    {rel.term}
-                  </Link>
-                ))}
+              <div className="nb-section-divider mb-10" />
+
+              <div className="mb-12">
+                <span className="nb-label mb-5 inline-block">Definition</span>
+                <div className="space-y-6">
+                  {term.definition.map((paragraph, i) => (
+                    <p
+                      key={i}
+                      className="text-[16px] leading-[1.82] font-medium text-[#404040]"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-12">
+                <span className="nb-label mb-5 inline-block">Key Points</span>
+                <ul className="space-y-3">
+                  {term.keyPoints.map((point, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-[15px] leading-[1.7] font-medium text-[#404040]"
+                    >
+                      <span className="mt-0.5 shrink-0 text-[14px] text-[#FF5F1F]">
+                        &#x25A0;
+                      </span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {term.exampleUseCase && (
+                <div className="mb-12 border-[3px] border-[#111] bg-[#FAFAF9] p-6 lg:p-8">
+                  <span className="nb-label mb-4 inline-block">
+                    Example Use Case
+                  </span>
+                  <p className="text-[15px] leading-[1.82] font-medium text-[#404040]">
+                    {term.exampleUseCase}
+                  </p>
+                </div>
+              )}
+
+              {related.length > 0 && (
+                <div className="mb-10">
+                  <span className="nb-label mb-5 inline-block">
+                    Related Terms
+                  </span>
+                  <div className="flex flex-wrap gap-3">
+                    {related.map((rel) => (
+                      <Link
+                        key={rel.slug}
+                        href={`/glossary/${rel.slug}`}
+                        className="nb-card inline-block bg-white px-4 py-2 text-[13px] font-bold tracking-[-0.01em] text-[#111]"
+                      >
+                        {rel.term}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="nb-section-divider pt-8">
+                <Link
+                  href="/glossary"
+                  className="nb-btn inline-flex items-center gap-2 px-6 py-3 text-[11px] font-extrabold uppercase"
+                >
+                  <span aria-hidden="true">&larr;</span>
+                  Back to Glossary
+                </Link>
               </div>
             </div>
-          )}
-
-          <div className="nb-section-divider mt-12 pt-8">
-            <Link
-              href="/glossary"
-              className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#C7661D] transition-colors hover:text-[#FF5F1F]"
-            >
-              ← Back to Glossary
-            </Link>
           </div>
         </div>
       </section>
