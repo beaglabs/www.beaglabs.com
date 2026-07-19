@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
+import RevenueChart from "./revenue-chart-wrapper"
 
 import { Navbar } from "@/components/navbar"
 import { SiteFooter } from "@/components/site-footer"
@@ -9,18 +10,18 @@ import { pageMetadata } from "@/lib/seo"
 export const metadata: Metadata = pageMetadata({
   title: "Invest",
   description:
-    "Small models, deployed anywhere. Beag Labs builds domain-specific AI that runs on your infrastructure at a fraction of the cost.",
+    "Small models, deployed anywhere. Beag Labs builds domain-specific AI for internal enterprise workflows — CRM, compliance, IAM, tool calling — that runs on your infrastructure at a fraction of the cost.",
   path: "/raise",
   label: "Invest",
   ogDescription:
-    "Small models, deployed anywhere. Beag Labs builds domain-specific AI that runs on your infrastructure at a fraction of the cost. Purpose-built models for compliance, legal, healthcare, and security — no cloud lock-in.",
+    "Small models, deployed anywhere. Beag Labs builds domain-specific AI for internal enterprise workflows — CRM, compliance, IAM, tool calling — no cloud lock-in.",
 })
 
 const problemCards = [
   {
     step: "01",
-    title: "Enterprise AI is overpriced and overprovisioned",
-    body: "Companies pay per-token rates for 1.8-trillion-parameter models to run classification and extraction workloads. These use cases need a focused model that costs 13x less and runs 40x faster — but no one sells one.",
+    title: "Internal workflows are stuck on general-purpose APIs",
+    body: "Companies pay per-token rates for 1.8-trillion-parameter models to run CRM updates, compliance checks, IAM provisioning, and workflow automation. These internal tasks need a focused model that costs 13x less and runs 40x faster — but no one sells one.",
   },
   {
     step: "02",
@@ -37,21 +38,21 @@ const problemCards = [
 const approachSteps = [
   {
     id: "01",
-    title: "We own the workflow, not just the model",
+    title: "Open weights, fine-tuned for any workflow",
     description:
-      "We start with a specific classification or extraction outcome your team needs — contract clause identification, medical record coding, document triage. We map the labeling schema, build the training pipeline, and deliver a deployed model. You pay for the outcome, not the GPU hour.",
+      "We start with frontier open-weight models (Google Gemma E4B) and fine-tune them for the customer's internal workflows. The resulting model is deployed on their infrastructure — on-prem, VPC, or edge device. The customer owns the model weights under a standard commercial license.",
     bg: "#FFF3E6",
   },
   {
     id: "02",
-    title: "Frontier models do the easy work. Your experts do the hard work.",
+    title: "GRPO + OPD = Small Models that run with the big dogs",
     description:
-      "Our pipeline uses frontier models to label ~95% of examples automatically. An uncertainty engine surfaces the 5% where the model is conflicted — those are the only examples your domain experts review. This cuts labeling cost by 20x and turns your SMEs into validators instead of labelers.",
+      "Our training recipe uses GRPO and On-policy Distillation to produce small models that can outperform foundation models on internal workflows. We measure performance on held-out test sets and compare against GPT-4 and Claude. The result: 13x lower inference cost, 40x lower latency, and better accuracy on the customer's internal tasks.",
     bg: "#E6F2FF",
   },
   {
     id: "03",
-    title: "Your data never touches our servers after training",
+    title: "Customer data never touches our servers after training",
     description:
       "We train on your data, in your cloud account or air-gapped environment if needed. The resulting model deploys on your infrastructure — on-prem, VPC, or edge device. We never see your inference data. You own the model weights under a standard commercial license.",
     bg: "#E6FFF2",
@@ -74,12 +75,12 @@ const tractionCards = [
   {
     label: "Design partners",
     value: "3 active",
-    body: "Working with legal-tech and healthcare organizations on production classification pipelines. Each is a paid pilot with a path to multi-year contract.",
+    body: "Working with legal-tech and healthcare organizations on production workflow automation pipelines. Each is a paid pilot with a path to multi-year contract.",
   },
   {
     label: "Model performance",
     value: "92-96% F1",
-    body: "Domain-specific classification models consistently outperform GPT-4 and Claude on held-out test sets at 13x lower inference cost.",
+    body: "Domain-specific workflow models consistently outperform GPT-4 and Claude on held-out test sets at 13x lower inference cost.",
   },
   {
     label: "Target contract",
@@ -99,20 +100,20 @@ const roadmapPhases = [
     phase: "Phase 2",
     status: "Next",
     title: "Productize the pipeline",
-    body: "Turn repeated delivery patterns into self-serve tooling: data connectors, the uncertainty-driven labeling interface, one-click deployment to customer infrastructure. Each deployment gets faster and cheaper to fulfill.",
+    body: "Turn repeated delivery patterns into self-serve tooling: data connectors, the uncertainty-driven labeling interface, one-click deployment to customer infrastructure. Each workflow deployment gets faster and cheaper to fulfill.",
   },
   {
     phase: "Phase 3",
     status: "Scale",
     title: "Expand vertically",
-    body: "Each domain (legal, healthcare, finance, defense) has a compounding data and schema advantage. Models, evaluation datasets, and labeling templates transfer across customers within a vertical. Enter new verticals through strategic design partners.",
+    body: "Each vertical (legal, healthcare, finance, defense) has a compounding data and schema advantage. Models, evaluation datasets, and workflow templates transfer across customers within a vertical. Enter new verticals through strategic design partners.",
   },
 ]
 
 const moatPoints = [
-  "The uncertainty engine gets smarter with every deployment. The distribution of frontier-model confidence across domains is proprietary data that improves our labeling efficiency permanently.",
-  "Customer-owned deployment creates structural switching costs. Your legal team reviewed the labels, your IT deployed the model, and your compliance team approved the air-gap. Replacing the model means redoing all three.",
-  "Vertical knowledge compounds. Healthcare schemas, legal document structures, financial instrument taxonomies — these don't exist in public training data. Each engagement creates defensible IP for that vertical.",
+  "The uncertainty engine gets smarter with every deployment. The distribution of frontier-model confidence across enterprise workflows is proprietary data that improves our pipeline efficiency permanently.",
+  "Customer-owned deployment creates structural switching costs. Your legal team reviewed the outputs, your IT deployed the model, and your compliance team approved the air-gap. Replacing the model means redoing all three.",
+  "Vertical knowledge compounds. CRM schemas, compliance taxonomies, IAM role structures, workflow orchestration patterns — these don't exist in public training data. Each engagement creates defensible IP for that vertical.",
   "The 70/30 split keeps us grounded. Delivery revenue funds research; research makes delivery cheaper and faster. Neither track starves the other. This is a durable business model, not a burn-for-market-share play.",
 ]
 
@@ -130,13 +131,13 @@ export default function RaisePage() {
               <span className="font-extrabold text-[#111]">Beag Labs</span>
             </div>
             <span className="nb-label mb-5 inline-block">
-              Pre-seed round
+              $4.5M pre-seed round
             </span>
             <h1 className="mb-6 max-w-[700px] text-[44px] font-extrabold leading-[1.0] tracking-[-0.055em] text-[#111] sm:text-[56px] lg:text-[68px]">
-              Small models that own the workflow. Deployed anywhere. 13x cheaper.
+              Helping enterprises own their models and inference.
             </h1>
             <p className="mb-8 max-w-[560px] text-[18px] leading-[1.7] text-[#404040] font-medium">
-              Beag Labs builds domain-specific classification and extraction models that outperform GPT-4 on their trained domain, run on customer-controlled infrastructure, and cost a fraction of per-token APIs. We own the outcome, not the API call.
+              Small models, deployed anywhere. Beag Labs builds domain-specific AI for internal enterprise workflows — CRM, compliance, IAM, tool calling — that runs on your infrastructure at a fraction of the cost.
             </p>
             <div className="flex flex-wrap items-center gap-4">
               <Link
@@ -147,7 +148,7 @@ export default function RaisePage() {
                 Meet the founder
               </Link>
               <span className="text-[14px] text-[#555] font-medium">
-                Raising $1M pre-seed. 3 design partners active.
+                Raising $4.5M pre-seed.
               </span>
             </div>
           </div>
@@ -162,7 +163,7 @@ export default function RaisePage() {
             <div className="nb-card bg-[#E6F2FF] p-6">
               <div className="text-[36px] font-extrabold tracking-[-0.04em] text-[#111]">13x cheaper</div>
               <p className="mt-1 text-[14px] leading-[1.6] text-[#404040] font-medium">
-                3-parameter models outperform GPT-4 on classification and extraction at 13x lower inference cost and 40x lower latency. Measured on real customer workloads.
+                Small models outperform GPT-4 on internal enterprise workflows at 13x lower inference cost and 40x lower latency. CRM, compliance, IAM, tool calling — measured on real customer workloads.
               </p>
             </div>
           </div>
@@ -177,7 +178,7 @@ export default function RaisePage() {
             Enterprise AI is stuck between overpriced APIs and impossible build-vs-buy decisions.
           </h2>
           <p className="mb-12 max-w-[560px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-            Every company needs AI for domain-specific tasks. No one sells a model that is accurate enough, private enough, and cheap enough — so enterprises either overpay for general APIs or give up.
+            Every company needs AI for internal enterprise workflows. No one sells a model that is accurate enough, private enough, and cheap enough — so enterprises either overpay for general APIs or give up.
           </p>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -201,10 +202,10 @@ export default function RaisePage() {
         <div className="mx-auto max-w-[1440px]">
           <span className="nb-label mb-5 inline-block">How we win</span>
           <h2 className="mb-4 max-w-[600px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            Services as the wedge. Platform as the exit. Data as the moat.
+            Enterprises want to own their models and inference. We own the pipeline that builds them.
           </h2>
           <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-            We sell workflow outcomes, not model access. Each engagement starts with a specific business process — contract review, medical chart coding, document triage — and delivers a deployed model that outperforms GPT-4 on that task at a fraction of the cost and latency. The customer owns the model. We own the pipeline that built it.
+            We sell the outcome, not the API call. Our pipeline uses frontier base SLMs (Google Gemma E4B) as the base for domain-specific fine-tuning of internal models deployed within the customer's infrastructure.
           </p>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -237,7 +238,7 @@ export default function RaisePage() {
             Pre-revenue with measurable technical traction and pipeline.
           </h2>
           <p className="mb-12 max-w-[560px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-            We have not yet recognized revenue — we are pre-revenue by design. What we do have is a validated technical approach, active design partners in legal and healthcare, and model performance numbers that beat GPT-4 and Claude on their specific classification tasks.
+            We have not yet recognized revenue — we are pre-revenue by design. What we do have is a validated technical approach, active design partners in legal and healthcare, and model performance numbers that beat GPT-4 and Claude on their specific enterprise workflow tasks.
           </p>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -271,13 +272,13 @@ export default function RaisePage() {
                 <div>
                   <div className="text-sm font-semibold text-white">Phase 2: Platform self-serve</div>
                   <p className="mt-1 text-sm leading-[1.6] text-white/72 font-medium">
-                    As the pipeline productizes, customers can run their own labeling campaigns and deployments. Platform subscription + usage-based deployment pricing.
+                    As the pipeline productizes, customers can run their own workflow configurations and deployments. Platform subscription + usage-based deployment pricing.
                   </p>
                 </div>
                 <div>
                   <div className="text-sm font-semibold text-white">Phase 3: Vertical expansion</div>
                   <p className="mt-1 text-sm leading-[1.6] text-white/72 font-medium">
-                    Pre-built models for legal, healthcare, finance, and defense. Each new customer in a vertical benefits from every previous customer's data and schemas.
+                    Pre-built models for CRM, compliance, IAM, and workflow automation. Each new customer in a vertical benefits from every previous customer's data and schemas.
                   </p>
                 </div>
               </div>
@@ -357,7 +358,7 @@ export default function RaisePage() {
                 <div>
                   <div className="text-sm font-semibold text-[#111]">General-purpose APIs (GPT-4, Claude, Gemini)</div>
                   <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
-                    Too expensive for volume classification. Cannot be deployed on customer infrastructure. No data privacy guarantees.
+                    Too expensive for volume workflow automation. Cannot be deployed on customer infrastructure. No data privacy guarantees.
                   </p>
                 </div>
                 <div>
@@ -417,14 +418,312 @@ export default function RaisePage() {
         </div>
       </section>
 
+      {/* Financial Plan */}
+      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <div className="mx-auto max-w-[1440px]">
+          <span className="nb-label mb-5 inline-block">Financial plan</span>
+          <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+            $4.5M pre-seed. Training infrastructure is the largest line item — everything else stays lean.
+          </h2>
+          <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+            Capital efficiency is the thesis. We allocate the majority of funds to model training infrastructure because that is the core product. Everything else — team, operations, legal — is minimized by design.
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="nb-card bg-[#111] p-8 text-white lg:col-span-2">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">
+                Allocation breakdown
+              </div>
+              <div className="mt-6 space-y-5">
+                {[
+                  { label: "Training infrastructure", pct: "35%", amount: "$1.58M", bar: "w-[35%]", color: "bg-[#FF5F1F]", desc: "Baseten SLURM, 32x B200 compute, data pipelines, eval infrastructure" },
+                  { label: "Operations budget", pct: "40%", amount: "$1.8M", bar: "w-[40%]", color: "bg-[#8B7355]", desc: "Founder salary, 2 revenue-gated hires (GTM + Sales Eng), legal, compliance, insurance" },
+                  { label: "Cloud & deployment", pct: "15%", amount: "$675K", bar: "w-[15%]", color: "bg-white/10", desc: "Customer-funded cloud spend offset, staging environments, CI/CD" },
+                  { label: "Reserve & contingency", pct: "10%", amount: "$450K", bar: "w-[10%]", color: "bg-white/5", desc: "Buffer for extended sales cycles, unexpected compute needs, opportunities" },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-white">{item.label}</span>
+                      <span className="text-sm text-white/60 font-medium">{item.amount} ({item.pct})</span>
+                    </div>
+                    <div className="mt-2 h-3 border-[2px] border-white/20">
+                      <div className={`h-full ${item.bar} ${item.color}`} />
+                    </div>
+                    <p className="mt-1 text-xs leading-[1.5] text-white/50 font-medium">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="nb-card bg-white p-8">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                Why training is #1
+              </div>
+              <div className="mt-5 space-y-4">
+                <div>
+                  <div className="text-sm font-semibold text-[#111]">Core product = trained models</div>
+                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
+                    Every dollar in training infrastructure produces a deployed model that generates revenue. This is not overhead — it is the product.
+                  </p>
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-[#111]">Iteration speed = competitive advantage</div>
+                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
+                    8x B200 compute means full training cycles in 3-5 hours. Faster iteration = better models = faster revenue.
+                  </p>
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-[#111]">Cost per training run</div>
+                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
+                    ~$200-300 per complete training cycle (SFT + GRPO + OPD). Each run produces a production-ready model. Budget supports 5,000+ training iterations.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Revenue forecast */}
+      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <div className="mx-auto max-w-[1440px]">
+          <span className="nb-label mb-5 inline-block">Revenue forecast</span>
+          <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+            Capital-efficient path to $2.5M ARR within 18 months of first contract.
+          </h2>
+          <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+            Forecast assumes founder-led delivery through year one with GTM and Sales Engineer hires triggered by pipeline milestones. Revenue begins when the first design partners convert to paid contracts in Q3. Cash runway extends past 18 months even at conservative revenue projections.
+          </p>
+
+          <div className="nb-card bg-white p-8">
+            <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F] mb-6">
+              Monthly revenue vs. expenses ($M)
+            </div>
+            <RevenueChart />
+
+            <div className="mt-6 grid grid-cols-1 gap-4 border-t-[2px] border-[#111]/10 pt-6 md:grid-cols-3">
+              <div>
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                  Revenue drivers
+                </div>
+                <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
+                  4-6 design partners convert to paid contracts in year one at $150-250K ACV. Revenue compounds as each deployment validates the model for adjacent prospects.
+                </p>
+              </div>
+              <div>
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                  Expense discipline
+                </div>
+                <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
+                  Burn rate stays under $280K/mo at peak. Founder operates at 5x capacity via LLMs. Hires are gated on revenue, not planning assumptions.
+                </p>
+              </div>
+              <div>
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                  Breakeven trajectory
+                </div>
+                <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
+                  Revenue catches expenses around month 22. At target case, the company reaches operational breakeven before the full cash runway is consumed.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solo + LLM Strategy */}
+      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <div className="mx-auto max-w-[1440px]">
+          <span className="nb-label mb-5 inline-block">Team strategy</span>
+          <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+            Solo founder. LLM-powered operations. Hires only where revenue demands it.
+          </h2>
+          <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+            We use LLMs to replace functions that would otherwise require 3-5 engineering hires. The founder handles product, ML, engineering, and delivery. Every hire must directly generate or close revenue.
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="nb-card bg-[#E6F2FF] p-8">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                What LLMs handle today
+              </div>
+              <div className="mt-5 space-y-3">
+                {[
+                  { role: "Code review & refactoring", note: "Claude / Cursor for iterative development" },
+                  { role: "Documentation & content", note: "Generated, not hand-written" },
+                  { role: "Testing & eval pipelines", note: "LLM-written test suites, automated evals" },
+                  { role: "UI/UX design iterations", note: "AI-assisted prototyping and iteration" },
+                  { role: "Customer support triage", note: "Automated responses, founder handles escalation" },
+                  { role: "Data labeling & annotation", note: "Frontier models label 95% of training examples" },
+                ].map((item) => (
+                  <div key={item.role} className="flex items-start gap-3">
+                    <span className="mt-1 flex-shrink-0 text-[#FF5F1F]">&#10003;</span>
+                    <div>
+                      <span className="text-sm font-semibold text-[#111]">{item.role}</span>
+                      <span className="text-sm text-[#555] font-medium"> — {item.note}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-5 text-[13px] leading-[1.6] text-[#555] font-medium">
+                Net effect: founder operates at the capacity of a 5-person team without the coordination overhead or burn rate.
+              </p>
+            </div>
+
+            <div className="nb-card bg-[#FFF3E6] p-8">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                Planned hires (revenue-gated)
+              </div>
+              <div className="mt-5 space-y-5">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold text-[#111]">GTM / Revenue Lead</div>
+                    <span className="nb-chip text-[10px]">Month 6-9</span>
+                  </div>
+                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
+                    Owns pipeline, manages inbound/outbound, runs discovery calls. Founder stays on demos and technical close. This hire is triggered by pipeline volume — not a planning assumption.
+                  </p>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold text-[#111]">Sales Engineer</div>
+                    <span className="nb-chip text-[10px]">Month 12-15</span>
+                  </div>
+                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
+                    Runs POC deployments, handles technical due diligence, builds custom demos. Hired only when deal volume exceeds founder capacity. Directly tied to closing revenue.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 border-t-[2px] border-[#111]/10 pt-4">
+                <p className="text-[13px] leading-[1.6] text-[#555] font-medium">
+                  <span className="font-semibold text-[#111]">Key principle:</span> No engineering hires in year one. LLMs handle code, tests, docs, and design. First engineering hire (if needed) is year two, funded entirely by revenue.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Model Sizes */}
+      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <div className="mx-auto max-w-[1440px]">
+          <span className="nb-label mb-5 inline-block">Model architecture</span>
+          <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+            Model sizes
+          </h2>
+          <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+            Two model tiers designed for different deployment realities. One for edge and VPC. One for large enterprise operations.
+          </p>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {/* Satellite */}
+            <div className="relative overflow-hidden rounded-[16px] border-[3px] border-[#111] bg-[#F8F9FA] p-8 shadow-[6px_6px_0px_0px_#111]">
+              <div className="mb-4 inline-block rounded-full border-[2px] border-[#111]/15 bg-white px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-[#555]">
+                4B params
+              </div>
+              <h3 className="text-[28px] font-extrabold leading-[1.1] text-[#111]">
+                Beag Labs Starling Satellite
+              </h3>
+              <p className="mt-2 text-[15px] leading-[1.6] text-[#555] font-medium">
+                Edge & VPC deployment. Fine-tuned Gemma E4B for CRM automation, compliance workflows, IAM provisioning, and tool-call orchestration.
+              </p>
+
+              <div className="relative my-8 flex items-center justify-center">
+                <div className="relative">
+                  <Image
+                    src="/starling.png"
+                    alt="Starling Satellite"
+                    width={180}
+                    height={180}
+                    className="object-contain"
+                  />
+                  <div className="absolute -right-3 -bottom-3 rounded-[10px] border-[2px] border-[#111]/10 bg-white p-1.5 shadow-md">
+                    <Image
+                      src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Gemma_icon.png"
+                      alt="Gemma"
+                      width={28}
+                      height={28}
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
+                  <span className="text-[#FF5F1F]">&#8226;</span> CRM, compliance, IAM, tool calling
+                </div>
+                <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
+                  <span className="text-[#FF5F1F]">&#8226;</span> Deploys on-prem, VPC, or edge
+                </div>
+                <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
+                  <span className="text-[#FF5F1F]">&#8226;</span> SFT + GRPO + On-Policy Distillation
+                </div>
+                <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
+                  <span className="text-[#FF5F1F]">&#8226;</span> ~$200-300 per training run
+                </div>
+              </div>
+            </div>
+
+            {/* Mothership (greyed out) */}
+            <div className="relative overflow-hidden rounded-[16px] border-[3px] border-[#111]/15 bg-[#F8F9FA] p-8 opacity-50">
+              <div className="absolute inset-0 z-10 flex items-center justify-center">
+                <div className="rotate-[-8deg] rounded-[12px] border-[3px] border-[#111] bg-white px-6 py-3 shadow-[4px_4px_0px_0px_#111]">
+                  <span className="font-mono text-[13px] font-bold uppercase tracking-[0.15em] text-[#111]">
+                    Planned for 2027
+                  </span>
+                </div>
+              </div>
+
+              <div className="mb-4 inline-block rounded-full border-[2px] border-[#111]/15 bg-white/60 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-[#555]/60">
+                Large model
+              </div>
+              <h3 className="text-[28px] font-extrabold leading-[1.1] text-[#111]/60">
+                Beag Labs Starling Mothership
+              </h3>
+              <p className="mt-2 text-[15px] leading-[1.6] text-[#555]/60 font-medium">
+                Large enterprise operations model. Multi-step workflow orchestration across CRM, compliance, IAM, and cross-system tool calling.
+              </p>
+
+              <div className="my-8 flex items-center justify-center">
+                <div className="h-[180px] w-[180px] rounded-full border-[3px] border-dashed border-[#111]/15" />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[13px] text-[#555]/60 font-medium">
+                  <span>&#8226;</span> Multi-system workflow orchestration
+                </div>
+                <div className="flex items-center gap-2 text-[13px] text-[#555]/60 font-medium">
+                  <span>&#8226;</span> Cross-domain CRM, compliance, IAM
+                </div>
+                <div className="flex items-center gap-2 text-[13px] text-[#555]/60 font-medium">
+                  <span>&#8226;</span> Complex tool-call chains
+                </div>
+                <div className="flex items-center gap-2 text-[13px] text-[#555]/60 font-medium">
+                  <span>&#8226;</span> Training plan to be defined
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Satellite Training Plan — component preserved for reuse */}
+      {/* 
+        TrainingPlanSection component removed. JSX is available in git history.
+        Function signature: <section> with stacked data cards, benchmark table, 
+        training phase breakdown, economics panel, and investor summary.
+        To restore: `git checkout HEAD~1 -- app/raise/page.tsx` then re-integrate.
+      */}
+
       {/* Ask */}
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
           <span className="nb-label mb-5 inline-block">The ask</span>
-          <h2 className="mb-4 max-w-[600px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            $1M pre-seed. 18 months of runway. Build the platform while customers pay for delivery.
+          <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+            $4.5M pre-seed. 18 months of runway. Build the platform while customers pay for delivery.
           </h2>
-          <p className="mb-12 max-w-[560px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+          <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
             We are looking for aligned capital that understands services-led SaaS and believes the enterprise AI market will reward focused, deploy-anywhere models over bloated general-purpose APIs. We will not grow at all costs — we will grow at the speed our customers pay us to.
           </p>
 
@@ -436,20 +735,16 @@ export default function RaisePage() {
               <ul className="mt-5 space-y-4">
                 {[
                   {
-                    title: "Platform engineering",
-                    body: "Build the uncertainty-driven labeling interface, data connectors, and one-click deployment pipeline that transforms each delivery from a consulting engagement into a product interaction.",
+                    title: "Training infrastructure",
+                    body: "Baseten SLURM compute, 8x B200 training runs, data pipelines, evaluation infrastructure. This is the core product — every dollar here produces a deployed model that generates revenue.",
                   },
                   {
-                    title: "Hire 2-3 senior engineers",
-                    body: "Current team is founder-only. First hires are full-stack and ML engineers who can own customer delivery end-to-end while building platform features in the same sprint.",
+                    title: "Operations budget",
+                    body: "Founder salary, 2 revenue-gated hires (GTM/Revenue Lead month 6-9, Sales Engineer month 12-15), legal, compliance, insurance. No engineering hires in year one — LLMs handle code, tests, docs, and design.",
                   },
                   {
-                    title: "Evaluation and data infrastructure",
-                    body: "The datasets, evals, and schemas that compound across customers within a vertical. This is the permanent asset that makes each subsequent deployment cheaper and faster.",
-                  },
-                  {
-                    title: "Operating runway",
-                    body: "18 months of founder salary, legal, and compliance costs. No burn rate beyond the team. No cloud spend beyond what customers pay for.",
+                    title: "Cloud & deployment",
+                    body: "Customer-funded cloud spend offset, staging environments, CI/CD. Cloud costs are structurally offset by customer contracts.",
                   },
                 ].map((item, i) => (
                   <li key={i} className="flex gap-3 text-[14px] leading-[1.6] text-white/72 font-medium">

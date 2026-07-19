@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.graphcms.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
     ],
   },
   async rewrites() {
