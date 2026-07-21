@@ -131,7 +131,7 @@ export default function RaisePage() {
               <span className="font-extrabold text-[#111]">Beag Labs</span>
             </div>
             <span className="nb-label mb-5 inline-block">
-              $4.5M pre-seed round
+              $4.5M Seed round
             </span>
             <h1 className="mb-6 max-w-[700px] text-[44px] font-extrabold leading-[1.0] tracking-[-0.055em] text-[#111] sm:text-[56px] lg:text-[68px]">
               Helping enterprises own their models and inference.
@@ -470,7 +470,7 @@ export default function RaisePage() {
         <div className="mx-auto max-w-[1440px]">
           <span className="nb-label mb-5 inline-block">Budget</span>
           <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            $4.5M pre-seed allocation.
+            $4.5M Seed round allocation.
           </h2>
           <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
             These numbers are directional — a best guess based on current assumptions. Actual allocation will shift as we learn from early customers and hire against real pipeline needs.
@@ -716,7 +716,7 @@ export default function RaisePage() {
         <div className="mx-auto max-w-[1440px]">
           <span className="nb-label mb-5 inline-block">The ask</span>
           <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            $4.5M pre-seed. 18 months of runway. Build the platform while customers pay for delivery.
+            $4.5M Seed round. 18 months of runway. Build the platform while customers pay for delivery.
           </h2>
           <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
             We are looking for aligned capital that understands services-led SaaS and believes the enterprise AI market will reward focused, deploy-anywhere models over bloated general-purpose APIs. We will not grow at all costs — we will grow at the speed our customers pay us to.
