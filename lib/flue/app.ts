@@ -1,6 +1,7 @@
 import { flue } from '@flue/runtime/routing'
 import { listAgents, listRuns, getRun } from '@flue/runtime'
 import { Hono } from 'hono'
+import { getChannel } from './channels/discord'
 
 const app = new Hono()
 
@@ -8,11 +9,9 @@ const app = new Hono()
 app.route('/', flue())
 
 // Manually mount Discord channel routes (auto-discovery requires @flue/cli)
-// Lazy import — createDiscordChannel validates env vars eagerly, so we can't
-// import at module scope during Next.js build when env vars are absent.
-app.post('/channels/discord/interactions', async (c) => {
-  const { channel } = await import('./channels/discord')
-  const handler = channel.routes.find(r => r.method === 'POST' && r.path === '/interactions')?.handler
+// getChannel() is lazy — only runs when the first request hits, not at build time
+app.post('/channels/discord/interactions', (c) => {
+  const handler = getChannel().routes.find(r => r.method === 'POST' && r.path === '/interactions')?.handler
   if (!handler) return c.json({ error: 'Handler not found' }, 404)
   return handler(c)
 })
