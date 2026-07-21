@@ -7,6 +7,16 @@ const app = new Hono()
 // Mount Flue's core runtime (agents, workflows, channels, runs)
 app.route('/', flue())
 
+// Manually mount Discord channel routes (auto-discovery requires @flue/cli)
+// Lazy import — createDiscordChannel validates env vars eagerly, so we can't
+// import at module scope during Next.js build when env vars are absent.
+app.post('/channels/discord/interactions', async (c) => {
+  const { channel } = await import('./channels/discord')
+  const handler = channel.routes.find(r => r.method === 'POST' && r.path === '/interactions')?.handler
+  if (!handler) return c.json({ error: 'Handler not found' }, 404)
+  return handler(c)
+})
+
 // ─── Custom admin endpoints ────────────────────────────────────────────────
 
 app.get('/admin/agents', async (c) => {
