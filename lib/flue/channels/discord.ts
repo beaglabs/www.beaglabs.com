@@ -1,6 +1,7 @@
 import { REST } from '@discordjs/rest'
 import { createDiscordChannel, type APIInteractionResponse } from '@flue/discord'
 import { dispatch } from '@flue/runtime'
+import { handleCommand } from '@/lib/discord/commands'
 import assistant from '../agents/assistant'
 
 let _channel: ReturnType<typeof createDiscordChannel> | null = null
@@ -24,6 +25,7 @@ export function getChannel() {
           const data = interaction.data as { name: string; options?: { name: string; value: string }[] }
           const name = data.name
 
+          // /ask is handled by the Flue agent dispatch
           if (name === 'ask') {
             const option = data.options?.find((o) => o.name === 'prompt')
             const prompt = option?.value ?? ''
@@ -67,10 +69,8 @@ export function getChannel() {
             }
           }
 
-          return {
-            type: 4,
-            data: { content: 'Unknown command.', flags: 64 },
-          }
+          // All other commands (ping, kick, ban, mute, unmute, purge, embed)
+          return handleCommand(interaction as Record<string, unknown>) as APIInteractionResponse
         }
 
         return {
