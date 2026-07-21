@@ -5,16 +5,18 @@ import { getChannel } from './channels/discord'
 
 const app = new Hono()
 
-// Mount Flue's core runtime (agents, workflows, channels, runs)
-app.route('/', flue())
-
-// Manually mount Discord channel routes (auto-discovery requires @flue/cli)
-// getChannel() is lazy — only runs when the first request hits, not at build time
+// Manually mount Discord channel routes BEFORE flue() — the flue() sub-app
+// registers a catch-all /channels/:name/:suffix{.+} that would intercept the
+// request and throw because configureFlueRuntime was never called.
+// getChannel() is lazy — only runs when the first request hits, not at build time.
 app.post('/channels/discord/interactions', (c) => {
   const handler = getChannel().routes.find(r => r.method === 'POST' && r.path === '/interactions')?.handler
   if (!handler) return c.json({ error: 'Handler not found' }, 404)
   return handler(c)
 })
+
+// Mount Flue's core runtime (agents, workflows, channels, runs)
+app.route('/', flue())
 
 // ─── Custom admin endpoints ────────────────────────────────────────────────
 
