@@ -9,10 +9,20 @@ const app = new Hono()
 // registers a catch-all /channels/:name/:suffix{.+} that would intercept the
 // request and throw because configureFlueRuntime was never called.
 // getChannel() is lazy — only runs when the first request hits, not at build time.
-app.post('/channels/discord/interactions', (c) => {
-  const handler = getChannel().routes.find(r => r.method === 'POST' && r.path === '/interactions')?.handler
-  if (!handler) return c.json({ error: 'Handler not found' }, 404)
-  return handler(c)
+// Discord interactions — only POST is meaningful, but handle all methods
+// so browser GETs don't fall through to the unconfigured flue() catch-all.
+app.all('/channels/discord/interactions', async (c) => {
+  if (c.req.method !== 'POST') {
+    return c.json({ ok: true, message: 'Discord interactions endpoint. Send POST from Discord.' }, 405)
+  }
+  try {
+    const handler = getChannel().routes.find(r => r.method === 'POST' && r.path === '/interactions')?.handler
+    if (!handler) return c.json({ error: 'Handler not found' }, 404)
+    return await handler(c)
+  } catch (err) {
+    console.error('[discord/interactions]', err)
+    return c.json({ error: String(err) }, 500)
+  }
 })
 
 // Mount Flue's core runtime (agents, workflows, channels, runs)
