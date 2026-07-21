@@ -9,7 +9,7 @@ async function deriveKey(): Promise<CryptoKey> {
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
     encoder.encode(SESSION_SECRET),
-    'HMAC',
+    { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
   )
