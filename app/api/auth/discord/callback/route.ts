@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  exchangeCode,
-  fetchUser,
-  isAuthorized,
-  encryptSession,
-} from '@/lib/discord-oauth'
+import { exchangeCode, fetchUser, isAuthorized } from '@/lib/discord-oauth'
+import { encryptSession } from '@/lib/discord-session-edge'
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code')
@@ -20,7 +16,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/portal?error=unauthorized', req.url))
     }
 
-    const session = encryptSession({
+    const session = await encryptSession({
       userId: user.id,
       username: user.username,
       globalName: user.global_name,
@@ -38,8 +34,9 @@ export async function GET(req: NextRequest) {
     })
 
     return response
-  } catch (err) {
+  } catch (err: any) {
     console.error('Discord OAuth callback error:', err)
-    return NextResponse.redirect(new URL('/portal?error=oauth_failed', req.url))
+    const msg = encodeURIComponent(err?.message || 'unknown')
+    return NextResponse.redirect(new URL(`/portal?error=oauth_failed&detail=${msg}`, req.url))
   }
 }

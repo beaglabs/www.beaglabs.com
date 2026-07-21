@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { decryptSession } from '@/lib/discord-oauth'
+import { decryptSession } from '@/lib/discord-session-edge'
 import { cookies } from 'next/headers'
 
 export const metadata: Metadata = {
@@ -44,7 +44,7 @@ const navSections = [
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
   const sessionCookie = cookieStore.get('discord-session')
-  const session = sessionCookie ? decryptSession(sessionCookie.value) : null
+  const session = sessionCookie ? await decryptSession(sessionCookie.value) : null
 
   const avatarUrl = session?.avatar
     ? `https://cdn.discordapp.com/avatars/${session.userId}/${session.avatar}.png?size=64`
