@@ -148,7 +148,7 @@ export default function RaisePage() {
                 Meet the founder
               </Link>
               <span className="text-[14px] text-[#555] font-medium">
-                Raising $4.5M pre-seed.
+                Raising $4.5M Seed Round.
               </span>
             </div>
           </div>
@@ -418,114 +418,109 @@ export default function RaisePage() {
         </div>
       </section>
 
-      {/* Financial Plan */}
-      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
-          <span className="nb-label mb-5 inline-block">Financial plan</span>
-          <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            $4.5M pre-seed. Training infrastructure is the largest line item — everything else stays lean.
-          </h2>
-          <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-            Capital efficiency is the thesis. We allocate the majority of funds to model training infrastructure because that is the core product. Everything else — team, operations, legal — is minimized by design.
-          </p>
-
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <div className="nb-card bg-[#111] p-8 text-white lg:col-span-2">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">
-                Allocation breakdown
-              </div>
-              <div className="mt-6 space-y-5">
-                {[
-                  { label: "Training infrastructure", pct: "35%", amount: "$1.58M", bar: "w-[35%]", color: "bg-[#FF5F1F]", desc: "Baseten SLURM, 32x B200 compute, data pipelines, eval infrastructure" },
-                  { label: "Operations budget", pct: "40%", amount: "$1.8M", bar: "w-[40%]", color: "bg-[#8B7355]", desc: "Founder salary, 2 revenue-gated hires (GTM + Sales Eng), legal, compliance, insurance" },
-                  { label: "Cloud & deployment", pct: "15%", amount: "$675K", bar: "w-[15%]", color: "bg-white/10", desc: "Customer-funded cloud spend offset, staging environments, CI/CD" },
-                  { label: "Reserve & contingency", pct: "10%", amount: "$450K", bar: "w-[10%]", color: "bg-white/5", desc: "Buffer for extended sales cycles, unexpected compute needs, opportunities" },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-white">{item.label}</span>
-                      <span className="text-sm text-white/60 font-medium">{item.amount} ({item.pct})</span>
-                    </div>
-                    <div className="mt-2 h-3 border-[2px] border-white/20">
-                      <div className={`h-full ${item.bar} ${item.color}`} />
-                    </div>
-                    <p className="mt-1 text-xs leading-[1.5] text-white/50 font-medium">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="nb-card bg-white p-8">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
-                Why training is #1
-              </div>
-              <div className="mt-5 space-y-4">
-                <div>
-                  <div className="text-sm font-semibold text-[#111]">Core product = trained models</div>
-                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
-                    Every dollar in training infrastructure produces a deployed model that generates revenue. This is not overhead — it is the product.
-                  </p>
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-[#111]">Iteration speed = competitive advantage</div>
-                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
-                    8x B200 compute means full training cycles in 3-5 hours. Faster iteration = better models = faster revenue.
-                  </p>
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-[#111]">Cost per training run</div>
-                  <p className="mt-1 text-[13px] leading-[1.6] text-[#555] font-medium">
-                    ~$200-300 per complete training cycle (SFT + GRPO + OPD). Each run produces a production-ready model. Budget supports 5,000+ training iterations.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Revenue forecast */}
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
           <span className="nb-label mb-5 inline-block">Revenue forecast</span>
           <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            Capital-efficient path to $2.5M ARR within 18 months of first contract.
+            Capital-efficient path to $1.4M contracted ACV within 24 months of first contract.
           </h2>
           <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-            Forecast assumes founder-led delivery through year one with GTM and Sales Engineer hires triggered by pipeline milestones. Revenue begins when the first design partners convert to paid contracts in Q3. Cash runway extends past 18 months even at conservative revenue projections.
+            Contracts are $150-250K ACV each, billed as flat annual fees. Founder closes the first 2-3 design partner contracts in months 4-10. A GTM hire at month 7 accelerates pipeline. A Sales Engineer at month 13 supports deal volume. Each contract compounds into the next — deployment experience shortens sales cycles and improves close rates.
           </p>
 
           <div className="nb-card bg-white p-8">
             <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F] mb-6">
-              Monthly revenue vs. expenses ($M)
+              Cumulative contracted ACV vs. monthly burn ($M)
             </div>
             <RevenueChart />
 
             <div className="mt-6 grid grid-cols-1 gap-4 border-t-[2px] border-[#111]/10 pt-6 md:grid-cols-3">
               <div>
                 <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
-                  Revenue drivers
+                  Contract model
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
-                  4-6 design partners convert to paid contracts in year one at $150-250K ACV. Revenue compounds as each deployment validates the model for adjacent prospects.
+                  $150-250K ACV per engagement, billed annually. Customer owns the model. We own the pipeline. Each contract is a multi-year commitment, not a token meter.
                 </p>
               </div>
               <div>
                 <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
-                  Expense discipline
+                  Pipeline velocity
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
-                  Burn rate stays under $280K/mo at peak. Founder operates at 5x capacity via LLMs. Hires are gated on revenue, not planning assumptions.
+                  First contract closes month 4. Founder-led sales through month 10. GTM hire accelerates to 1 contract per quarter. Sales Engineer at month 13 supports concurrent deals.
                 </p>
               </div>
               <div>
                 <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
-                  Breakeven trajectory
+                  Cash position
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
-                  Revenue catches expenses around month 22. At target case, the company reaches operational breakeven before the full cash runway is consumed.
+                  Monthly burn stays under $250K. Cash runway extends past 22 months. Breakeven at month 21 — revenue catches expenses with cash remaining on the balance sheet.
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Budget */}
+      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <div className="mx-auto max-w-[1440px]">
+          <span className="nb-label mb-5 inline-block">Budget</span>
+          <h2 className="mb-4 max-w-[700px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+            $4.5M pre-seed allocation.
+          </h2>
+          <p className="mb-12 max-w-[620px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+            These numbers are directional — a best guess based on current assumptions. Actual allocation will shift as we learn from early customers and hire against real pipeline needs.
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="nb-card bg-[#111] p-8 text-white">
+              <div className="space-y-4">
+                {[
+                  { label: "Training Infrastructure", amount: "$500k" },
+                  { label: "Core Team & Engineering", amount: "$1.2M" },
+                  { label: "Security, Compliance & Risk", amount: "$1.5M" },
+                  { label: "Sales & GTM", amount: "$670k" },
+                  { label: "Internal Platform / Ops", amount: "$250k" },
+                  { label: "Reserve", amount: "$380k" },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span className="text-[15px] font-semibold text-white">{item.label}</span>
+                    <span className="text-[15px] text-white/60 font-medium font-mono">{item.amount}</span>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-[15px] font-extrabold text-white">Total</span>
+                  <span className="text-[15px] font-extrabold text-white font-mono">$4.5M</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="nb-card bg-[#FFF3E6] p-8">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                Spending principles
+              </div>
+              <ul className="mt-5 space-y-4">
+                {[
+                  { title: "Revenue gates every hire", body: "No headcount until pipeline justifies it. We use LLMs to accelerate traction prior to pipeline justification. GTM hire at month 7, Sales Engineer at month 13 — both triggered by deal volume, not planning assumptions." },
+                  { title: "No engineering hires in year one", body: "LLMs handle code, tests, docs, and design. The founder operates at 5x capacity. First engineering hire (if needed) is year two, funded by revenue." },
+                  { title: "Compliance is not optional", body: "Regulated industries require SOC 2, HIPAA, and data residency guarantees. The security budget is front-loaded because it unblocks enterprise deals." },
+                  { title: "Reserve is real", body: "$380K buffer for extended sales cycles, unexpected compute needs, and opportunistic hires. Not a rounding error — it is 8 months of founder runway." },
+                ].map((item, i) => (
+                  <li key={i} className="flex gap-3 text-[14px] leading-[1.6] text-[#404040] font-medium">
+                    <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#FF5F1F]">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <span className="font-semibold text-[#111]">{item.title}</span>
+                      <span> — {item.body}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -782,7 +777,7 @@ export default function RaisePage() {
                 </ul>
               </div>
               <Link
-                href="https://cal.com/comradelemoncake/meet-the-founder"
+                href="mailto:james@beaglabs.com?subject=Investment%20Opportunity"
                 target="_blank"
                 className="nb-btn inline-flex items-center gap-2 bg-[#111] px-8 py-4 text-[12px] uppercase text-white mt-8 self-start"
               >
