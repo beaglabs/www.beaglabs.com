@@ -4,6 +4,8 @@ import { dispatch } from '@flue/runtime'
 import { handleCommand } from '@/lib/discord/commands'
 import assistant from '../agents/assistant'
 
+const ASK_ALLOWED_USER_ID = '1387255717794152519'
+
 let _channel: ReturnType<typeof createDiscordChannel> | null = null
 let _client: REST | null = null
 
@@ -27,6 +29,14 @@ export function getChannel() {
 
           // /ask is handled by the Flue agent dispatch
           if (name === 'ask') {
+            const userId = interaction.member?.user?.id
+            if (userId !== ASK_ALLOWED_USER_ID) {
+              return {
+                type: 4,
+                data: { content: 'You are not authorized to use this command.', flags: 64 },
+              }
+            }
+
             const option = data.options?.find((o) => o.name === 'prompt')
             const prompt = option?.value ?? ''
 
