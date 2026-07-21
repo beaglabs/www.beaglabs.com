@@ -29,58 +29,58 @@ export default function CredentialsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-medium text-[#e5e5e5]">Credentials</h1>
-          <p className="text-xs text-[#666] mt-1">API keys and tokens for tools and integrations</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#111]">Credentials</h1>
+          <p className="text-sm text-[#555] mt-1">API keys and tokens for tools and integrations</p>
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="px-3 py-1.5 text-xs font-medium bg-[#C7661D] text-white rounded hover:bg-[#d87a3a] transition-colors"
+          className="nb-btn-orange px-3 py-1.5 text-xs font-extrabold uppercase tracking-wider"
         >
           Add Credential
         </button>
       </div>
 
-      <div className="border border-yellow-400/20 bg-yellow-400/5 rounded-lg p-3">
-        <p className="text-xs text-yellow-400">
+      <div className="nb-card bg-yellow-50 border-yellow-400 p-3">
+        <p className="text-xs text-yellow-800 font-medium">
           ⚠ Credentials are stored in memory for this session only. For production, integrate with an encrypted persistent store.
         </p>
       </div>
 
       {showAdd && (
-        <div className="border border-[#1a1a1a] bg-[#0d0d0d] rounded-lg p-4 space-y-4">
-          <h3 className="text-sm font-medium text-[#e5e5e5]">Add Credential</h3>
+        <div className="nb-card bg-white p-4 space-y-4">
+          <h3 className="text-sm font-extrabold text-[#111]">Add Credential</h3>
           <div className="grid gap-3">
             <div>
-              <label className="text-[10px] font-mono uppercase tracking-wider text-[#444]">Name</label>
+              <label className="nb-label text-[9px]">Name</label>
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="MY_API_KEY"
-                className="w-full mt-1 bg-[#111] border border-[#1a1a1a] rounded px-3 py-1.5 text-xs text-[#e5e5e5] placeholder-[#444] focus:outline-none focus:border-[#333]"
+                className="w-full mt-1 border-[3px] border-[#111] bg-white px-3 py-1.5 text-xs text-[#111] placeholder-[#999] focus:outline-none focus:ring-2 focus:ring-[#FF5F1F]"
               />
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase tracking-wider text-[#444]">Value</label>
+              <label className="nb-label text-[9px]">Value</label>
               <input
                 type="password"
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
                 placeholder="sk-..."
-                className="w-full mt-1 bg-[#111] border border-[#1a1a1a] rounded px-3 py-1.5 text-xs text-[#e5e5e5] placeholder-[#444] focus:outline-none focus:border-[#333]"
+                className="w-full mt-1 border-[3px] border-[#111] bg-white px-3 py-1.5 text-xs text-[#111] placeholder-[#999] focus:outline-none focus:ring-2 focus:ring-[#FF5F1F]"
               />
             </div>
           </div>
           <div className="flex gap-2">
             <button
               onClick={addCredential}
-              className="px-3 py-1.5 text-xs font-medium bg-[#C7661D] text-white rounded hover:bg-[#d87a3a] transition-colors"
+              className="nb-btn-orange px-3 py-1.5 text-xs font-extrabold uppercase tracking-wider"
             >
               Store
             </button>
             <button
               onClick={() => setShowAdd(false)}
-              className="px-3 py-1.5 text-xs text-[#666] hover:text-[#999] transition-colors"
+              className="px-3 py-1.5 text-xs text-[#555] hover:text-[#111] font-bold transition-colors"
             >
               Cancel
             </button>
@@ -89,28 +89,28 @@ export default function CredentialsPage() {
       )}
 
       {credentials.length === 0 ? (
-        <div className="border border-[#1a1a1a] bg-[#0d0d0d] rounded-lg p-8 text-center">
-          <p className="text-sm text-[#666]">No credentials stored.</p>
+        <div className="nb-card bg-white p-8 text-center">
+          <p className="text-sm text-[#555]">No credentials stored.</p>
         </div>
       ) : (
-        <div className="border border-[#1a1a1a] rounded-lg overflow-hidden">
+        <div className="nb-card bg-white overflow-hidden">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-[#1a1a1a] bg-[#0d0d0d]">
-                <th className="text-left px-4 py-2 text-[#666] font-mono uppercase tracking-wider">Name</th>
-                <th className="text-left px-4 py-2 text-[#666] font-mono uppercase tracking-wider">Created</th>
-                <th className="text-right px-4 py-2 text-[#666] font-mono uppercase tracking-wider">Actions</th>
+              <tr className="border-b-[3px] border-[#111]">
+                <th className="text-left px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-[#555]">Name</th>
+                <th className="text-left px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-[#555]">Created</th>
+                <th className="text-right px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-[#555]">Actions</th>
               </tr>
             </thead>
             <tbody>
               {credentials.map((cred) => (
-                <tr key={cred.name} className="border-b border-[#111] hover:bg-[#111] transition-colors">
-                  <td className="px-4 py-2 font-mono text-[#e5e5e5]">{cred.name}</td>
+                <tr key={cred.name} className="border-b border-[#111] hover:bg-[#FF5F1F]/5 transition-colors">
+                  <td className="px-4 py-2 font-mono font-bold text-[#111]">{cred.name}</td>
                   <td className="px-4 py-2 text-[#555]">{new Date(cred.createdAt).toLocaleString()}</td>
                   <td className="px-4 py-2 text-right">
                     <button
                       onClick={() => deleteCredential(cred.name)}
-                      className="text-red-400 hover:text-red-300 transition-colors"
+                      className="text-red-600 hover:text-red-800 font-bold transition-colors"
                     >
                       Delete
                     </button>

@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { decryptSession } from '@/lib/discord-session-edge'
 import { cookies } from 'next/headers'
+import { Navbar } from '@/components/navbar'
+import { SiteFooter } from '@/components/site-footer'
 
 export const metadata: Metadata = {
   title: 'Portal — Beag Labs',
@@ -44,42 +47,45 @@ const navSections = [
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
   const sessionCookie = cookieStore.get('discord-session')
-  const session = sessionCookie ? await decryptSession(sessionCookie.value) : null
+
+  if (!sessionCookie) {
+    redirect('/api/auth/discord')
+  }
+
+  const session = await decryptSession(sessionCookie.value)
+  if (!session) {
+    redirect('/api/auth/discord')
+  }
 
   const avatarUrl = session?.avatar
     ? `https://cdn.discordapp.com/avatars/${session.userId}/${session.avatar}.png?size=64`
     : null
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5]">
-      {/* Top bar */}
-      <header className="border-b border-[#1a1a1a] bg-[#0d0d0d]">
-        <div className="flex items-center justify-between px-6 h-12">
-          <div className="flex items-center gap-3">
-            <Link href="/portal" className="font-mono text-xs font-bold tracking-widest text-[#C7661D] uppercase">
-              Beag Portal
-            </Link>
-          </div>
-          <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-[#FAFAF9] text-[#111]">
+      <Navbar />
+
+      <div className="mx-auto flex max-w-[1440px] pt-16">
+        {/* Sidebar */}
+        <aside className="w-56 shrink-0 border-r-[3px] border-[#111] bg-[#FAFAF9] p-4 min-h-[calc(100vh-4rem)]">
+          {/* User badge */}
+          <div className="mb-6 flex items-center gap-2 border-b-[3px] border-[#111] pb-4">
             {avatarUrl && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full" />
+              <img src={avatarUrl} alt="" className="w-6 h-6 border-2 border-[#111]" />
             )}
-            <span className="text-xs text-[#666]">{session?.globalName || session?.username}</span>
-            <Link href="/api/auth/discord/logout" className="text-xs text-[#555] hover:text-[#999] transition-colors">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[11px] font-bold text-[#111]">{session?.globalName || session?.username}</p>
+            </div>
+            <Link href="/api/auth/discord/logout" className="text-[10px] font-mono uppercase tracking-wider text-[#999] hover:text-[#FF5F1F] transition-colors">
               Logout
             </Link>
           </div>
-        </div>
-      </header>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-56 min-h-[calc(100vh-3rem)] border-r border-[#1a1a1a] bg-[#0d0d0d] p-4">
           <nav className="space-y-6">
             {navSections.map((section) => (
               <div key={section.label}>
-                <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#444] mb-2">
+                <p className="nb-label text-[9px] mb-2">
                   {section.label}
                 </p>
                 <ul className="space-y-0.5">
@@ -87,7 +93,7 @@ export default async function PortalLayout({ children }: { children: React.React
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className="block px-2 py-1.5 text-xs text-[#888] hover:text-[#e5e5e5] hover:bg-[#151515] rounded transition-colors"
+                        className="block px-2 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#555] hover:text-[#111] hover:bg-[#FF5F1F]/10 border-l-[3px] border-transparent hover:border-[#FF5F1F] transition-all"
                       >
                         {item.label}
                       </Link>
@@ -100,10 +106,12 @@ export default async function PortalLayout({ children }: { children: React.React
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-6 min-h-[calc(100vh-3rem)]">
+        <main className="flex-1 p-6 min-h-[calc(100vh-4rem)]">
           {children}
         </main>
       </div>
+
+      <SiteFooter />
     </div>
   )
 }

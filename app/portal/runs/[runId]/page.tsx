@@ -60,20 +60,20 @@ export default function RunDetailPage() {
 
   const statusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'text-emerald-400'
-      case 'active': return 'text-blue-400'
-      case 'errored': return 'text-red-400'
-      default: return 'text-[#666]'
+      case 'completed': return 'text-emerald-700 font-bold'
+      case 'active': return 'text-blue-700 font-bold'
+      case 'errored': return 'text-red-700 font-bold'
+      default: return 'text-[#555]'
     }
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-lg font-medium text-[#e5e5e5] font-mono">{runId.slice(0, 24)}…</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-[#111] font-mono">{runId.slice(0, 24)}…</h1>
         {meta && (
-          <div className="flex items-center gap-4 mt-2 text-xs text-[#666]">
-            <span>Workflow: <span className="text-[#888]">{meta.workflowName}</span></span>
+          <div className="flex items-center gap-4 mt-2 text-xs text-[#555]">
+            <span>Workflow: <span className="font-bold text-[#111]">{meta.workflowName}</span></span>
             <span className={statusColor(meta.status)}>{meta.status}</span>
             {meta.createdAt && (
               <span>Started: {new Date(meta.createdAt).toLocaleString()}</span>
@@ -85,8 +85,8 @@ export default function RunDetailPage() {
       {/* Input */}
       {meta?.input != null && (
         <div>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-[#444] mb-2">Input</h2>
-          <pre className="text-xs text-[#888] bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-3 overflow-x-auto">
+          <h2 className="nb-label mb-2">Input</h2>
+          <pre className="text-xs text-[#111] nb-card bg-white p-3 overflow-x-auto font-mono">
             {JSON.stringify(meta.input, null, 2)}
           </pre>
         </div>
@@ -95,8 +95,8 @@ export default function RunDetailPage() {
       {/* Result */}
       {meta?.result != null && (
         <div>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-[#444] mb-2">Result</h2>
-          <pre className="text-xs text-[#888] bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-3 overflow-x-auto">
+          <h2 className="nb-label mb-2">Result</h2>
+          <pre className="text-xs text-[#111] nb-card bg-white p-3 overflow-x-auto font-mono">
             {JSON.stringify(meta.result, null, 2)}
           </pre>
         </div>
@@ -105,8 +105,8 @@ export default function RunDetailPage() {
       {/* Error */}
       {meta?.error != null && (
         <div>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-red-400/60 mb-2">Error</h2>
-          <pre className="text-xs text-red-400 bg-red-400/5 border border-red-400/20 rounded-lg p-3 overflow-x-auto">
+          <h2 className="nb-label mb-2">Error</h2>
+          <pre className="text-xs text-red-700 bg-red-50 nb-card p-3 overflow-x-auto font-mono">
             {JSON.stringify(meta.error, null, 2)}
           </pre>
         </div>
@@ -114,21 +114,21 @@ export default function RunDetailPage() {
 
       {/* Event stream */}
       <div>
-        <h2 className="text-xs font-mono uppercase tracking-wider text-[#444] mb-2">Events</h2>
-        <div className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-4 max-h-96 overflow-y-auto space-y-2">
+        <h2 className="nb-label mb-2">Events</h2>
+        <div className="nb-card bg-white p-4 max-h-96 overflow-y-auto space-y-2">
           {events.length === 0 ? (
-            <p className="text-xs text-[#444] text-center py-4">Waiting for events…</p>
+            <p className="text-xs text-[#999] text-center py-4 font-mono">Waiting for events…</p>
           ) : (
             events.map((event, i) => (
-              <div key={i} className="border-l-2 border-[#222] pl-3 py-1">
+              <div key={i} className="border-l-[3px] border-[#111] pl-3 py-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-[#555]">{event.type}</span>
+                  <span className="text-[10px] font-mono font-bold text-[#555]">{event.type}</span>
                   {event.timestamp && (
-                    <span className="text-[10px] text-[#333]">{new Date(event.timestamp).toLocaleTimeString()}</span>
+                    <span className="text-[10px] text-[#999]">{new Date(event.timestamp).toLocaleTimeString()}</span>
                   )}
                 </div>
                 {event.data != null && (
-                  <pre className="text-[10px] text-[#555] mt-1 overflow-x-auto">
+                  <pre className="text-[10px] text-[#555] mt-1 overflow-x-auto font-mono">
                     {JSON.stringify(event.data, null, 2)}
                   </pre>
                 )}

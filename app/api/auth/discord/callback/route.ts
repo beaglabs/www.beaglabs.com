@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     const response = NextResponse.redirect(new URL('/portal', req.url))
     response.cookies.set('discord-session', session, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { decryptSession } from '@/lib/discord-session-edge'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -12,13 +11,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/api/auth/discord', request.url))
     }
 
-    const session = await decryptSession(sessionCookie.value)
-    if (!session) {
-      // Invalid or expired session — clear cookie and redirect to login
-      const response = NextResponse.redirect(new URL('/api/auth/discord', request.url))
-      response.cookies.delete('discord-session')
-      return response
-    }
+    // Cookie exists — let the request through.
+    // Full session validation happens server-side in the portal layout.
+    // This avoids decrypting on every navigation (Edge crypto can be flaky)
+    // and prevents the "re-auth on every page load" loop.
   }
 
   return NextResponse.next()

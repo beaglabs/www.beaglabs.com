@@ -84,19 +84,19 @@ export default function AgentDetailPage() {
   const renderEvent = (event: StreamEvent, i: number) => {
     if (event.type === 'text' || event.type === 'message') {
       return (
-        <div key={i} className="border-l-2 border-[#333] pl-3 py-1">
-          <p className="text-xs text-[#888]">{event.type}</p>
-          <p className="text-sm text-[#ccc] mt-0.5 whitespace-pre-wrap">{event.text || JSON.stringify(event.data)}</p>
+        <div key={i} className="border-l-[3px] border-[#111] pl-3 py-1">
+          <p className="text-[10px] font-mono uppercase tracking-wider text-[#999]">{event.type}</p>
+          <p className="text-sm text-[#111] mt-0.5 whitespace-pre-wrap">{event.text || JSON.stringify(event.data)}</p>
         </div>
       )
     }
 
     if (event.type === 'tool_call' || event.type === 'tool_use') {
       return (
-        <div key={i} className="border-l-2 border-blue-500/40 pl-3 py-1 bg-blue-500/5 rounded-r">
-          <p className="text-xs text-blue-400 font-mono">🔧 {event.toolName || 'tool'}</p>
+        <div key={i} className="border-l-[3px] border-[#FF5F1F] pl-3 py-1 bg-[#FF5F1F]/5">
+          <p className="text-xs text-[#FF5F1F] font-mono font-bold">🔧 {event.toolName || 'tool'}</p>
           {event.toolInput != null && (
-            <pre className="text-[10px] text-[#888] mt-1 overflow-x-auto">
+            <pre className="text-[10px] text-[#555] mt-1 overflow-x-auto font-mono">
               {JSON.stringify(event.toolInput, null, 2)}
             </pre>
           )}
@@ -106,9 +106,9 @@ export default function AgentDetailPage() {
 
     if (event.type === 'tool_result') {
       return (
-        <div key={i} className="border-l-2 border-emerald-500/40 pl-3 py-1 bg-emerald-500/5 rounded-r">
-          <p className="text-xs text-emerald-400 font-mono">✓ result</p>
-          <pre className="text-[10px] text-[#888] mt-1 overflow-x-auto">
+        <div key={i} className="border-l-[3px] border-emerald-600 pl-3 py-1 bg-emerald-50">
+          <p className="text-xs text-emerald-700 font-mono font-bold">✓ result</p>
+          <pre className="text-[10px] text-[#555] mt-1 overflow-x-auto font-mono">
             {typeof event.toolOutput === 'string'
               ? event.toolOutput
               : JSON.stringify(event.toolOutput ?? null, null, 2)}
@@ -118,9 +118,9 @@ export default function AgentDetailPage() {
     }
 
     return (
-      <div key={i} className="border-l-2 border-[#222] pl-3 py-1">
-        <p className="text-[10px] text-[#555] font-mono">{event.type}</p>
-        <pre className="text-[10px] text-[#444] mt-0.5 overflow-x-auto">
+      <div key={i} className="border-l-[3px] border-[#111] pl-3 py-1">
+        <p className="text-[10px] text-[#999] font-mono font-bold">{event.type}</p>
+        <pre className="text-[10px] text-[#555] mt-0.5 overflow-x-auto font-mono">
           {JSON.stringify(event.data ?? event, null, 2)}
         </pre>
       </div>
@@ -128,26 +128,26 @@ export default function AgentDetailPage() {
   }
 
   return (
-    <div className="space-y-6 h-[calc(100vh-6rem)] flex flex-col">
+    <div className="space-y-6 h-[calc(100vh-8rem)] flex flex-col">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-medium text-[#e5e5e5]">{name}</h1>
-          <p className="text-xs text-[#666] mt-1">
-            Instance: <code className="text-[#C7661D]">{instanceId}</code>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#111]">{name}</h1>
+          <p className="text-sm text-[#555] mt-1">
+            Instance: <code className="font-mono text-[#FF5F1F]">{instanceId}</code>
           </p>
         </div>
         <button
           onClick={abortAgent}
-          className="px-3 py-1.5 text-xs text-red-400 border border-red-400/20 rounded hover:bg-red-400/10 transition-colors"
+          className="nb-btn bg-red-600 text-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider"
         >
           Abort
         </button>
       </div>
 
       {/* Events stream */}
-      <div className="flex-1 overflow-y-auto border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-4 space-y-2">
+      <div className="flex-1 overflow-y-auto nb-card bg-white p-4 space-y-2">
         {events.length === 0 ? (
-          <p className="text-xs text-[#444] text-center py-8">
+          <p className="text-xs text-[#999] text-center py-8 font-mono">
             No events yet. Send a prompt below.
           </p>
         ) : (
@@ -164,13 +164,13 @@ export default function AgentDetailPage() {
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && sendPrompt()}
           placeholder="Send a prompt to this agent..."
-          className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-lg px-3 py-2 text-sm text-[#e5e5e5] placeholder-[#444] focus:outline-none focus:border-[#333]"
+          className="flex-1 border-[3px] border-[#111] bg-white px-3 py-2 text-sm text-[#111] placeholder-[#999] focus:outline-none focus:ring-2 focus:ring-[#FF5F1F]"
           disabled={sending}
         />
         <button
           onClick={sendPrompt}
           disabled={sending || !prompt.trim()}
-          className="px-4 py-2 text-xs font-medium bg-[#C7661D] text-white rounded-lg hover:bg-[#d87a3a] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="nb-btn-orange px-4 py-2 text-xs font-extrabold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {sending ? 'Sending…' : 'Send'}
         </button>
