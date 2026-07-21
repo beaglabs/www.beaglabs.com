@@ -5,7 +5,10 @@ import app from '@/lib/flue/app'
  * This mounts the full Flue API (agents, workflows, channels, admin) at /api/flue/*.
  */
 async function handler(request: Request) {
-  return app.fetch(request)
+  // Strip /api/flue prefix — Hono routes are mounted at root (/channels/..., /admin/..., etc.)
+  const url = new URL(request.url)
+  url.pathname = url.pathname.replace(/^\/api\/flue/, '') || '/'
+  return app.fetch(new Request(url.toString(), request))
 }
 
 export {
