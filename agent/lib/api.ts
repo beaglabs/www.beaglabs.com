@@ -180,7 +180,7 @@ export async function listChannels(): Promise<Channel[]> {
 }
 
 export async function getChannelStatus(
-  name: 'discord' | 'resend'
+  name: string
 ): Promise<Channel> {
   return fetchApi<Channel>(`/admin/channels/${name}`)
 }

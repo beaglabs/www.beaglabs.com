@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/page-header'
 import { StatusBadge } from '@/components/status-badge'
 import { EmptyState } from '@/components/empty-state'
 import { formatDate } from '@/lib/utils'
-import type { Schedule } from '@/lib/types'
+import type { Schedule, Workflow, Agent } from '@/lib/types'
 import {
   Clock,
   Plus,
@@ -14,8 +14,12 @@ import {
   Trash2,
   Loader2,
   Edit,
-  Workflow,
+  Workflow as WorkflowIcon,
   Bot,
+  ChevronDown,
+  Search,
+  X,
+  RefreshCw,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -34,6 +38,13 @@ export default function SchedulesPage() {
   const [formInput, setFormInput] = useState('{}')
   const [creating, setCreating] = useState(false)
 
+  // Dropdown data
+  const [workflows, setWorkflows] = useState<Workflow[]>([])
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [loadingTargets, setLoadingTargets] = useState(false)
+  const [targetSearch, setTargetSearch] = useState('')
+  const [showTargetDropdown, setShowTargetDropdown] = useState(false)
+
   useEffect(() => {
     fetch('/api/flue/admin/schedules')
       .then((r) => r.json())
@@ -41,6 +52,54 @@ export default function SchedulesPage() {
       .catch(() => setSchedules([]))
       .finally(() => setLoading(false))
   }, [])
+
+  // Fetch available targets when type changes or form opens
+  useEffect(() => {
+    if (!showCreate) return
+
+    setLoadingTargets(true)
+    const fetchTargets = async () => {
+      try {
+        if (formType === 'workflow') {
+          const res = await fetch('/api/flue/admin/workflows')
+          const data = await res.json()
+          setWorkflows(Array.isArray(data) ? data : [])
+        } else {
+          const res = await fetch('/api/flue/admin/agents')
+          const data = await res.json()
+          setAgents(Array.isArray(data) ? data : [])
+        }
+      } catch {
+        setWorkflows([])
+        setAgents([])
+      } finally {
+        setLoadingTargets(false)
+      }
+    }
+
+    fetchTargets()
+  }, [formType, showCreate])
+
+  function getTargets() {
+    if (formType === 'workflow') {
+      return workflows
+        .filter(w => !targetSearch || w.name.toLowerCase().includes(targetSearch.toLowerCase()))
+        .map(w => ({
+          value: w.name,
+          label: w.name,
+          description: w.description,
+          icon: <WorkflowIcon className="w-4 h-4" />,
+        }))
+    }
+    return agents
+      .filter(a => !targetSearch || a.name.toLowerCase().includes(targetSearch.toLowerCase()))
+      .map(a => ({
+        value: a.name,
+        label: a.name,
+        description: a.description,
+        icon: <Bot className="w-4 h-4" />,
+      }))
+  }
 
   async function createSchedule() {
     if (!formName.trim() || !formTarget.trim() || !formCron.trim()) {
@@ -128,7 +187,12 @@ export default function SchedulesPage() {
     setFormCron('')
     setFormTimezone('UTC')
     setFormInput('{}')
+    setTargetSearch('')
+    setShowTargetDropdown(false)
   }
+
+  const targets = getTargets()
+  const selectedTarget = targets.find(t => t.value === formTarget)
 
   return (
     <>
@@ -165,24 +229,104 @@ export default function SchedulesPage() {
               </label>
               <select
                 value={formType}
-                onChange={(e) => setFormType(e.target.value as 'workflow' | 'dispatch')}
+                onChange={(e) => {
+                  setFormType(e.target.value as 'workflow' | 'dispatch')
+                  setFormTarget('')
+                  setTargetSearch('')
+                }}
                 className="w-full border-3 border-black px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
               >
                 <option value="workflow">Workflow Invocation</option>
                 <option value="dispatch">Agent Dispatch</option>
               </select>
             </div>
-            <div>
+            <div className="relative">
               <label className="font-mono text-xs uppercase tracking-[0.14em] text-[var(--muted-foreground)] block mb-1.5">
                 Target
               </label>
-              <input
-                type="text"
-                value={formTarget}
-                onChange={(e) => setFormTarget(e.target.value)}
-                placeholder={formType === 'workflow' ? 'workflow-name' : 'agent-name'}
-                className="w-full border-3 border-black px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-              />
+              <div
+                className="w-full border-3 border-black px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer flex items-center justify-between"
+                onClick={() => setShowTargetDropdown(!showTargetDropdown)}
+              >
+                {formTarget ? (
+                  <div className="flex items-center gap-2">
+                    {selectedTarget?.icon}
+                    <span className="font-medium">{formTarget}</span>
+                  </div>
+                ) : (
+                  <span className="text-[var(--muted-foreground)]">
+                    Select a {formType === 'workflow' ? 'workflow' : 'agent'}
+                  </span>
+                )}
+                <ChevronDown className={`w-4 h-4 transition-transform ${showTargetDropdown ? 'rotate-180' : ''}`} />
+              </div>
+
+              {/* Dropdown */}
+              {showTargetDropdown && (
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 border-3 border-black bg-white shadow-[6px_6px_0px_0px_#111] max-h-60 overflow-hidden">
+                  {/* Search */}
+                  <div className="p-2 border-b-2 border-black">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+                      <input
+                        type="text"
+                        value={targetSearch}
+                        onChange={(e) => setTargetSearch(e.target.value)}
+                        placeholder={`Search ${formType === 'workflow' ? 'workflows' : 'agents'}...`}
+                        className="w-full border-2 border-black pl-8 pr-3 py-1.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Options */}
+                  <div className="overflow-y-auto max-h-48">
+                    {loadingTargets ? (
+                      <div className="p-4 text-center">
+                        <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                        <p className="text-xs text-[var(--muted-foreground)] mt-1">Loading...</p>
+                      </div>
+                    ) : targets.length === 0 ? (
+                      <div className="p-4 text-center text-xs text-[var(--muted-foreground)]">
+                        No {formType === 'workflow' ? 'workflows' : 'agents'} found
+                      </div>
+                    ) : (
+                      targets.map((target) => (
+                        <div
+                          key={target.value}
+                          className={`px-4 py-2.5 text-sm cursor-pointer flex items-center gap-3 transition-colors ${
+                            formTarget === target.value
+                              ? 'bg-[var(--accent)] font-bold'
+                              : 'hover:bg-[var(--sidebar-accent)]'
+                          }`}
+                          onClick={() => {
+                            setFormTarget(target.value)
+                            setShowTargetDropdown(false)
+                            setTargetSearch('')
+                          }}
+                        >
+                          <div className={`w-6 h-6 border-2 border-black flex items-center justify-center ${
+                            formTarget === target.value ? 'bg-black text-white' : 'bg-[var(--secondary)]'
+                          }`}>
+                            {target.icon}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate">{target.label}</div>
+                            {target.description && (
+                              <div className="text-[10px] text-[var(--muted-foreground)] truncate">
+                                {target.description}
+                              </div>
+                            )}
+                          </div>
+                          {formTarget === target.value && (
+                            <div className="w-2 h-2 bg-black rounded-full" />
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <label className="font-mono text-xs uppercase tracking-[0.14em] text-[var(--muted-foreground)] block mb-1.5">
@@ -280,14 +424,23 @@ export default function SchedulesPage() {
                     <td className="px-5 py-3">
                       <span className="nb-chip !py-0.5 !px-2 !text-[10px] flex items-center gap-1 w-fit">
                         {schedule.type === 'workflow' ? (
-                          <Workflow className="w-3 h-3" />
+                          <WorkflowIcon className="w-3 h-3" />
                         ) : (
                           <Bot className="w-3 h-3" />
                         )}
                         {schedule.type}
                       </span>
                     </td>
-                    <td className="px-5 py-3 font-mono text-xs">{schedule.target}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        {schedule.type === 'workflow' ? (
+                          <WorkflowIcon className="w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+                        ) : (
+                          <Bot className="w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+                        )}
+                        <span className="font-mono text-xs">{schedule.target}</span>
+                      </div>
+                    </td>
                     <td className="px-5 py-3 font-mono text-xs">{schedule.cron}</td>
                     <td className="px-5 py-3">
                       <StatusBadge status={schedule.enabled ? 'active' : 'stopped'} />

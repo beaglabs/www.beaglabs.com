@@ -63,6 +63,12 @@ export interface McpServer {
   tools: McpTool[]
   headers?: Record<string, string>
   lastHealthCheck?: string
+  oauth?: {
+    configured: boolean
+    authorized: boolean
+    expiresAt?: string
+    scopes?: string[]
+  }
 }
 
 export interface McpTool {
@@ -72,11 +78,17 @@ export interface McpTool {
 }
 
 export interface Channel {
-  name: 'resend'
+  name: string
   status: 'connected' | 'disconnected' | 'error'
   config: Record<string, unknown>
   lastActivity?: string
   messageCount: number
+  oauth?: {
+    configured: boolean
+    authorized: boolean
+    expiresAt?: string
+    scopes?: string[]
+  }
 }
 
 export interface Sandbox {

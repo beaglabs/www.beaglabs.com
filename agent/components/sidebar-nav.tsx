@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   Zap,
   LogOut,
+  Radio,
 } from 'lucide-react'
 
 const navItems = [
@@ -37,6 +38,11 @@ const navItems = [
     title: 'Skills',
     href: '/skills',
     icon: Puzzle,
+  },
+  {
+    title: 'Channels',
+    href: '/channels',
+    icon: Radio,
   },
   {
     title: 'MCP Servers',
