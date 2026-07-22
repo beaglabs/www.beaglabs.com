@@ -1,0 +1,240 @@
+# Agent Management Portal — Implementation Plan
+
+## Overview
+
+Build a Vellum.ai-style agent management portal at `/agent` that can be deployed as a standalone Vercel project. The portal integrates with the existing Flue runtime, supports MCP configs, skill management, Discord + Resend channels, Daytona/Vercel sandboxes, schedules, and observability.
+
+---
+
+## Architecture
+
+### Route Structure (Standalone `/agent` project)
+
+```
+agent/
+├── app/
+│   ├── layout.tsx                    # Root layout with sidebar nav
+│   ├── page.tsx                      # Dashboard / overview
+│   ├── globals.css                   # Shared styles (import from main)
+│   ├── agents/
+│   │   ├── page.tsx                  # Agent list
+│   │   ├── [id]/
+│   │   │   ├── page.tsx              # Agent detail + chat
+│   │   │   ├── config/page.tsx       # Agent configuration
+│   │   │   └── runs/page.tsx         # Agent run history
+│   │   └── new/page.tsx              # Create agent
+│   ├── workflows/
+│   │   ├── page.tsx                  # Workflow list
+│   │   ├── [id]/page.tsx             # Workflow detail + runs
+│   │   └── new/page.tsx              # Create workflow
+│   ├── skills/
+│   │   ├── page.tsx                  # Skill registry
+│   │   └── [id]/page.tsx             # Skill detail
+│   ├── mcp/
+│   │   └── page.tsx                  # MCP server configuration
+│   ├── channels/
+│   │   └── page.tsx                  # Discord + Resend channels
+│   ├── sandboxes/
+│   │   └── page.tsx                  # Daytona + Vercel sandbox management
+│   ├── schedules/
+│   │   ├── page.tsx                  # Schedule list
+│   │   └── [id]/page.tsx             # Schedule detail
+│   ├── observability/
+│   │   ├── page.tsx                  # Observability dashboard
+│   │   └── runs/[id]/page.tsx        # Individual run trace
+│   └── settings/
+│       ├── page.tsx                  # General settings
+│       └── security/page.tsx         # FIDO2/WebAuthn enrollment
+├── components/
+│   ├── ui/                           # Shared UI components (shadcn)
+│   ├── sidebar-nav.tsx               # Main navigation sidebar
+│   ├── agent-card.tsx                # Agent preview card
+│   ├── agent-chat.tsx                # Interactive agent chat panel
+│   ├── workflow-card.tsx             # Workflow preview card
+│   ├── skill-card.tsx                # Skill preview card
+│   ├── mcp-config-form.tsx           # MCP server config form
+│   ├── channel-status.tsx            # Channel connection status
+│   ├── sandbox-terminal.tsx          # Sandbox terminal emulator
+│   ├── schedule-timeline.tsx         # Schedule timeline view
+│   ├── observability-chart.tsx       # Metrics visualization
+│   ├── run-trace.tsx                 # Run execution trace
+│   └── webauthn-enroll.tsx           # FIDO2 enrollment component
+├── lib/
+│   ├── api.ts                        # Flue SDK client wrapper
+│   ├── auth.ts                       # WebAuthn + session auth
+│   └── types.ts                      # Shared TypeScript types
+├── next.config.mjs
+├── package.json
+├── tsconfig.json
+├── tailwind.config.ts
+└── vercel.json                       # Standalone Vercel config
+```
+
+### Key Design Decisions
+
+1. **Standalone deployment**: The `agent/` directory is a complete Next.js app that can be deployed to Vercel independently. It shares the same Flue API backend at `www.beaglabs.com/api/flue/`.
+
+2. **Neobrutalist design**: Inherits the existing design system (black borders, orange accent, shadow utilities) from the main site.
+
+3. **Flue SDK client**: Uses `@flue/sdk` to communicate with the Flue runtime API for agent management, workflow invocation, and run inspection.
+
+4. **WebAuthn authentication**: Implements FIDO2/WebAuthn for zero-trust identity verification as the primary auth method, with better-auth session fallback.
+
+---
+
+## Implementation Phases
+
+### Phase 1: Project Scaffolding + Core Layout
+- Create `agent/` as a standalone Next.js 16 app
+- Set up shared design tokens (globals.css, tailwind)
+- Build sidebar navigation with all sections
+- Create root layout with auth provider
+
+### Phase 2: Agent Management
+- Agent list page with cards showing status, model, last active
+- Agent detail page with interactive chat (POST to `/api/flue/agents/:name/:id`)
+- Agent configuration page (model, instructions, tools, skills)
+- Agent creation flow with form wizard
+
+### Phase 3: Workflow Management
+- Workflow list with run status indicators
+- Workflow detail with run history table
+- Workflow invocation form (manual trigger)
+- Run detail page with event timeline
+
+### Phase 4: Skill Registry
+- Skill list showing installed skills from `.agents/skills/`
+- Skill detail with SKILL.md preview
+- Enable/disable toggle per agent
+- Install new skill (from npm package or GitHub)
+
+### Phase 5: MCP Configuration
+- MCP server connection form (name, URL, headers)
+- Connected server list with health status
+- Tool discovery preview from connected servers
+- Per-agent MCP server assignment
+
+### Phase 6: Channel Management
+- Discord channel status + configuration
+- Resend email channel status + configuration
+- Channel health monitoring
+- Message/activity feed from channels
+
+### Phase 7: Sandbox Management
+- Daytona sandbox list with status (running/stopped/error)
+- Vercel Sandbox fallback configuration
+- Sandbox creation/termination controls
+- File browser + terminal emulator per sandbox
+
+### Phase 8: Schedules
+- Schedule list with cron expressions and next-run times
+- Create/edit schedule form (workflow or agent dispatch)
+- Schedule run history
+- Enable/disable individual schedules
+
+### Phase 9: Observability Dashboard
+- Overview metrics (total runs, success rate, avg latency, cost)
+- Run timeline chart (runs over time)
+- Model usage breakdown (tokens, cost per model)
+- Individual run trace viewer (events, tool calls, model turns)
+- Error log aggregation
+
+### Phase 10: Security (WebAuthn)
+- FIDO2/WebAuthn enrollment flow
+- Passkey management (list, add, remove)
+- Session management
+- Zero-trust identity verification integration
+
+---
+
+## Files to Create (ordered)
+
+### Core Infrastructure
+1. `agent/package.json` — Dependencies
+2. `agent/next.config.mjs` — Next.js config with API proxy
+3. `agent/tsconfig.json` — TypeScript config
+4. `agent/tailwind.config.ts` — Tailwind with shared design tokens
+5. `agent/app/globals.css` — Styles (nb-* utilities from main site)
+6. `agent/app/layout.tsx` — Root layout with sidebar
+7. `agent/lib/api.ts` — Flue SDK client
+8. `agent/lib/types.ts` — Shared types
+9. `agent/lib/auth.ts` — WebAuthn auth helpers
+
+### Pages
+10. `agent/app/page.tsx` — Dashboard
+11. `agent/app/agents/page.tsx` — Agent list
+12. `agent/app/agents/[id]/page.tsx` — Agent detail + chat
+13. `agent/app/agents/[id]/config/page.tsx` — Agent config
+14. `agent/app/agents/new/page.tsx` — Create agent
+15. `agent/app/workflows/page.tsx` — Workflow list
+16. `agent/app/workflows/[id]/page.tsx` — Workflow detail
+17. `agent/app/skills/page.tsx` — Skill registry
+18. `agent/app/mcp/page.tsx` — MCP config
+19. `agent/app/channels/page.tsx` — Channel management
+20. `agent/app/sandboxes/page.tsx` — Sandbox management
+21. `agent/app/schedules/page.tsx` — Schedule management
+22. `agent/app/observability/page.tsx` — Observability dashboard
+23. `agent/app/observability/runs/[id]/page.tsx` — Run trace
+24. `agent/app/settings/page.tsx` — Settings
+25. `agent/app/settings/security/page.tsx` — WebAuthn enrollment
+
+### Components
+26. `agent/components/sidebar-nav.tsx`
+27. `agent/components/agent-card.tsx`
+28. `agent/components/agent-chat.tsx`
+29. `agent/components/workflow-card.tsx`
+30. `agent/components/skill-card.tsx`
+31. `agent/components/mcp-config-form.tsx`
+32. `agent/components/channel-status.tsx`
+33. `agent/components/sandbox-terminal.tsx`
+34. `agent/components/schedule-timeline.tsx`
+35. `agent/components/observability-chart.tsx`
+36. `agent/components/run-trace.tsx`
+37. `agent/components/webauthn-enroll.tsx`
+
+### Flue Extensions (in main repo)
+38. `lib/flue/workflows/agent-management.ts` — Agent CRUD workflow
+39. `lib/flue/workflows/skill-registry.ts` — Skill management workflow
+40. `lib/flue/tools/mcp-connect.ts` — MCP server connection tool
+41. `lib/flue/tools/sandbox-manager.ts` — Sandbox lifecycle tool
+
+---
+
+## API Integration Points
+
+| Feature | Flue API Endpoint | Method |
+|---------|-------------------|--------|
+| List agents | `/admin/agents` | GET |
+| Get agent runs | `/admin/runs?workflow=<name>` | GET |
+| Get run detail | `/admin/runs/:runId` | GET |
+| Invoke workflow | `/workflows/:name` | POST |
+| Agent chat | `/agents/:name/:id` | POST |
+| Agent events | `/agents/:name/:id` | GET (SSE) |
+| Discord channel | `/channels/discord/interactions` | POST |
+| Resend channel | `/channels/resend/webhook` | POST |
+
+---
+
+## Dependencies to Add
+
+```json
+{
+  "@flue/sdk": "^1.0.0-beta.9",
+  "@simplewebauthn/browser": "^10.0.0",
+  "@simplewebauthn/server": "^10.0.0",
+  "recharts": "^2.15.0",
+  "xterm": "^5.3.0",
+  "@xterm/addon-fit": "^0.10.0"
+}
+```
+
+---
+
+## Vercel Deployment
+
+The `agent/` directory is configured as a standalone Vercel project:
+- `vercel.json` sets up the rewrite to proxy `/api/flue/*` requests to the main site
+- Environment variables reference the main site's Flue API
+- Can be deployed independently with `vercel --cwd agent`
+
+Alternatively, it can be deployed as a path-based route on the main site by adding it to the existing Next.js app under `app/agent/`.
