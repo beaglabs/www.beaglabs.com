@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {
   Send,
   Loader2,
@@ -20,6 +22,7 @@ import {
   Check,
   Trash2,
   Search,
+  Wrench,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -31,6 +34,14 @@ interface Message {
   model?: string
   tokens?: { input: number; output: number }
   attachments?: Attachment[]
+  toolCalls?: ToolCall[]
+}
+
+interface ToolCall {
+  id: string
+  name: string
+  arguments: string
+  result?: string
 }
 
 interface Attachment {
@@ -99,7 +110,6 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [currentConversation?.messages])
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
@@ -332,7 +342,6 @@ export default function ChatPage() {
           </button>
         </div>
 
-        {/* Search */}
         <div className="p-2 border-b-[3px] border-black">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
@@ -381,7 +390,6 @@ export default function ChatPage() {
           )}
         </div>
 
-        {/* Model Settings */}
         <div className="p-3 border-t-[3px] border-black">
           <button
             onClick={() => setShowSettings(!showSettings)}
@@ -413,7 +421,6 @@ export default function ChatPage() {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col bg-[var(--background)]">
-        {/* Messages */}
         <div
           className="flex-1 overflow-y-auto"
           onDragOver={handleDragOver}
@@ -428,14 +435,14 @@ export default function ChatPage() {
               <h2 className="text-2xl font-extrabold mb-2">Start a conversation</h2>
               <p className="text-[var(--muted-foreground)] max-w-md text-sm leading-relaxed">
                 Send a message to start chatting with the AI assistant.
-                The agent will be created dynamically with your chosen model.
+                You can also ask it to create schedules or run workflows.
               </p>
               <div className="mt-8 grid grid-cols-2 gap-3 max-w-lg w-full">
                 {[
+                  'Create a daily summary schedule',
+                  'List my workflows',
                   'Explain quantum computing',
                   'Write a React component',
-                  'Debug this error message',
-                  'Create a REST API',
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
@@ -461,7 +468,6 @@ export default function ChatPage() {
                   )}
 
                   <div className={`max-w-[75%] group relative ${msg.role === 'user' ? 'order-1' : ''}`}>
-                    {/* Message Bubble */}
                     <div
                       className={`${
                         msg.role === 'user'
@@ -469,7 +475,6 @@ export default function ChatPage() {
                           : 'bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#111]'
                       } p-4`}
                     >
-                      {/* Attachments */}
                       {msg.attachments && msg.attachments.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-3 pb-3 border-b border-black/10">
                           {msg.attachments.map((att) => {
@@ -492,10 +497,30 @@ export default function ChatPage() {
                         </div>
                       )}
 
-                      {/* Message Content */}
-                      <div className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</div>
+                      {/* Tool calls indicator */}
+                      {msg.toolCalls && msg.toolCalls.length > 0 && (
+                        <div className="mb-3 pb-3 border-b border-black/10 space-y-2">
+                          {msg.toolCalls.map((tc) => (
+                            <div key={tc.id} className="flex items-center gap-2 text-xs bg-[var(--secondary)] border-2 border-black px-3 py-2">
+                              <Wrench className="w-3.5 h-3.5 shrink-0" />
+                              <span className="font-bold font-mono">{tc.name}</span>
+                              <span className="text-[var(--muted-foreground)] truncate">{tc.arguments}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
-                      {/* Token Info */}
+                      {/* Message Content — Markdown for assistant, plain text for user */}
+                      {msg.role === 'assistant' ? (
+                        <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-foreground prose-p:my-2 prose-pre:bg-black/5 prose-pre:border-2 prose-pre:border-black/10 prose-pre:rounded prose-code:text-[13px] prose-code:bg-black/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-table:border-2 prose-table:border-black prose-th:border-2 prose-th:border-black prose-th:bg-[var(--secondary)] prose-th:px-3 prose-th:py-2 prose-td:border-2 prose-td:border-black prose-td:px-3 prose-td:py-2 prose-ul:list-disc prose-ol:list-decimal prose-li:my-0.5 prose-a:text-[var(--accent)] prose-a:underline prose-strong:font-bold prose-blockquote:border-l-4 prose-blockquote:border-[var(--accent)] prose-blockquote:pl-4 prose-blockquote:italic">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
+                      ) : (
+                        <div className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</div>
+                      )}
+
                       {msg.tokens && (
                         <div className={`mt-3 pt-2 border-t ${
                           msg.role === 'user' ? 'border-white/10' : 'border-black/10'
@@ -509,7 +534,6 @@ export default function ChatPage() {
                       )}
                     </div>
 
-                    {/* Message Actions */}
                     <div className={`absolute top-2 ${
                       msg.role === 'user' ? '-left-10' : '-right-10'
                     } opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1`}>
@@ -539,7 +563,6 @@ export default function ChatPage() {
           )}
         </div>
 
-        {/* Drag Overlay */}
         {isDragging && (
           <div className="absolute inset-0 bg-[var(--accent)]/10 border-[3px] border-dashed border-[var(--accent)] flex items-center justify-center z-50 pointer-events-none">
             <div className="bg-white border-[3px] border-black px-8 py-4 shadow-[6px_6px_0px_0px_#111]">
@@ -549,9 +572,7 @@ export default function ChatPage() {
           </div>
         )}
 
-        {/* Input Area */}
         <div className="border-t-[3px] border-black bg-white p-4">
-          {/* Attachments Preview */}
           {attachments.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3 pb-3 border-b-2 border-black/10">
               {attachments.map((att) => {

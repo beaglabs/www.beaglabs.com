@@ -5,11 +5,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   Bot,
-  Workflow,
   Puzzle,
   Plug,
   MessageSquare,
-  Clock,
   BarChart3,
   Settings,
   LayoutDashboard,
@@ -30,11 +28,6 @@ const navItems = [
     icon: MessageSquare,
   },
   {
-    title: 'Workflows',
-    href: '/workflows',
-    icon: Workflow,
-  },
-  {
     title: 'Skills',
     href: '/skills',
     icon: Puzzle,
@@ -48,11 +41,6 @@ const navItems = [
     title: 'MCP Servers',
     href: '/mcp',
     icon: Plug,
-  },
-  {
-    title: 'Schedules',
-    href: '/schedules',
-    icon: Clock,
   },
   {
     title: 'Observability',

@@ -221,7 +221,7 @@ export default function DashboardPage() {
           </div>
         </a>
         <a
-          href="/workflows"
+          href="/chat"
           className="nb-card bg-white p-5 flex items-center gap-4 hover:bg-[var(--sidebar-accent)] transition-colors"
         >
           <div className="w-10 h-10 bg-[var(--accent)] border-2 border-black flex items-center justify-center">
@@ -230,7 +230,7 @@ export default function DashboardPage() {
           <div>
             <p className="font-bold text-sm">Run Workflow</p>
             <p className="text-xs text-[var(--muted-foreground)]">
-              Invoke a workflow manually
+              Ask the chat to invoke a workflow
             </p>
           </div>
         </a>
