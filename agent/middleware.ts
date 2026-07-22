@@ -6,7 +6,7 @@ const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secr
 const COOKIE_NAME = 'agent-session'
 
 // Public paths that don't require authentication
-const publicPaths = ['/login', '/api/auth']
+const publicPaths = ['/api/auth']
 
 function isPublicPath(pathname: string): boolean {
   return publicPaths.some((path) => pathname.startsWith(path))
@@ -15,7 +15,7 @@ function isPublicPath(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow public paths
+  // Allow public API paths
   if (isPublicPath(pathname)) {
     return NextResponse.next()
   }
@@ -23,8 +23,26 @@ export async function middleware(request: NextRequest) {
   // Check for session cookie
   const token = request.cookies.get(COOKIE_NAME)?.value
 
+  // If on login page
+  if (pathname === '/login') {
+    if (token) {
+      try {
+        // Verify the token - if valid, redirect to portal
+        await jwtVerify(token, SECRET)
+        return NextResponse.redirect(new URL('/', request.url))
+      } catch {
+        // Invalid token - clear it and show login
+        const response = NextResponse.next()
+        response.cookies.delete(COOKIE_NAME)
+        return response
+      }
+    }
+    // No token - show login page
+    return NextResponse.next()
+  }
+
+  // For all other paths, require authentication
   if (!token) {
-    // Redirect to login if no session
     const loginUrl = new URL('/login', request.url)
     return NextResponse.redirect(loginUrl)
   }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { SidebarNav } from '@/components/sidebar-nav'
 import { Toaster } from 'sonner'
+import { LayoutWrapper } from '@/components/layout-wrapper'
 import './globals.css'
 
 const inter = Inter({
@@ -35,10 +36,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <SidebarNav />
-        <main className="ml-64 min-h-screen">
-          <div className="p-8">{children}</div>
-        </main>
+        <LayoutWrapper>{children}</LayoutWrapper>
         <Toaster position="bottom-right" />
       </body>
     </html>

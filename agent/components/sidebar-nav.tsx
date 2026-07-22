@@ -24,9 +24,9 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: 'Agents',
-    href: '/agents',
-    icon: Bot,
+    title: 'Chat',
+    href: '/chat',
+    icon: MessageSquare,
   },
   {
     title: 'Workflows',
@@ -42,11 +42,6 @@ const navItems = [
     title: 'MCP Servers',
     href: '/mcp',
     icon: Plug,
-  },
-  {
-    title: 'Channels',
-    href: '/channels',
-    icon: MessageSquare,
   },
   {
     title: 'Schedules',
@@ -68,6 +63,11 @@ const navItems = [
 export function SidebarNav() {
   const pathname = usePathname()
   const router = useRouter()
+
+  // Don't render sidebar on login page
+  if (pathname === '/login') {
+    return null
+  }
 
   const handleLogout = async () => {
     await fetch('/api/auth/session', { method: 'DELETE' })
