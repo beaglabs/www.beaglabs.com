@@ -109,7 +109,7 @@ async function executeTool(name: string, args: Record<string, unknown>, baseUrl:
   }
 }
 
-// Call the Xiaomi API and return the full response (non-streaming) for tool call handling
+// Call the Xiaomi API (non-streaming) for tool call handling
 async function callModel(messages: Array<{ role: string; content: string | null; tool_calls?: unknown[]; tool_call_id?: string; name?: string }>, model: string) {
   const response = await fetch(`${XIAOMI_API_URL}/chat/completions`, {
     method: 'POST',
@@ -208,6 +208,23 @@ async function streamTextResponse(
   }
 }
 
+const SYSTEM_PROMPT = `You are the Beag Labs Agent Portal assistant. You have direct access to the platform's backend through function calling tools. ALWAYS use your tools when the user asks about workflows or schedules — never say you can't do something that a tool can do.
+
+YOUR AVAILABLE TOOLS:
+• create_schedule — Creates a recurring schedule. Use when the user wants to automate something on a cron pattern, run a task periodically, or set up recurring execution.
+• list_schedules — Lists all existing schedules. Use when the user asks what schedules exist or wants to check schedule status.
+• invoke_workflow — Runs a workflow immediately. Use when the user wants to trigger, run, or execute a workflow right now.
+• list_workflows — Lists all available workflows. Use when the user asks what workflows exist or what they can run.
+
+RULES:
+1. When the user asks to "create a schedule", "set up a recurring task", "automate X daily/weekly/hourly", or similar — call create_schedule immediately. Do not ask for permission.
+2. When the user asks to "run a workflow", "invoke X", "execute Y", or similar — call invoke_workflow immediately.
+3. When the user asks "what workflows do I have" or "list my schedules" — call list_workflows or list_schedules.
+4. If you need information (like which workflow to target), call list_workflows first to discover what's available, then proceed.
+5. Never say "I can't create schedules" or "I can't run workflows" — you have tools for exactly this.
+6. Be concise. Use markdown formatting for responses.
+7. If the user's request is ambiguous, make a reasonable assumption and proceed rather than asking clarifying questions.`
+
 export async function POST(request: Request) {
   try {
     const { message, conversationId, model, history = [] } = await request.json()
@@ -219,18 +236,8 @@ export async function POST(request: Request) {
     const modelName = model?.split('/')[1] || 'mimo-v2.5-pro'
     const baseUrl = new URL(request.url).origin
 
-    // Build messages array
     const messages: Array<{ role: string; content: string | null; tool_calls?: unknown[]; tool_call_id?: string; name?: string }> = [
-      {
-        role: 'system',
-        content: `You are a helpful AI assistant for the Beag Labs Agent Portal. You can help users manage workflows and schedules.
-
-When a user asks to create a schedule, set up a recurring task, or automate something on a cron pattern, use the create_schedule tool.
-When a user asks to run or invoke a workflow, use the invoke_workflow tool.
-When a user asks to see their schedules or workflows, use the list_schedules or list_workflows tools.
-
-Be concise and accurate. Format your responses using markdown when appropriate (code blocks, lists, tables, etc.).`,
-      },
+      { role: 'system', content: SYSTEM_PROMPT },
       ...history,
       { role: 'user', content: message },
     ]
@@ -246,11 +253,9 @@ Be concise and accurate. Format your responses using markdown when appropriate (
 
       // If no tool calls, we're done — stream the final text response
       if (!assistantMessage.tool_calls || assistantMessage.tool_calls.length === 0) {
-        // If this was a non-streaming call and we have content, stream it directly
         if (assistantMessage.content) {
           const stream = new ReadableStream({
             async start(controller) {
-              // Send the content in chunks to simulate streaming
               const content = assistantMessage.content!
               const chunkSize = 20
               for (let i = 0; i < content.length; i += chunkSize) {
@@ -292,7 +297,6 @@ Be concise and accurate. Format your responses using markdown when appropriate (
           args = JSON.parse(fn.arguments || '{}')
         } catch {}
 
-        // Notify client about tool execution
         const toolResult = await executeTool(fn.name, args, baseUrl)
 
         messages.push({
