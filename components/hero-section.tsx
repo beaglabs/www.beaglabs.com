@@ -37,17 +37,17 @@ export function HeroSection() {
           </span>
 
           <h1 className="mb-6 max-w-[820px] text-[52px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#111] sm:text-[64px] lg:text-[80px]">
-            Small models.
+            Own your models.
             <br />
-            SOTA research.
+            Own your data.
             <br />
             <span className="bg-[#FF5F1F] text-[#111] px-3 py-0.5">
-              Deployed anywhere.
+            Save your coins 💰
             </span>
           </h1>
 
           <p className="mb-10 max-w-[650px] text-[18px] leading-[1.65] text-[#404040] font-medium">
-            Deploy domain-adapted models on your infrastructure, train custom models, or hire us to build one using SOTA methods. Slash compute costs and ship to production faster.
+            We use QAT and other techniques to make deploying internal LLMs 120x cheaper than proprietary APIs. Get the 2026 ML Training Cookbook to learn how to train and deploy your own models.
           </p>
 
           {status === "success" ? (
