@@ -1,34 +1,34 @@
 const services = [
   {
     id: "01",
-    title: "Data Connectors",
+    title: "Data Pipeline Engineering",
     description:
-      "Plug into the tools your team already uses. OAuth connectors for Gmail, GitHub, HubSpot, Notion — or drop a CSV. Your data never leaves your environment, and we never train on it.",
-    label: "Ingest",
+      "We connect to your data sources, clean and preprocess your documents, and prepare them for model development — all within your environment. Your data never leaves your infrastructure.",
+    label: "Pipeline",
     bg: "#FFF3E6",
   },
   {
     id: "02",
-    title: "Intelligent Labeling",
+    title: "Model Development",
     description:
-      "Frontier models label your data. Our disagreement engine flags only the 2-5% of examples that need human review — the rest are auto-labeled.",
-    label: "Label",
+      "We design and fine-tune compact models for your specific classification and extraction tasks. Frontier models accelerate the labeling process; your experts review only the edge cases.",
+    label: "Develop",
     bg: "#E6F2FF",
   },
   {
     id: "03",
-    title: "Custom Training",
+    title: "Deployment Engineering",
     description:
-      "Fine-tune models from 500M to 5B parameters for classification, extraction, and relevance. Same training recipe used to replicate expert judgment in financial tasks.",
-    label: "Train",
+      "We export your model as ONNX and deploy it on your infrastructure — cloud, on-prem, or air-gapped. No runtime API calls back to us. You own the weights, not us.",
+    label: "Deploy",
     bg: "#E6FFF2",
   },
   {
     id: "04",
-    title: "Model Export & Deploy",
+    title: "Production Support",
     description:
-      "Export your trained model as ONNX and deploy anywhere — cloud, on-prem, or air-gapped. You own the weights, not us.",
-    label: "Deploy",
+      "We monitor model performance, retrain as your data evolves, and keep your models accurate at scale. You get a deployed model that stays relevant — not a one-time handoff.",
+    label: "Support",
     bg: "#FFF9E6",
   },
 ]
@@ -39,17 +39,16 @@ export function CapabilitiesSection() {
       <div className="mx-auto max-w-[1440px]">
         <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <div>
-            <span className="nb-label mb-5 inline-block">Platform</span>
+            <span className="nb-label mb-5 inline-block">Services</span>
             <h2 className="max-w-[460px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-              Everything you need to deploy domain-specific AI.
+              We build, deploy, and maintain your domain AI.
             </h2>
           </div>
           <div>
             <p className="max-w-[480px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-              From raw documents to a deployed model in hours, not months.
-              Frontier models handle the heavy lifting on labeling. Your
-              experts review only the hard cases. The result is a model
-              tuned to your domain that you control end-to-end.
+              From raw documents to a deployed model running on your
+              infrastructure — we handle the pipeline end to end.
+              You own the weights. Your data never leaves your environment.
             </p>
           </div>
         </div>

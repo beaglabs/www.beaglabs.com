@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const title = searchParams.get('title') ?? 'Beag Labs'
   const description = searchParams.get('description') ?? ''
-  const label = searchParams.get('label') ?? 'Small Model Foundry'
+  const label = searchParams.get('label') ?? 'Custom AI. On Your Infra.'
 
   const fonts = await googleFonts([
     { name: 'Inter', weight: [500, 700, 800] },

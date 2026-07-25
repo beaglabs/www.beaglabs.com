@@ -1,8 +1,8 @@
 const tracks = [
-  "Document classification",
-  "Structured extraction",
-  "Legal, healthcare, finance, defense",
-  "ONNX export — you own the weights",
+  "Custom classification models",
+  "Structured extraction pipelines",
+  "Legal · Healthcare · Finance · Defense",
+  "Managed deployment & hosting",
 ]
 
 export function CapabilityTracksStrip() {
@@ -10,7 +10,7 @@ export function CapabilityTracksStrip() {
     <section className="border-b-[3px] border-[#111] bg-[#FFF3E6] px-6 py-10 lg:px-9">
       <div className="mx-auto max-w-[1440px]">
         <span className="nb-label mb-6 inline-block bg-[#111] text-[#FFF3E6] border-[#111]">
-          Platform Tracks
+          What We Build
         </span>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {tracks.map((track, index) => (

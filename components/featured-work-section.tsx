@@ -32,7 +32,7 @@ export function FeaturedWorkSection() {
           </h2>
           <p className="max-w-[430px] text-[17px] leading-[1.65] text-[#404040] font-medium">
             Every domain has its own vocabulary, risk surface, and compliance
-            requirements. Our platform adapts to yours — and deploys where
+            requirements. We adapt to yours — and deploys where
             your security policy demands.
           </p>
         </div>

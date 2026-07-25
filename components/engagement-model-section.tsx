@@ -1,30 +1,30 @@
 const steps = [
   {
     id: "01",
-    title: "Chat with us",
+    title: "Tell us what you need",
     description:
-      "Tell us what you're building. We'll design a labeling schema, hand-pick the best frontier model for your data, and ship you a custom data recipe you can run yourself — or we'll run it for you.",
+      "We'll learn about your data, your infrastructure, and the tasks you want to automate. Then we design a solution — model architecture, deployment target, and a timeline.",
     bg: "#FFF3E6",
   },
   {
     id: "02",
-    title: "Train with intelligent labeling",
+    title: "We build your model",
     description:
-      "Frontier models auto-label your examples. Our disagreement engine surfaces the 2-5% where the model is uncertain — those are the only ones your team reviews.",
+      "We connect your data sources, use frontier models to accelerate labeling, fine-tune a compact model for your task, and export it as ONNX — ready to deploy.",
     bg: "#E6F2FF",
   },
   {
     id: "03",
-    title: "Co-Review the hard cases",
+    title: "We deploy on your infra",
     description:
-      "A keyboard-driven review interface lets your domain experts correct contested labels in minutes. No CSV export, no spreadsheet ping-pong.",
+      "We deploy the model on your infrastructure — cloud, on-prem, or air-gapped — and integrate it into your workflows. No runtime API calls to us. Your data stays put.",
     bg: "#E6FFF2",
   },
   {
     id: "04",
-    title: "Deploy your model",
+    title: "We keep it running",
     description:
-      "Export as ONNX and deploy on your infrastructure — cloud, on-prem, or air-gapped. You own the model. We don't touch your inference data.",
+      "We monitor accuracy, retrain as your data changes, and optimize performance over time. A model that starts accurate stays accurate.",
     bg: "#FFF9E6",
   },
 ]
@@ -36,12 +36,12 @@ export function EngagementModelSection() {
         <div>
           <span className="nb-label mb-5 inline-block">How It Works</span>
           <h2 className="mb-4 max-w-[470px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            From raw data to deployed model in under 24 hours.
+            From conversation to deployed model — we handle it all.
           </h2>
           <p className="max-w-[430px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-            Four steps, no PhD required. Connect your data, let frontier
-            models handle the labeling, review the edge cases, and deploy a
-            model you own on infrastructure you control.
+            Tell us what you need. We design, build, deploy, and maintain
+            your custom model on infrastructure you control. No PhD required
+            on your side.
           </p>
         </div>
 

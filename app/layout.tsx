@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
+    default: 'Beag Labs — Custom AI. Your Data. Your Infrastructure.',
   },
   description:
-    'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
+    'Custom AI services — we build and deploy domain-specific classification and extraction models on your infrastructure. On-prem, air-gapped, or VPC. You own the model.',
   alternates: {
     canonical: '/',
   },
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
+    title: 'Beag Labs — Custom AI. Your Data. Your Infrastructure.',
     description:
-      'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
+      'Custom AI services — we build and deploy domain-specific classification and extraction models on your infrastructure. On-prem, air-gapped, or VPC. You own the model.',
     url: 'https://www.beaglabs.com',
     siteName: 'Beag Labs',
     images: [
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Domain AI, Deployed Anywhere',
+        alt: 'Beag Labs — Custom AI Deployed Anywhere',
       },
     ],
     locale: 'en_US',
@@ -47,9 +47,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Beag Labs — Purpose-Built AI. Your Data. Your Infrastructure.',
+    title: 'Beag Labs — Custom AI. Your Data. Your Infrastructure.',
     description:
-      'Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.',
+      'Custom AI services — we build and deploy domain-specific classification and extraction models on your infrastructure. On-prem, air-gapped, or VPC. You own the model.',
     images: ['/og-image.png'],
     creator: '@beaglabs',
   },
@@ -62,7 +62,7 @@ const organizationJsonLd = {
   url: 'https://www.beaglabs.com',
   logo: 'https://www.beaglabs.com/favicon.png',
   description:
-    'Small Model Foundry. Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC.',
+    'Custom AI services. Domain-specific classification and extraction models deployed on your infrastructure — on-prem, air-gapped, or in your VPC.',
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [
     'Small language models',

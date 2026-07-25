@@ -2,37 +2,37 @@ const faqs = [
   {
     question: "What is Beag Labs?",
     answer:
-      "Beag Labs is a small model foundry that builds domain-specific classification and extraction models trained on your proprietary data. Unlike frontier API providers, Beag Labs models are deployed on your own infrastructure — on-prem, air-gapped, or in your VPC — with no data leakage and no vendor lock-in. You own the trained model weights.",
+      "Beag Labs is an AI services company that builds and deploys custom small language models for regulated, data-sensitive organizations. We handle everything — data pipeline engineering, model development, ONNX export, and deployment on your infrastructure. You own the trained model weights and your data never leaves your environment.",
   },
   {
-    question: "What is a small model foundry?",
+    question: "How does your engagement model work?",
     answer:
-      "A small model foundry is a platform that trains and deploys small language models (SLMs) — typically 500M to 5B parameters — specialized for a specific domain or task. Instead of sending data to a large general-purpose API, a foundry produces compact models you run on your own hardware. This cuts compute costs dramatically while matching or exceeding frontier-model accuracy on domain-specific tasks.",
+      "We start by understanding your data, infrastructure, and the tasks you want to automate. We design a solution, build a custom model using frontier models to accelerate labeling, and deploy it on your infrastructure — cloud, on-prem, or air-gapped. After deployment, we monitor performance and retrain as your data evolves.",
   },
   {
-    question: "Can I deploy Beag Labs models on-premises or air-gapped?",
+    question: "Can you deploy on-premises or in air-gapped environments?",
     answer:
-      "Yes. Every model Beag Labs trains is exported as ONNX and deployed on infrastructure you control — cloud, on-premises, or fully air-gapped environments. There are no runtime API calls to Beag Labs. Your inference data never leaves your environment, and you own the model weights outright.",
+      "Yes. Every model we build is exported as ONNX and deployed on infrastructure you control — cloud, on-premises, or fully air-gapped. There are no runtime API calls back to us. Your inference data never leaves your environment, and you own the model weights outright.",
   },
   {
-    question: "Does Beag Labs train on my data or share it with third parties?",
+    question: "Do you train on our data or share it with third parties?",
     answer:
-      "No. Beag Labs never trains foundation models on your proprietary data, and your data never leaves your environment during inference. The custom models built for you are yours — not absorbed into a shared model. Data connectors (Gmail, GitHub, HubSpot, Notion, or CSV upload) operate within your environment.",
+      "No. We never train foundation models on your data, and your data never leaves your environment during inference. The custom models we build for you are yours alone — not absorbed into a shared model. Data connectors operate within your environment, and we never touch your production data.",
   },
   {
-    question: "What types of models does Beag Labs build?",
+    question: "What types of models do you build?",
     answer:
-      "Beag Labs builds four domain model families: Compliance SLMs (NIST 800-53 control classification), Security SLMs (CVE, OWASP, MITRE ATT&CK mapping), Legal SLMs (e-discovery, contract clause extraction), and Healthcare SLMs (clinical document triage, adverse event classification). All models handle classification, extraction, and relevance tasks.",
+      "We build compact classification, extraction, and relevance models for regulated industries: compliance (NIST 800-53 control classification), security (CVE, OWASP, MITRE ATT&CK mapping), legal (e-discovery, contract clause extraction), and healthcare (clinical document triage, adverse event classification). Each model is typically 500M to 5B parameters.",
   },
   {
     question: "How is Beag Labs different from calling an LLM API like OpenAI or Anthropic?",
     answer:
-      "Frontier API providers charge per-token for every inference, expose your data to their servers, and lock you into their platform. Beag Labs trains a compact model you own and deploy on your own hardware, which can be up to 13x cheaper than per-token API pricing at scale. There are no API dependencies at runtime, no data leakage, and no vendor lock-in.",
+      "API providers charge per-token for every inference, your data passes through their servers, and you're locked into their platform. We build a compact model you own and deploy on your own hardware — no per-token costs, no data exposure, no vendor lock-in. At scale it can be up to 13x cheaper than per-token API pricing.",
   },
   {
-    question: "How long does it take to build and deploy a custom model?",
+    question: "How long does it take to get a deployed model?",
     answer:
-      "From raw data to a deployed model typically takes under 24 hours. The pipeline uses frontier models for intelligent auto-labeling, then surfaces only the 2-5% of edge cases for human review via a disagreement engine. After review, the model is fine-tuned and exported as ONNX for immediate deployment.",
+      "From our first conversation to a deployed model typically takes under two weeks. We use frontier models to accelerate the labeling pipeline, then fine-tune and export as ONNX for deployment on your infrastructure. Ongoing support keeps the model accurate as your data evolves.",
   },
 ]
 
@@ -61,13 +61,13 @@ export function FaqSection() {
           <div>
             <span className="nb-label mb-5 inline-block">FAQ</span>
             <h2 className="max-w-[460px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-              Common questions about domain-specific AI.
+              Common questions about custom AI deployment.
             </h2>
           </div>
           <div>
             <p className="max-w-[480px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-              Everything you need to know about how Beag Labs trains, deploys,
-              and secures small models for regulated and data-sensitive
+              Everything you need to know about how Beag Labs builds, deploys,
+              and maintains small models for regulated and data-sensitive
               environments.
             </p>
           </div>

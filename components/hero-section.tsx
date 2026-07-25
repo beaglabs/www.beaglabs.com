@@ -33,7 +33,7 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-[1440px] grid-cols-1 items-center gap-10 px-6 py-24 lg:grid-cols-[1fr_minmax(320px,480px)] lg:gap-16 lg:px-9 lg:py-14">
         <div className="max-w-[760px]">
           <span className="nb-label mb-6 inline-block">
-            Small Model Foundry
+            Custom AI. On Your Infra.
           </span>
 
           <h1 className="mb-6 max-w-[820px] text-[52px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#111] sm:text-[64px] lg:text-[80px]">
