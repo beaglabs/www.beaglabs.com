@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
@@ -81,15 +80,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
-        <Script
+      <head>
+        <script
           id="Cookiebot"
           src="https://consent.cookiebot.com/uc.js"
           data-cbid="bad980ff-2e66-4542-bb27-fafa08d70ba2"
           data-blockingmode="auto"
           type="text/javascript"
-          strategy="beforeInteractive"
         />
+      </head>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
