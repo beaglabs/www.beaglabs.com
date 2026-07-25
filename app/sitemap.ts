@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_ALL_BLOG_SLUGS, GET_ALL_RESEARCH_SLUGS, GET_ALL_BLOG_CATEGORIES, GET_ALL_BLOG_TAGS, GET_ALL_RESEARCH_AUTHORS } from '@/lib/hygraph/queries'
+import { GET_ALL_BLOG_SLUGS, GET_ALL_BLOG_CATEGORIES, GET_ALL_BLOG_TAGS } from '@/lib/hygraph/queries'
 
 const BASE_URL = 'https://www.beaglabs.com'
 
@@ -20,26 +20,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let dynamicRoutes: MetadataRoute.Sitemap = []
   let dataRoutes: MetadataRoute.Sitemap = []
 
-  // Hygraph content (blog posts, research papers, categories, tags, authors)
+  // Hygraph content (blog posts, categories, tags)
   try {
-    const [blogData, researchData, blogCats, blogTags, researchAuthors] = await Promise.all([
+    const [blogData, blogCats, blogTags] = await Promise.all([
       fetchHygraph<{ blogPosts: { slug: string; publishedAt: string }[] }>(GET_ALL_BLOG_SLUGS),
-      fetchHygraph<{ researchPapers: { slug: string; publishedAt: string }[] }>(GET_ALL_RESEARCH_SLUGS),
       fetchHygraph<{ blogPosts: { category: string }[] }>(GET_ALL_BLOG_CATEGORIES),
       fetchHygraph<{ blogPosts: { tags: string[] }[] }>(GET_ALL_BLOG_TAGS),
-      fetchHygraph<{ researchPapers: { authors: string[] }[] }>(GET_ALL_RESEARCH_AUTHORS),
     ])
 
     const blogRoutes: MetadataRoute.Sitemap = blogData.blogPosts.map((post) => ({
       url: `${BASE_URL}/blog/${post.slug}`,
       lastModified: new Date(post.publishedAt),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    }))
-
-    const researchRoutes: MetadataRoute.Sitemap = researchData.researchPapers.map((paper) => ({
-      url: `${BASE_URL}/research/${paper.slug}`,
-      lastModified: new Date(paper.publishedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     }))
@@ -58,14 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }))
 
-    const authors = [...new Set(researchAuthors.researchPapers.flatMap((p) => p.authors))]
-    const authorRoutes: MetadataRoute.Sitemap = authors.map((author) => ({
-      url: `${BASE_URL}/research/authors/${encodeURIComponent(author)}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.5,
-    }))
-
-    dynamicRoutes = [...blogRoutes, ...researchRoutes, ...categoryRoutes, ...tagRoutes, ...authorRoutes]
+    dynamicRoutes = [...blogRoutes, ...categoryRoutes, ...tagRoutes]
   } catch {
     // If Hygraph is unavailable, serve static routes only
   }
@@ -104,6 +88,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${BASE_URL}/compare/${c.slug}`,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
+    })))
+  } catch {}
+
+  try {
+    const { trainingConcepts } = await import('@/data/training/concepts')
+    dataRoutes.push(...trainingConcepts.map((t) => ({
+      url: `${BASE_URL}/training/${t.slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     })))
   } catch {}
 

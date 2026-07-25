@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const inter = Inter({
@@ -80,21 +82,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          id="Cookiebot"
-          src="https://consent.cookiebot.com/uc.js"
-          data-cbid="bad980ff-2e66-4542-bb27-fafa08d70ba2"
-          data-blockingmode="auto"
-          type="text/javascript"
-        />
-      </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
+        <PosthogConsentGate />
         {children}
+        <CookieConsentBanner />
+        <Toaster />
         <Analytics />
       </body>
     </html>

@@ -157,6 +157,24 @@
   border-top: 3px solid #111;
 }
 
+@utility nb-input {
+  border: 2px solid #111;
+  background: #fff;
+  color: #111;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 14px;
+  outline: none;
+  transition: box-shadow 0.15s ease;
+  &:focus {
+    box-shadow: 3px 3px 0px 0px #111;
+  }
+  &::placeholder {
+    color: #bbb;
+    font-weight: 400;
+  }
+}
+
 @utility nb-label {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -168,6 +186,21 @@
   padding: 3px 10px;
   border: 2px solid #111;
   box-shadow: 3px 3px 0px 0px #111;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@utility animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @utility nb-chip {

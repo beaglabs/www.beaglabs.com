@@ -7,7 +7,7 @@ const footerColumns = [
     links: [
       { label: "Overview", href: "/models" },
       { label: "Capabilities", href: "#capabilities" },
-      { label: "Research", href: "/research" },
+      { label: "Training", href: "/training" },
     ],
   },
   {
@@ -23,7 +23,6 @@ const footerColumns = [
   {
     title: "Company",
     links: [
-      { label: "Research", href: "/research" },
       { label: "GitHub", href: "https://github.com/beaglabs" },
       { label: "Contact", href: "https://cal.com/comradelemoncake/meet-the-founder" },
     ],
