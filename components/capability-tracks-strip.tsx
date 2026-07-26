@@ -1,31 +1,71 @@
-const tracks = [
-  "Custom classification models",
-  "Structured extraction pipelines",
-  "Legal · Healthcare · Finance · Defense",
-  "Managed deployment & hosting",
+'use client'
+
+import Image from 'next/image'
+
+const LABS = [
+  { name: 'OpenAI', domain: 'openai.com' },
+  { name: 'Anthropic', domain: 'anthropic.com' },
+  { name: 'Google DeepMind', domain: 'deepmind.google' },
+  { name: 'Meta AI', domain: 'ai.meta.com' },
+  { name: 'Mistral AI', domain: 'mistral.ai' },
+  { name: 'xAI', domain: 'x.ai' },
+  { name: 'Cohere', domain: 'cohere.com' },
+  { name: 'Together AI', domain: 'together.ai' },
+  { name: 'NVIDIA', domain: 'nvidia.com' },
+  { name: 'Microsoft', domain: 'microsoft.com' },
+  { name: 'Allen AI', domain: 'allenai.org' },
+  { name: 'Stability AI', domain: 'stability.ai' },
+  { name: 'Qwen', domain: 'qwenlm.ai' },
+  { name: 'Apple', domain: 'apple.com' },
+  { name: 'Amazon', domain: 'amazon.science' },
+  { name: 'Hugging Face', domain: 'huggingface.co' },
 ]
 
 export function CapabilityTracksStrip() {
+  const logos = LABS.map((lab) => ({
+    src: `https://img.logo.dev/${lab.domain}?size=64&format=webp&retina=true&token=pk_PJhuwvcfSPKKCJJxJcElsQ`,
+    alt: lab.name,
+    href: `https://${lab.domain}`,
+  }))
+
   return (
-    <section className="border-b-[3px] border-[#111] bg-[#FFF3E6] px-6 py-10 lg:px-9">
+    <section className="border-b-[3px] border-[#111] bg-[#FFF3E6] px-6 py-12 lg:px-9">
       <div className="mx-auto max-w-[1440px]">
-        <span className="nb-label mb-6 inline-block bg-[#111] text-[#FFF3E6] border-[#111]">
-          What We Build
-        </span>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {tracks.map((track, index) => (
-            <div
-              key={track}
-              className="border-[3px] border-[#111] bg-white p-5 shadow-[4px_4px_0px_0px_#111]"
-            >
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#FF5F1F]">
-                Track {String(index + 1).padStart(2, "0")}
-              </div>
-              <div className="mt-2 text-[18px] font-bold leading-[1.15] text-[#111]">
-                {track}
-              </div>
-            </div>
-          ))}
+        <div className="text-center mb-8">
+          <span className="nb-label mb-4 inline-block">Models we work with</span>
+        </div>
+        <div className="relative w-full overflow-hidden">
+          <div className="absolute left-0 top-0 h-full w-24 bg-gradient-to-r from-[#FFF3E6] to-transparent z-10" />
+          <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-[#FFF3E6] to-transparent z-10" />
+          <div className="flex animate-marquee whitespace-nowrap">
+            {[...logos, ...logos].map((logo, idx) => (
+              <a
+                key={idx}
+                href={logo.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mx-6 flex-shrink-0"
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  width={64}
+                  height={64}
+                  unoptimized
+                  className="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+                />
+              </a>
+            ))}
+          </div>
+          <style jsx>{`
+            @keyframes marquee {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            .animate-marquee {
+              animation: marquee 30s linear infinite;
+            }
+          `}</style>
         </div>
       </div>
     </section>
