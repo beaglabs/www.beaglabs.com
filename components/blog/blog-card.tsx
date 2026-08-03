@@ -31,10 +31,10 @@ export function BlogCard({ post }: BlogCardProps) {
           </div>
         )}
         <div className="p-6 lg:p-7">
-          <span className="mb-4 inline-block rounded-full bg-[#f3ede5] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#FF5F1F] font-bold">
+          <span className="mb-4 inline-block rounded-full bg-[#f3ede5] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#ff5f1f] font-bold">
             {post.category}
           </span>
-          <h3 className="mb-3 text-[24px] leading-[1.08] tracking-[-0.03em] text-[#111] transition-colors group-hover:text-[#FF5F1F]">
+          <h3 className="mb-3 text-[24px] leading-[1.08] tracking-[-0.03em] text-[#111] transition-colors group-hover:text-[#ff5f1f]">
             {post.title}
           </h3>
           <p className="mb-4 line-clamp-3 text-[14px] leading-[1.75] text-[#555]">

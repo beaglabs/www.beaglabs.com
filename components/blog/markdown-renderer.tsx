@@ -45,7 +45,7 @@ const components: Components = {
   a: ({ children, href, ...props }) => (
     <a
       href={href}
-      className="font-bold text-[#FF5F1F] underline underline-offset-2 transition-colors hover:text-[#d44d12]"
+      className="font-bold text-[#ff5f1f] underline underline-offset-2 transition-colors hover:text-[#d44d12]"
       {...props}
     >
       {children}
@@ -93,7 +93,7 @@ const components: Components = {
   },
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="mb-6 border-l-[3px] border-l-[#FF5F1F] pl-5 italic text-[#555]"
+      className="mb-6 border-l-[3px] border-l-[#ff5f1f] pl-5 italic text-[#555]"
       {...props}
     >
       {children}

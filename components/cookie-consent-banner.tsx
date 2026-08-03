@@ -96,7 +96,7 @@ export function CookieConsentBanner() {
               </p>
               <p className="mt-1 text-[12px] leading-[1.5] text-[#555] sm:text-[13px]">
                 Posthog helps us understand usage patterns. No personal data is shared with third parties.{" "}
-                <a href="/privacy" className="underline underline-offset-2 hover:text-[#FF5F1F]">
+                <a href="/privacy" className="underline underline-offset-2 hover:text-[#ff5f1f]">
                   Privacy Policy
                 </a>.
               </p>
@@ -110,7 +110,7 @@ export function CookieConsentBanner() {
               </button>
               <button
                 onClick={handleAccept}
-                className="border-[3px] border-[#111] bg-[#FF5F1F] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.05em] text-white hover:bg-[#e05012]"
+                className="border-[3px] border-[#111] bg-[#ff5f1f] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.05em] text-white hover:bg-[#e05012]"
               >
                 Accept All
               </button>

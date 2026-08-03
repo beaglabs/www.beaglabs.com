@@ -101,7 +101,7 @@ export default async function ComparisonDetailPage({
 
           <Breadcrumbs items={breadcrumbItems} />
 
-          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Comparison
           </p>
 
@@ -121,7 +121,7 @@ export default async function ComparisonDetailPage({
             ].map(({ option, accent }) => (
               <div key={option.name} className="nb-card bg-white p-8">
                 <div
-                  className={`mb-2 font-mono text-[10px] uppercase tracking-[0.26em] ${accent ? "text-[#C7661D]" : "text-[#6B6B6B]"}`}
+                  className={`mb-2 font-mono text-[10px] uppercase tracking-[0.26em] ${accent ? "text-[#ff5f1f]" : "text-[#6B6B6B]"}`}
                 >
                   {accent ? "Option A" : "Option B"}
                 </div>
@@ -142,7 +142,7 @@ export default async function ComparisonDetailPage({
                         key={i}
                         className="flex items-start gap-2.5 text-[14px] leading-[1.6] text-[#404040] font-medium"
                       >
-                        <span className="mt-[3px] text-[#FF5F1F] shrink-0 text-[14px]">
+                        <span className="mt-[3px] text-[#ff5f1f] shrink-0 text-[14px]">
                           &#10003;
                         </span>
                         <span>{pro}</span>
@@ -175,7 +175,7 @@ export default async function ComparisonDetailPage({
 
           {/* Comparison Table */}
           <div className="mb-16">
-            <h2 className="mb-6 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+            <h2 className="mb-6 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
               Feature Comparison
             </h2>
             <div className="overflow-x-auto">
@@ -185,7 +185,7 @@ export default async function ComparisonDetailPage({
                     <th className="py-4 pr-4 text-left font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#6B6B6B]">
                       Feature
                     </th>
-                    <th className="py-4 px-4 text-left font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#C7661D]">
+                    <th className="py-4 px-4 text-left font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#ff5f1f]">
                       {comparison.optionA.name}
                     </th>
                     <th className="py-4 pl-4 text-left font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#6B6B6B]">
@@ -217,7 +217,7 @@ export default async function ComparisonDetailPage({
 
           {/* Verdict */}
           <div className="mb-16 max-w-[820px]">
-            <h2 className="mb-6 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+            <h2 className="mb-6 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
               Verdict
             </h2>
             <div className="space-y-5">
@@ -236,7 +236,7 @@ export default async function ComparisonDetailPage({
           <div className="border-t-[3px] border-[#111] pt-12">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
                   Get started
                 </div>
                 <h2 className="max-w-[560px] text-[28px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111] lg:text-[34px]">
@@ -257,7 +257,7 @@ export default async function ComparisonDetailPage({
           <div className="nb-section-divider mt-12 pt-8">
             <Link
               href="/compare"
-              className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#C7661D] transition-colors hover:text-[#FF5F1F]"
+              className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#ff5f1f] transition-colors hover:text-[#ff5f1f]"
             >
               &larr; Back to Comparisons
             </Link>

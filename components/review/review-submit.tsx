@@ -23,7 +23,7 @@ export function ReviewSubmit({
         onClick={onSubmit}
         disabled={reviewedCount === 0 || submitting}
         className="w-full rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-10"
-        style={{ backgroundColor: "#C7661D" }}
+        style={{ backgroundColor: "#ff5f1f" }}
       >
         {submitting
           ? "Submitting..."

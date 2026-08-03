@@ -49,7 +49,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#f6f4ef] flex items-center justify-center px-4">
       <div className="w-full max-w-[400px]">
         <div className="mb-8 text-center">
-          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#C7661D] mb-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#ff5f1f] mb-4">
             Beag Labs
           </div>
           <h1 className="text-[28px] font-bold tracking-[-0.04em] text-[#111] leading-[1.05]">
@@ -88,7 +88,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#C7661D] bg-white"
+              className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#ff5f1f] bg-white"
             />
             <input
               type="password"
@@ -97,7 +97,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#C7661D] bg-white"
+              className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#ff5f1f] bg-white"
             />
             {error && <p className="text-[13px] text-red-600">{error}</p>}
             <button
@@ -111,7 +111,7 @@ export default function LoginPage() {
 
           <p className="text-center text-[13px] text-[#777]">
             {mode === "signin" ? "No account?" : "Already have an account?"}{" "}
-            <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="text-[#C7661D] hover:underline font-medium">
+            <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="text-[#ff5f1f] hover:underline font-medium">
               {mode === "signin" ? "Sign up" : "Sign in"}
             </button>
           </p>

@@ -8,7 +8,7 @@ export function AnnouncementBanner() {
           Get the 2026 ML Training Cookbook | 52 recipes — GRPO, Flow Matching, World Models, and everything in between {" "}
           <Link
             href="/cookbook"
-            className="font-extrabold text-[#FF5F1F] underline decoration-[#FF5F1F] decoration-2 underline-offset-3 transition-colors hover:text-[#FF7A1A]"
+            className="font-extrabold text-[#ff5f1f] underline decoration-[#ff5f1f] decoration-2 underline-offset-3 transition-colors hover:text-[#FF7A1A]"
           >
             Download Now &rarr;
           </Link>

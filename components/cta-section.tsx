@@ -7,7 +7,7 @@ export function CTASection() {
     <section id="contact" className="relative bg-white py-32 px-6 lg:px-8 border-t border-[#E5E7EB]">
       <div className="max-w-4xl mx-auto">
         <div className="border border-[#E5E7EB] p-12 lg:p-20">
-          <div className="font-mono text-xs tracking-widest text-[#FF5F1F] uppercase mb-8">
+          <div className="font-mono text-xs tracking-widest text-[#ff5f1f] uppercase mb-8">
             Engage With Us
           </div>
 
@@ -24,7 +24,7 @@ export function CTASection() {
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <a
               href="mailto:contact@beaglabs.com"
-              className="inline-flex items-center gap-3 font-mono text-xs tracking-wide text-white bg-[#0a0a0a] px-7 py-4 hover:bg-[#FF5F1F] transition-colors"
+              className="inline-flex items-center gap-3 font-mono text-xs tracking-wide text-white bg-[#0a0a0a] px-7 py-4 hover:bg-[#ff5f1f] transition-colors"
               onClick={() => posthog.capture('contact_email_clicked', { location: 'cta_section' })}
             >
               CONTACT US

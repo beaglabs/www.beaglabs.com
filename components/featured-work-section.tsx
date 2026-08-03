@@ -1,23 +1,19 @@
 const domains = [
   {
     label: "Legal",
-    desc: "E-discovery relevance, contract classification, and privilege review — at 85% less manual effort.",
-    bg: "#FFF3E6",
+    desc: "E-discovery, contract classification, and privilege review — trained on your documents, deployed on your hardware.",
   },
   {
     label: "Healthcare",
     desc: "Clinical document triage, adverse event classification, and prior authorization extraction in HIPAA-compliant environments.",
-    bg: "#E6FFF2",
   },
   {
     label: "Finance",
     desc: "Research relevance filtering, KYC document review, and regulatory filing classification at a fraction of frontier API cost.",
-    bg: "#E6F2FF",
   },
   {
     label: "Government & Defense",
     desc: "Intelligence report categorization and FOIA triage deployed on air-gapped infrastructure where commercial APIs can't reach.",
-    bg: "#FFF9E6",
   },
 ]
 
@@ -41,10 +37,9 @@ export function FeaturedWorkSection() {
           {domains.map((d) => (
             <div
               key={d.label}
-              className="nb-card group p-8"
-              style={{ background: d.bg }}
+              className="nb-card group bg-white p-8"
             >
-              <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5F1F]">
+              <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                 {d.label}
               </div>
               <p className="text-[14px] leading-[1.7] text-[#444]">

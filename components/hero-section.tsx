@@ -1,113 +1,120 @@
 "use client"
 
-import * as React from "react"
 import Link from "next/link"
-import { useState, FormEvent } from "react"
-import { LiquidMetal } from "@paper-design/shaders-react"
+import { BrutalistPhoto } from "@/components/brutalist-photo"
 
-const MemoizedLiquidMetal = React.memo(LiquidMetal)
+const CERTS = [
+  {
+    label: 'HUBZone Certified',
+    src: 'https://www.wildflowerintl.com/wp-content/uploads/2024/02/HubZoneCertified.png',
+  },
+  {
+    label: 'SBA',
+    src: 'https://images.seeklogo.com/logo-png/33/2/small-business-administration-logo-png_seeklogo-331699.png',
+  },
+]
+
+const CAPABILITIES = [
+  {
+    label: 'Legacy Data Extraction',
+    href: '/capability/modernization',
+  },
+  {
+    label: 'AI-Enabled Software Development',
+    href: '/capability/spec-drive-development',
+  },
+  {
+    label: 'Agent UX Consulting',
+    href: '/capability/agent-ux',
+  },
+  {
+    label: 'SLM Feasibility & Savings',
+    href: '/capability/slm-feasibility',
+  },
+  {
+    label: 'SLM Deployments',
+    href: '/capability/slm-deployment',
+  },
+] as const
 
 export function HeroSection() {
-  const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle")
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    if (!email.trim()) return
-    setStatus("loading")
-    try {
-      const res = await fetch("/api/cookbook/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      })
-      if (res.ok) setStatus("success")
-      else setStatus("idle")
-    } catch {
-      setStatus("idle")
-    }
-  }
-
   return (
     <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9] pt-[calc(4rem+2.375rem)]">
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-[1440px] grid-cols-1 items-center gap-10 px-6 py-24 lg:grid-cols-[1fr_minmax(320px,480px)] lg:gap-16 lg:px-9 lg:py-14">
+      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-[1440px] grid-cols-1 items-center gap-10 px-6 py-24 lg:grid-cols-[1fr_minmax(320px,520px)] lg:gap-16 lg:px-9 lg:py-14">
         <div className="max-w-[760px]">
           <span className="nb-label mb-6 inline-block">
             Custom AI. On Your Infra.
           </span>
 
           <h1 className="mb-6 max-w-[820px] text-[52px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#111] sm:text-[64px] lg:text-[80px]">
-            Own your models.
-            <br />
-            Own your data.
-            <br />
-            <span className="bg-[#FF5F1F] text-[#111] px-3 py-0.5">
-            Save your coins 💰
-            </span>
+            Condensed Intelligence for Regulated Industries.
           </h1>
 
           <p className="mb-10 max-w-[650px] text-[18px] leading-[1.65] text-[#404040] font-medium">
-            We use QAT and other techniques to make deploying internal LLMs 120x cheaper than proprietary APIs. Get the 2026 ML Training Cookbook to learn how to train and deploy your own models.
+            We use QAT and other techniques to enable high-trust industries to deploy LLMs and SLMs within their own VPCs, on-prem, or in air-gapped environments.
           </p>
 
-          {status === "success" ? (
-            <div className="mb-8 max-w-[600px] border-[3px] border-[#111] bg-[#FFF3E6] p-5 text-center">
-              <p className="text-[14px] font-extrabold text-[#111]">Check your inbox</p>
-              <p className="mt-1 text-[11px] text-[#555]">The cookbook is on its way.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="mb-8 flex w-full max-w-[600px] gap-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                disabled={status === "loading"}
-                className="min-w-0 flex-1 border-[3px] border-[#111] bg-white px-4 py-3 text-[14px] font-medium text-[#111] placeholder:text-[#999] focus:outline-none focus:border-[#FF5F1F] disabled:opacity-50"
-              />
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="nb-btn inline-flex items-center gap-2 bg-[#111] px-6 py-3 text-[11px] uppercase text-white whitespace-nowrap disabled:opacity-50"
-              >
-                {status === "loading" ? "Sending..." : "Get the 2026 ML Training Cookbook"}
-              </button>
-            </form>
-          )}
-
-          <div className="flex flex-wrap gap-3">
-            {["Custom Models", "On-Prem Deploy", "13x Cheaper Than GPT"].map((chip) => (
-              <span key={chip} className="nb-chip">
-                {chip}
+          <div className="mb-8 w-full max-w-[640px]">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+                Our capabilities
               </span>
+              <span className="block h-px flex-1 max-w-[40px] bg-[#111]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">
+                05 / 05
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2.5">
+              {CAPABILITIES.map((cap) => (
+                <Link
+                  key={cap.href}
+                  href={cap.href}
+                  className="group inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-4 py-3 text-[12px] font-extrabold uppercase tracking-[0.06em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#ff5f1f]"
+                >
+                  {cap.label}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M5 12h14M13 6l6 6-6 6"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="square"
+                      strokeLinejoin="miter"
+                    />
+                  </svg>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+              Certified
+            </span>
+            {CERTS.map((cert) => (
+              <div
+                key={cert.label}
+                className="flex h-12 items-center justify-center border-[2px] border-[#111] bg-white px-3 shadow-[3px_3px_0px_0px_#111]"
+                title={cert.label}
+              >
+                <img
+                  src={cert.src}
+                  alt={cert.label}
+                  className="block h-9 w-auto max-w-[120px] object-contain"
+                  loading="lazy"
+                />
+              </div>
             ))}
           </div>
         </div>
 
-        <div className="relative hidden lg:flex items-center justify-center aspect-square w-full max-h-[520px] xl:max-h-[600px]">
-          <div className="absolute inset-0 overflow-hidden rounded-[3rem]">
-            <div className="absolute inset-0" style={{ filter: "drop-shadow(0 0 0 3px #111)" }}>
-              <MemoizedLiquidMetal
-                shape="daisy"
-                colorBack="#FFF3E6"
-                colorTint="#FF5F1F"
-                repetition={7}
-                softness={0.2}
-                shiftRed={1.5}
-                shiftBlue={-1}
-                distortion={0.3}
-                contour={0.7}
-                offsetY={0}
-                speed={0.6}
-                scale={0.7}
-                fit="contain"
-                style={{ width: "100%", height: "100%" }}
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-tl from-[#FAFAF9]/30 to-transparent pointer-events-none" />
-          </div>
-        </div>
+        <BrutalistPhoto
+          src="https://images.pexels.com/photos/3318582/pexels-photo-3318582.jpeg"
+          alt="Industrial machinery in a regulated environment"
+          badge="ON-PREM · AIR-GAPPED"
+          meta="beaglabs / home"
+          rounded
+          className="hidden lg:flex mx-auto w-full max-w-[520px]"
+        />
       </div>
     </section>
   )

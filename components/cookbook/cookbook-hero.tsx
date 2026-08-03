@@ -9,13 +9,13 @@ export function CookbookHero({ recipeCount, partCount }: { recipeCount: number; 
       className="bg-[#FAFAF9]"
       srTitle="ML Cookbook 2026"
       title={<span className="text-[#111]">ML Cookbook</span>}
-      subtitle={<span className="text-[#FF5F1F]">2026</span>}
+      subtitle={<span className="text-[#ff5f1f]">2026</span>}
       description={`${recipeCount} Modern Training Recipes Every AI Engineer Should Know`}
       showCta={false}
       showBadges={false}
       image="/cookbook-icon.svg"
-      colorBack="#ffffff00"
-      colorTint="#FF5F1F"
+      colorBack="#00000000"
+      colorTint="#ff5f1f"
       repetition={4}
       softness={0.85}
       shiftRed={1.2}

@@ -1,37 +1,52 @@
+import Link from "next/link"
+
 const services = [
   {
     id: "01",
-    title: "Data Pipeline Engineering",
+    title: "Legacy Data Extraction",
     description:
-      "We connect to your data sources, clean and preprocess your documents, and prepare them for model development — all within your environment. Your data never leaves your infrastructure.",
-    label: "Pipeline",
-    bg: "#FFF3E6",
+      "We extract structured data from mainframes, COBOL, AS/400, and scanned documents — then deliver it as validated records into your modern data infrastructure. Source systems are read-only.",
+    label: "Extract",
   },
   {
     id: "02",
-    title: "Model Development",
+    title: "AI-Enabled Software Development",
     description:
-      "We design and fine-tune compact models for your specific classification and extraction tasks. Frontier models accelerate the labeling process; your experts review only the edge cases.",
-    label: "Develop",
-    bg: "#E6F2FF",
+      "We embed with your engineering team to ship a production AI feature in 6–10 weeks. Data, model, infrastructure, integration — code merged into your repo, model owned by you.",
+    label: "Build",
   },
   {
     id: "03",
-    title: "Deployment Engineering",
+    title: "Agent UX Consulting",
     description:
-      "We export your model as ONNX and deploy it on your infrastructure — cloud, on-prem, or air-gapped. No runtime API calls back to us. You own the weights, not us.",
-    label: "Deploy",
-    bg: "#E6FFF2",
+      "We design the user-facing surface of your AI agent — interaction patterns, disclosure, error recovery, latency. Working prototype backed by your model.",
+    label: "Design",
   },
   {
     id: "04",
-    title: "Production Support",
+    title: "SLM Feasibility & Savings",
     description:
-      "We monitor model performance, retrain as your data evolves, and keep your models accurate at scale. You get a deployed model that stays relevant — not a one-time handoff.",
-    label: "Support",
-    bg: "#FFF9E6",
+      "We measure whether a small model can serve your workload at lower TCO than your current solution. Written report with go/no-go and 3-year cost projection.",
+    label: "Assess",
+  },
+  {
+    id: "05",
+    title: "SLM Deployments",
+    description:
+      "We deploy a small model on your infrastructure — on-prem, air-gapped, VPC, edge. You own the weights, the serving stack, and the data. No license server, no per-inference fee.",
+    label: "Deploy",
   },
 ]
+
+function slugFor(label: string): string {
+  return {
+    Extract: "modernization",
+    Build: "spec-drive-development",
+    Design: "agent-ux",
+    Assess: "slm-feasibility",
+    Deploy: "slm-deployment",
+  }[label] ?? ""
+}
 
 export function CapabilitiesSection() {
   return (
@@ -39,42 +54,46 @@ export function CapabilitiesSection() {
       <div className="mx-auto max-w-[1440px]">
         <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <div>
-            <span className="nb-label mb-5 inline-block">Services</span>
+            <span className="nb-label mb-5 inline-block">Capabilities</span>
             <h2 className="max-w-[460px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-              We build, deploy, and maintain your domain AI.
+              Five ways we ship AI you actually own.
             </h2>
           </div>
           <div>
             <p className="max-w-[480px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-              From raw documents to a deployed model running on your
-              infrastructure — we handle the pipeline end to end.
-              You own the weights. Your data never leaves your environment.
+              Every engagement ends with you owning the code, the model
+              weights, and the operational runbook. No managed-service
+              dependency, no per-inference fees, no data leaving your
+              perimeter.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <div
-              key={service.title}
-              className="nb-card group flex flex-col p-8 lg:p-10"
-              style={{ background: service.bg }}
+            <Link
+              key={service.id}
+              href={`/capability/${slugFor(service.label)}`}
+              className="nb-card group flex flex-col bg-white p-8 transition-all hover:shadow-[8px_8px_0px_0px_#ff5f1f] hover:-translate-x-[1px] hover:-translate-y-[1px] lg:p-10"
             >
               <div className="mb-8 flex items-start justify-between gap-6">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5F1F]">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                   {service.label}
                 </span>
                 <span className="font-mono text-[11px] font-bold text-[#8c8c8c]">
                   {service.id}
                 </span>
               </div>
-              <h3 className="mb-3 text-[26px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111]">
+              <h3 className="mb-3 text-[22px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[#111]">
                 {service.title}
               </h3>
-              <p className="text-[14px] leading-[1.7] text-[#444] lg:text-[15px]">
+              <p className="text-[13.5px] leading-[1.7] text-[#444] lg:text-[14px]">
                 {service.description}
               </p>
-            </div>
+              <span className="mt-6 inline-flex items-center gap-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#ff5f1f] transition-all group-hover:gap-2">
+                Read more →
+              </span>
+            </Link>
           ))}
         </div>
       </div>

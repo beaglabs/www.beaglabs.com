@@ -73,7 +73,7 @@ function DomainCard({ stat, onMerge }: { stat: DomainStats; onMerge: (domain: st
             className="h-full rounded-full transition-all"
             style={{
               width: `${Math.min(100, (stat.adapter_count / 3) * 100)}%`,
-              backgroundColor: stat.adapter_count >= 3 ? "#2E7D32" : "#C7661D",
+              backgroundColor: stat.adapter_count >= 3 ? "#2E7D32" : "#ff5f1f",
             }}
           />
         </div>
@@ -82,7 +82,7 @@ function DomainCard({ stat, onMerge }: { stat: DomainStats; onMerge: (domain: st
           <Button
             onClick={() => onMerge(stat.domain)}
             className="w-full rounded-full text-[11px] font-extrabold uppercase tracking-[0.08em] h-8"
-            style={{ backgroundColor: "#C7661D" }}
+            style={{ backgroundColor: "#ff5f1f" }}
           >
             Merge Domain
           </Button>
@@ -171,7 +171,7 @@ export function LibraryPage() {
                 <Button
                   onClick={() => handleMerge(c.domain)}
                   className="rounded-full text-[11px] font-extrabold uppercase tracking-[0.08em] h-8 px-4"
-                  style={{ backgroundColor: "#C7661D" }}
+                  style={{ backgroundColor: "#ff5f1f" }}
                 >
                   Merge Now
                 </Button>

@@ -25,8 +25,8 @@ export default function RevenueChartInner() {
         <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="acvGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#FF5F1F" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#FF5F1F" stopOpacity={0.02} />
+              <stop offset="5%" stopColor="#ff5f1f" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#ff5f1f" stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <XAxis dataKey="month" tick={{ fontSize: 12, fontWeight: 600 }} stroke="#999" />
@@ -41,7 +41,7 @@ export default function RevenueChartInner() {
             iconType="square"
             wrapperStyle={{ fontSize: 12, fontWeight: 600, paddingBottom: 8 }}
           />
-          <Bar dataKey="acv" fill="url(#acvGrad)" stroke="#FF5F1F" strokeWidth={2} name="Cumulative contracted ACV" />
+          <Bar dataKey="acv" fill="url(#acvGrad)" stroke="#ff5f1f" strokeWidth={2} name="Cumulative contracted ACV" />
           <Line type="stepAfter" dataKey="expense" stroke="#111" strokeWidth={2} dot={false} name="Monthly expenses" />
         </ComposedChart>
       </ResponsiveContainer>

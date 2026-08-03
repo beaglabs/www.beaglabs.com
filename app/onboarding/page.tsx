@@ -83,21 +83,21 @@ export default function OnboardingPage() {
               <div key={s} className="flex items-center">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono transition-colors"
                   style={{
-                    backgroundColor: i <= step ? '#C7661D15' : 'transparent',
-                    color: i <= step ? '#C7661D' : '#6B6B6B',
-                    border: `1px solid ${i <= step ? '#C7661D30' : '#E2E0DB'}`,
+                    backgroundColor: i <= step ? '#ff5f1f15' : 'transparent',
+                    color: i <= step ? '#ff5f1f' : '#6B6B6B',
+                    border: `1px solid ${i <= step ? '#ff5f1f30' : '#E2E0DB'}`,
                   }}>
                   <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono"
                     style={{
-                      backgroundColor: i < step ? '#C7661D' : 'transparent',
-                      color: i < step ? '#fff' : i === step ? '#C7661D' : '#6B6B6B',
-                      border: i === step ? '1px solid #C7661D' : i < step ? 'none' : '1px solid #E2E0DB',
+                      backgroundColor: i < step ? '#ff5f1f' : 'transparent',
+                      color: i < step ? '#fff' : i === step ? '#ff5f1f' : '#6B6B6B',
+                      border: i === step ? '1px solid #ff5f1f' : i < step ? 'none' : '1px solid #E2E0DB',
                     }}>
                     {i < step ? '✓' : i + 1}
                   </span>
                   {s}
                 </div>
-                {i < steps.length - 2 && <div className="w-8 h-px mx-1" style={{ backgroundColor: step > i ? '#C7661D' : '#E2E0DB' }} />}
+                {i < steps.length - 2 && <div className="w-8 h-px mx-1" style={{ backgroundColor: step > i ? '#ff5f1f' : '#E2E0DB' }} />}
               </div>
             ))}
           </div>
@@ -106,7 +106,7 @@ export default function OnboardingPage() {
         {/* Step -1: Create workspace */}
         {step === -1 && (
           <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-[#C7661D10] border border-[#C7661D20] flex items-center justify-center text-2xl mx-auto mb-6">
+            <div className="w-16 h-16 rounded-full bg-[#ff5f1f10] border border-[#ff5f1f20] flex items-center justify-center text-2xl mx-auto mb-6">
               B_
             </div>
             <h1 className="text-[32px] font-bold tracking-[-0.045em] text-[#111]">
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
                   value={orgName}
                   onChange={(e) => handleOrgNameChange(e.target.value)}
                   required
-                  className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#C7661D] bg-white"
+                  className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#ff5f1f] bg-white"
                 />
               </div>
               <div>
@@ -140,7 +140,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setSlug(e.target.value)}
                   required
                   pattern="[a-z0-9-]+"
-                  className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#C7661D] bg-white font-mono"
+                  className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#ff5f1f] bg-white font-mono"
                 />
                 <p className="text-[11px] text-[#999] mt-1">Used in URLs</p>
               </div>
@@ -163,7 +163,7 @@ export default function OnboardingPage() {
         {/* Step 0: Welcome */}
         {step === 0 && (
           <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-[#C7661D10] border border-[#C7661D20] flex items-center justify-center text-2xl mx-auto mb-6">
+            <div className="w-16 h-16 rounded-full bg-[#ff5f1f10] border border-[#ff5f1f20] flex items-center justify-center text-2xl mx-auto mb-6">
               B_
             </div>
             <h1 className="text-[32px] lg:text-[40px] font-bold tracking-[-0.045em] text-[#111]">
@@ -200,8 +200,8 @@ export default function OnboardingPage() {
 
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all hover:bg-[#F5F4F0] hover:border-[#C7661D]"
-              style={{ borderColor: uploadedFile ? '#C7661D' : '#E2E0DB' }}
+              className="border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all hover:bg-[#F5F4F0] hover:border-[#ff5f1f]"
+              style={{ borderColor: uploadedFile ? '#ff5f1f' : '#E2E0DB' }}
             >
               {uploadedFile ? (
                 <div>
@@ -248,7 +248,7 @@ export default function OnboardingPage() {
                 <select
                   value={labelColumn}
                   onChange={(e) => setLabelColumn(e.target.value)}
-                  className="w-full border border-[#E2E0DB] px-4 py-2 text-[14px] text-[#111] outline-none focus:border-[#C7661D] bg-white"
+                  className="w-full border border-[#E2E0DB] px-4 py-2 text-[14px] text-[#111] outline-none focus:border-[#ff5f1f] bg-white"
                 >
                   {uploadPreview[0]?.map((col) => (
                     <option key={col} value={col}>{col}</option>
@@ -260,7 +260,7 @@ export default function OnboardingPage() {
                     <thead>
                       <tr className="bg-[#F5F4F0] border-b" style={{ borderColor: '#E2E0DB' }}>
                         {uploadPreview[0]?.map((col) => (
-                          <th key={col} className={`px-4 py-2 font-mono text-[11px] font-medium ${col === labelColumn ? 'text-[#C7661D]' : 'text-[#6B6B6B]'}`}>
+                          <th key={col} className={`px-4 py-2 font-mono text-[11px] font-medium ${col === labelColumn ? 'text-[#ff5f1f]' : 'text-[#6B6B6B]'}`}>
                             {col}{col === labelColumn ? ' (label)' : ''}
                           </th>
                         ))}
@@ -313,8 +313,8 @@ export default function OnboardingPage() {
                   onClick={() => setTaskType(t.key)}
                   className="bg-white border rounded-lg px-5 py-4 flex items-start gap-4 cursor-pointer transition-all hover:bg-[#F5F4F0]"
                   style={{
-                    borderColor: taskType === t.key ? '#C7661D' : '#E2E0DB',
-                    boxShadow: taskType === t.key ? '0 0 0 1px #C7661D' : 'none',
+                    borderColor: taskType === t.key ? '#ff5f1f' : '#E2E0DB',
+                    boxShadow: taskType === t.key ? '0 0 0 1px #ff5f1f' : 'none',
                   }}>
                   <span className="text-lg mt-0.5">{t.icon}</span>
                   <div className="flex-1 min-w-0">
@@ -322,7 +322,7 @@ export default function OnboardingPage() {
                     <p className="text-xs text-[#6B6B6B] mt-0.5">{t.desc}</p>
                   </div>
                   {taskType === t.key && (
-                    <span className="w-5 h-5 rounded-full bg-[#C7661D] flex items-center justify-center text-white text-[10px] font-bold mt-0.5">✓</span>
+                    <span className="w-5 h-5 rounded-full bg-[#ff5f1f] flex items-center justify-center text-white text-[10px] font-bold mt-0.5">✓</span>
                   )}
                 </div>
               ))}
@@ -377,14 +377,14 @@ export default function OnboardingPage() {
                 </div>
                 <div className="rounded-lg px-4 py-3" style={{ backgroundColor: '#FFF0E8' }}>
                   <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Model Prediction</p>
-                  <p className="font-mono text-sm font-bold mt-1" style={{ color: '#FF5F1F' }}>bug — missing try/catch</p>
+                  <p className="font-mono text-sm font-bold mt-1" style={{ color: '#ff5f1f' }}>bug — missing try/catch</p>
                   <p className="font-mono text-[10px] text-[#6B6B6B] mt-0.5">low confidence — needs your judgment</p>
                 </div>
               </div>
             </div>
 
             <div className="rounded-lg p-5 flex items-start gap-3"
-              style={{ backgroundColor: '#C7661D08', border: '1px solid #C7661D20' }}>
+              style={{ backgroundColor: '#ff5f1f08', border: '1px solid #ff5f1f20' }}>
               <p className="text-sm text-[#404040] leading-relaxed">
                 Whether it&apos;s code, contracts, emails, or lab reports — the loop is the same.
                 Cheap frontier labels → model flags disagreements → you review 2-5% → retrain → ONNX.

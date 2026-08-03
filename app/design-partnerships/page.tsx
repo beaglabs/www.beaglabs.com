@@ -127,7 +127,7 @@ export default function DesignPartnershipsPage() {
 
         <div className="relative z-10 mx-auto max-w-[1440px] px-6 py-24 lg:px-9 lg:py-14">
           <div className="max-w-[760px] pt-10 lg:pt-0">
-            <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.28em] text-[#C7661D]">
+            <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.28em] text-[#ff5f1f]">
               Design partnership
             </div>
 
@@ -177,7 +177,7 @@ export default function DesignPartnershipsPage() {
 
       <section className="border-t border-[rgba(0,0,0,0.08)] bg-[#f6f4ef] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             What&apos;s included
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -204,7 +204,7 @@ export default function DesignPartnershipsPage() {
       <section className="border-t border-[rgba(0,0,0,0.08)] bg-[#f6f4ef] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
-            <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+            <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
               Timeline
             </div>
             <h2 className="mb-4 max-w-[470px] text-[34px] font-bold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
@@ -222,7 +222,7 @@ export default function DesignPartnershipsPage() {
                 key={phase.id}
                 className="border border-[rgba(17,17,17,0.1)] bg-[rgba(255,255,255,0.72)] p-8 backdrop-blur-sm"
               >
-                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
+                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
                   Phase {phase.id}
                 </div>
                 <h3 className="mb-3 text-[22px] leading-[1.08] text-[#111]">
@@ -241,7 +241,7 @@ export default function DesignPartnershipsPage() {
         <div className="mx-auto max-w-[1440px]">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <div>
-              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
                 Phase 02 in detail
               </div>
               <h2 className="mb-6 max-w-[470px] text-[34px] font-bold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
@@ -272,7 +272,7 @@ export default function DesignPartnershipsPage() {
                   },
                 ].map((item) => (
                   <div key={item.step} className="flex gap-4">
-                    <div className="mt-1 flex h-6 w-6 flex-none items-center justify-center rounded-full border border-[rgba(17,17,17,0.15)] bg-[rgba(255,255,255,0.5)] text-[11px] font-bold text-[#C7661D] backdrop-blur-sm">
+                    <div className="mt-1 flex h-6 w-6 flex-none items-center justify-center rounded-full border border-[rgba(17,17,17,0.15)] bg-[rgba(255,255,255,0.5)] text-[11px] font-bold text-[#ff5f1f] backdrop-blur-sm">
                       {item.step}
                     </div>
                     <div>
@@ -292,14 +292,14 @@ export default function DesignPartnershipsPage() {
                 <DomainModelDiagram />
 
                 <div className="mt-6 border-t border-[rgba(17,17,17,0.08)] pt-5">
-                  <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
+                  <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
                     Constraints
                   </div>
                   <div className="flex flex-wrap gap-3">
-                    <span className="inline-flex items-center rounded-full border border-[rgba(199,102,29,0.2)] bg-[rgba(199,102,29,0.06)] px-3 py-1.5 font-mono text-[11px] text-[#C7661D]">
+                    <span className="inline-flex items-center rounded-full border border-[rgba(199,102,29,0.2)] bg-[rgba(199,102,29,0.06)] px-3 py-1.5 font-mono text-[11px] text-[#ff5f1f]">
                       asset.region ∈ location.code
                     </span>
-                    <span className="inline-flex items-center rounded-full border border-[rgba(199,102,29,0.2)] bg-[rgba(199,102,29,0.06)] px-3 py-1.5 font-mono text-[11px] text-[#C7661D]">
+                    <span className="inline-flex items-center rounded-full border border-[rgba(199,102,29,0.2)] bg-[rgba(199,102,29,0.06)] px-3 py-1.5 font-mono text-[11px] text-[#ff5f1f]">
                       event.ts ≥ asset.created
                     </span>
                   </div>
@@ -313,7 +313,7 @@ export default function DesignPartnershipsPage() {
         <div className="mx-auto max-w-[1440px]">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <div>
-              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
                 Phase 03 in detail
               </div>
               <h2 className="mb-6 max-w-[470px] text-[34px] font-bold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
@@ -344,7 +344,7 @@ export default function DesignPartnershipsPage() {
                   },
                 ].map((item) => (
                   <div key={item.step} className="flex gap-4">
-                    <div className="mt-1 flex h-6 w-6 flex-none items-center justify-center rounded-full border border-[rgba(17,17,17,0.15)] bg-[rgba(255,255,255,0.5)] text-[11px] font-bold text-[#C7661D] backdrop-blur-sm">
+                    <div className="mt-1 flex h-6 w-6 flex-none items-center justify-center rounded-full border border-[rgba(17,17,17,0.15)] bg-[rgba(255,255,255,0.5)] text-[11px] font-bold text-[#ff5f1f] backdrop-blur-sm">
                       {item.step}
                     </div>
                     <div>
@@ -369,7 +369,7 @@ export default function DesignPartnershipsPage() {
 
       <section className="border-t border-[rgba(0,0,0,0.08)] bg-[#f6f4ef] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Pricing
           </div>
           <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -433,7 +433,7 @@ export default function DesignPartnershipsPage() {
             </div>
 
             <div className="border border-[rgba(17,17,17,0.1)] bg-[rgba(255,255,255,0.72)] px-8 py-10 backdrop-blur-sm lg:px-10 lg:py-12">
-              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
                 Standard — future price
               </div>
               <div className="mb-2 text-[52px] font-bold leading-[0.94] tracking-[-0.055em] text-[#111]">
@@ -446,23 +446,23 @@ export default function DesignPartnershipsPage() {
               </p>
               <ul className="mb-8 space-y-3 text-[14px] leading-[1.75] text-[#555]">
                 <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-[#C7661D]">&#10003;</span>
+                  <span className="mt-0.5 text-[#ff5f1f]">&#10003;</span>
                   <span>12-week full engagement</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-[#C7661D]">&#10003;</span>
+                  <span className="mt-0.5 text-[#ff5f1f]">&#10003;</span>
                   <span>Cross-system data integration</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-[#C7661D]">&#10003;</span>
+                  <span className="mt-0.5 text-[#ff5f1f]">&#10003;</span>
                   <span>Natural-language querying interface</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-[#C7661D]">&#10003;</span>
+                  <span className="mt-0.5 text-[#ff5f1f]">&#10003;</span>
                   <span>Deployment in your secure environment</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-[#C7661D]">&#10003;</span>
+                  <span className="mt-0.5 text-[#ff5f1f]">&#10003;</span>
                   <span>Mature product and refined process</span>
                 </li>
               </ul>

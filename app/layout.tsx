@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter, JetBrains_Mono, Playfair_Display, EB_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
 import { Toaster } from '@/components/ui/sonner'
@@ -13,15 +13,27 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: '--font-mono'
 });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: '--font-display',
+  weight: ['400', '700', '900'],
+  style: ['normal', 'italic'],
+});
+const garamond = EB_Garamond({
+  subsets: ["latin"],
+  variable: '--font-serif',
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs — Custom AI. Your Data. Your Infrastructure.',
+    default: 'Beag Labs — Small models for government and high-trust industries. Deployable anywhere.',
   },
   description:
-    'Custom AI services — we build and deploy domain-specific classification and extraction models on your infrastructure. On-prem, air-gapped, or VPC. You own the model.',
+    'Small models for government and high-trust industries. Deployable anywhere.',
   alternates: {
     canonical: '/',
   },
@@ -30,9 +42,9 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Beag Labs — Custom AI. Your Data. Your Infrastructure.',
+    title: 'Beag Labs — Small models for government and high-trust industries. Deployable anywhere.',
     description:
-      'Custom AI services — we build and deploy domain-specific classification and extraction models on your infrastructure. On-prem, air-gapped, or VPC. You own the model.',
+      'Small models for government and high-trust industries. Deployable anywhere.',
     url: 'https://www.beaglabs.com',
     siteName: 'Beag Labs',
     images: [
@@ -40,7 +52,7 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Custom AI Deployed Anywhere',
+        alt: 'Beag Labs — Small models deployed anywhere',
       },
     ],
     locale: 'en_US',
@@ -48,9 +60,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Beag Labs — Custom AI. Your Data. Your Infrastructure.',
+    title: 'Beag Labs — Small models for government and high-trust industries. Deployable anywhere.',
     description:
-      'Custom AI services — we build and deploy domain-specific classification and extraction models on your infrastructure. On-prem, air-gapped, or VPC. You own the model.',
+      'Small models for government and high-trust industries. Deployable anywhere.',
     images: ['/og-image.png'],
     creator: '@beaglabs',
   },
@@ -63,7 +75,7 @@ const organizationJsonLd = {
   url: 'https://www.beaglabs.com',
   logo: 'https://www.beaglabs.com/favicon.png',
   description:
-    'Custom AI services. Domain-specific classification and extraction models deployed on your infrastructure — on-prem, air-gapped, or in your VPC.',
+    'Small models for government and high-trust industries. Deployable anywhere.',
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [
     'Small language models',
@@ -82,7 +94,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
+        <body className={`${inter.variable} ${jetbrainsMono.variable} ${playfair.variable} ${garamond.variable} font-sans antialiased bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

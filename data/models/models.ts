@@ -19,7 +19,7 @@ export const modelFamilies: ModelFamily[] = [
     slug: "compliance-slm",
     name: "Compliance SLMs",
     status: "In Training",
-    statusColor: "bg-[#FF5F1F]",
+    statusColor: "bg-[#ff5f1f]",
     target: "NIST 800-53",
     description:
       "Purpose-built small language models and LoRAs for classifying documents against NIST 800-53 controls. Maps policies, procedures, and evidence to control families with human-expert accuracy at a fraction of frontier API cost.",
@@ -30,7 +30,7 @@ export const modelFamilies: ModelFamily[] = [
       "Gap analysis flagging",
     ],
     bg: "#FFF3E6",
-    borderColor: "#FF5F1F",
+    borderColor: "#ff5f1f",
     longDescription: [
       "Compliance SLMs are small language models — 1B to 8B parameters — fine-tuned specifically for NIST 800-53 control families. Unlike general-purpose LLMs that hallucinate control numbers or misclassify evidence, these models are trained on thousands of annotated policy documents, control mappings, and audit evidence packages. They understand the difference between AC-2 (Account Management) and AC-3 (Access Enforcement) without prompting tricks.",
       "Each model ships as a LoRA adapter on top of an open-weights base model, so you can run inference on a single GPU or even a laptop. The disagreement engine flags only the 2-5% of edge cases where model confidence is low or annotators disagree — everything else is auto-classified. That means your compliance team reviews exceptions, not the full document pile.",

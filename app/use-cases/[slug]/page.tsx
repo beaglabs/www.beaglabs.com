@@ -91,7 +91,7 @@ export default async function UseCaseDetailPage({
               { name: industry.industry, url: `/use-cases/${industry.slug}` },
             ]}
           />
-          <div className="mt-8 mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+          <div className="mt-8 mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             {industry.industry}
           </div>
           <h1 className="mb-5 max-w-[820px] text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
@@ -105,7 +105,7 @@ export default async function UseCaseDetailPage({
 
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Use Cases
           </div>
           <h2 className="mb-12 max-w-[600px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
@@ -130,7 +130,7 @@ export default async function UseCaseDetailPage({
         <div className="mx-auto max-w-[1440px]">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <div>
-              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
                 Benefits
               </div>
               <h2 className="max-w-[470px] text-[34px] font-extrabold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
@@ -143,7 +143,7 @@ export default async function UseCaseDetailPage({
                   key={benefit}
                   className="flex items-start gap-3 border-b border-[rgba(17,17,17,0.08)] pb-4"
                 >
-                  <span className="mt-0.5 text-[#FF5F1F] shrink-0 text-[18px]">
+                  <span className="mt-0.5 text-[#ff5f1f] shrink-0 text-[18px]">
                     &#10003;
                   </span>
                   <span className="text-[16px] font-bold leading-[1.5] text-[#111]">
@@ -158,7 +158,7 @@ export default async function UseCaseDetailPage({
 
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Compliance &amp; Security
           </div>
           <h2 className="mb-12 max-w-[600px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
@@ -170,7 +170,7 @@ export default async function UseCaseDetailPage({
                 key={item}
                 className="flex items-center gap-3 border-[3px] border-[#111] bg-white px-6 py-5"
               >
-                <span className="flex h-8 w-8 flex-none items-center justify-center border-[2px] border-[#111] bg-[#FF5F1F] text-[14px] font-extrabold text-[#111]">
+                <span className="flex h-8 w-8 flex-none items-center justify-center border-[2px] border-[#111] bg-[#ff5f1f] text-[14px] font-extrabold text-[#111]">
                   &#10003;
                 </span>
                 <span className="text-[15px] font-bold leading-[1.4] text-[#111]">

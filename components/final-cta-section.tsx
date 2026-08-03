@@ -1,69 +1,70 @@
-"use client"
-
-import { useState, FormEvent } from "react"
+import { BrutalistPhoto } from "@/components/brutalist-photo"
 
 export function FinalCTASection() {
-  const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle")
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    if (!email.trim()) return
-    setStatus("loading")
-    try {
-      const res = await fetch("/api/cookbook/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      })
-      if (res.ok) setStatus("success")
-      else setStatus("idle")
-    } catch {
-      setStatus("idle")
-    }
-  }
-
   return (
-    <section className="border-t-[3px] border-[#111] bg-[#111] text-white px-6 py-24 lg:px-9 lg:py-28">
-      <div className="mx-auto flex max-w-[1440px] flex-col items-center text-center">
-        <span className="nb-label mb-5 inline-block bg-[#FF5F1F] text-[#111] border-[#FF5F1F] shadow-[3px_3px_0px_0px_#FF5F1F]/20">
-          Free Cookbook
-        </span>
-
-        <h2 className="mb-4 max-w-[720px] text-[42px] font-extrabold leading-[0.96] tracking-[-0.05em] text-white lg:text-[56px]">
-          Get the 2026 ML Training Cookbook
-        </h2>
-
-        <p className="mb-10 max-w-[560px] text-[18px] leading-[1.65] text-[#C9C9C9] font-medium">
-          50+ pages of battle-tested recipes for fine-tuning, distillation, and
-          on-prem deployment. No fluff.
-        </p>
-
-        {status === "success" ? (
-          <div className="max-w-[520px] border-[3px] border-[#FF5F1F] bg-[#FFF3E6] p-5 text-center">
-            <p className="text-[14px] font-extrabold text-[#111]">Check your inbox</p>
-            <p className="mt-1 text-[11px] text-[#555]">The cookbook is on its way.</p>
+    <section className="border-y-[3px] border-[#111] bg-[#111] text-white">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 py-10 lg:grid-cols-[1.1fr_minmax(360px,500px)] lg:px-9 lg:py-14">
+        <div className="flex flex-col items-start text-left">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="border-[2px] border-white bg-white px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-[#111]">
+              Free
+            </span>
+            <span className="block h-px w-10 bg-white/40" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/60">2026 edition</span>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex w-full max-w-[520px] gap-3">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              disabled={status === "loading"}
-              className="min-w-0 flex-1 border-[3px] border-white/30 bg-transparent px-4 py-3 text-[14px] font-medium text-white placeholder:text-white/40 focus:outline-none focus:border-[#FF5F1F] disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="border-[3px] border-white bg-[#FF5F1F] px-6 py-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#111] whitespace-nowrap hover:bg-white transition-colors disabled:opacity-50"
-            >
-              {status === "loading" ? "Sending..." : "Send It"}
-            </button>
-          </form>
-        )}
+
+          <h2 className="text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-white sm:text-[60px] lg:text-[72px]">
+            The ML Engineer&rsquo;s
+          </h2>
+          <h2 className="text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-white sm:text-[60px] lg:text-[72px]">
+            Cookbook
+          </h2>
+          <h2 className="mb-6 text-[48px] font-extrabold leading-[1.05] tracking-[-0.055em] text-white sm:text-[60px] lg:text-[72px]">
+            2026 Edition
+          </h2>
+
+          <p className="mb-2 max-w-[700px] text-[20px] font-extrabold leading-tight tracking-[-0.02em] text-white">
+            52 recipes — GRPO, Flow Matching, World Models, and everything in between
+          </p>
+
+          <p className="mb-8 max-w-[650px] text-[15px] leading-[1.65] text-white/70">
+            Training methodologies for AI engineers who build — with pipeline
+            diagrams, compute estimates, and paper references. 7 domains,
+            no filler.
+          </p>
+
+          <hr className="mb-8 w-full max-w-[650px] border-0 border-t-[2px] border-white/30" />
+
+          <a
+            href="/beag-labs-ml-cookbook-2026.pdf"
+            download
+            className="nb-btn-white group mb-3 inline-flex items-center gap-3 px-6 py-3 text-[12px]"
+          >
+            Download the PDF
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="square"
+                strokeLinejoin="miter"
+              />
+            </svg>
+          </a>
+
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/60">
+            PDF · 52 recipes · 7 parts · No email required
+          </p>
+        </div>
+
+        <BrutalistPhoto
+          src="https://images.pexels.com/photos/8112199/pexels-photo-8112199.jpeg"
+          alt="Open cookbook on a wooden surface"
+          badge="52 RECIPES"
+          meta="beaglabs / cookbook"
+          rounded
+          className="mx-auto w-full max-w-[480px]"
+        />
       </div>
     </section>
   )

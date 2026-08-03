@@ -24,12 +24,12 @@ function LabelEditor({ labels, onChange }: { labels: string[]; onChange: (l: str
   return editing ? (
     <div className="flex items-center gap-2">
       <Input value={text} onChange={(e) => setText(e.target.value)} className="h-8 text-[13px]" placeholder="label1, label2, ..." />
-      <Button onClick={() => { onChange(text.split(",").map(s => s.trim()).filter(Boolean)); setEditing(false); }} className="h-8 rounded-full text-[11px] px-3" style={{ backgroundColor: "#C7661D" }}>Save</Button>
+      <Button onClick={() => { onChange(text.split(",").map(s => s.trim()).filter(Boolean)); setEditing(false); }} className="h-8 rounded-full text-[11px] px-3" style={{ backgroundColor: "#ff5f1f" }}>Save</Button>
     </div>
   ) : (
     <div className="flex items-center gap-2 flex-wrap">
       {labels.map((l) => (
-        <span key={l} className="text-[11px] px-2 py-0.5 rounded-full font-mono" style={{ backgroundColor: "#C7661D10", color: "#C7661D", border: "1px solid #C7661D20" }}>{l}</span>
+        <span key={l} className="text-[11px] px-2 py-0.5 rounded-full font-mono" style={{ backgroundColor: "#ff5f1f10", color: "#ff5f1f", border: "1px solid #ff5f1f20" }}>{l}</span>
       ))}
       <Button variant="ghost" onClick={() => { setText(labels.join(", ")); setEditing(true); }} className="h-6 text-[11px] text-[#999] px-2">Edit</Button>
     </div>
@@ -170,8 +170,8 @@ export function CreateRunPage() {
         {(["data", "task"] as const).map((s, i) => (
           <div key={s} className="flex items-center gap-3">
             <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold border-2" style={{
-              backgroundColor: step === s ? "#C7661D" : i < ["data", "task"].indexOf(step) ? "#2E7D32" : "transparent",
-              borderColor: step === s ? "#C7661D" : i < ["data", "task"].indexOf(step) ? "#2E7D32" : "#E2E0DB",
+              backgroundColor: step === s ? "#ff5f1f" : i < ["data", "task"].indexOf(step) ? "#2E7D32" : "transparent",
+              borderColor: step === s ? "#ff5f1f" : i < ["data", "task"].indexOf(step) ? "#2E7D32" : "#E2E0DB",
               color: step === s || i < ["data", "task"].indexOf(step) ? "#fff" : "#999",
             }}>{i < ["data", "task"].indexOf(step) ? "✓" : i + 1}</div>
             <span className="text-[13px] font-medium" style={{ color: step === s ? "#111" : "#999" }}>
@@ -189,8 +189,8 @@ export function CreateRunPage() {
 
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all hover:border-[#C7661D] hover:bg-[#F5F4F0]"
-            style={{ borderColor: uploadedFile ? '#C7661D' : '#E2E0DB' }}
+            className="border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all hover:border-[#ff5f1f] hover:bg-[#F5F4F0]"
+            style={{ borderColor: uploadedFile ? '#ff5f1f' : '#E2E0DB' }}
           >
             {uploadedFile ? (
               <div>
@@ -215,7 +215,7 @@ export function CreateRunPage() {
             <div className="mt-6">
               <label className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#777] mb-2">Label column</label>
               <select value={labelColumn} onChange={(e) => setLabelColumn(e.target.value)}
-                className="w-full border border-[#E2E0DB] px-4 py-2 text-[14px] text-[#111] outline-none focus:border-[#C7661D] bg-white">
+                className="w-full border border-[#E2E0DB] px-4 py-2 text-[14px] text-[#111] outline-none focus:border-[#ff5f1f] bg-white">
                 {uploadPreview[0]?.map((col) => <option key={col} value={col}>{col}</option>)}
               </select>
               <div className="mt-4 overflow-x-auto border rounded-lg" style={{ borderColor: '#E2E0DB' }}>
@@ -223,7 +223,7 @@ export function CreateRunPage() {
                   <thead>
                     <tr className="bg-[#F5F4F0] border-b" style={{ borderColor: '#E2E0DB' }}>
                       {uploadPreview[0]?.map((col) => (
-                        <th key={col} className={`px-3 py-2 font-mono text-[11px] font-medium ${col === labelColumn ? 'text-[#C7661D]' : 'text-[#6B6B6B]'}`}>
+                        <th key={col} className={`px-3 py-2 font-mono text-[11px] font-medium ${col === labelColumn ? 'text-[#ff5f1f]' : 'text-[#6B6B6B]'}`}>
                           {col}{col === labelColumn ? '  ←' : ''}
                         </th>
                       ))}
@@ -269,9 +269,9 @@ export function CreateRunPage() {
               <div key={t.value}
                 onClick={() => handleTaskChange(t.value)}
                 className="border rounded-lg px-4 py-3 cursor-pointer transition-all hover:bg-[#F5F4F0] flex items-start gap-3"
-                style={{ borderColor: taskType === t.value ? '#C7661D' : '#E2E0DB', boxShadow: taskType === t.value ? '0 0 0 1px #C7661D' : 'none' }}>
-                <div className={`w-4 h-4 rounded-full mt-0.5 flex-shrink-0 border-2 ${taskType === t.value ? 'border-[#C7661D]' : 'border-[#E2E0DB]'}`}>
-                  {taskType === t.value && <div className="w-2 h-2 rounded-full m-0.5" style={{ backgroundColor: '#C7661D' }} />}
+                style={{ borderColor: taskType === t.value ? '#ff5f1f' : '#E2E0DB', boxShadow: taskType === t.value ? '0 0 0 1px #ff5f1f' : 'none' }}>
+                <div className={`w-4 h-4 rounded-full mt-0.5 flex-shrink-0 border-2 ${taskType === t.value ? 'border-[#ff5f1f]' : 'border-[#E2E0DB]'}`}>
+                  {taskType === t.value && <div className="w-2 h-2 rounded-full m-0.5" style={{ backgroundColor: '#ff5f1f' }} />}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[#111]">{t.label}</p>
@@ -293,7 +293,7 @@ export function CreateRunPage() {
                     <div key={t}
                       onClick={() => setModelTier(t)}
                       className="border rounded-lg px-3 py-2 text-center cursor-pointer text-[13px] font-medium capitalize transition-all"
-                      style={{ borderColor: modelTier === t ? '#C7661D' : '#E2E0DB', backgroundColor: modelTier === t ? '#C7661D08' : '#fff' }}>
+                      style={{ borderColor: modelTier === t ? '#ff5f1f' : '#E2E0DB', backgroundColor: modelTier === t ? '#ff5f1f08' : '#fff' }}>
                       {t}
                     </div>
                   ))}

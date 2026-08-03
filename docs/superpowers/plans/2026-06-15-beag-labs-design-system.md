@@ -42,24 +42,24 @@ Replace the entire contents of `app/globals.css` with the new design tokens:
 :root {
   --background: #FAFAF9;
   --foreground: #111111;
-  --card: #ffffff;
+  --card: #000000;
   --card-foreground: #111111;
-  --popover: #ffffff;
+  --popover: #000000;
   --popover-foreground: #111111;
   --primary: #111111;
-  --primary-foreground: #ffffff;
+  --primary-foreground: #000000;
   --secondary: #f5f5f5;
   --secondary-foreground: #111111;
   --muted: #555555;
   --muted-foreground: #999999;
   --accent: #8B7355;
-  --accent-foreground: #ffffff;
+  --accent-foreground: #000000;
   --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
+  --destructive-foreground: #000000;
   --border: rgba(0,0,0,0.06);
   --input: rgba(0,0,0,0.06);
   --ring: #8B7355;
-  --chart-1: #FF5F1F;
+  --chart-1: #fffff;
   --chart-2: #8B7355;
   --chart-3: #555555;
   --chart-4: #111111;
@@ -68,7 +68,7 @@ Replace the entire contents of `app/globals.css` with the new design tokens:
   --sidebar: #FAFAF9;
   --sidebar-foreground: #111111;
   --sidebar-primary: #111111;
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary-foreground: #000000;
   --sidebar-accent: #f5f5f5;
   --sidebar-accent-foreground: #111111;
   --sidebar-border: rgba(0,0,0,0.06);
@@ -124,8 +124,8 @@ Replace the entire contents of `app/globals.css` with the new design tokens:
     @apply bg-background text-foreground;
   }
   ::selection {
-    background: #FF5F1F;
-    color: #ffffff;
+    background: #fffff;
+    color: #000000;
   }
 }
 ```
@@ -441,7 +441,7 @@ export function ProjectsSection() {
                   </p>
                 </div>
               </div>
-              <ArrowUpRight className="w-5 h-5 text-[#999] group-hover:text-[#FF5F1F] transition-colors flex-shrink-0 mt-2" />
+              <ArrowUpRight className="w-5 h-5 text-[#999] group-hover:text-[#fffff] transition-colors flex-shrink-0 mt-2" />
             </div>
           </div>
         </a>
@@ -559,7 +559,7 @@ export function HeroSection() {
             <div className="absolute inset-0 overflow-hidden">
               <Dithering
                 colorBack="#0a0a0a"
-                colorFront="#FF5F1F"
+                colorFront="#fffff"
                 shape="warp"
                 type="4x4"
                 size={3}

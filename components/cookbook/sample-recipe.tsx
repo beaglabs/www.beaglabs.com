@@ -12,7 +12,7 @@ export function SampleRecipe() {
     <div className="nb-card p-8">
       <div className="mb-4 flex items-center gap-3">
         <span className="nb-label text-[10px]">Sample Recipe</span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#FF5F1F]">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff5f1f]">
           {'★'.repeat(sampleRecipe.complexity)}{'☆'.repeat(5 - sampleRecipe.complexity)}
         </span>
       </div>
@@ -44,7 +44,7 @@ export function SampleRecipe() {
                 {step}
               </span>
               {i < sampleRecipe.pipeline.length - 1 && (
-                <span className="text-[16px] text-[#FF5F1F]">&rarr;</span>
+                <span className="text-[16px] text-[#ff5f1f]">&rarr;</span>
               )}
             </span>
           ))}

@@ -199,7 +199,7 @@ REVALIDATE_SECRET=random-secret-for-hygraph-webhook
 Both sections use the existing academic-minimal design tokens from `globals.css`:
 
 - Typography: Inter for headings and body, JetBrains Mono for code/meta/authors
-- Colors: `--background` (#FAFAF9) for page chrome, `--card` (#ffffff) for cards, `--foreground` (#111111) for text, `--muted` (#555555) for secondary text, `--accent` (#8B7355) for blog-specific accents, `--border` for card borders
+- Colors: `--background` (#FAFAF9) for page chrome, `--card` (#000000) for cards, `--foreground` (#111111) for text, `--muted` (#555555) for secondary text, `--accent` (#8B7355) for blog-specific accents, `--border` for card borders
 - KaTeX math inherits the mono font where possible (KaTeX renders to spans with its own CSS)
 
 **Navbar update:** Add "Blog" and "Research" links in the existing nav style (text-xs, #555, hover #111). Position between current links: Blog | Research | Projects | [Contact].

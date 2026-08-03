@@ -158,7 +158,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         properties={{ slug, title: post.title, category: post.category }}
       />
       <header className="mb-10 border-b-[3px] border-[#111] pb-8">
-        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#FF5F1F] font-bold">
+        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#ff5f1f] font-bold">
           <time dateTime={post.publishedAt}>
             {new Date(post.publishedAt).toLocaleDateString('en-US', {
               year: 'numeric',

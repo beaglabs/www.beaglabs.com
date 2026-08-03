@@ -1,31 +1,27 @@
 const steps = [
   {
     id: "01",
-    title: "Tell us what you need",
+    title: "Scope",
     description:
       "We'll learn about your data, your infrastructure, and the tasks you want to automate. Then we design a solution — model architecture, deployment target, and a timeline.",
-    bg: "#FFF3E6",
   },
   {
     id: "02",
-    title: "We build your model",
+    title: "Build",
     description:
       "We connect your data sources, use frontier models to accelerate labeling, fine-tune a compact model for your task, and export it as ONNX — ready to deploy.",
-    bg: "#E6F2FF",
   },
   {
     id: "03",
-    title: "We deploy on your infra",
+    title: "Deploy",
     description:
       "We deploy the model on your infrastructure — cloud, on-prem, or air-gapped — and integrate it into your workflows. No runtime API calls to us. Your data stays put.",
-    bg: "#E6FFF2",
   },
   {
     id: "04",
-    title: "We keep it running",
+    title: "Operate",
     description:
       "We monitor accuracy, retrain as your data changes, and optimize performance over time. A model that starts accurate stays accurate.",
-    bg: "#FFF9E6",
   },
 ]
 
@@ -49,10 +45,9 @@ export function EngagementModelSection() {
           {steps.map((step) => (
             <div
               key={step.id}
-              className="nb-card group p-8"
-              style={{ background: step.bg }}
+              className="nb-card group bg-white p-8"
             >
-              <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5F1F]">
+              <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                 {step.id}
               </div>
               <h3 className="mb-3 text-[22px] font-extrabold leading-[1.08] text-[#111]">

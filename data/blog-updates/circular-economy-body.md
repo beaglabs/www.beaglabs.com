@@ -35,7 +35,7 @@ flowchart TD
     style ANT fill:#ff990030,stroke:#ff9900
     style AWS fill:#ff990030,stroke:#ff9900
     style VC fill:#88888820,stroke:#888
-    style AI_IND fill:#FF5F1F30,stroke:#FF5F1F
+    style AI_IND fill:#fffff30,stroke:#fffff
 ```
 
 ## The NVIDIA Reinvestment Engine

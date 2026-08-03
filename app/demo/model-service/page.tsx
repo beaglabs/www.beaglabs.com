@@ -6,13 +6,13 @@ import { useState } from 'react'
 const beag = {
   bg: '#F5F4F0',
   sidebar: '#EDEBE6',
-  surface: '#FFFFFF',
+  surface: '#000000',
   fg: '#111111',
   body: '#404040',
   muted: '#6B6B6B',
   border: '#E2E0DB',
-  accent: '#C7661D',
-  cta: '#FF5F1F',
+  accent: '#ff5f1f',
+  cta: '#ff5f1f',
   green: '#2E7D32',
   red: '#D32F2F',
 }
@@ -43,7 +43,7 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
       <div className="relative z-10 w-full max-w-sm mx-6">
         <div className="text-center mb-10">
           <h1 className="text-[28px] font-bold tracking-[-0.04em] text-[#111]">B_</h1>
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D] mt-2">Model Training Platform</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f] mt-2">Model Training Platform</p>
         </div>
 
         <div className="bg-white border px-10 py-10" style={{ borderColor: '#E2E0DB' }}>
@@ -74,7 +74,7 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
             <div>
               <label className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Email</label>
               <input type="email" placeholder="you@company.com"
-                className="w-full mt-1 px-4 py-2.5 text-sm border rounded-lg outline-none transition-colors focus:border-[#C7661D]"
+                className="w-full mt-1 px-4 py-2.5 text-sm border rounded-lg outline-none transition-colors focus:border-[#ff5f1f]"
                 style={{ borderColor: '#E2E0DB', color: '#111', backgroundColor: '#FAFAF8' }} />
             </div>
             <button onClick={onLogin}
@@ -102,7 +102,7 @@ const RUNS = [
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; bg: string; fg: string }> = {
-    running: { label: 'Running', bg: '#FFF0E8', fg: '#FF5F1F' },
+    running: { label: 'Running', bg: '#FFF0E8', fg: '#ff5f1f' },
     review: { label: 'Needs Review', bg: '#FFF8E1', fg: '#B8860B' },
     complete: { label: 'Complete', bg: '#E8F5E9', fg: '#2E7D32' },
   }
@@ -134,9 +134,9 @@ function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Active Runs', value: '2', color: '#FF5F1F' },
+          { label: 'Active Runs', value: '2', color: '#ff5f1f' },
           { label: 'Completed', value: '18', color: '#2E7D32' },
-          { label: 'Avg Accuracy', value: '86.3%', color: '#C7661D' },
+          { label: 'Avg Accuracy', value: '86.3%', color: '#ff5f1f' },
           { label: 'Total Saved vs Frontier', value: '$2,840', color: '#111' },
         ].map(s => (
           <div key={s.label} className="bg-white border rounded-lg p-5" style={{ borderColor: '#E2E0DB' }}>
@@ -165,7 +165,7 @@ function DashboardPage() {
                 {r.status === 'running' && (
                   <>
                     <div className="w-16 h-1.5 bg-[#E2E0DB] rounded-full overflow-hidden">
-                      <div className="h-full rounded-full animate-pulse" style={{ width: `${r.progress}%`, backgroundColor: '#FF5F1F' }} />
+                      <div className="h-full rounded-full animate-pulse" style={{ width: `${r.progress}%`, backgroundColor: '#ff5f1f' }} />
                     </div>
                     <span className="font-mono text-[11px] text-[#6B6B6B]">{r.progress}%</span>
                   </>
@@ -204,7 +204,7 @@ function ConnectorsPage() {
           <p className="text-sm text-[#6B6B6B] mt-0.5">Connect data sources to train models</p>
         </div>
         <button className="rounded-full bg-[#111] px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-white hover:bg-[#2a2a2a] transition-colors duration-200"
-          style={{ backgroundColor: '#C7661D' }}>
+          style={{ backgroundColor: '#ff5f1f' }}>
           + Add Connector
         </button>
       </div>
@@ -244,7 +244,7 @@ function ConnectorsPage() {
               <div key={c} className="bg-white border rounded-lg px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-[#F5F4F0] transition-colors duration-200"
                 style={{ borderColor: '#E2E0DB' }}>
                 <span className="text-sm text-[#111]">{c}</span>
-                <span className="text-xs text-[#C7661D]">+</span>
+                <span className="text-xs text-[#ff5f1f]">+</span>
               </div>
             ))}
           </div>
@@ -292,26 +292,26 @@ function PipelinePage() {
         <div className="flex items-center justify-between relative">
           <div className="absolute top-5 left-[3%] right-[3%] h-px bg-[#E2E0DB]" />
           <div className="absolute top-5 left-[3%] h-px transition-all duration-700 ease-in-out"
-            style={{ width: `${(activeStep / (stages.length - 1)) * 94}%`, backgroundColor: '#C7661D' }} />
+            style={{ width: `${(activeStep / (stages.length - 1)) * 94}%`, backgroundColor: '#ff5f1f' }} />
 
           {stages.map((s, i) => (
             <div key={s.label} className="flex flex-col items-center gap-2 relative z-10 text-center" style={{ width: `${100 / stages.length}%` }}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-500`}
                 style={{
                   backgroundColor: i <= activeStep ? '#FFF0E8' : '#FAFAF8',
-                  borderColor: i <= activeStep ? '#C7661D' : '#E2E0DB',
+                  borderColor: i <= activeStep ? '#ff5f1f' : '#E2E0DB',
                 }}>
                 {i < activeStep ? (
-                  <span className="text-xs" style={{ color: '#C7661D' }}>✓</span>
+                  <span className="text-xs" style={{ color: '#ff5f1f' }}>✓</span>
                 ) : (
                   <span className={`w-2 h-2 rounded-full ${i === activeStep ? 'animate-pulse' : ''}`}
-                    style={{ backgroundColor: i === activeStep ? '#C7661D' : '#CCC' }} />
+                    style={{ backgroundColor: i === activeStep ? '#ff5f1f' : '#CCC' }} />
                 )}
               </div>
               <p className="text-xs font-medium text-[#111]">{s.label}</p>
               <p className="font-mono text-[10px] text-[#6B6B6B]">{s.desc}</p>
               {i === activeStep && i < 5 && (
-                <span className="font-mono text-[10px] animate-pulse" style={{ color: '#C7661D' }}>Running</span>
+                <span className="font-mono text-[10px] animate-pulse" style={{ color: '#ff5f1f' }}>Running</span>
               )}
               {i < activeStep && (
                 <span className="font-mono text-[10px]" style={{ color: '#2E7D32' }}>Done</span>
@@ -386,9 +386,9 @@ function ReviewPage() {
             <div key={i}
               className="border rounded-lg px-4 py-3 cursor-pointer transition-all text-sm"
               style={{
-                borderColor: i === currentIndex ? '#C7661D' : ex.contested ? '#E2E0DB' : '#E2E0DB',
+                borderColor: i === currentIndex ? '#ff5f1f' : ex.contested ? '#E2E0DB' : '#E2E0DB',
                 backgroundColor: i === currentIndex ? '#FFF0E8' : ex.contested ? '#fff' : '#F9F9F6',
-                boxShadow: i === currentIndex ? '0 0 0 1px #C7661D' : 'none',
+                boxShadow: i === currentIndex ? '0 0 0 1px #ff5f1f' : 'none',
               }}>
               <div className="flex items-center gap-2">
                 <span className={`w-2 h-2 rounded-full shrink-0 ${
@@ -429,7 +429,7 @@ function ReviewPage() {
             {example.contested ? (
               <div className="border rounded-lg px-4 py-3" style={{ borderColor: '#FFE0CC', backgroundColor: '#FFF0E8' }}>
                 <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Model Prediction</p>
-                <p className="font-mono text-sm font-bold mt-1" style={{ color: '#FF5F1F' }}>{example.modelPrediction}</p>
+                <p className="font-mono text-sm font-bold mt-1" style={{ color: '#ff5f1f' }}>{example.modelPrediction}</p>
                 <p className="font-mono text-[10px] text-[#6B6B6B] mt-0.5">low confidence</p>
               </div>
             ) : (
@@ -526,7 +526,7 @@ function ExportPage() {
 
         {/* Dataset export */}
         <div className="bg-white border rounded-lg p-6" style={{ borderColor: '#E2E0DB' }}>
-          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#C7661D] mb-4">Labeled Dataset</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#ff5f1f] mb-4">Labeled Dataset</p>
           <p className="text-sm text-[#404040] mb-4">
             All 10,686 records with model labels, confidence scores, and review status.
           </p>
@@ -544,7 +544,7 @@ function ExportPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-[#6B6B6B]">{f.size}</span>
-                  <span className="font-mono text-xs text-[#C7661D] cursor-pointer">Download</span>
+                  <span className="font-mono text-xs text-[#ff5f1f] cursor-pointer">Download</span>
                 </div>
               </div>
             ))}
@@ -574,7 +574,7 @@ function ExportPage() {
             <span className="font-medium text-[#111]">{m.name}</span>
             <span className="font-mono text-xs text-[#6B6B6B]">{m.date}</span>
             <span className="font-mono text-xs" style={{ color: m.status === 'Active' ? '#2E7D32' : '#6B6B6B' }}>{m.status}</span>
-            <span className="font-mono text-xs text-[#C7661D] cursor-pointer justify-self-end">Download</span>
+            <span className="font-mono text-xs text-[#ff5f1f] cursor-pointer justify-self-end">Download</span>
           </div>
         ))}
       </div>
@@ -593,7 +593,7 @@ function SettingsPage() {
 
       <div className="space-y-8">
         <div className="bg-white border rounded-lg p-6" style={{ borderColor: '#E2E0DB' }}>
-          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#C7661D] mb-4">Profile</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#ff5f1f] mb-4">Profile</p>
           <div className="space-y-4">
             {[
               { label: 'Organization', value: 'Genentech' },
@@ -609,7 +609,7 @@ function SettingsPage() {
         </div>
 
         <div className="bg-white border rounded-lg p-6" style={{ borderColor: '#E2E0DB' }}>
-          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#C7661D] mb-4">On-Prem Deployment</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#ff5f1f] mb-4">On-Prem Deployment</p>
           <p className="text-sm text-[#404040] mb-4">Deploy training infrastructure within your VPC for data residency compliance.</p>
           <button className="rounded-full border px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors duration-200"
             style={{ borderColor: '#E2E0DB', color: '#111' }}>
@@ -618,7 +618,7 @@ function SettingsPage() {
         </div>
 
         <div className="bg-white border rounded-lg p-6" style={{ borderColor: '#E2E0DB' }}>
-          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#C7661D] mb-4">Danger Zone</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#ff5f1f] mb-4">Danger Zone</p>
           <p className="text-sm text-[#404040] mb-4">Permanently delete all models and training data.</p>
           <button className="rounded-full border px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors duration-200"
             style={{ borderColor: '#FFCDD2', color: '#D32F2F', backgroundColor: '#FFEBEE' }}>
@@ -722,7 +722,7 @@ function AppShell({ onLogout }: { onLogout: () => void }) {
           {NAV_ITEMS.map(item => (
             <button key={item.key} onClick={() => setPage(item.key)}
               className="flex-1 flex flex-col items-center py-2 text-[10px] font-mono uppercase tracking-[0.08em] transition-colors"
-              style={{ color: page === item.key ? '#C7661D' : '#6B6B6B' }}>
+              style={{ color: page === item.key ? '#ff5f1f' : '#6B6B6B' }}>
               <Icon name={item.key} size={16} />
               <span className="mt-0.5">{item.label}</span>
             </button>
@@ -774,21 +774,21 @@ function OnboardingPage({ onComplete }: { onComplete: () => void }) {
             <div key={s} className="flex items-center">
               <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono transition-colors`}
                 style={{
-                  backgroundColor: i <= step ? '#C7661D15' : 'transparent',
-                  color: i <= step ? '#C7661D' : '#6B6B6B',
-                  border: `1px solid ${i <= step ? '#C7661D30' : '#E2E0DB'}`,
+                  backgroundColor: i <= step ? '#ff5f1f15' : 'transparent',
+                  color: i <= step ? '#ff5f1f' : '#6B6B6B',
+                  border: `1px solid ${i <= step ? '#ff5f1f30' : '#E2E0DB'}`,
                 }}>
                 <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono`}
                   style={{
-                    backgroundColor: i < step ? '#C7661D' : 'transparent',
-                    color: i < step ? '#fff' : i === step ? '#C7661D' : '#6B6B6B',
-                    border: i === step ? `1px solid #C7661D` : i < step ? 'none' : `1px solid #E2E0DB`,
+                    backgroundColor: i < step ? '#ff5f1f' : 'transparent',
+                    color: i < step ? '#fff' : i === step ? '#ff5f1f' : '#6B6B6B',
+                    border: i === step ? `1px solid #ff5f1f` : i < step ? 'none' : `1px solid #E2E0DB`,
                   }}>
                   {i < step ? '✓' : i + 1}
                 </span>
                 {s}
               </div>
-              {i < steps.length - 1 && <div className="w-8 h-px mx-1" style={{ backgroundColor: step > i ? '#C7661D' : '#E2E0DB' }} />}
+              {i < steps.length - 1 && <div className="w-8 h-px mx-1" style={{ backgroundColor: step > i ? '#ff5f1f' : '#E2E0DB' }} />}
             </div>
           ))}
         </div>
@@ -796,7 +796,7 @@ function OnboardingPage({ onComplete }: { onComplete: () => void }) {
         {/* Step content */}
         {step === 0 && (
           <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-[#C7661D10] border border-[#C7661D20] flex items-center justify-center text-2xl mx-auto mb-6">
+            <div className="w-16 h-16 rounded-full bg-[#ff5f1f10] border border-[#ff5f1f20] flex items-center justify-center text-2xl mx-auto mb-6">
               B_
             </div>
             <h1 className="text-[32px] lg:text-[40px] font-bold tracking-[-0.045em] text-[#111]">
@@ -844,8 +844,8 @@ function OnboardingPage({ onComplete }: { onComplete: () => void }) {
                   onClick={() => toggleSource(s.name)}
                   className="bg-white border rounded-lg px-5 py-4 flex items-center gap-4 cursor-pointer transition-all hover:bg-[#F5F4F0]"
                   style={{
-                    borderColor: selectedSources.includes(s.name) ? '#C7661D' : '#E2E0DB',
-                    boxShadow: selectedSources.includes(s.name) ? '0 0 0 1px #C7661D' : 'none',
+                    borderColor: selectedSources.includes(s.name) ? '#ff5f1f' : '#E2E0DB',
+                    boxShadow: selectedSources.includes(s.name) ? '0 0 0 1px #ff5f1f' : 'none',
                   }}>
                   <div className="w-10 h-10 rounded-lg bg-[#F5F4F0] border flex items-center justify-center font-mono text-sm font-bold"
                     style={{ borderColor: '#E2E0DB' }}>{s.icon}</div>
@@ -857,7 +857,7 @@ function OnboardingPage({ onComplete }: { onComplete: () => void }) {
                     <span className="font-mono text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: '#F5F4F0', color: '#6B6B6B' }}>AST</span>
                   )}
                   <div className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold transition-colors ${
-                    selectedSources.includes(s.name) ? 'bg-[#C7661D] text-white' : 'border text-transparent'
+                    selectedSources.includes(s.name) ? 'bg-[#ff5f1f] text-white' : 'border text-transparent'
                   }`} style={{ borderColor: '#E2E0DB' }}>
                     {selectedSources.includes(s.name) ? '✓' : ''}
                   </div>
@@ -899,8 +899,8 @@ function OnboardingPage({ onComplete }: { onComplete: () => void }) {
                   onClick={() => setTaskType(t.key)}
                   className="bg-white border rounded-lg px-5 py-4 flex items-start gap-4 cursor-pointer transition-all hover:bg-[#F5F4F0]"
                   style={{
-                    borderColor: taskType === t.key ? '#C7661D' : '#E2E0DB',
-                    boxShadow: taskType === t.key ? '0 0 0 1px #C7661D' : 'none',
+                    borderColor: taskType === t.key ? '#ff5f1f' : '#E2E0DB',
+                    boxShadow: taskType === t.key ? '0 0 0 1px #ff5f1f' : 'none',
                   }}>
                   <span className="text-lg mt-0.5">{t.icon}</span>
                   <div className="flex-1 min-w-0">
@@ -908,7 +908,7 @@ function OnboardingPage({ onComplete }: { onComplete: () => void }) {
                     <p className="text-xs text-[#6B6B6B] mt-0.5">{t.desc}</p>
                   </div>
                   {taskType === t.key && (
-                    <span className="w-5 h-5 rounded-full bg-[#C7661D] flex items-center justify-center text-white text-[10px] font-bold mt-0.5">✓</span>
+                    <span className="w-5 h-5 rounded-full bg-[#ff5f1f] flex items-center justify-center text-white text-[10px] font-bold mt-0.5">✓</span>
                   )}
                 </div>
               ))}
@@ -963,14 +963,14 @@ function OnboardingPage({ onComplete }: { onComplete: () => void }) {
                 </div>
                 <div className="rounded-lg px-4 py-3" style={{ backgroundColor: '#FFF0E8' }}>
                   <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Model Prediction</p>
-                  <p className="font-mono text-sm font-bold mt-1" style={{ color: '#FF5F1F' }}>bug — missing try/catch</p>
+                  <p className="font-mono text-sm font-bold mt-1" style={{ color: '#ff5f1f' }}>bug — missing try/catch</p>
                   <p className="font-mono text-[10px] text-[#6B6B6B] mt-0.5">low confidence — needs your judgment</p>
                 </div>
               </div>
             </div>
 
             <div className="rounded-lg p-5 flex items-start gap-3"
-              style={{ backgroundColor: '#C7661D08', border: '1px solid #C7661D20' }}>
+              style={{ backgroundColor: '#ff5f1f08', border: '1px solid #ff5f1f20' }}>
               <div>
                 <p className="font-mono text-xs font-bold text-[#111] mb-1">You only verify the edge cases</p>
                 <p className="text-sm text-[#404040] leading-relaxed">
@@ -1014,8 +1014,8 @@ function ActivationGate({ onActivate }: { onActivate: () => void }) {
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-lg w-full text-center">
           {/* Status icon */}
-          <div className="w-16 h-16 rounded-full bg-[#FFF0E8] border border-[#FF5F1F20] flex items-center justify-center mx-auto mb-6">
-            <span className="w-3 h-3 rounded-full animate-pulse bg-[#FF5F1F]" />
+          <div className="w-16 h-16 rounded-full bg-[#FFF0E8] border border-[#ff5f1f20] flex items-center justify-center mx-auto mb-6">
+            <span className="w-3 h-3 rounded-full animate-pulse bg-[#ff5f1f]" />
           </div>
 
           <h1 className="text-[28px] font-bold tracking-[-0.04em] text-[#111]">
@@ -1033,15 +1033,15 @@ function ActivationGate({ onActivate }: { onActivate: () => void }) {
             <div className="flex items-center justify-between mb-3">
               <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Genentech Protein Relevance</span>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono"
-                style={{ backgroundColor: '#FFF0E8', color: '#FF5F1F' }}>
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#FF5F1F]" />
+                style={{ backgroundColor: '#FFF0E8', color: '#ff5f1f' }}>
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#ff5f1f]" />
                 Training
               </span>
             </div>
             <div className="flex items-center gap-1">
               {['Ingest', 'Label', 'Train', 'Disagree', 'Review', 'Export'].map((s, i) => (
                 <div key={s} className="flex-1 text-center">
-                  <div className={`w-full h-1 rounded-full ${i < 2 ? 'bg-[#C7661D]' : i === 2 ? 'bg-[#C7661D] animate-pulse' : 'bg-[#E2E0DB]'}`} />
+                  <div className={`w-full h-1 rounded-full ${i < 2 ? 'bg-[#ff5f1f]' : i === 2 ? 'bg-[#ff5f1f] animate-pulse' : 'bg-[#E2E0DB]'}`} />
                   <span className={`font-mono text-[9px] mt-1 block ${i <= 2 ? 'text-[#111]' : 'text-[#6B6B6B]'}`}>{s}</span>
                 </div>
               ))}

@@ -63,7 +63,7 @@ function ProgressBar({ status }: { status: RunStatus }) {
         className="h-full rounded-full transition-all duration-700"
         style={{
           width: `${pct}%`,
-          backgroundColor: failed ? "#D32F2F" : pct === 100 && !failed ? "#2E7D32" : "#C7661D",
+          backgroundColor: failed ? "#D32F2F" : pct === 100 && !failed ? "#2E7D32" : "#ff5f1f",
         }}
       />
     </div>
@@ -119,7 +119,7 @@ export function RunsDashboard({ initialRuns = [] }: { initialRuns?: TrainingRun[
           <CardContent className="p-12 text-center">
             <p className="text-[15px] text-[#777]">No training runs yet.</p>
           <Link href="/model-service/runs/create">
-            <Button className="mt-4 rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5" style={{ backgroundColor: "#C7661D" }}>
+            <Button className="mt-4 rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5" style={{ backgroundColor: "#ff5f1f" }}>
               Create your first run
             </Button>
           </Link>
@@ -174,7 +174,7 @@ export function RunsDashboard({ initialRuns = [] }: { initialRuns?: TrainingRun[
                     {run.training_cost != null ? `$${run.training_cost}` : "—"}
                   </td>
                   <td className="px-4 py-3">
-                    <Button variant="ghost" size="sm" className="text-[#C7661D] text-xs">
+                    <Button variant="ghost" size="sm" className="text-[#ff5f1f] text-xs">
                       View →
                     </Button>
                   </td>

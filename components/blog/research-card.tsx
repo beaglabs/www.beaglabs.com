@@ -27,10 +27,10 @@ export function ResearchCard({ paper }: ResearchCardProps) {
           </div>
         )}
         <div className="p-6 lg:p-7">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#C7661D]">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#ff5f1f]">
             {paper.authors.join(', ')}
           </p>
-          <h3 className="mb-3 text-[24px] leading-[1.08] tracking-[-0.03em] text-[#111] transition-colors group-hover:text-[#C7661D]">
+          <h3 className="mb-3 text-[24px] leading-[1.08] tracking-[-0.03em] text-[#111] transition-colors group-hover:text-[#ff5f1f]">
             {paper.title}
           </h3>
           <p className="mb-4 line-clamp-3 text-[14px] leading-[1.75] text-[#555]">
@@ -47,7 +47,7 @@ export function ResearchCard({ paper }: ResearchCardProps) {
             {paper.doi && (
               <>
                 <span aria-hidden="true">·</span>
-                <span className="text-[#C7661D]">DOI</span>
+                <span className="text-[#ff5f1f]">DOI</span>
               </>
             )}
           </div>

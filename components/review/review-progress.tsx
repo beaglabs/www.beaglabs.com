@@ -31,12 +31,12 @@ export function ReviewProgress({
           className="h-full rounded-full transition-all duration-500 ease-out"
           style={{
             width: `${pct}%`,
-            backgroundColor: pct === 100 ? "#2E7D32" : "#C7661D",
+            backgroundColor: pct === 100 ? "#2E7D32" : "#ff5f1f",
           }}
         />
       </div>
       {etaMinutes != null && etaMinutes > 0 && (
-        <p className="text-[10px] text-[#C7661D] mt-1">
+        <p className="text-[10px] text-[#ff5f1f] mt-1">
           ~{etaMinutes} min remaining
         </p>
       )}

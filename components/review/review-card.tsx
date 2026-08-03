@@ -53,7 +53,7 @@ export const ReviewCard = memo(function ReviewCard({
 
   return (
     <Card
-      className="bg-white border-[#E2E0DB] focus-within:border-[#C7661D] transition-colors outline-none"
+      className="bg-white border-[#E2E0DB] focus-within:border-[#ff5f1f] transition-colors outline-none"
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
@@ -93,7 +93,7 @@ export const ReviewCard = memo(function ReviewCard({
         <div className="flex items-center gap-3 mb-3">
           <div>
             <p className="text-[9px] text-[#999] uppercase">Frontier</p>
-            <Badge variant="outline" className={hasBothLabels ? "border-[#FF5F1F] text-[#FF5F1F]" : ""}>
+            <Badge variant="outline" className={hasBothLabels ? "border-[#ff5f1f] text-[#ff5f1f]" : ""}>
               {example.frontier_label || "—"}
             </Badge>
           </div>

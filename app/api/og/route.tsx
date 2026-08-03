@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const title = searchParams.get('title') ?? 'Beag Labs'
   const description = searchParams.get('description') ?? ''
-  const label = searchParams.get('label') ?? 'Custom AI. On Your Infra.'
+  const label = searchParams.get('label') ?? 'Small models. Deployable anywhere.'
 
   const fonts = await googleFonts([
     { name: 'Inter', weight: [500, 700, 800] },
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
             left: 0,
             right: 0,
             height: '6px',
-            backgroundColor: '#FF5F1F',
+            backgroundColor: '#ff5f1f',
             display: 'flex',
           }}
         />
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
               display: 'flex',
               alignSelf: 'flex-start',
               alignItems: 'center',
-              backgroundColor: '#FF5F1F',
+              backgroundColor: '#ff5f1f',
               color: '#111111',
               padding: '5px 14px',
               fontSize: '14px',
@@ -173,7 +173,7 @@ export async function GET(request: Request) {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#000000',
                   color: '#111111',
                   padding: '6px 14px',
                   fontSize: '14px',

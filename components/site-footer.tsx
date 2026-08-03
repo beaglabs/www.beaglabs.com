@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 
 const footerColumns = [
@@ -44,26 +43,21 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_repeat(4,1fr)] lg:gap-7">
           <div>
             <div className="mb-4 flex items-center gap-3">
-              <Image
-                src="/logo.png"
-                alt="Beag Labs"
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
+              <span className="bg-[#111] text-[#FAFAF9] px-2.5 py-1 text-[18px] font-extrabold tracking-[-0.04em]">
+                B_
+              </span>
               <span className="text-[13px] font-extrabold tracking-[0.08em] text-[#111]">
                 Beag Labs
               </span>
             </div>
             <p className="max-w-[250px] text-[14px] leading-[1.7] text-[#555] font-medium">
-              Classification and extraction models trained on your data,
-              deployed on your infrastructure.
+              Small models for government and high-trust industries. Deployable anywhere. 
             </p>
           </div>
 
           {footerColumns.map((col) => (
             <div key={col.title}>
-              <h4 className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5F1F]">
+              <h4 className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                 {col.title}
               </h4>
               <ul className="space-y-2.5 text-[14px] text-[#444]">
@@ -71,7 +65,7 @@ export function SiteFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="font-medium border-b-2 border-transparent transition-all hover:border-[#FF5F1F] hover:text-[#111]"
+                      className="font-medium border-b-2 border-transparent transition-all hover:border-[#ff5f1f] hover:text-[#111]"
                     >
                       {link.label}
                     </Link>

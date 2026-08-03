@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { BrutalistPhoto } from "@/components/brutalist-photo"
 import { trainingConcepts } from "@/data/training/concepts"
 
 export const metadata: Metadata = {
@@ -46,22 +47,38 @@ export default function TrainingListingPage() {
 
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <Breadcrumbs
-            items={[
-              { name: "Home", url: "/" },
-              { name: "Training", url: "/training" },
-            ]}
-          />
-          <div className="mt-8 mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
-            ML Cookbook + QAT
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_minmax(380px,520px)]">
+            <div>
+              <Breadcrumbs
+                items={[
+                  { name: "Home", url: "/" },
+                  { name: "Training Techniques", url: "/training" },
+                ]}
+              />
+              <div className="mt-8 mb-5 flex items-center gap-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+                  ML Cookbook + QAT
+                </span>
+                <span className="block h-px w-10 bg-[#111]" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">53 techniques</span>
+              </div>
+              <h1 className="mb-5 max-w-[820px] text-[42px] font-extrabold leading-[1.02] tracking-[-0.05em] text-[#111] sm:text-[52px] lg:text-[64px]">
+                Training Techniques
+              </h1>
+              <p className="max-w-[640px] text-[17px] leading-[1.72] text-[#404040] font-medium">
+                53 modern training techniques every AI engineer should know — spanning language models,
+                vision, 3D generation, speech, robotics, agents, synthetic data, and model optimization.
+              </p>
+            </div>
+            <BrutalistPhoto
+              src="https://images.pexels.com/photos/574069/pexels-photo-574069.jpeg"
+              alt="Code on a dark monitor"
+              badge="53 TECHNIQUES"
+              meta="beaglabs / training"
+              rounded
+              className="mx-auto w-full max-w-[480px]"
+            />
           </div>
-          <h1 className="mb-5 max-w-[820px] text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-            Training Techniques
-          </h1>
-          <p className="max-w-[640px] text-[17px] leading-[1.72] text-[#404040] font-medium">
-            53 modern training techniques every AI engineer should know — spanning language models,
-            vision, 3D generation, speech, robotics, agents, synthetic data, and model optimization.
-          </p>
         </div>
       </section>
 
@@ -71,7 +88,7 @@ export default function TrainingListingPage() {
         return (
           <section key={part.name} className="nb-section-divider bg-[#FAFAF9] px-6 py-16 lg:px-9 lg:py-20">
             <div className="mx-auto max-w-[1440px]">
-              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
                 Part {part.index}
               </div>
               <h2 className="mb-2 text-[32px] font-extrabold tracking-[-0.04em] text-[#111] lg:text-[40px]">
@@ -88,7 +105,7 @@ export default function TrainingListingPage() {
                     className="nb-card bg-white p-6"
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#C7661D]">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#ff5f1f]">
                         {c.part}
                       </span>
                       <span className="text-[11px] text-[#999]">{c.complexity}</span>

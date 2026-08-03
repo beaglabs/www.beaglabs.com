@@ -184,7 +184,7 @@ export default function RaisePage() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {problemCards.map((card) => (
               <div key={card.step} className="border-[3px] border-[#111] bg-white p-8 shadow-[6px_6px_0px_0px_#111]">
-                <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5F1F]">
+                <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                   {card.step}
                 </div>
                 <h3 className="mb-3 text-[22px] font-extrabold leading-[1.08] text-[#111]">
@@ -215,7 +215,7 @@ export default function RaisePage() {
                 className="nb-card p-8"
                 style={{ background: step.bg }}
               >
-                <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5F1F]">
+                <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                   {step.id}
                 </div>
                 <h3 className="mb-3 text-[22px] font-extrabold leading-[1.08] text-[#111]">
@@ -244,7 +244,7 @@ export default function RaisePage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {tractionCards.map((card) => (
               <div key={card.label} className="nb-card bg-white p-6">
-                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                   {card.label}
                 </div>
                 <div className="mt-3 text-[28px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111]">
@@ -285,7 +285,7 @@ export default function RaisePage() {
             </div>
 
             <div className="nb-card bg-[#FFF3E6] p-8">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                 Operating split
               </div>
               <div className="mt-5 space-y-4">
@@ -295,7 +295,7 @@ export default function RaisePage() {
                     <span>70%</span>
                   </div>
                   <div className="mt-2 h-4 border-[2px] border-[#111]">
-                    <div className="h-full w-[70%] bg-[#FF5F1F]" />
+                    <div className="h-full w-[70%] bg-[#ff5f1f]" />
                   </div>
                   <p className="mt-1 text-xs leading-[1.6] text-[#555] font-medium">
                     Funds operations and grows reference customer base
@@ -335,13 +335,13 @@ export default function RaisePage() {
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="nb-card bg-white p-8">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                 Moat
               </div>
               <ul className="mt-5 space-y-4">
                 {moatPoints.map((point, i) => (
                   <li key={i} className="flex gap-3 text-[14px] leading-[1.6] text-[#404040] font-medium">
-                    <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#FF5F1F]">
+                    <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#ff5f1f]">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span>{point}</span>
@@ -351,7 +351,7 @@ export default function RaisePage() {
             </div>
 
             <div className="nb-card bg-[#E6F2FF] p-8">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                 Who we compete with
               </div>
               <div className="mt-5 space-y-4">
@@ -394,7 +394,7 @@ export default function RaisePage() {
             {roadmapPhases.map((phase, i) => (
               <div key={phase.phase} className="nb-card bg-white p-8 flex flex-col sm:flex-row gap-6">
                 <div className="flex-shrink-0 space-y-2 border-b-[3px] border-[#111] pb-4 sm:border-b-0 sm:border-r-[3px] sm:pr-6 sm:pb-0 sm:w-[160px]">
-                  <div className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5F1F]">
+                  <div className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                     {phase.phase}
                   </div>
                   <div className="nb-chip text-[10px]">
@@ -430,14 +430,14 @@ export default function RaisePage() {
           </p>
 
           <div className="nb-card bg-white p-8">
-            <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F] mb-6">
+            <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f] mb-6">
               Cumulative contracted ACV vs. monthly burn ($M)
             </div>
             <RevenueChart />
 
             <div className="mt-6 grid grid-cols-1 gap-4 border-t-[2px] border-[#111]/10 pt-6 md:grid-cols-3">
               <div>
-                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                   Contract model
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
@@ -445,7 +445,7 @@ export default function RaisePage() {
                 </p>
               </div>
               <div>
-                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                   Pipeline velocity
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
@@ -453,7 +453,7 @@ export default function RaisePage() {
                 </p>
               </div>
               <div>
-                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                   Cash position
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.6] text-[#555] font-medium">
@@ -500,7 +500,7 @@ export default function RaisePage() {
             </div>
 
             <div className="nb-card bg-[#FFF3E6] p-8">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                 Spending principles
               </div>
               <ul className="mt-5 space-y-4">
@@ -511,7 +511,7 @@ export default function RaisePage() {
                   { title: "Reserve is real", body: "$380K buffer for extended sales cycles, unexpected compute needs, and opportunistic hires. Not a rounding error — it is 8 months of founder runway." },
                 ].map((item, i) => (
                   <li key={i} className="flex gap-3 text-[14px] leading-[1.6] text-[#404040] font-medium">
-                    <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#FF5F1F]">
+                    <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#ff5f1f]">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
@@ -539,7 +539,7 @@ export default function RaisePage() {
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="nb-card bg-[#E6F2FF] p-8">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                 What LLMs handle today
               </div>
               <div className="mt-5 space-y-3">
@@ -552,7 +552,7 @@ export default function RaisePage() {
                   { role: "Data labeling & annotation", note: "Frontier models label 95% of training examples" },
                 ].map((item) => (
                   <div key={item.role} className="flex items-start gap-3">
-                    <span className="mt-1 flex-shrink-0 text-[#FF5F1F]">&#10003;</span>
+                    <span className="mt-1 flex-shrink-0 text-[#ff5f1f]">&#10003;</span>
                     <div>
                       <span className="text-sm font-semibold text-[#111]">{item.role}</span>
                       <span className="text-sm text-[#555] font-medium"> — {item.note}</span>
@@ -566,7 +566,7 @@ export default function RaisePage() {
             </div>
 
             <div className="nb-card bg-[#FFF3E6] p-8">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                 Planned hires (revenue-gated)
               </div>
               <div className="mt-5 space-y-5">
@@ -646,16 +646,16 @@ export default function RaisePage() {
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
-                  <span className="text-[#FF5F1F]">&#8226;</span> CRM, compliance, IAM, tool calling
+                  <span className="text-[#ff5f1f]">&#8226;</span> CRM, compliance, IAM, tool calling
                 </div>
                 <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
-                  <span className="text-[#FF5F1F]">&#8226;</span> Deploys on-prem, VPC, or edge
+                  <span className="text-[#ff5f1f]">&#8226;</span> Deploys on-prem, VPC, or edge
                 </div>
                 <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
-                  <span className="text-[#FF5F1F]">&#8226;</span> SFT + GRPO + On-Policy Distillation
+                  <span className="text-[#ff5f1f]">&#8226;</span> SFT + GRPO + On-Policy Distillation
                 </div>
                 <div className="flex items-center gap-2 text-[13px] text-[#555] font-medium">
-                  <span className="text-[#FF5F1F]">&#8226;</span> ~$200-300 per training run
+                  <span className="text-[#ff5f1f]">&#8226;</span> ~$200-300 per training run
                 </div>
               </div>
             </div>
@@ -743,7 +743,7 @@ export default function RaisePage() {
                   },
                 ].map((item, i) => (
                   <li key={i} className="flex gap-3 text-[14px] leading-[1.6] text-white/72 font-medium">
-                    <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#FF5F1F]">
+                    <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#ff5f1f]">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
@@ -757,7 +757,7 @@ export default function RaisePage() {
 
             <div className="nb-card bg-white p-8 flex flex-col justify-between">
               <div>
-                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5F1F]">
+                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5f1f]">
                   Ideal partner
                 </div>
                 <ul className="mt-5 space-y-4">
@@ -768,7 +768,7 @@ export default function RaisePage() {
                     "Has the network to open design partner conversations in legal, healthcare, or financial services.",
                   ].map((item, i) => (
                     <li key={i} className="flex gap-3 text-[14px] leading-[1.6] text-[#404040] font-medium">
-                      <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#FF5F1F]">
+                      <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] font-bold text-[#ff5f1f]">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span>{item}</span>

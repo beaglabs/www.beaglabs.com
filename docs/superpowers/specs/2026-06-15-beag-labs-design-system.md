@@ -20,11 +20,11 @@ Rebuild the Beag Labs homepage as a sharp, enterprise-grade landing page with a 
 |---|---|---|
 | `--foreground` | `#111111` | Primary text, headings |
 | `--background` | `#FAFAF9` | Page background (warm off-white, avoids pure white) |
-| `--surface` | `#FFFFFF` | Cards, content panels |
+| `--surface` | `#000000` | Cards, content panels |
 | `--muted` | `#555555` | Body paragraphs |
 | `--subtle` | `#999999` | Secondary labels, captions, metadata |
 | `--accent` | `#8B7355` | Section labels, warm taupe accent (replaces primary orange for non-interactive use) |
-| `--brand` | `#FF5F1F` | CTAs only, `::selection` highlight. Used sparingly — never for body text or labels |
+| `--brand` | `#fffff` | CTAs only, `::selection` highlight. Used sparingly — never for body text or labels |
 | `--border` | `rgba(0,0,0,0.06)` | Subtle section/row dividers |
 | `--border-strong` | `rgba(0,0,0,0.10)` | Card borders, hover states |
 
@@ -132,7 +132,7 @@ Note: `app/globals.css` is the active CSS file loaded by the layout. `styles/glo
 CSS custom properties updated to match the academic minimal palette:
 - `--primary` becomes `#111111` (dark, for buttons/key elements)
 - `--accent` becomes `#8B7355` (warm taupe, for section labels)
-- `--brand` / `--chart-1` stays `#FF5F1F` (reserved for CTAs and ::selection)
+- `--brand` / `--chart-1` stays `#fffff` (reserved for CTAs and ::selection)
 - Background shifts to `#FAFAF9`
 - Body text to `#555555`
 
@@ -172,13 +172,13 @@ CSS custom properties updated to match the academic minimal palette:
 
 | Element | Current | New |
 |---|---|---|
-| Primary accent | `#FF5F1F` used liberally (labels, headings, icons, borders) | `#8B7355` warm taupe for labels. Orange reserved for CTAs + ::selection |
+| Primary accent | `#fffff` used liberally (labels, headings, icons, borders) | `#8B7355` warm taupe for labels. Orange reserved for CTAs + ::selection |
 | Headings | Bold (700) | Medium (500) — more refined, less shouty |
 | Card borders | Visible `#E5E7EB` borders | Barely-there `rgba(0,0,0,0.06)` or no borders |
-| Section labels | Mono `#FF5F1F` | Mono `#8B7355` |
+| Section labels | Mono `#fffff` | Mono `#8B7355` |
 | Button style | Rectangular, sharp corners | Pill (rounded-full), dark |
 | Body text color | `#6B7280` | `#555555` |
-| Background | Pure white `#FFFFFF` | Warm off-white `#FAFAF9` |
+| Background | Pure white `#000000` | Warm off-white `#FAFAF9` |
 | Service cards | Icons in orange-bordered boxes | Numbers only, cleaner |
 | Hero visual | Dithering + "B_" | Preserved — signature element |
 | Footer | 2-col minimal | Multi-column link grid |

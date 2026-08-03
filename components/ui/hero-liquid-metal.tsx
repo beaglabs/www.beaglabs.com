@@ -155,7 +155,7 @@ const defaultDesktopShaderProps: Partial<LiquidMetalProps> = {
   width: 1280,
   height: 720,
   image: "/cult-icon.svg",
-  colorBack: "#ffffff00",
+  colorBack: "#00000000",
   colorTint: "#2c5d72",
   shape: undefined,
   repetition: 6,
@@ -172,7 +172,7 @@ const defaultDesktopShaderProps: Partial<LiquidMetalProps> = {
 
 const defaultMobileShaderProps: Partial<LiquidMetalProps> = {
   image: "/cult-icon.svg",
-  colorBack: "#ffffff00",
+  colorBack: "#00000000",
   colorTint: "#2c5d72",
   shape: undefined,
   repetition: 6,

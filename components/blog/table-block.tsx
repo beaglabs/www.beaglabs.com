@@ -47,7 +47,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                 {headers.map((h, i) => (
                   <th
                     key={i}
-                    className="border-b-[3px] border-[#111] bg-[#FF5F1F] px-4 py-3 text-left text-xs font-bold text-[#111] uppercase tracking-wider"
+                    className="border-b-[3px] border-[#111] bg-[#ff5f1f] px-4 py-3 text-left text-xs font-bold text-[#111] uppercase tracking-wider"
                   >
                     {h}
                   </th>
@@ -56,7 +56,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                   (_, i) => (
                     <th
                       key={`empty-${i}`}
-                      className="border-b-[3px] border-[#111] bg-[#FF5F1F] px-4 py-3"
+                      className="border-b-[3px] border-[#111] bg-[#ff5f1f] px-4 py-3"
                     />
                   )
                 )}

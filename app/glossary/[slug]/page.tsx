@@ -165,7 +165,7 @@ export default async function GlossaryTermPage({
                       key={i}
                       className="flex items-start gap-3 text-[15px] leading-[1.7] font-medium text-[#404040]"
                     >
-                      <span className="mt-0.5 shrink-0 text-[14px] text-[#FF5F1F]">
+                      <span className="mt-0.5 shrink-0 text-[14px] text-[#ff5f1f]">
                         &#x25A0;
                       </span>
                       <span>{point}</span>

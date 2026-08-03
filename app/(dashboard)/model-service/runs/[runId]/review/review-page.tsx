@@ -63,7 +63,7 @@ function ReviewProgressBar({ reviewed, total, startTime }: { reviewed: number; t
           </span>
           <span className="text-[11px] text-[#999]">reviewed</span>
           {etaMinutes != null && etaMinutes > 0 && (
-            <span className="text-[11px] text-[#C7661D]">{formatEstimate(etaMinutes)} remaining</span>
+            <span className="text-[11px] text-[#ff5f1f]">{formatEstimate(etaMinutes)} remaining</span>
           )}
         </div>
         <span className="text-[11px] text-[#999]">{Math.round(pct)}%</span>
@@ -71,7 +71,7 @@ function ReviewProgressBar({ reviewed, total, startTime }: { reviewed: number; t
       <div className="h-2 bg-[#E2E0DB] rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${pct}%`, backgroundColor: pct === 100 ? "#2E7D32" : "#C7661D" }}
+          style={{ width: `${pct}%`, backgroundColor: pct === 100 ? "#2E7D32" : "#ff5f1f" }}
         />
       </div>
     </div>
@@ -236,7 +236,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
         <div>
           <Link
             href={`/model-service/runs/${runId}`}
-            className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] hover:text-[#C7661D] transition-colors"
+            className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] hover:text-[#ff5f1f] transition-colors"
           >
             ← Run Detail
           </Link>
@@ -322,7 +322,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
                     onClick={() => setCurrentIdx(idx)}
                     className="w-2 h-2 rounded-full transition-all"
                     style={{
-                      backgroundColor: idx === currentIdx ? "#C7661D" : reviews[ex.id] ? "#2E7D32" : "#E2E0DB",
+                      backgroundColor: idx === currentIdx ? "#ff5f1f" : reviews[ex.id] ? "#2E7D32" : "#E2E0DB",
                       transform: idx === currentIdx ? "scale(1.2)" : "scale(1)",
                     }}
                   />
@@ -407,7 +407,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
             onClick={submitAll}
             disabled={reviewedCount === 0 || submitting}
             className="w-full rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-10"
-            style={{ backgroundColor: "#C7661D" }}
+            style={{ backgroundColor: "#ff5f1f" }}
           >
             {submitting
               ? "Submitting..."

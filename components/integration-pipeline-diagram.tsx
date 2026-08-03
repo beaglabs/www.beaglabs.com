@@ -13,7 +13,7 @@ export function IntegrationPipelineDiagram() {
   return (
     <div className="relative overflow-hidden">
       <div className="mb-5 flex items-center justify-between">
-        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#C7661D]">
+        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
           Data flow
         </div>
         <div className="flex items-center gap-1.5">
@@ -67,9 +67,9 @@ export function IntegrationPipelineDiagram() {
         <div className="flex justify-center gap-2 pb-3">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-0.5" style={{ width: "25%" }}>
-              <span className="h-1 w-1 rounded-full bg-[#C7661D] flow-dot" style={{ animationDelay: `${i * 0.15}s` }} />
-              <span className="h-1 w-1 rounded-full bg-[#C7661D] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.2}s` }} />
-              <span className="h-1 w-1 rounded-full bg-[#C7661D] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.4}s` }} />
+              <span className="h-1 w-1 rounded-full bg-[#ff5f1f] flow-dot" style={{ animationDelay: `${i * 0.15}s` }} />
+              <span className="h-1 w-1 rounded-full bg-[#ff5f1f] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.2}s` }} />
+              <span className="h-1 w-1 rounded-full bg-[#ff5f1f] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.4}s` }} />
             </div>
           ))}
         </div>

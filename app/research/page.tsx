@@ -3,6 +3,7 @@ import { fetchHygraph } from '@/lib/hygraph/client'
 import { GET_RESEARCH_PAPERS } from '@/lib/hygraph/queries'
 import type { ResearchPapersResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
+import { BrutalistPhoto } from '@/components/brutalist-photo'
 
 export const metadata: Metadata = {
   title: 'Research',
@@ -43,17 +44,30 @@ export default async function ResearchPage({
   return (
     <main className="bg-[#FAFAF9] px-6 py-14 lg:px-9 lg:py-16">
       <div className="mx-auto max-w-[1440px]">
-        <div className="mb-14 border-b-[3px] border-[#111] pb-10">
-          <span className="nb-label mb-5 inline-block">
-            Research
-          </span>
-          <h1 className="mb-3 text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-            Research
-          </h1>
-          <p className="max-w-[520px] text-[17px] leading-[1.72] text-[#404040] font-medium">
-            Papers, technical deep-dives, and research findings from active
-            work across operational AI systems, data, and evaluation.
-          </p>
+        <div className="mb-14 grid grid-cols-1 items-center gap-12 border-b-[3px] border-[#111] pb-10 lg:grid-cols-[1.4fr_minmax(320px,440px)]">
+          <div>
+            <div className="mb-5 flex items-center gap-3">
+              <span className="nb-label">Research</span>
+              <span className="block h-px w-10 bg-[#111]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">technical</span>
+            </div>
+            <h1 className="mb-3 text-[42px] font-extrabold leading-[1.02] tracking-[-0.05em] text-[#111] sm:text-[52px] lg:text-[64px]">
+              Research
+            </h1>
+            <p className="max-w-[520px] text-[17px] leading-[1.72] text-[#404040] font-medium">
+              Papers, technical deep-dives, and research findings from active
+              work across operational AI systems, data, and evaluation.
+            </p>
+          </div>
+          <BrutalistPhoto
+            src="https://images.pexels.com/photos/2280549/pexels-photo-2280549.jpeg"
+            alt="Research workspace with papers and notebook"
+            badge="TECHNICAL"
+            meta="beaglabs / research"
+            rounded
+            className="mx-auto w-full max-w-[400px]"
+            shadowSize="md"
+          />
         </div>
         <BlogList
           papers={data.researchPapers}

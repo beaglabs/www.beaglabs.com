@@ -57,7 +57,7 @@ export default async function ModelServiceLayout({ children }: { children: React
       <header className="border-b border-[#E2E0DB] bg-white">
         <div className="max-w-[1440px] mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/model-service/runs" className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+            <Link href="/model-service/runs" className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
               Beag Model Training
             </Link>
             <nav className="flex items-center gap-6">

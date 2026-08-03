@@ -50,8 +50,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
               href={`#${heading.id}`}
               className={`-ml-[2px] block border-l-2 py-1 text-[12px] font-bold leading-[1.45] transition-colors ${
                 activeId === heading.id
-                  ? 'border-l-[#FF5F1F] text-[#111]'
-                  : 'border-l-transparent text-[#555] hover:border-l-[#FF5F1F] hover:text-[#111]'
+                  ? 'border-l-[#ff5f1f] text-[#111]'
+                  : 'border-l-transparent text-[#555] hover:border-l-[#ff5f1f] hover:text-[#111]'
               }`}
             >
               {heading.text}

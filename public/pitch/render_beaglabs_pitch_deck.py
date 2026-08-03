@@ -12,7 +12,7 @@ PAGE_H = 540
 MARGIN_X = 54
 MARGIN_Y = 42
 
-WHITE = HexColor("#FFFFFF")
+WHITE = HexColor("#000000")
 PANEL = HexColor("#FCFBF8")
 INK = HexColor("#111111")
 MUTED = HexColor("#5F5B57")

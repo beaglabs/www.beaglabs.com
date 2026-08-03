@@ -27,7 +27,7 @@ export function ResearchDoiLink({ doi, title }: ResearchDoiLinkProps) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#777] underline underline-offset-2 transition-colors hover:text-[#C7661D]"
+        className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#777] underline underline-offset-2 transition-colors hover:text-[#ff5f1f]"
       >
         DOI: {doi}
       </a>

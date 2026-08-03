@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "eslint .",
     "generate-cookbook-pdf": "tsx scripts/generate-cookbook-pdf.ts",
-    "generate-raise-pdf": "tsx scripts/generate-raise-pdf.ts"
+    "generate-raise-pdf": "tsx scripts/generate-raise-pdf.ts",
+    "generate-capability-pdf": "tsx scripts/generate-capability-pdf.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai-compatible": "^3.0.20",
+    "@ai-sdk/react": "^4.0.51",
     "@browserbasehq/stagehand": "^3.7.1",
     "@daytona/sdk": "^0.199.0",
     "@discordjs/rest": "^2.6.3",
@@ -49,9 +52,11 @@
     "@radix-ui/react-toggle": "1.1.10",
     "@radix-ui/react-toggle-group": "1.1.11",
     "@radix-ui/react-tooltip": "1.2.8",
+    "@react-pdf/renderer": "^4.5.1",
     "@types/pg": "^8.20.0",
     "@vercel/analytics": "1.6.1",
     "@vercel/sandbox": "^2.8.0",
+    "ai": "^7.0.48",
     "autoprefixer": "^10.4.20",
     "better-auth": "^1.6.23",
     "class-variance-authority": "^0.7.1",

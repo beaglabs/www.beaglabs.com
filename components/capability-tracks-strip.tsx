@@ -29,14 +29,14 @@ export function CapabilityTracksStrip() {
   }))
 
   return (
-    <section className="border-b-[3px] border-[#111] bg-[#FFF3E6] px-6 py-12 lg:px-9">
+    <section className="border-b-[3px] border-[#111] bg-[#FAFAF9] px-6 py-12 lg:px-9">
       <div className="mx-auto max-w-[1440px]">
         <div className="text-center mb-8">
           <span className="nb-label mb-4 inline-block">Models we work with</span>
         </div>
         <div className="relative w-full overflow-hidden">
-          <div className="absolute left-0 top-0 h-full w-24 bg-gradient-to-r from-[#FFF3E6] to-transparent z-10" />
-          <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-[#FFF3E6] to-transparent z-10" />
+          <div className="absolute left-0 top-0 h-full w-24 bg-gradient-to-r from-[#FAFAF9] to-transparent z-10" />
+          <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-[#FAFAF9] to-transparent z-10" />
           <div className="flex animate-marquee whitespace-nowrap">
             {[...logos, ...logos].map((logo, idx) => (
               <a

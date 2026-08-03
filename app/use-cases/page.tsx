@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
+import { BrutalistPhoto } from "@/components/brutalist-photo"
 import { industries } from "@/data/use-cases/industries"
 
 export const metadata: Metadata = {
@@ -44,15 +45,30 @@ export default function UseCasesPage() {
 
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <span className="nb-label mb-5 inline-block">Use Cases</span>
-          <h1 className="mb-4 max-w-[820px] text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-            Domain-specific AI for regulated industries.
-          </h1>
-          <p className="max-w-[560px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-            Custom small language models for classification, extraction, and
-            relevance — trained on your data, deployed on your infrastructure.
-            No APIs. No data leakage. You own the model.
-          </p>
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_minmax(380px,520px)]">
+            <div>
+              <div className="mb-5 flex items-center gap-3">
+                <span className="nb-label">Use Cases</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">04 industries</span>
+              </div>
+              <h1 className="mb-4 max-w-[820px] text-[42px] font-extrabold leading-[1.02] tracking-[-0.05em] text-[#111] sm:text-[52px] lg:text-[64px]">
+                Domain-specific AI for regulated industries.
+              </h1>
+              <p className="max-w-[560px] text-[17px] leading-[1.65] text-[#404040] font-medium">
+                Small models for government and high-trust industries.
+                Deployable anywhere — on-prem, air-gapped, or in your VPC.
+                No APIs. No data leakage. You own the model.
+              </p>
+            </div>
+            <BrutalistPhoto
+              src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg"
+              alt="Modern office workspace"
+              badge="REGULATED"
+              meta="beaglabs / use-cases"
+              rounded
+              className="mx-auto w-full max-w-[480px]"
+            />
+          </div>
         </div>
       </section>
 
@@ -65,7 +81,7 @@ export default function UseCasesPage() {
                 href={`/use-cases/${industry.slug}`}
                 className="nb-card group block bg-white p-8 lg:p-10"
               >
-                <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+                <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
                   {industry.industry}
                 </div>
                 <h2 className="mb-4 text-[26px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111]">
@@ -84,7 +100,7 @@ export default function UseCasesPage() {
                         key={uc.title}
                         className="text-[13px] font-bold text-[#111] flex items-start gap-2"
                       >
-                        <span className="text-[#FF5F1F] mt-0.5 shrink-0">
+                        <span className="text-[#ff5f1f] mt-0.5 shrink-0">
                           &#x25A0;
                         </span>
                         {uc.title}
@@ -92,7 +108,7 @@ export default function UseCasesPage() {
                     ))}
                   </ul>
                 </div>
-                <div className="mt-6 inline-flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#FF5F1F]">
+                <div className="mt-6 inline-flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#ff5f1f]">
                   Explore {industry.industry}
                   <span className="text-lg">&rarr;</span>
                 </div>

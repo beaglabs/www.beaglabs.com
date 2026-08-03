@@ -126,9 +126,9 @@ export default async function ConceptPage({ params }: ConceptPageProps) {
             </div>
 
             <aside className="w-full shrink-0 lg:w-[340px] lg:ml-16">
-              <div className="nb-card space-y-6 border-[#FF5F1F] bg-white p-6">
+              <div className="nb-card space-y-6 border-[#ff5f1f] bg-white p-6">
                 <div>
-                  <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#C7661D]">At a Glance</div>
+                  <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#ff5f1f]">At a Glance</div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between border-b border-[#eee] pb-2 text-[12px]">
                       <span className="font-semibold text-[#666]">Category</span>
@@ -147,7 +147,7 @@ export default async function ConceptPage({ params }: ConceptPageProps) {
 
                 {c.prerequisites.length > 0 && (
                   <div>
-                    <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#C7661D]">Prerequisites</div>
+                    <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#ff5f1f]">Prerequisites</div>
                     <div className="flex flex-wrap gap-2">
                       {c.prerequisites.map((p, i) => (
                         <span key={i} className="inline-block border-[2px] border-[#111] bg-[#FAFAF9] px-3 py-1.5 text-[11px] font-bold text-[#111]">
@@ -160,11 +160,11 @@ export default async function ConceptPage({ params }: ConceptPageProps) {
 
                 {c.useCases.length > 0 && (
                   <div>
-                    <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#C7661D]">Common Uses</div>
+                    <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-[#ff5f1f]">Common Uses</div>
                     <ul className="space-y-2">
                       {c.useCases.map((uc, i) => (
                         <li key={i} className="flex items-start gap-2.5 text-[12px] leading-[1.5] text-[#333]">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border-[2px] border-[#FF5F1F] bg-[#FF5F1F] text-[9px] font-extrabold text-white">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border-[2px] border-[#ff5f1f] bg-[#ff5f1f] text-[9px] font-extrabold text-white">
                             {i + 1}
                           </span>
                           {uc}
@@ -183,7 +183,7 @@ export default async function ConceptPage({ params }: ConceptPageProps) {
       {hasLinks && (
         <section className="nb-section-divider bg-[#FAFAF9] px-6 py-20 lg:px-9 lg:py-24">
           <div className="mx-auto max-w-[1440px]">
-            <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#C7661D]">
+            <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
               Resources
             </div>
             <h2 className="mb-12 max-w-[520px] text-[34px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[42px]">
@@ -304,7 +304,7 @@ export default async function ConceptPage({ params }: ConceptPageProps) {
           )}
           <div className="flex flex-wrap gap-4">
             <Link
-              href="/contact"
+              href="mailto:james@beaglabs.com"
               className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
             >
               Chat with us &rarr;
