@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_BLOG_POSTS_BY_TAG, GET_ALL_TAGS } from '@/lib/hygraph/queries'
+import { GET_BLOG_POSTS_BY_TAG, GET_ALL_BLOG_TAGS } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 
 export async function generateStaticParams() {
   try {
     const data = await fetchHygraph<{ blogPostsGroup: { field: string }[] }>(
-      GET_ALL_TAGS
+      GET_ALL_BLOG_TAGS
     )
     return data.blogPostsGroup.map((g) => ({
       tag: encodeURIComponent(g.field),

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_BLOG_POSTS_BY_CATEGORY, GET_ALL_CATEGORIES } from '@/lib/hygraph/queries'
+import { GET_BLOG_POSTS_BY_CATEGORY, GET_ALL_BLOG_CATEGORIES } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
@@ -9,7 +9,7 @@ import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
 export async function generateStaticParams() {
   try {
     const data = await fetchHygraph<{ blogPostsGroup: { field: string }[] }>(
-      GET_ALL_CATEGORIES
+      GET_ALL_BLOG_CATEGORIES
     )
     return data.blogPostsGroup.map((g) => ({
       category: encodeURIComponent(g.field),
