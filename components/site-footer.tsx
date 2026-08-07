@@ -1,37 +1,38 @@
-import Link from "next/link"
+import Link from 'next/link'
 
 const footerColumns = [
   {
-    title: "Models",
+    title: 'Models',
     links: [
-      { label: "Overview", href: "/models" },
-      { label: "Capabilities", href: "#capabilities" },
-      { label: "Training", href: "/training" },
+      { label: 'Overview', href: '/models' },
+      { label: 'Capabilities', href: '/#capabilities' },
+      { label: 'Training', href: '/training' },
     ],
   },
   {
-    title: "Resources",
+    title: 'Resources',
     links: [
-      { label: "Blog", href: "/blog" },
-      { label: "Cookbook", href: "/cookbook" },
-      { label: "Glossary", href: "/glossary" },
-      { label: "Use Cases", href: "/use-cases" },
-      { label: "Comparisons", href: "/compare" },
+      { label: 'Papyrus Trust Center', href: '/trust/papyrus' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Cookbook', href: '/cookbook' },
+      { label: 'Glossary', href: '/glossary' },
+      { label: 'Use Cases', href: '/use-cases' },
+      { label: 'Comparisons', href: '/compare' },
     ],
   },
   {
-    title: "Company",
+    title: 'Company',
     links: [
-      { label: "GitHub", href: "https://github.com/beaglabs" },
-      { label: "Contact", href: "https://cal.com/comradelemoncake/meet-the-founder" },
+      { label: 'GitHub', href: 'https://github.com/beaglabs' },
+      { label: 'Contact', href: 'https://cal.com/comradelemoncake/meet-the-founder' },
     ],
   },
   {
-    title: "Legal",
+    title: 'Legal',
     links: [
-      { label: "Privacy Policy", href: "/privacy-policy" },
-      { label: "Terms of Service", href: "/terms-of-service" },
-      { label: "Imprint", href: "/imprint" },
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'Terms of Service', href: '/terms-of-service' },
+      { label: 'Imprint', href: '/imprint' },
     ],
   },
 ]
@@ -51,7 +52,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="max-w-[250px] text-[14px] leading-[1.7] text-[#555] font-medium">
-              Small models for government and high-trust industries. Deployable anywhere. 
+              Small models for government and high-trust industries. Deployable anywhere.
             </p>
           </div>
 

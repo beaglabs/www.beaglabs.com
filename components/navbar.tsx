@@ -1,10 +1,11 @@
-import Link from "next/link"
+import Link from 'next/link'
 
 const NAV_LINKS = [
-  { label: "Capabilities", href: "/#capabilities" },
-  { label: "Domains", href: "/#domains" },
-  { label: "Engagement", href: "/#how-it-works" },
-  { label: "Cookbook", href: "/cookbook" },
+  { label: 'Capabilities', href: '/#capabilities' },
+  { label: 'Domains', href: '/#domains' },
+  { label: 'Engagement', href: '/#how-it-works' },
+  { label: 'Trust', href: '/trust/papyrus' },
+  { label: 'Cookbook', href: '/cookbook' },
 ] as const
 
 export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
@@ -23,12 +24,12 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
           </span>
         </Link>
 
-        <div className="flex items-center gap-5 sm:gap-7 lg:gap-8">
+        <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#111] border-b-2 border-transparent transition-all hover:border-[#ff5f1f] hover:text-[#ff5f1f]"
+              className="hidden text-[11px] font-bold uppercase tracking-[0.1em] text-[#111] border-b-2 border-transparent transition-all hover:border-[#ff5f1f] hover:text-[#ff5f1f] sm:inline"
             >
               {link.label}
             </Link>
