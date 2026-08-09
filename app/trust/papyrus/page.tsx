@@ -1,19 +1,13 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
 import {
-  ArrowDownToLine,
-  BadgeCheck,
-  Binary,
-  Blocks,
-  Bot,
+  ArrowUpRight,
   Check,
+  Download,
   FileJson2,
-  Fingerprint,
-  KeyRound,
-  Network,
-  Radar,
-  ScrollText,
-  ServerCog,
+  FileText,
+  Github,
   ShieldCheck,
 } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
@@ -22,467 +16,380 @@ import { SiteFooter } from '@/components/site-footer'
 export const metadata: Metadata = {
   title: 'Papyrus Trust Center',
   description:
-    'Security architecture, shared responsibility, supply-chain practices, and OSCAL control documentation for self-hosted Papyrus deployments.',
+    'Machine-readable security controls, software bill of materials, and third-party license reporting for Papyrus.',
   alternates: { canonical: '/trust/papyrus' },
 }
 
-const controlFamilies = [
-  {
-    family: 'AC',
-    name: 'Access Control',
-    controls: ['AC-2', 'AC-3', 'AC-6', 'AC-7', 'AC-12'],
-    summary:
-      'Account lifecycle, RBAC enforcement, least privilege, login protection, and session termination.',
-  },
-  {
-    family: 'IA',
-    name: 'Identification & Authentication',
-    controls: ['IA-2', 'IA-4', 'IA-5', 'IA-8'],
-    summary: 'CAC/PIV, WebAuthn, OIDC, SAML, identity provenance, and authenticator lifecycle.',
-  },
-  {
-    family: 'AU',
-    name: 'Audit & Accountability',
-    controls: ['AU-2', 'AU-3', 'AU-6', 'AU-8', 'AU-9', 'AU-12'],
-    summary:
-      'Event coverage, record content, review, timestamps, integrity protection, and generation.',
-  },
-  {
-    family: 'CM',
-    name: 'Configuration Management',
-    controls: ['CM-2', 'CM-3', 'CM-5', 'CM-6', 'CM-7', 'CM-8'],
-    summary:
-      'Deployment baselines, controlled changes, secure settings, least functionality, and inventory.',
-  },
-  {
-    family: 'SC',
-    name: 'System & Communications Protection',
-    controls: ['SC-7', 'SC-8', 'SC-12', 'SC-13', 'SC-23', 'SC-28'],
-    summary:
-      'Boundaries, TLS and QUIC, key management, session authenticity, and customer storage encryption.',
-  },
-  {
-    family: 'SI',
-    name: 'System & Information Integrity',
-    controls: ['SI-2', 'SI-4', 'SI-7', 'SI-10', 'SI-11'],
-    summary:
-      'Flaw remediation, monitoring, software integrity, input validation, and bounded errors.',
-  },
-  {
-    family: 'RA / SA / SR',
-    name: 'Assurance & Supply Chain',
-    controls: ['RA-5', 'SA-11', 'SR-4'],
-    summary:
-      'Vulnerability scanning, developer testing, lockfiles, SBOMs, release evidence, and provenance.',
-  },
-] as const
-
-const responsibilities = [
-  {
-    label: 'Papyrus',
-    marker: 'P',
-    color: 'bg-[#ff5f1f]',
-    text: 'Application behavior enforced by Papyrus and evidenced in source, tests, configuration, or audit output.',
-  },
-  {
-    label: 'Shared',
-    marker: 'S',
-    color: 'bg-[#fff3e6]',
-    text: 'Papyrus supplies a mechanism; the customer securely configures, operates, monitors, and assesses it.',
-  },
-  {
-    label: 'Customer',
-    marker: 'C',
-    color: 'bg-white',
-    text: 'Implemented inside the customer boundary: infrastructure, policy, identity lifecycle, storage, and operations.',
-  },
-  {
-    label: 'Inherited',
-    marker: 'I',
-    color: 'bg-[#111] text-white',
-    text: 'Supplied by an authorized platform, operating system, enclave, identity provider, or shared service.',
-  },
-] as const
-
-const architecture = [
-  {
-    icon: Fingerprint,
-    eyebrow: 'Identity',
-    title: 'Profile-gated authentication',
-    copy: 'CAC/PIV for SIPRNet/IL6; CAC/PIV and WebAuthn for NIPRNet/IL4; WebAuthn, OIDC, or SAML for commercial deployments. External identities bind to Papyrus member keys with provenance.',
-  },
-  {
-    icon: KeyRound,
-    eyebrow: 'Cryptography',
-    title: 'Keys stay in the boundary',
-    copy: 'Member keys, TLS certificates, IdP verification material, Iroh identities, and license keys remain customer-controlled. FIPS requirements depend on deployed modules—not an algorithm label.',
-  },
-  {
-    icon: ScrollText,
-    eyebrow: 'Evidence',
-    title: 'Security events with context',
-    copy: 'Authentication, roles, project lifecycle, canvas changes, agent actions, peer activity, exports, and administrative operations are designed for auditable, integrity-verifiable records.',
-  },
-  {
-    icon: Network,
-    eyebrow: 'Networking',
-    title: 'Encrypted peer synchronization',
-    copy: 'Iroh and QUIC provide encrypted peer transport. Customers select explicit peers, LAN discovery, or owned/allowlisted relays and retain responsibility for segmentation and cross-domain boundaries.',
-  },
-  {
-    icon: Bot,
-    eyebrow: 'Agent safety',
-    title: 'Human-reviewed AI work',
-    copy: 'Skills and tools are bounded by authorization, endpoint policy, input validation, audit events, execution limits, and human acceptance. Model inference can remain entirely inside the enclave.',
-  },
-  {
-    icon: ServerCog,
-    eyebrow: 'Data',
-    title: 'Local-first persistence',
-    copy: 'Projects, credentials, configuration, and audit information are stored locally. The customer owns host hardening, disk or volume encryption, retention, backup protection, and secure recovery.',
-  },
-] as const
-
-const evidence = [
-  'OSCAL 1.2.1 Component Definition',
-  'NIST SP 800-53 Rev. 5 control mappings',
-  'SPDX or CycloneDX SBOM',
-  'Pinned pnpm dependency graph',
-  'Vulnerability and license scans',
-  'Authentication and RBAC tests',
-  'Audit-event samples and chain verification',
-  'Release hashes and build provenance',
-  'Secure configuration guidance',
-  'Shared-responsibility matrix',
-  'Backup and recovery procedure',
-  'Supported-version and remediation policy',
-] as const
-
-const technologies = [
-  { name: 'NIST', domain: 'nist.gov', subtitle: 'OSCAL + SP 800-53' },
-  { name: 'FIDO Alliance', domain: 'fidoalliance.org', subtitle: 'WebAuthn / passkeys' },
-  { name: 'OpenID', domain: 'openid.net', subtitle: 'Federated identity' },
-  { name: 'Iroh', domain: 'iroh.computer', subtitle: 'Encrypted QUIC mesh' },
-  { name: 'SQLite', domain: 'sqlite.org', subtitle: 'Local persistence' },
-  { name: 'Node.js', domain: 'nodejs.org', subtitle: 'Self-hosted runtime' },
-] as const
-
-function Label({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
-  return (
-    <span
-      className={`inline-flex border-2 border-[#111] px-3 py-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] ${
-        dark ? 'bg-[#111] text-white' : 'bg-[#ff5f1f] text-[#111]'
-      }`}
-    >
-      {children}
-    </span>
-  )
+type BomComponent = {
+  name: string
+  version?: string
+  purl?: string
+  licenses?: Array<{ license?: { id?: string }; expression?: string }>
+  externalReferences?: Array<{ type?: string; url?: string }>
+  manufacturer?: { url?: string[] }
 }
+
+type Bom = {
+  specVersion: string
+  metadata?: { timestamp?: string }
+  components?: BomComponent[]
+}
+
+type OscalRequirement = {
+  'control-id': string
+  description: string
+  props?: Array<{ name: string; value: string }>
+}
+
+type Oscal = {
+  'component-definition': {
+    metadata: {
+      title: string
+      version: string
+      'oscal-version': string
+      'last-modified': string
+      remarks: string
+    }
+    components: Array<{
+      title: string
+      description: string
+      props?: Array<{ name: string; value: string }>
+      'control-implementations'?: Array<{
+        'implemented-requirements'?: OscalRequirement[]
+      }>
+    }>
+  }
+}
+
+const compliancePath = path.join(process.cwd(), 'public', 'compliance')
+const bom = JSON.parse(readFileSync(path.join(compliancePath, 'cyclonedx.sbom.json'), 'utf8')) as Bom
+const oscal = JSON.parse(
+  readFileSync(path.join(compliancePath, 'papyrus-component-definition.json'), 'utf8'),
+) as Oscal
+
+const definition = oscal['component-definition']
+const product = definition.components[0]
+const requirements = product['control-implementations']?.flatMap(
+  (implementation) => implementation['implemented-requirements'] ?? [],
+) ?? []
+
+const getVersion = (component: BomComponent) => {
+  if (component.version) return component.version
+  const match = component.purl?.match(/@([^@?]+)(?:\?|$)/)
+  return match?.[1] ? decodeURIComponent(match[1]) : 'Unspecified'
+}
+
+const normalizeProjectUrl = (url?: string) => {
+  if (!url) return undefined
+  return url
+    .replace(/^git\+/, '')
+    .replace(/^git:\/\//, 'https://')
+    .replace(/\.git$/, '')
+}
+
+const getProjectUrl = (component: BomComponent) => {
+  const repository = component.externalReferences?.find((reference) =>
+    ['vcs', 'website', 'distribution'].includes(reference.type ?? ''),
+  )?.url
+  const known = normalizeProjectUrl(repository ?? component.manufacturer?.url?.[0])
+  if (known) return known
+  return `https://www.npmjs.com/package/${encodeURIComponent(component.name)}`
+}
+
+const getLogoUrl = (projectUrl: string) => {
+  const github = projectUrl.match(/github\.com\/([^/]+)/i)
+  if (github?.[1]) return `https://github.com/${github[1]}.png?size=96`
+  try {
+    const domain = new URL(projectUrl).hostname
+    return `https://img.logo.dev/${domain}?format=png&size=96`
+  } catch {
+    return 'https://img.logo.dev/npmjs.com?format=png&size=96'
+  }
+}
+
+const getLicenses = (component: BomComponent) => {
+  const licenses = component.licenses
+    ?.map((entry) => entry.license?.id ?? entry.expression)
+    .filter(Boolean)
+  return licenses?.length ? [...new Set(licenses)].join(' + ') : 'Not declared'
+}
+
+const components = (bom.components ?? []).map((component) => {
+  const projectUrl = getProjectUrl(component)
+  return {
+    ...component,
+    projectUrl,
+    logoUrl: getLogoUrl(projectUrl),
+    displayVersion: getVersion(component),
+    displayLicenses: getLicenses(component),
+  }
+})
+
+const licenseCounts = components.reduce<Record<string, number>>((counts, component) => {
+  const license = component.displayLicenses
+  counts[license] = (counts[license] ?? 0) + 1
+  return counts
+}, {})
+
+const primaryLicenses = Object.entries(licenseCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 4)
+
+const responsibilityCounts = requirements.reduce<Record<string, number>>((counts, requirement) => {
+  const owner = requirement.props?.find((prop) => prop.name === 'responsibility')?.value ?? 'unspecified'
+  counts[owner] = (counts[owner] ?? 0) + 1
+  return counts
+}, {})
+
+const artifacts = [
+  {
+    title: 'OSCAL component definition',
+    detail: `OSCAL ${definition.metadata['oscal-version']} · v${definition.metadata.version}`,
+    href: '/compliance/papyrus-component-definition.json',
+    source:
+      'https://github.com/beaglabs/papyrus/blob/main/compliance/papyrus-component-definition.json',
+    icon: FileJson2,
+  },
+  {
+    title: 'CycloneDX SBOM',
+    detail: `CycloneDX ${bom.specVersion} · ${components.length} components`,
+    href: '/compliance/cyclonedx.sbom.json',
+    source: 'https://github.com/beaglabs/papyrus/blob/main/compliance/cyclonedx.sbom.json',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'FOSSA third-party report',
+    detail: 'Dependency licenses and notices · PDF',
+    href:
+      'https://github.com/beaglabs/papyrus/raw/refs/heads/main/compliance/third-party-software-report.pdf',
+    source:
+      'https://github.com/beaglabs/papyrus/blob/main/compliance/third-party-software-report.pdf',
+    icon: FileText,
+  },
+] as const
 
 export default function PapyrusTrustCenter() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#FAFAF9] text-[#111]">
+    <main className="min-h-screen bg-[#FAFAF9] text-[#111]">
       <Navbar />
 
-      <section className="relative border-b-[3px] border-[#111] px-6 pb-16 pt-32 lg:px-9 lg:pb-24 lg:pt-40">
-        <div className="pointer-events-none absolute right-[-7rem] top-20 hidden h-72 w-72 rotate-6 border-[3px] border-[#111] bg-[#ff5f1f] shadow-[12px_12px_0_#111] lg:block" />
-        <div className="relative mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-[1.25fr_.75fr] lg:items-end">
-          <div>
-            <Label>Papyrus / Trust Center</Label>
-            <h1 className="mt-7 max-w-5xl text-[clamp(3.6rem,8vw,8.6rem)] font-black leading-[0.82] tracking-[-0.075em]">
-              Trust should be
-              <span className="block text-[#ff5f1f] [-webkit-text-stroke:3px_#111]">
-                inspectable.
-              </span>
-            </h1>
-            <p className="mt-8 max-w-3xl text-lg font-medium leading-8 text-[#444] lg:text-xl">
-              Papyrus is a self-hosted product-development canvas built for regulated and
-              disconnected environments. This center explains the mechanisms, evidence, and customer
-              responsibilities behind that design—without presenting a certification we have not
-              earned.
-            </p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <a
-                href="/compliance/papyrus-component-definition.json"
-                download
-                className="nb-btn-orange inline-flex items-center gap-2 px-5 py-3 text-xs uppercase tracking-[0.12em]"
-              >
-                <ArrowDownToLine className="h-4 w-4" />
-                Download OSCAL JSON
-              </a>
+      <section className="border-b-[3px] border-[#111] pt-16">
+        <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-28">
+          <span className="nb-label mb-6 inline-block">Papyrus / Trust Center</span>
+          <div className="grid gap-12 lg:grid-cols-[1.3fr_.7fr] lg:items-end">
+            <div>
+              <h1 className="max-w-[900px] text-[52px] font-extrabold leading-[1.02] tracking-[-0.055em] sm:text-[64px] lg:text-[80px]">
+                Security evidence,
+                <span className="block text-[#ff5f1f]">published in the open.</span>
+              </h1>
+              <p className="mt-7 max-w-[760px] text-[18px] font-medium leading-[1.65] text-[#404040]">
+                Papyrus is self-hosted software for regulated and disconnected environments. This
+                page is generated from the product&apos;s published OSCAL and CycloneDX artifacts and
+                links directly to the underlying evidence.
+              </p>
+            </div>
+            <div className="border-l-[3px] border-[#111] pl-6 lg:pl-8">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+                Scope note
+              </p>
+              <p className="mt-3 text-sm font-semibold leading-6 text-[#444]">
+                These artifacts document potential software control contributions. They are not a
+                FedRAMP authorization, an ATO, an SSP, or an independent assessment.
+              </p>
               <a
                 href="https://github.com/beaglabs/papyrus"
                 target="_blank"
                 rel="noreferrer"
-                className="nb-btn-white inline-flex items-center gap-2 px-5 py-3 text-xs uppercase tracking-[0.12em]"
+                className="mt-5 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.08em] underline decoration-2 underline-offset-4"
               >
-                <Binary className="h-4 w-4" />
-                Inspect repository
+                <Github className="h-4 w-4" /> Inspect the repository
               </a>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="relative mx-auto w-full max-w-md">
-            <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[2.25rem] border-[3px] border-[#111] bg-[#111]" />
-            <div className="relative rounded-[2.25rem] border-[3px] border-[#111] bg-white p-8">
-              <img
-                src="/papyrus-logo.svg"
-                alt="Papyrus orange parchment logo"
-                className="mx-auto aspect-square w-full max-w-[300px] object-contain"
-              />
-              <div className="mt-3 border-t-[3px] border-[#111] pt-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#777]">
-                      Artifact
-                    </p>
-                    <p className="mt-1 text-2xl font-black">35 controls</p>
-                  </div>
-                  <BadgeCheck className="h-12 w-12 text-[#ff5f1f]" strokeWidth={2.5} />
-                </div>
-                <p className="mt-4 text-sm font-medium leading-6 text-[#555]">
-                  OSCAL Component Definition · NIST SP 800-53 Rev. 5 · version 0.1.0
-                </p>
+      <section className="border-b-[3px] border-[#111] bg-white">
+        <div className="mx-auto grid max-w-[1440px] divide-y-[3px] divide-[#111] lg:grid-cols-3 lg:divide-x-[3px] lg:divide-y-0">
+          {artifacts.map(({ title, detail, href, source, icon: Icon }) => (
+            <article key={title} className="p-6 lg:p-8">
+              <div className="flex items-start justify-between gap-5">
+                <Icon className="h-7 w-7 text-[#ff5f1f]" strokeWidth={2.2} />
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#777]">
+                  Published artifact
+                </span>
               </div>
+              <h2 className="mt-8 text-xl font-extrabold tracking-[-0.025em]">{title}</h2>
+              <p className="mt-2 text-sm font-medium text-[#555]">{detail}</p>
+              <div className="mt-6 flex flex-wrap gap-4">
+                <a
+                  href={href}
+                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em]"
+                >
+                  <Download className="h-4 w-4" /> Download
+                </a>
+                <a
+                  href={source}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em] text-[#555]"
+                >
+                  Source <ArrowUpRight className="h-4 w-4" />
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-b-[3px] border-[#111] bg-[#111] text-white">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-2 divide-x divide-white/20 lg:grid-cols-4">
+          {[
+            ['Components', String(components.length)],
+            ['Mapped controls', String(requirements.length)],
+            ['OSCAL version', definition.metadata['oscal-version']],
+            ['SBOM generated', new Date(bom.metadata?.timestamp ?? '').toLocaleDateString('en-US')],
+          ].map(([label, value]) => (
+            <div key={label} className="px-6 py-7 lg:px-9">
+              <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/55">{label}</p>
+              <p className="mt-2 text-2xl font-extrabold tracking-[-0.035em] text-[#ff5f1f]">{value}</p>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-[#111] px-6 py-5 text-white lg:px-9">
-        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4">
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.16em]">
-            Self-hosted · Local-first · Customer-owned boundary
-          </p>
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-[#ff5f1f]">
-            No FedRAMP or ATO claim
-          </p>
-        </div>
-      </section>
-
-      <section className="px-6 py-20 lg:px-9 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-8 lg:grid-cols-[.75fr_1.25fr]">
+      <section className="border-b-[3px] border-[#111]">
+        <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-24">
+          <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
             <div>
-              <Label dark>Security architecture</Label>
-              <h2 className="mt-6 text-5xl font-black leading-[0.92] tracking-[-0.055em] lg:text-7xl">
-                Designed for the boundary you own.
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+                Machine-readable controls
+              </p>
+              <h2 className="mt-4 text-4xl font-extrabold leading-[1.02] tracking-[-0.05em] lg:text-6xl">
+                The model is explicit about ownership.
               </h2>
-              <p className="mt-6 max-w-xl text-base font-medium leading-7 text-[#555]">
-                Papyrus contributes application controls. Your organization supplies the authorized
-                infrastructure, identity lifecycle, cryptographic modules, operations, monitoring,
-                and assessment around them.
+              <p className="mt-6 text-base font-medium leading-7 text-[#555]">
+                The OSCAL component definition separates behavior provided by Papyrus from
+                configuration, infrastructure, and inherited services owned by the customer.
               </p>
             </div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              {architecture.map(({ icon: Icon, eyebrow, title, copy }) => (
-                <article key={title} className="nb-card bg-white p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <p className="font-mono text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#ff5f1f]">
-                      {eyebrow}
-                    </p>
-                    <Icon className="h-6 w-6" strokeWidth={2.4} />
+            <div>
+              <div className="grid grid-cols-2 border-[3px] border-[#111] bg-white sm:grid-cols-4">
+                {['papyrus', 'shared', 'customer', 'inherited'].map((owner, index) => (
+                  <div
+                    key={owner}
+                    className={`p-5 ${index ? 'border-l-[3px] border-[#111]' : ''}`}
+                  >
+                    <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#777]">{owner}</p>
+                    <p className="mt-2 text-3xl font-extrabold">{responsibilityCounts[owner] ?? 0}</p>
                   </div>
-                  <h3 className="mt-5 text-xl font-black tracking-[-0.025em]">{title}</h3>
-                  <p className="mt-3 text-sm font-medium leading-6 text-[#555]">{copy}</p>
-                </article>
-              ))}
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {requirements.map((requirement) => (
+                  <a
+                    key={requirement['control-id']}
+                    href={`https://csf.tools/reference/nist-sp-800-53/r5/${requirement['control-id'].split('-')[0]}/${requirement['control-id']}/`}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={requirement.description}
+                    className="border-2 border-[#111] bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase hover:bg-[#fff3e6]"
+                  >
+                    {requirement['control-id']}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-y-[3px] border-[#111] bg-[#fff3e6] px-6 py-20 lg:px-9 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+      <section className="border-b-[3px] border-[#111] bg-white">
+        <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-24">
+          <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
             <div>
-              <Label>OSCAL / Rev. 5</Label>
-              <h2 className="mt-6 text-5xl font-black tracking-[-0.055em] lg:text-7xl">
-                Control coverage
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+                Software bill of materials
+              </p>
+              <h2 className="mt-4 text-4xl font-extrabold tracking-[-0.05em] lg:text-6xl">
+                {components.length} inspectable components.
               </h2>
             </div>
-            <p className="max-w-2xl text-base font-medium leading-7 text-[#555]">
-              Selected controls where software-level documentation is useful. Statements describe
-              potential contributions and must be tailored and assessed inside the deployed system.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-5 lg:grid-cols-2">
-            {controlFamilies.map((group, index) => (
-              <article
-                key={group.family}
-                className={`border-[3px] border-[#111] bg-white p-6 shadow-[6px_6px_0_#111] ${
-                  index === controlFamilies.length - 1 ? 'lg:col-span-2' : ''
-                }`}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#ff5f1f]">
-                      Family {group.family}
-                    </p>
-                    <h3 className="mt-2 text-2xl font-black">{group.name}</h3>
-                  </div>
-                  <div className="flex flex-wrap justify-end gap-2">
-                    {group.controls.map((control) => (
-                      <span
-                        key={control}
-                        className="border-2 border-[#111] bg-[#FAFAF9] px-2.5 py-1 font-mono text-[10px] font-black"
-                      >
-                        {control}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <p className="mt-5 border-t-2 border-[#111] pt-4 text-sm font-medium leading-6 text-[#555]">
-                  {group.summary}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-20 lg:px-9 lg:py-28">
-        <div className="mx-auto grid max-w-[1440px] gap-14 lg:grid-cols-2">
-          <div>
-            <Label dark>Shared responsibility</Label>
-            <h2 className="mt-6 text-5xl font-black leading-[0.94] tracking-[-0.055em] lg:text-7xl">
-              A component is not a boundary.
-            </h2>
-            <p className="mt-6 text-base font-medium leading-7 text-[#555]">
-              Every OSCAL statement is labeled by responsibility so an authorizing team can see what
-              Papyrus provides, what must be configured, and what is inherited from the deployment.
-            </p>
-            <div className="mt-9 space-y-4">
-              {responsibilities.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex gap-4 border-[3px] border-[#111] bg-white p-4"
-                >
-                  <span
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center border-2 border-[#111] font-mono text-sm font-black ${item.color}`}
-                  >
-                    {item.marker}
-                  </span>
-                  <div>
-                    <h3 className="font-black">{item.label}</h3>
-                    <p className="mt-1 text-sm font-medium leading-6 text-[#555]">{item.text}</p>
-                  </div>
-                </div>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-bold text-[#555]">
+              {primaryLicenses.map(([license, count]) => (
+                <span key={license}>
+                  <strong className="text-[#111]">{count}</strong> {license}
+                </span>
               ))}
             </div>
           </div>
 
-          <div className="border-[3px] border-[#111] bg-[#111] p-7 text-white shadow-[10px_10px_0_#ff5f1f] lg:p-10">
-            <div className="flex items-center justify-between gap-5 border-b-2 border-white/30 pb-6">
-              <div>
-                <p className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#ff5f1f]">
-                  Evidence package
-                </p>
-                <h3 className="mt-2 text-3xl font-black">What customers can request</h3>
-              </div>
-              <FileJson2 className="h-10 w-10 text-[#ff5f1f]" />
+          <div className="mt-10 overflow-hidden border-[3px] border-[#111]">
+            <div className="hidden grid-cols-[minmax(0,1.5fr)_140px_180px_36px] gap-5 border-b-[3px] border-[#111] bg-[#FAFAF9] px-5 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#666] md:grid">
+              <span>Component</span>
+              <span>Version</span>
+              <span>License</span>
+              <span />
             </div>
-            <ul className="mt-7 grid gap-3 sm:grid-cols-2">
-              {evidence.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm font-semibold leading-6">
-                  <Check className="mt-1 h-4 w-4 shrink-0 text-[#ff5f1f]" strokeWidth={3} />
-                  {item}
+            <ol className="divide-y-2 divide-[#111]">
+              {components.map((component) => (
+                <li key={component.purl ?? `${component.name}-${component.displayVersion}`}>
+                  <a
+                    href={component.projectUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group grid gap-4 bg-white px-5 py-4 transition-colors hover:bg-[#fff3e6] md:grid-cols-[minmax(0,1.5fr)_140px_180px_36px] md:items-center md:gap-5"
+                  >
+                    <span className="flex min-w-0 items-center gap-4">
+                      <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border-2 border-[#111] bg-white font-mono text-xs font-black uppercase">
+                        {component.name.slice(0, 1)}
+                        <img
+                          src={component.logoUrl}
+                          alt=""
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full bg-white object-contain p-1"
+                        />
+                      </span>
+                      <span className="min-w-0 truncate font-extrabold tracking-[-0.015em]">
+                        {component.name}
+                      </span>
+                    </span>
+                    <span className="font-mono text-[11px] font-semibold text-[#555]">
+                      {component.displayVersion}
+                    </span>
+                    <span className="text-xs font-bold text-[#555]">{component.displayLicenses}</span>
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </a>
                 </li>
               ))}
-            </ul>
-            <div className="mt-8 border-2 border-[#ff5f1f] bg-[#1b1b1b] p-5">
-              <p className="font-mono text-[10px] font-black uppercase tracking-[0.18em] text-[#ff5f1f]">
-                Important
-              </p>
-              <p className="mt-2 text-sm font-medium leading-6 text-white/75">
-                Evidence availability evolves with the product. The OSCAL file is a maintained
-                implementation artifact, not an independent assessment or guarantee of control
-                effectiveness.
-              </p>
-            </div>
+            </ol>
           </div>
+
+          <p className="mt-5 max-w-3xl text-xs font-medium leading-5 text-[#666]">
+            Component names, versions, and declared licenses are read from the published CycloneDX
+            SBOM. Project links are taken from each component&apos;s repository metadata, with npm as the
+            fallback. Marks identify their respective projects or maintainers and do not imply
+            endorsement.
+          </p>
         </div>
       </section>
 
-      <section className="border-y-[3px] border-[#111] bg-white px-6 py-20 lg:px-9">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-            <div>
-              <Label>Standards + foundations</Label>
-              <h2 className="mt-5 text-4xl font-black tracking-[-0.045em] lg:text-6xl">
-                Built from inspectable parts.
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm font-medium leading-6 text-[#555]">
-              These marks identify standards bodies and technical foundations—not endorsements,
-              certifications, or partnerships.
+      <section className="px-6 py-20 lg:px-9 lg:py-24">
+        <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+              Need deployment evidence?
             </p>
+            <h2 className="mt-4 max-w-4xl text-4xl font-extrabold leading-[1.04] tracking-[-0.05em] lg:text-6xl">
+              Map the component into your actual authorization boundary.
+            </h2>
           </div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {technologies.map((technology) => (
-              <div
-                key={technology.name}
-                className="flex items-center gap-4 border-[3px] border-[#111] bg-[#FAFAF9] p-5 shadow-[4px_4px_0_#111]"
-              >
-                <div className="flex h-14 w-14 items-center justify-center border-2 border-[#111] bg-white p-2">
-                  <img
-                    src={`https://img.logo.dev/${technology.domain}?format=png&size=96`}
-                    alt=""
-                    loading="lazy"
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-                <div>
-                  <p className="font-black">{technology.name}</p>
-                  <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#777]">
-                    {technology.subtitle}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-20 lg:px-9 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="relative overflow-hidden border-[3px] border-[#111] bg-[#ff5f1f] p-8 shadow-[10px_10px_0_#111] lg:p-14">
-            <ShieldCheck
-              className="absolute -bottom-14 -right-8 h-64 w-64 text-[#111]/10"
-              strokeWidth={1.5}
-            />
-            <div className="relative max-w-4xl">
-              <p className="font-mono text-[10px] font-black uppercase tracking-[0.2em]">
-                Authorization support
-              </p>
-              <h2 className="mt-4 text-4xl font-black leading-[0.95] tracking-[-0.05em] lg:text-7xl">
-                Bring Papyrus into your SSP—not the other way around.
-              </h2>
-              <p className="mt-6 max-w-3xl text-base font-semibold leading-7">
-                Import the Component Definition, instantiate it in the real architecture, tailor the
-                shared statements, add inherited controls and evidence, then assess the deployed
-                system.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <a
-                  href="/compliance/papyrus-component-definition.json"
-                  download
-                  className="nb-btn-white inline-flex items-center gap-2 px-5 py-3 text-xs uppercase tracking-[0.12em]"
-                >
-                  <Blocks className="h-4 w-4" />
-                  Get the component definition
-                </a>
-                <Link
-                  href="mailto:james@beaglabs.com?subject=Papyrus%20security%20review"
-                  className="nb-btn inline-flex items-center gap-2 bg-[#111] px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-white"
-                >
-                  <Radar className="h-4 w-4" />
-                  Request evidence
-                </Link>
-              </div>
-            </div>
-          </div>
+          <a
+            href="mailto:james@beaglabs.com?subject=Papyrus%20security%20review"
+            className="nb-btn-orange inline-flex items-center justify-center gap-2 px-6 py-4 text-xs uppercase tracking-[0.1em]"
+          >
+            Request evidence <ArrowUpRight className="h-4 w-4" />
+          </a>
         </div>
       </section>
 
