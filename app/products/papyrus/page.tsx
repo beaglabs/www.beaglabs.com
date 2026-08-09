@@ -23,13 +23,6 @@ export const metadata: Metadata = pageMetadata({
   ],
 })
 
-const outputs = [
-  'Product requirements documents',
-  'User stories and acceptance criteria',
-  'Success metrics and delivery plans',
-  'Architecture and security artifacts',
-]
-
 const agents = [
   {
     number: '01',
@@ -116,32 +109,15 @@ export default function PapyrusProductPage() {
             </div>
           </div>
 
-          <div className="flex flex-col justify-between bg-[#ff5f1f] px-6 py-16 lg:px-12 lg:py-20">
-            <div className="max-w-[520px]">
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em]">
-                One shared operating picture
-              </p>
-              <h2 className="mt-5 text-[34px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[42px]">
-                Less handoff loss. More usable detail.
-              </h2>
-              <p className="mt-5 text-[16px] font-medium leading-[1.7]">
-                Decisions, source context, and generated work remain visible on the canvas so
-                collaborators can inspect the path from problem to plan.
-              </p>
-            </div>
-            <ul className="mt-12 border-t-[3px] border-[#111]">
-              {outputs.map((output) => (
-                <li
-                  key={output}
-                  className="flex items-center gap-3 border-b-[3px] border-[#111] py-4 text-[14px] font-extrabold uppercase tracking-[0.04em]"
-                >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-[#111] text-[#FAFAF9]">
-                    <Check className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                  {output}
-                </li>
-              ))}
-            </ul>
+          <div className="relative min-h-[620px] border-t-[3px] border-[#111] lg:border-t-0">
+            <Image
+              src="https://images.pexels.com/photos/31888836/pexels-photo-31888836.jpeg"
+              alt="Papyrus"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1023px) 100vw, 50vw"
+              priority
+            />
           </div>
         </div>
       </section>

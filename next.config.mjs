@@ -22,6 +22,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'tpucdn.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+      },
     ],
   },
   async rewrites() {
