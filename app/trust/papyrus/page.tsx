@@ -10,12 +10,15 @@ import {
 } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Papyrus Trust Center',
-  description:
-    'Machine-readable security controls, software bill of materials, and third-party license reporting for Papyrus.',
-  alternates: { canonical: '/trust/papyrus' },
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata({
+    title: 'Papyrus Trust Center',
+    description: `Machine-readable security posture for Papyrus: ${requirements.length} OSCAL controls implemented across ${controlFamilies.length} control families, a CycloneDX SBOM of ${components.length} components, and third-party license reporting.`,
+    path: '/trust/papyrus',
+    label: 'Trust Center',
+  })
 }
 
 type BomComponent = {

@@ -7,21 +7,23 @@ import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = pageMetadata({
-  title: 'Papyrus',
-  description:
-    'A self-hosted, multi-agent product workspace for turning mission needs into requirements, user stories, success metrics, and delivery plans.',
-  path: '/products/papyrus',
-  label: 'Product',
-  images: [
-    {
-      url: '/products/papyrus-workspace.png',
-      width: 2047,
-      height: 1167,
-      alt: 'Papyrus multi-agent product workspace',
-    },
-  ],
-})
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata({
+    title: 'Papyrus',
+    description:
+      'A self-hosted, multi-agent product workspace for turning mission needs into requirements, user stories, success metrics, and delivery plans.',
+    path: '/products/papyrus',
+    label: 'Product',
+    images: [
+      {
+        url: '/products/papyrus-workspace.png',
+        width: 2047,
+        height: 1167,
+        alt: 'Papyrus multi-agent product workspace',
+      },
+    ],
+  })
+}
 
 const agents = [
   {
@@ -65,25 +67,8 @@ export default function PapyrusProductPage() {
       <section className="overflow-hidden border-b-[3px] border-[#111] pt-16">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
           <div className="flex min-h-[620px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
-            <div className="mb-10 flex items-center gap-4">
-              <Image
-                src="/papyrus-logo.svg"
-                alt="Papyrus"
-                width={72}
-                height={72}
-                className="h-16 w-16 object-contain sm:h-[72px] sm:w-[72px]"
-                priority
-              />
-              <div>
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#ff5f1f]">
-                  Beag Labs product
-                </p>
-                <p className="mt-1 text-[24px] font-extrabold tracking-[0.12em]">PAPYRUS</p>
-              </div>
-            </div>
-
             <h1 className="max-w-[720px] text-[52px] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
-              Turn mission needs into build-ready plans.
+              Agentic product collaboration for regulated teams
             </h1>
             <p className="mt-7 max-w-[650px] text-[18px] font-medium leading-[1.7] text-[#444]">
               Papyrus is a self-hosted, multi-agent product workspace. Product, design,
@@ -109,13 +94,13 @@ export default function PapyrusProductPage() {
             </div>
           </div>
 
-          <div className="relative min-h-[620px] border-t-[3px] border-[#111] lg:border-t-0">
+          <div className="relative flex min-h-[620px] items-center justify-center border-t-[3px] border-[#111] bg-white lg:border-t-0">
             <Image
-              src="https://images.pexels.com/photos/31888836/pexels-photo-31888836.jpeg"
+              src="/papyrus-logo.svg"
               alt="Papyrus"
-              fill
-              className="object-cover"
-              sizes="(max-width: 1023px) 100vw, 50vw"
+              width={320}
+              height={320}
+              className="h-48 w-48 object-contain sm:h-64 sm:w-64 lg:h-80 lg:w-80"
               priority
             />
           </div>
