@@ -13,6 +13,8 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${BASE_URL}/use-cases`, changeFrequency: 'monthly', priority: 0.8 },
   { url: `${BASE_URL}/compare`, changeFrequency: 'monthly', priority: 0.7 },
   { url: `${BASE_URL}/cookbook`, changeFrequency: 'monthly', priority: 0.7 },
+  { url: `${BASE_URL}/products/papyrus`, changeFrequency: 'monthly', priority: 0.9 },
+  { url: `${BASE_URL}/trust/papyrus`, changeFrequency: 'monthly', priority: 0.8 },
   { url: `${BASE_URL}/design-partnerships`, changeFrequency: 'monthly', priority: 0.6 },
 ]
 
