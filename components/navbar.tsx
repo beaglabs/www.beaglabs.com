@@ -1,9 +1,7 @@
 import Link from 'next/link'
 
 const NAV_LINKS = [
-  { label: 'Capabilities', href: '/#capabilities' },
-  { label: 'Domains', href: '/#domains' },
-  { label: 'Engagement', href: '/#how-it-works' },
+  { label: 'Papyrus', href: '/products/papyrus' },
   { label: 'Trust', href: '/trust/papyrus' },
   { label: 'Cookbook', href: '/cookbook' },
 ] as const
