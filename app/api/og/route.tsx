@@ -137,6 +137,30 @@ export async function GET(request: Request) {
             >
               beaglabs / blog
             </div>
+
+            {/* CTA badge — conversion prompt, absolutely positioned so it
+                never affects the title/description layout below */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                position: 'absolute',
+                bottom: '20px',
+                left: '20px',
+                border: `3px solid ${INK}`,
+                backgroundColor: ORANGE,
+                boxShadow: `6px 6px 0px 0px ${INK}`,
+                padding: '10px 22px',
+                fontFamily: 'JetBrains Mono',
+                fontSize: '22px',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: INK,
+              }}
+            >
+              Read more →
+            </div>
           </div>
 
           {/* Body */}
