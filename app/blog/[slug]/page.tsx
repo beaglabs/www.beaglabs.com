@@ -72,6 +72,8 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     openGraph: {
       title: `${data.blogPost.seoTitle || data.blogPost.title} — Beag Labs`,
       description: data.blogPost.seoDescription || data.blogPost.exerpt,
+      siteName: 'Beag Labs',
+      locale: 'en_US',
       type: 'article' as const,
       publishedTime: data.blogPost.publishedAt,
       modifiedTime: data.blogPost.updatedAt,
