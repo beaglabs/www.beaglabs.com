@@ -6,29 +6,10 @@ import { Navbar } from '@/components/navbar'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { SiteFooter } from '@/components/site-footer'
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import { capabilities, capabilityBySlug, getAllSlugs } from '@/data/capabilities'
+import { capabilities, capabilityBySlug } from '@/data/capabilities'
 import { company } from '@/data/company'
 
 type Params = Promise<{ slug: string }>
-
-type Capability = {
-  slug: string
-  number: string
-  eyebrow: string
-  title: string
-  subtitle: string
-  description: string
-  hero: { src: string; alt: string; badge: string }
-  includes: { title: string; blurb: string; bullets: string[] }[]
-  process: { step: string; title: string; blurb: string }[]
-  proof: { metric: string; label: string }[]
-  cta: { headline: string; blurb: string; chatPrompt: string }
-  metaDescription: string
-}
-
-function capabilityBySlug(slug: string): Capability | undefined {
-  return capabilities.find((c) => c.slug === slug)
-}
 
 export function generateStaticParams() {
   return capabilities.map((c) => ({ slug: c.slug }))
@@ -384,7 +365,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
                   Certifications
                 </span>
                 <div className="grid grid-cols-2 gap-4">
-                  {company.certs.map((cert) => (
+                  {(company.certs ?? []).map((cert) => (
                     <div
                       key={cert.label}
                       className="flex h-28 items-center justify-center border-[2px] border-[#111] bg-[#FAFAF9] p-3"
