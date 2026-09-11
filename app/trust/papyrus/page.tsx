@@ -7,6 +7,13 @@ import {
   FileJson2,
   FileText,
   ShieldCheck,
+  Cpu,
+  Server,
+  Key,
+  Lock,
+  Puzzle,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
@@ -183,16 +190,23 @@ const artifacts = [
     icon: FileText,
     logo: 'https://avatars.githubusercontent.com/u/9543448?s=280&v=4',
   },
+  {
+    title: 'SPDX SBOM',
+    detail: `SPDX 2.3 · ${components.length} packages`,
+    href: '/sbom.spdx.json',
+    source: 'https://github.com/beaglabs/papyrus/blob/main/sbom.spdx.json',
+    icon: FileJson2,
+  },
 ] as const
 
 const alignedWith = [
   {
-    title: 'DoW IL4',
+    title: 'DoD IL4',
     detail: 'Customer-managed controlled environment profile',
     logo: 'https://www.war.gov/portals/1/Page-Assets/branding-guide/logos/png/DOW-Logo-Stacked-1-Color.png',
   },
   {
-    title: 'DoW IL6',
+    title: 'DoD IL6',
     detail: 'Customer-managed classified environment profile',
     logo: 'https://www.war.gov/portals/1/Page-Assets/branding-guide/logos/png/DOW-Logo-Stacked-1-Color.png',
   },
@@ -201,6 +215,47 @@ const alignedWith = [
     detail: `${requirements.length} documented control mappings`,
     logo: 'https://hyperproof.io/wp-content/uploads/2023/06/framework-informational-page_hero-badges-nist-800-53.png',
   },
+] as const
+
+const architecturePillars = [
+  {
+    icon: Server,
+    title: 'Mastra Runtime',
+    detail: 'Owns sessions, memory, schedules, workflows, and signal delivery. Storage starts even without a configured model.',
+  },
+  {
+    icon: Puzzle,
+    title: 'Plugin Architecture',
+    detail: 'Teams, Exchange email, ACP, A2A, and customer systems are plugins. Disabling them does not disable the runtime.',
+  },
+  {
+    icon: Key,
+    title: 'Entra ID Native',
+    detail: 'No local identity system. Six application roles: Integration.View, Integration.Manage, Security.Manage, Action.Approve, Audit.View, System.Owner.',
+  },
+  {
+    icon: Lock,
+    title: 'Zero-Inline-Secrets',
+    detail: 'Connector config accepts only customer-vault, certificate, or managed-identity references. Inline tokens and keys are rejected.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Sandboxed Execution',
+    detail: 'Agent code runs only on Linux under Bubblewrap with network denied. Off-host execution is explicitly disabled.',
+  },
+  {
+    icon: Cpu,
+    title: 'Offline Licensing',
+    detail: 'Deployment-bound, signed, offline license format. No Beag cloud callback required. License authorities are customer-pinned.',
+  },
+] as const
+
+const pluginLifecycle = [
+  { label: 'Draft', detail: 'Initial configuration authored by an integration owner' },
+  { label: 'Tested', detail: 'Configuration validated; health checked against the target system' },
+  { label: 'Awaiting Approval', detail: 'Submitted for review by an Entra-authorized approver' },
+  { label: 'Active', detail: 'Approved and operational; actions can be released' },
+  { label: 'Degraded / Disabled', detail: 'Health issues detected or explicitly disabled by governance' },
 ] as const
 
 export default function PapyrusTrustCenter() {
@@ -218,8 +273,9 @@ export default function PapyrusTrustCenter() {
                   Security evidence, published in the open.
                 </h1>
                 <p className="mt-6 max-w-[650px] text-[17px] font-medium leading-[1.65] text-[#404040]">
-                  Papyrus is self-hosted software for regulated and disconnected environments. This
-                  page is generated from published OSCAL and CycloneDX evidence.
+                  Papyrus is a customer-hosted durable agent runtime powered by Mastra. Entra ID is the identity
+                  authority. The product surface is a Mastra-native agent runtime with governed plugin lifecycle,
+                  offline licensing, sandboxed execution, and zero-inline-secrets architecture.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
                   <a href="mailto:james@beaglabs.com?subject=Papyrus%20security%20review" className="underline decoration-2 underline-offset-4">
@@ -242,6 +298,7 @@ export default function PapyrusTrustCenter() {
             <div className="border-t-[3px] border-[#111] bg-[#fff3e6] px-6 py-4">
               <p className="text-xs font-semibold leading-5 text-[#444]">
                 Scope: potential software control contributions only. These materials are not a FedRAMP authorization, ATO, SSP, certification, or independent assessment.
+                Papyrus is not an authorization to operate, a cross-domain solution, or a claim of GCC High, DoD, IL4, IL6, or SIPR accreditation.
               </p>
             </div>
           </div>
@@ -252,22 +309,22 @@ export default function PapyrusTrustCenter() {
         <div className="mx-auto max-w-[1440px] px-6 py-12 lg:px-9">
           <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Deployment alignment</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">Aligned with</h2>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Architecture</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">Six pillars</h2>
             </div>
             <p className="max-w-xl text-xs font-medium leading-5 text-[#666]">
-              Alignment describes supported deployment profiles and documented mappings—not government approval or authorization.
+              Papyrus is a licensed daemon for durable, event-driven agent work. Mastra owns sessions; plugins are adapters; Entra is authoritative.
             </p>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {alignedWith.map((item) => (
-              <article key={item.title} className="flex min-h-32 items-center gap-5 border-[3px] border-[#111] bg-white p-5">
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-white p-2">
-                  <img src={item.logo} alt="" className="max-h-full max-w-full object-contain" />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {architecturePillars.map((pillar) => (
+              <article key={pillar.title} className="flex min-h-40 items-start gap-5 border-[3px] border-[#111] bg-white p-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-[#111] bg-white">
+                  <pillar.icon className="h-6 w-6 text-[#ff5f1f]" strokeWidth={2.2} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold">{item.title}</h3>
-                  <p className="mt-2 text-xs font-medium leading-5 text-[#666]">{item.detail}</p>
+                  <h3 className="text-lg font-extrabold">{pillar.title}</h3>
+                  <p className="mt-2 text-xs font-medium leading-5 text-[#666]">{pillar.detail}</p>
                 </div>
               </article>
             ))}
@@ -276,42 +333,28 @@ export default function PapyrusTrustCenter() {
       </section>
 
       <section className="border-b-[3px] border-[#111] bg-white">
-        <div className="mx-auto grid max-w-[1440px] divide-y-[3px] divide-[#111] lg:grid-cols-3 lg:divide-x-[3px] lg:divide-y-0">
-          {artifacts.map((artifact) => {
-            const Icon = artifact.icon
-            return (
-            <article key={artifact.title} className="p-6 lg:p-8">
-              <div className="flex items-start justify-between gap-5">
-                {'logo' in artifact ? (
-                  <img src={artifact.logo} alt="FOSSA" className="h-10 w-10 rounded-md object-contain" />
-                ) : (
-                  <Icon className="h-7 w-7 text-[#ff5f1f]" strokeWidth={2.2} />
-                )}
-                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#777]">
-                  Published artifact
-                </span>
-              </div>
-              <h2 className="mt-8 text-xl font-extrabold tracking-[-0.025em]">{artifact.title}</h2>
-              <p className="mt-2 text-sm font-medium text-[#555]">{artifact.detail}</p>
-              <div className="mt-6 flex flex-wrap gap-4">
-                <a
-                  href={artifact.href}
-                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em]"
-                >
-                  <Download className="h-4 w-4" /> Download
-                </a>
-                <a
-                  href={artifact.source}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em] text-[#555]"
-                >
-                  Source <ArrowUpRight className="h-4 w-4" />
-                </a>
-              </div>
-            </article>
-            )
-          })}
+        <div className="mx-auto max-w-[1440px] px-6 py-12 lg:px-9">
+          <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Governed plugin lifecycle</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">Draft → Tested → Awaiting Approval → Active → Degraded / Disabled</h2>
+            </div>
+            <p className="max-w-xl text-xs font-medium leading-5 text-[#666]">
+              Credential values never enter model context. The card sends credential references directly to the daemon.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            {pluginLifecycle.map((stage) => (
+              <article key={stage.label} className="flex-1 min-w-[200px] border-[3px] border-[#111] bg-white p-5">
+                <div className="flex items-center gap-3">
+                  <span className="border-2 border-[#111] bg-white px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#111]">
+                    {stage.label}
+                  </span>
+                </div>
+                <p className="mt-4 text-sm font-medium leading-[1.5] text-[#444]">{stage.detail}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -331,7 +374,7 @@ export default function PapyrusTrustCenter() {
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111]">
+      <section className="border-b-[3px] border-[#111] bg-white">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-24">
           <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
             <div>
@@ -360,8 +403,8 @@ export default function PapyrusTrustCenter() {
                   </div>
                 </div>
                 <p className="mt-5 border-t-2 border-[#111] pt-4 text-xs font-medium leading-5 text-[#666]">
-                  No mapping is represented as fully implemented or assessed. “Partial” records a
-                  potential Papyrus contribution; “customer-configured” depends on the deployed boundary.
+                  No mapping is represented as fully implemented or assessed. "Partial" records a
+                  potential Papyrus contribution; "customer-configured" depends on the deployed boundary.
                 </p>
               </div>
             </div>
@@ -496,6 +539,73 @@ export default function PapyrusTrustCenter() {
             fallback. Marks identify their respective projects or maintainers and do not imply
             endorsement.
           </p>
+        </div>
+      </section>
+
+      <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
+        <div className="mx-auto max-w-[1440px] px-6 py-12 lg:px-9">
+          <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Deployment alignment</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">Aligned with</h2>
+            </div>
+            <p className="max-w-xl text-xs font-medium leading-5 text-[#666]">
+              Alignment describes supported deployment profiles and documented mappings—not government approval or authorization.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {alignedWith.map((item) => (
+              <article key={item.title} className="flex min-h-32 items-center gap-5 border-[3px] border-[#111] bg-white p-5">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-white p-2">
+                  <img src={item.logo} alt="" className="max-h-full max-w-full object-contain" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold">{item.title}</h3>
+                  <p className="mt-2 text-xs font-medium leading-5 text-[#666]">{item.detail}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b-[3px] border-[#111] bg-white">
+        <div className="mx-auto grid max-w-[1440px] divide-y-[3px] divide-[#111] lg:grid-cols-3 lg:divide-x-[3px] lg:divide-y-0">
+          {artifacts.map((artifact) => {
+            const Icon = artifact.icon
+            return (
+            <article key={artifact.title} className="p-6 lg:p-8">
+              <div className="flex items-start justify-between gap-5">
+                {'logo' in artifact ? (
+                  <img src={artifact.logo} alt="FOSSA" className="h-10 w-10 rounded-md object-contain" />
+                ) : (
+                  <Icon className="h-7 w-7 text-[#ff5f1f]" strokeWidth={2.2} />
+                )}
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#777]">
+                  Published artifact
+                </span>
+              </div>
+              <h2 className="mt-8 text-xl font-extrabold tracking-[-0.025em]">{artifact.title}</h2>
+              <p className="mt-2 text-sm font-medium text-[#555]">{artifact.detail}</p>
+              <div className="mt-6 flex flex-wrap gap-4">
+                <a
+                  href={artifact.href}
+                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em]"
+                >
+                  <Download className="h-4 w-4" /> Download
+                </a>
+                <a
+                  href={artifact.source}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em] text-[#555]"
+                >
+                  Source <ArrowUpRight className="h-4 w-4" />
+                </a>
+              </div>
+            </article>
+            )
+          })}
         </div>
       </section>
 

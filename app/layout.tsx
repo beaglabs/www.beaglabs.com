@@ -1,29 +1,23 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono, Playfair_Display, EB_Garamond } from 'next/font/google'
+import { Work_Sans, JetBrains_Mono, Big_Shoulders } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const inter = Inter({
+const workSans = Work_Sans({
   subsets: ["latin"],
-  variable: '--font-sans'
+  variable: '--font-sans',
+  weight: ['300', '400', '500', '600', '700', '800'],
 });
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: '--font-mono'
 });
-const playfair = Playfair_Display({
+const bigShoulders = Big_Shoulders({
   subsets: ["latin"],
   variable: '--font-display',
-  weight: ['400', '700', '900'],
-  style: ['normal', 'italic'],
-});
-const garamond = EB_Garamond({
-  subsets: ["latin"],
-  variable: '--font-serif',
-  weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
+  weight: ['400', '500', '600', '700', '800', '900'],
 });
 
 export const metadata: Metadata = {
@@ -94,7 +88,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.variable} ${jetbrainsMono.variable} ${playfair.variable} ${garamond.variable} font-sans antialiased bg-background text-foreground`}>
+        <body className={`${workSans.variable} ${jetbrainsMono.variable} ${bigShoulders.variable} font-sans antialiased bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

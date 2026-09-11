@@ -16,6 +16,8 @@ node_modules/
 .next/
 .DS_Store
 .env
+*.mp4
+*.spdx.json
 
 # Python
 __pycache__/
