@@ -60,6 +60,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     title: data.blogPost.title,
     description: data.blogPost.seoDescription || data.blogPost.exerpt,
     label: data.blogPost.category,
+    date: data.blogPost.publishedAt,
   })
 
   return {
