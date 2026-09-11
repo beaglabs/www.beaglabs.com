@@ -2,14 +2,11 @@
 
 import Link from 'next/link'
 import posthog from 'posthog-js'
+import { BLOG_CATEGORIES } from '@/lib/blog/categories'
 
-const CATEGORIES = [
-  { value: '', label: 'All' },
-  { value: 'Case Study', label: 'Case Studies' },
-  { value: 'Project Update', label: 'Project Updates' },
-  { value: 'Tutorial', label: 'Tutorials' },
-  { value: 'Opinion', label: 'Opinion' },
-] as const
+// `value` carries the Hygraph enum apiId so the /blog/category/[category] route
+// receives a value the Content API can filter on. `label` is display-only.
+const CATEGORIES = [{ value: '', label: 'All' }, ...BLOG_CATEGORIES] as const
 
 interface BlogCategoryFilterProps {
   currentCategory?: string
