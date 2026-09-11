@@ -8,6 +8,24 @@ const pool = new Pool({
 
 export const auth = betterAuth({
   database: pool,
+  // Set the origin explicitly instead of letting Better Auth derive it from the
+  // incoming request. Env wins; otherwise fall back to a sane per-environment
+  // default. Silences: "[better-auth] Base URL is not set".
+  baseURL:
+    process.env.BETTER_AUTH_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (process.env.NODE_ENV === "production"
+      ? "https://www.beaglabs.com"
+      : "http://localhost:3000"),
+  // Better Auth already reads BETTER_AUTH_SECRET from env; pass it explicitly for
+  // clarity. During `next build` no auth operations actually run, so fall back to
+  // a placeholder purely to keep the build log clean. At runtime a real
+  // BETTER_AUTH_SECRET MUST be set (see .env.example) or Better Auth will warn.
+  secret:
+    process.env.BETTER_AUTH_SECRET ??
+    (process.env.NEXT_PHASE === "phase-production-build"
+      ? "build-only-placeholder-set-BETTER_AUTH_SECRET-in-env"
+      : undefined),
   emailAndPassword: {
     enabled: true,
   },

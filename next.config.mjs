@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ["@takumi-rs/core"],
+  // Keep server-only native/dynamic-require packages out of the bundle so
+  // Turbopack doesn't trace their optional dynamic requires (pg loads
+  // pg-native/pg-cloudflare, takumi loads a platform-specific .node binary).
+  // Silences: "Cannot find module as expression is too dynamic".
+  serverExternalPackages: ["@takumi-rs/core", "takumi-js", "pg"],
   typescript: {
     ignoreBuildErrors: true,
   },
