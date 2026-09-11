@@ -85,8 +85,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* Kill the rubber-band overscroll bounce (and the light gap it reveals
+       above the full-bleed colored hero bands) and pull-to-refresh. */
+    overscroll-behavior-y: none;
+    background-color: var(--background);
+  }
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior-y: none;
   }
   ::selection {
     background: #ff5f1f;
