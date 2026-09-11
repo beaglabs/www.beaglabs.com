@@ -143,39 +143,50 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   return (
-    <BlogLayout toc={toc} isDraft={isDraft}>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Breadcrumbs items={[
-        { name: 'Home', url: '/' },
-        { name: 'Blog', url: '/blog' },
-        { name: post.title, url: `/blog/${slug}` },
-      ]} />
       <PostTracker
         eventName="blog_post_viewed"
         properties={{ slug, title: post.title, category: post.category }}
       />
-      <header className="mb-10 border-b-[3px] border-[#111] pb-8">
-        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#ff5f1f] font-bold">
-          <time dateTime={post.publishedAt}>
-            {new Date(post.publishedAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: '2-digit',
-            })}
-          </time>
-          <span aria-hidden="true"> · </span>
-          <span>{post.category}</span>
-        </p>
-        <h1 className="mb-4 text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-          {post.title}
-        </h1>
-        <p className="max-w-[680px] text-[18px] leading-[1.75] text-[#404040] font-medium">
-          {post.exerpt}
-        </p>
-      </header>
+
+      {/* ─── HERO BAND ─── */}
+      <section className="border-b-[3px] border-[#111] bg-[#ff5f1f]">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-6 py-14 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-16 lg:px-9 lg:py-16">
+          <p className="font-mono text-[13px] font-bold uppercase tracking-[0.2em] text-[#111]">
+            [{' '}
+            <time dateTime={post.publishedAt}>
+              {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+              })}
+            </time>{' '}
+            ]
+          </p>
+          <div className="max-w-[820px] lg:justify-self-end">
+            <span className="mb-5 inline-block border-[2px] border-[#111] bg-[#111] px-3 py-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ff5f1f]">
+              {post.category}
+            </span>
+            <h1 className="text-[36px] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[46px] lg:text-[58px]">
+              {post.title}
+            </h1>
+            <p className="mt-5 max-w-[720px] text-[18px] font-medium leading-[1.6] text-[#111]">
+              {post.exerpt}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <BlogLayout toc={toc} isDraft={isDraft}>
+        <Breadcrumbs items={[
+          { name: 'Home', url: '/' },
+          { name: 'Blog', url: '/blog' },
+          { name: post.title, url: `/blog/${slug}` },
+        ]} />
 
       {post.coverImage && (
         <img
@@ -193,6 +204,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
 
       <PostTags tags={post.tags} />
-    </BlogLayout>
+      </BlogLayout>
+    </>
   )
 }
