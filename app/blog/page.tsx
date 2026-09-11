@@ -4,7 +4,6 @@ import { GET_BLOG_POSTS } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
-import { BrutalistPhoto } from '@/components/brutalist-photo'
 
 export const metadata: Metadata = {
   title: 'Blog',
@@ -40,42 +39,51 @@ export default async function BlogPage({
   )
 
   return (
-    <main className="px-6 py-14 lg:px-9 lg:py-16">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="mb-14 grid grid-cols-1 items-center gap-12 border-b-[3px] border-[#111] pb-10 lg:grid-cols-[1.4fr_minmax(320px,440px)]">
-          <div>
-            <div className="mb-5 flex items-center gap-3">
-              <span className="nb-label">Journal</span>
-              <span className="block h-px w-10 bg-[#111]" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">applied AI</span>
-            </div>
-            <h1 className="mb-3 text-[42px] font-extrabold leading-[1.02] tracking-[-0.05em] text-[#111] sm:text-[52px] lg:text-[64px]">
-              Blog
+    <main>
+      {/* ─── HERO BAND ─── */}
+      <section className="border-b-[3px] border-[#111] bg-[#ff5f1f]">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-20 lg:px-9 lg:py-20">
+          <span className="font-mono text-[13px] font-bold uppercase tracking-[0.24em] text-[#111]">
+            [ Blog ]
+          </span>
+          <div className="max-w-[720px] lg:justify-self-end">
+            <h1 className="mb-5 text-[44px] font-extrabold leading-[1.0] tracking-[-0.05em] text-[#111] sm:text-[56px] lg:text-[68px]">
+              We ship models. We also write.
             </h1>
-            <p className="max-w-[520px] text-[17px] leading-[1.72] text-[#404040] font-medium">
+            <p className="mb-9 max-w-[600px] text-[17px] font-medium leading-[1.6] text-[#111]">
               Project updates, case studies, and tutorials documenting how Beag
               Labs approaches applied AI systems in practice.
             </p>
+            <a
+              href="mailto:james@beaglabs.com?subject=Subscribe%20to%20the%20Beag%20Labs%20blog"
+              className="nb-btn inline-flex items-center gap-2.5 bg-[#111] px-7 py-4 text-[12px] font-extrabold uppercase tracking-[0.1em] text-[#ff5f1f]"
+            >
+              Sign up for updates
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M5 12h14M13 6l6 6-6 6"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="square"
+                  strokeLinejoin="miter"
+                />
+              </svg>
+            </a>
           </div>
-          <BrutalistPhoto
-            src="https://images.pexels.com/photos/261949/pexels-photo-261949.jpeg"
-            alt="Notebook and pen on a desk"
-            badge="JOURNAL"
-            meta="beaglabs / blog"
-            rounded
-            className="mx-auto w-full max-w-[400px]"
-            shadowSize="md"
-          />
         </div>
-        <div className="mb-8">
+      </section>
+
+      {/* ─── CONTENT ─── */}
+      <div className="mx-auto max-w-[1440px] px-6 py-14 lg:px-9 lg:py-16">
+        <div className="mb-10">
           <BlogCategoryFilter />
         </div>
-        <BlogList posts={data.blogPosts} emptyMessage="No posts yet." />
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          basePath="/blog"
+        <BlogList
+          posts={data.blogPosts}
+          featured={page === 1}
+          emptyMessage="No posts yet."
         />
+        <Pagination currentPage={page} totalPages={totalPages} basePath="/blog" />
       </div>
     </main>
   )
