@@ -190,13 +190,6 @@ const artifacts = [
     icon: FileText,
     logo: 'https://avatars.githubusercontent.com/u/9543448?s=280&v=4',
   },
-  {
-    title: 'SPDX SBOM',
-    detail: `SPDX 2.3 · ${components.length} packages`,
-    href: '/sbom.spdx.json',
-    source: 'https://github.com/beaglabs/papyrus/blob/main/sbom.spdx.json',
-    icon: FileJson2,
-  },
 ] as const
 
 const alignedWith = [
