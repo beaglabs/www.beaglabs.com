@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 
+import { Resend } from "resend"
+
 import { coerceAnswers, orderedFields, validateAnswers } from "@/lib/questionnaire"
 import { getQuestionnaire, QUESTIONNAIRE_IDS } from "@/lib/questionnaires"
 
@@ -157,6 +159,52 @@ export async function POST(request: Request) {
     }
 
     await Promise.allSettled(calls)
+
+    // Founder contact: send the email server-side instead of opening the visitor's mail
+    // client. The record is already in Customer.io; this is the direct channel.
+    const notify = definition.email
+    if (notify && answers[notify.when] === notify.equals) {
+      const apiKey = process.env.RESEND_API_KEY
+      if (!apiKey) {
+        console.error("[questionnaire] RESEND_API_KEY not set — contact email not sent")
+      } else {
+        try {
+          const resend = new Resend(apiKey)
+          const body = [
+            `${definition.title} — ${definition.id}`,
+            "",
+            fields
+              .map((field) => {
+                const value = answers[field.name]
+                const text = Array.isArray(value)
+                  ? value.join(", ")
+                  : typeof value === "boolean"
+                    ? (value ? "Yes" : "No")
+                    : value == null
+                      ? ""
+                      : String(value)
+                return text ? `${field.label}: ${text}` : null
+              })
+              .filter((line): line is string => line !== null)
+              .join("\n"),
+            "",
+            `Submitted: ${submittedAt}`,
+          ].join("\n")
+
+          const result = await resend.emails.send({
+            from: process.env.RESEND_FROM_EMAIL || "no-reply@beaglabs.com",
+            to: notify.to,
+            cc: notify.cc,
+            reply_to: email,
+            subject: notify.subject,
+            text: body,
+          })
+          if (result.error) console.error("[questionnaire] Resend error:", result.error.message)
+        } catch (err) {
+          console.error("[questionnaire] Resend send failed:", err)
+        }
+      }
+    }
 
     return NextResponse.json({ success: true, questionnaire: definition.id })
   } catch (err) {

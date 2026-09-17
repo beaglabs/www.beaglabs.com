@@ -18,8 +18,8 @@
  *      in what order, so one field set is one page or three with no change to the fields.
  *
  * The field model and validation live in `lib/questionnaire.ts`, so the API route enforces
- * exactly what the browser accepted. When `mailto` is set and a gating answer matches, the
- * submission also opens the visitor's mail client so a human inbox gets the lead directly.
+ * exactly what the browser accepted. When a definition declares an `email` notification and
+ * the gating answer matches, the route sends it server-side to the right inbox.
  */
 
 import * as React from "react"
@@ -31,7 +31,6 @@ import {
   type ControlId,
   type ControlProps,
   type FieldKind,
-  type MailtoConfig,
   type QuestionnaireAnswers,
   type QuestionnaireField,
   type QuestionnaireStep,
@@ -43,7 +42,6 @@ export type {
   ControlId,
   ControlProps,
   FieldKind,
-  MailtoConfig,
   QuestionnaireAnswers,
   QuestionnaireField,
   QuestionnaireOption,
@@ -267,35 +265,6 @@ export const BUILT_IN_CONTROLS: Record<ControlId, React.ComponentType<ControlPro
 }
 
 /* -------------------------------------------------------------------------- */
-/* Mailto                                                                      */
-/* -------------------------------------------------------------------------- */
-
-function formatAnswer(value: unknown): string {
-  if (value === undefined || value === null) return ""
-  if (typeof value === "boolean") return value ? "Yes" : "No"
-  if (Array.isArray(value)) return value.join(", ")
-  return String(value)
-}
-
-function buildMailtoBody(fields: QuestionnaireField[], answers: QuestionnaireAnswers): string {
-  return fields
-    .map((field) => {
-      const value = formatAnswer(answers[field.name])
-      return value ? `${field.label}: ${value}` : null
-    })
-    .filter((line): line is string => line !== null)
-    .join("\n")
-}
-
-function buildMailtoHref(mailto: MailtoConfig, body: string): string {
-  const query: string[] = []
-  if (mailto.subject) query.push(`subject=${encodeURIComponent(mailto.subject)}`)
-  if (mailto.cc?.length) query.push(`cc=${encodeURIComponent(mailto.cc.join(","))}`)
-  if (body) query.push(`body=${encodeURIComponent(body).replace(/%0A/g, "%0D%0A")}`)
-  return `mailto:${mailto.to}${query.length ? `?${query.join("&")}` : ""}`
-}
-
-/* -------------------------------------------------------------------------- */
 /* Component                                                                   */
 /* -------------------------------------------------------------------------- */
 
@@ -314,8 +283,6 @@ export interface QuestionnaireProps {
   /** Sent alongside the answers so the route knows which schema applies. */
   questionnaireId?: string
   headers?: Record<string, string>
-  /** Open the visitor's mail client when the gating answer matches. */
-  mailto?: MailtoConfig
   onSubmit?: (answers: QuestionnaireAnswers) => void | Promise<void>
   /** Rendered once the POST succeeds, replacing the form. */
   successMessage?: React.ReactNode
@@ -336,7 +303,6 @@ export function Questionnaire({
   action,
   questionnaireId,
   headers,
-  mailto,
   onSubmit,
   successMessage = "Thanks — we have your answers.",
   submitLabel = "Submit",
@@ -414,12 +380,6 @@ export function Questionnaire({
         }
       }
       await onSubmit?.(answers)
-
-      // Hand the lead to a human inbox when the gating answer asks for it. The record is
-      // already POSTed above; this is the direct, founder-contact channel.
-      if (mailto && answers[mailto.when] === mailto.equals) {
-        window.location.href = buildMailtoHref(mailto, buildMailtoBody(fields, answers))
-      }
 
       setDone(true)
     } catch (cause) {

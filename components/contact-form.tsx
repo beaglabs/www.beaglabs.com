@@ -2,7 +2,7 @@
 
 /**
  * Renders a contact questionnaire from its definition, wired to the POST route and to the
- * founder-contact mailto configured on the definition itself.
+ * founder-contact email configured on the definition itself.
  */
 
 import { Questionnaire } from "@/components/ui/questionnaire"
@@ -21,7 +21,6 @@ export function ContactForm({ id }: { id: string }) {
       questionnaireId={definition.id}
       submitLabel={definition.submitLabel}
       successMessage={definition.successMessage}
-      mailto={definition.mailto}
     />
   )
 }

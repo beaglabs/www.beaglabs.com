@@ -6,11 +6,11 @@
  * ends know about it; there is no second schema to keep in sync.
  *
  * There are three contact forms, one per public inbox. They share the same core fields
- * and differ only in what they ask and where the founder-contact mailto is addressed.
+ * and differ only in what they ask and where the founder-contact email is addressed.
  */
 
 import type {
-  MailtoConfig,
+  EmailNotification,
   QuestionnaireDefinition,
   QuestionnaireField,
 } from "@/lib/questionnaire"
@@ -82,7 +82,7 @@ const FOUNDER_FIELD: QuestionnaireField = {
   ],
 }
 
-function mailto(to: string, subject: string): MailtoConfig {
+function email(to: string, subject: string): EmailNotification {
   return {
     when: "founderContact",
     equals: "yes",
@@ -106,7 +106,7 @@ export const PARTNERSHIPS_FORM: QuestionnaireDefinition = {
   submitLabel: "Submit inquiry",
   successMessage:
     "Thanks — we will come back with partner pricing, the deployment runbook, and deal registration.",
-  mailto: mailto("partnerships@beaglabs.com", "Partnership inquiry"),
+  email: email("partnerships@beaglabs.com", "Partnership inquiry"),
   fields: [
     ...CORE_FIELDS,
     {
@@ -138,7 +138,7 @@ export const HELLO_FORM: QuestionnaireDefinition = {
     "General enquiries, press, or anything that does not fit one of the other forms. It lands in the same place.",
   submitLabel: "Send message",
   successMessage: "Thanks — we read everything and reply within two business days.",
-  mailto: mailto("hello@beaglabs.com", "General inquiry"),
+  email: email("hello@beaglabs.com", "General inquiry"),
   fields: [...CORE_FIELDS, MESSAGE_FIELD, FOUNDER_FIELD],
   steps: [
     STEPS.you,
@@ -154,7 +154,7 @@ export const SALES_FORM: QuestionnaireDefinition = {
     "Tell us what you are evaluating. Budget and timeline are what let us answer yes or no instead of scheduling a discovery call.",
   submitLabel: "Send inquiry",
   successMessage: "Thanks — we will come back with pricing, a demo, or a scoping call.",
-  mailto: mailto("sales@beaglabs.com", "Sales inquiry"),
+  email: email("sales@beaglabs.com", "Sales inquiry"),
   fields: [
     ...CORE_FIELDS,
     {
