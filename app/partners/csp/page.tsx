@@ -58,17 +58,6 @@ function Steps({ items }: { items: Array<{ title: string; body: React.ReactNode 
   )
 }
 
-function EmailCta() {
-  return (
-    <a
-      href={CONTACT_HREF}
-      className="inline-block bg-[#111] text-white px-6 py-3 text-[15px] font-semibold"
-    >
-      Email us about partnering
-    </a>
-  )
-}
-
 export default function CspPartnersPage() {
   return (
     <>
@@ -87,7 +76,9 @@ export default function CspPartnersPage() {
             commercial model works, how deployment and licensing run, and who does what when
             something goes wrong.
           </p>
-          <EmailCta />
+          <div className="mb-16 max-w-3xl">
+            <ContactForm id="partnerships" />
+          </div>
 
           <div className="mt-16 max-w-3xl">
             <Section id="commercial" title="1. How the commercial model works">
@@ -338,15 +329,7 @@ export default function CspPartnersPage() {
               </dl>
             </Section>
 
-            <Section id="contact" title="6. Talk to us">
-              <p>
-                Tell us who you are, your CSP program ID if you have one, and roughly what a
-                first customer looks like. Only Direct Bill partners and Indirect Providers can be
-                authorised to resell — indirect resellers should work through their provider, who
-                can pass access and margin on.
-              </p>
-              <ContactForm id="partnerships" />
-            </Section>
+            
           </div>
         </div>
       </main>

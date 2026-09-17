@@ -55,10 +55,10 @@ export { DEFAULT_CONTROLS } from "@/lib/questionnaire"
 /* -------------------------------------------------------------------------- */
 
 const INPUT_CLASS =
-  "w-full border border-[#E2E0DB] bg-white px-4 py-3 text-[15px] text-[#111] outline-none transition-colors placeholder:text-[#b5b0a8] focus:border-[#111]"
+  "w-full border border-[#111] bg-white px-4 py-3 text-[15px] text-[#111] outline-none transition-colors placeholder:text-[#b5b0a8] focus:border-[#ff5f1f] focus:ring-1 focus:ring-[#ff5f1f]"
 
 const OPTION_CLASS =
-  "flex w-full cursor-pointer items-start gap-3 border border-[#E2E0DB] bg-white px-4 py-3 text-left transition-colors has-[:checked]:border-[#ff5f1f]"
+  "flex w-full cursor-pointer items-start gap-3 border border-[#111] bg-white px-4 py-3 text-left transition-colors"
 
 const PRIMARY_BUTTON =
   "bg-[#111] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-50"
@@ -141,7 +141,7 @@ function OptionLabel({
   onChange: () => void
 }) {
   return (
-    <label htmlFor={htmlFor} className={OPTION_CLASS}>
+    <label htmlFor={htmlFor} className={cn(OPTION_CLASS, checked && "border-[#ff5f1f] bg-[#fff5ee]")}>
       <input
         id={htmlFor}
         type={type}
