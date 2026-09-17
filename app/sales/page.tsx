@@ -19,7 +19,7 @@ export default function SalesPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#F5F4F0]">
+      <main className="min-h-screen bg-[#FAFAF9]">
         <div className="mx-auto max-w-[1100px] px-6 py-16">
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Sales

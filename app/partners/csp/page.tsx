@@ -62,7 +62,7 @@ export default function CspPartnersPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#F5F4F0]">
+      <main className="min-h-screen bg-[#FAFAF9]">
         <div className="max-w-[1100px] mx-auto px-6 py-16">
           <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f] mb-3">
             Cloud Solution Provider program

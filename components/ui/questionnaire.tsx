@@ -3,19 +3,16 @@
 /**
  * Config-driven questionnaire.
  *
- * Built on native controls and styled to match the site's flat look (the same palette as
- * the partner and support pages: cream canvas, light borders, black buttons, orange mono
- * eyebrows) rather than on `@shadcn/react/questionnaire`, which is not a dependency and
- * expects theme tokens this stylesheet does not define.
+ * Built on native controls and styled to match the site's neobrutalist look — thick black
+ * borders, hard offset shadows, the orange accent, white cards, bold mono labels — rather
+ * than on `@shadcn/react/questionnaire`, which is not a dependency and expects theme tokens
+ * this stylesheet does not define.
  *
  * Three properties:
- *
- *   1. **Fields declare a value type.** A field says what it *is* — `single`, `multi`,
- *      `email`, `switch`, `slider` — and carries its own options.
- *   2. **Controls are exchangeable.** `kind` picks a default control; the form's
- *      `controls` map overrides it by kind; a field's own `control` overrides that.
- *   3. **Layout is separate from content.** `steps` decides which fields appear where and
- *      in what order, so one field set is one page or three with no change to the fields.
+ *   1. Fields declare a value type (`single`, `multi`, `email`, `switch`, `slider`, …).
+ *   2. Controls are exchangeable: `kind` picks a default, `controls` overrides by kind, and
+ *      `field.control` overrides that.
+ *   3. Layout is separate from content: `steps` decides which fields appear where.
  *
  * The field model and validation live in `lib/questionnaire.ts`, so the API route enforces
  * exactly what the browser accepted. When a definition declares an `email` notification and
@@ -55,16 +52,21 @@ export { DEFAULT_CONTROLS } from "@/lib/questionnaire"
 /* -------------------------------------------------------------------------- */
 
 const INPUT_CLASS =
-  "w-full border border-[#111] bg-white px-4 py-3 text-[15px] text-[#111] outline-none transition-colors placeholder:text-[#b5b0a8] focus:border-[#ff5f1f] focus:ring-1 focus:ring-[#ff5f1f]"
+  "w-full border-2 border-[#111] bg-white px-4 py-3 text-[14px] font-semibold text-[#111] outline-none transition-shadow placeholder:font-normal placeholder:text-[#b5b0a8] focus:shadow-[3px_3px_0px_0px_#111]"
 
-const OPTION_CLASS =
-  "flex w-full cursor-pointer items-start gap-3 border border-[#111] bg-white px-4 py-3 text-left transition-colors"
+const OPTION_BASE =
+  "flex w-full cursor-pointer items-start gap-3 border-[3px] border-[#111] bg-white px-4 py-3 text-left shadow-[4px_4px_0px_0px_#111]"
+
+const OPTION_SELECTED = "border-[#ff5f1f] bg-[#fff5ee]"
 
 const PRIMARY_BUTTON =
-  "bg-[#111] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-50"
+  "border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
 
 const SECONDARY_BUTTON =
-  "border border-[#E2E0DB] bg-white px-6 py-3 text-[14px] font-semibold text-[#111] transition-colors hover:bg-[#f0eee9] disabled:cursor-not-allowed disabled:opacity-50"
+  "border-[3px] border-[#111] bg-white px-6 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
+
+const PANEL =
+  "border-[3px] border-[#111] bg-white shadow-[6px_6px_0px_0px_#111]"
 
 /* -------------------------------------------------------------------------- */
 /* Built-in controls                                                           */
@@ -141,7 +143,7 @@ function OptionLabel({
   onChange: () => void
 }) {
   return (
-    <label htmlFor={htmlFor} className={cn(OPTION_CLASS, checked && "border-[#ff5f1f] bg-[#fff5ee]")}>
+    <label htmlFor={htmlFor} className={cn(OPTION_BASE, checked && OPTION_SELECTED)}>
       <input
         id={htmlFor}
         type={type}
@@ -152,8 +154,8 @@ function OptionLabel({
         className="mt-1 h-4 w-4 shrink-0 accent-[#ff5f1f]"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="text-[15px] font-medium text-[#111]">{label}</span>
-        {description ? <span className="text-[13px] text-[#6B6B6B]">{description}</span> : null}
+        <span className="text-[15px] font-bold text-[#111]">{label}</span>
+        {description ? <span className="text-[13px] font-medium text-[#6b6b6b]">{description}</span> : null}
       </span>
     </label>
   )
@@ -217,18 +219,18 @@ const SwitchControl: React.FC<ControlProps> = ({ field, value, onChange, disable
         disabled={disabled}
         onClick={() => onChange(!on)}
         className={cn(
-          "relative h-7 w-12 shrink-0 rounded-full border border-[#E2E0DB] transition-colors",
-          on ? "bg-[#ff5f1f] border-[#ff5f1f]" : "bg-[#f0eee9]",
+          "relative h-7 w-12 shrink-0 rounded-full border-2 border-[#111] transition-colors",
+          on ? "bg-[#ff5f1f]" : "bg-white",
         )}
       >
         <span
           className={cn(
-            "absolute top-0.5 left-0.5 block h-5 w-5 rounded-full bg-white transition-transform",
+            "absolute top-0.5 left-0.5 block h-5 w-5 rounded-full bg-[#111] transition-transform",
             on && "translate-x-5",
           )}
         />
       </button>
-      <label htmlFor={field.name} className="cursor-pointer text-[15px] text-[#111]">
+      <label htmlFor={field.name} className="cursor-pointer text-[15px] font-bold text-[#111]">
         {field.placeholder ?? "Yes"}
       </label>
     </div>
@@ -249,7 +251,9 @@ const SliderControl: React.FC<ControlProps> = ({ field, value, onChange, disable
         onChange={(event) => onChange(Number(event.target.value))}
         className="h-2 w-full cursor-pointer accent-[#ff5f1f]"
       />
-      <span className="w-8 shrink-0 text-right font-mono text-[14px] text-[#111]">{current}</span>
+      <span className="w-8 shrink-0 border-2 border-[#111] bg-white py-1 text-center font-mono text-[14px] font-bold text-[#111]">
+        {current}
+      </span>
     </div>
   )
 }
@@ -380,7 +384,6 @@ export function Questionnaire({
         }
       }
       await onSubmit?.(answers)
-
       setDone(true)
     } catch (cause) {
       setFailure(cause instanceof Error ? cause.message : "Submission failed.")
@@ -399,40 +402,22 @@ export function Questionnaire({
     setStepIndex((index) => index + 1)
   }
 
-  function ControlFor({ field }: { field: QuestionnaireField }) {
-    const chosen: Control = field.control ?? controls?.[field.kind] ?? DEFAULT_CONTROLS[field.kind]
-    const Resolved: React.ComponentType<ControlProps> =
-      typeof chosen === "function"
-        ? (chosen as unknown as React.ComponentType<ControlProps>)
-        : BUILT_IN_CONTROLS[chosen]
-
-    return (
-      <Resolved
-        field={field}
-        value={answers[field.name]}
-        onChange={(next) => setAnswer(field.name, next)}
-        disabled={pending}
-        invalid={Boolean(errors[field.name])}
-      />
-    )
-  }
-
   if (done) {
     return (
-      <div role="status" className={cn("border border-[#E2E0DB] bg-white p-6 sm:p-8", className)}>
-        <p className="text-[15px] leading-relaxed text-[#111]">{successMessage}</p>
+      <div role="status" className={cn(PANEL, "p-6 sm:p-8", className)}>
+        <p className="text-[15px] font-bold text-[#111]">{successMessage}</p>
       </div>
     )
   }
 
   return (
-    <div data-slot="questionnaire" className={cn("flex w-full min-w-0 flex-col gap-5", className)}>
+    <div data-slot="questionnaire" className={cn("flex w-full min-w-0 flex-col gap-6", className)}>
       {showProgress && resolvedSteps.length > 1 ? (
         <div className="flex flex-col gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Step {stepIndex + 1} of {resolvedSteps.length}
           </span>
-          <div className="h-[2px] w-full bg-[#E2E0DB]">
+          <div className="h-[10px] w-full border-[3px] border-[#111] bg-white">
             <div
               className="h-full bg-[#ff5f1f] transition-all"
               style={{ width: `${((stepIndex + 1) / resolvedSteps.length) * 100}%` }}
@@ -441,25 +426,22 @@ export function Questionnaire({
         </div>
       ) : null}
 
-      <section
-        aria-labelledby={`${current.id}-title`}
-        className="border border-[#E2E0DB] bg-white p-6 sm:p-8"
-      >
+      <section aria-labelledby={`${current.id}-title`} className={cn(PANEL, "p-6 sm:p-8")}>
         <div className="flex min-w-0 flex-col gap-5">
           {current.title ? (
             <header className="flex flex-col gap-2">
-              <h2 id={`${current.id}-title`} className="text-xl font-bold tracking-[-0.02em] text-[#111]">
+              <h2 id={`${current.id}-title`} className="text-xl font-extrabold tracking-[-0.02em] text-[#111]">
                 {current.title}
               </h2>
               {current.description ? (
-                <p className="text-[15px] leading-relaxed text-[#333]">{current.description}</p>
+                <p className="text-[15px] font-medium leading-relaxed text-[#555]">{current.description}</p>
               ) : null}
             </header>
           ) : null}
 
           <div
             data-slot="field-grid"
-            className={cn("grid min-w-0 gap-5", current.columns === 2 && "sm:grid-cols-2")}
+            className={cn("grid min-w-0 gap-6", current.columns === 2 && "sm:grid-cols-2")}
           >
             {current.fields.map((name) => {
               const field = fieldByName.get(name)
@@ -469,30 +451,42 @@ export function Questionnaire({
               const describedBy =
                 [hintId, errors[field.name] ? errorId : undefined].filter(Boolean).join(" ") || undefined
 
+              const chosen: Control = field.control ?? controls?.[field.kind] ?? DEFAULT_CONTROLS[field.kind]
+              const Resolved: React.ComponentType<ControlProps> =
+                typeof chosen === "function"
+                  ? (chosen as unknown as React.ComponentType<ControlProps>)
+                  : BUILT_IN_CONTROLS[chosen]
+
               return (
                 <div
                   key={field.name}
                   data-slot="questionnaire-field"
                   className={cn("flex min-w-0 flex-col gap-2", field.span === 2 && "sm:col-span-2")}
                 >
-                  <label htmlFor={field.name} className="text-[15px] font-semibold text-[#111]">
+                  <label htmlFor={field.name} className="text-[14px] font-bold text-[#111]">
                     {field.label}
                     {field.required && field.kind !== "switch" && field.kind !== "single" ? (
                       <span aria-hidden="true" className="text-[#ff5f1f]"> *</span>
                     ) : null}
                   </label>
                   {field.description ? (
-                    <p id={hintId} className="text-[13px] leading-relaxed text-[#6B6B6B]">
+                    <p id={hintId} className="text-[13px] font-medium leading-relaxed text-[#6b6b6b]">
                       {field.description}
                     </p>
                   ) : null}
 
                   <div aria-describedby={describedBy}>
-                    <ControlFor field={field} />
+                    <Resolved
+                      field={field}
+                      value={answers[field.name]}
+                      onChange={(next) => setAnswer(field.name, next)}
+                      disabled={pending}
+                      invalid={Boolean(errors[field.name])}
+                    />
                   </div>
 
                   {errors[field.name] ? (
-                    <p id={errorId} role="alert" className="text-[13px] font-medium text-[#dc2626]">
+                    <p id={errorId} role="alert" className="text-[13px] font-bold text-[#dc2626]">
                       {errors[field.name]}
                     </p>
                   ) : null}
@@ -502,12 +496,12 @@ export function Questionnaire({
           </div>
 
           {failure ? (
-            <p role="alert" className="text-[13px] font-medium text-[#dc2626]">
+            <p role="alert" className="text-[13px] font-bold text-[#dc2626]">
               {failure}
             </p>
           ) : null}
 
-          <div className="flex items-center justify-between gap-2 border-t border-[#E2E0DB] pt-5">
+          <div className="flex items-center justify-between gap-2 border-t-[3px] border-[#111] pt-5">
             <button
               type="button"
               disabled={stepIndex === 0 || pending}
