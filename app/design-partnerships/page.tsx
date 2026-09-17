@@ -143,14 +143,8 @@ export default function DesignPartnershipsPage() {
             </p>
 
             <div className="mb-10 flex flex-wrap items-center gap-4">
-              <a
-                href="https://cal.com/comradelemoncake/meet-the-founder"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-[#111] px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white transition-colors duration-200 hover:bg-[#2a2a2a]"
-              >
-                Apply as design partner
-              </a>
+              <Link href="/design-partnerships/apply"
+                className="inline-flex items-center justify-center rounded-full bg-[#111] px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white transition-colors duration-200 hover:bg-[#2a2a2a]">Apply as design partner</Link>
               <a
                 href="https://cal.com/comradelemoncake/meet-the-founder"
                 target="_blank"
@@ -422,14 +416,8 @@ export default function DesignPartnershipsPage() {
                   <span>Direct input on product direction</span>
                 </li>
               </ul>
-              <a
-                href="https://cal.com/comradelemoncake/meet-the-founder"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-[#FF7A1A] px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] transition-colors duration-200 hover:bg-[#ff8b39]"
-              >
-                Apply as design partner
-              </a>
+              <Link href="/design-partnerships/apply"
+                className="inline-flex items-center justify-center rounded-full bg-[#FF7A1A] px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] transition-colors duration-200 hover:bg-[#ff8b39]">Apply as design partner</Link>
             </div>
 
             <div className="border border-[rgba(17,17,17,0.1)] bg-[rgba(255,255,255,0.72)] px-8 py-10 backdrop-blur-sm lg:px-10 lg:py-12">
@@ -496,14 +484,8 @@ export default function DesignPartnershipsPage() {
           </div>
 
           <div className="flex flex-wrap items-end justify-start gap-4 lg:justify-end">
-            <a
-              href="https://cal.com/comradelemoncake/meet-the-founder"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full bg-[#FF7A1A] px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] transition-colors duration-200 hover:bg-[#ff8b39]"
-            >
-              Apply as design partner
-            </a>
+            <Link href="/design-partnerships/apply"
+              className="inline-flex items-center justify-center rounded-full bg-[#FF7A1A] px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] transition-colors duration-200 hover:bg-[#ff8b39]">Apply as design partner</Link>
             <Link
               href="/research"
               className="inline-flex items-center justify-center rounded-full border border-[rgba(255,255,255,0.16)] px-6 py-3.5 text-[12px] font-bold uppercase tracking-[0.08em] text-white transition-colors duration-200 hover:bg-[rgba(255,255,255,0.06)]"

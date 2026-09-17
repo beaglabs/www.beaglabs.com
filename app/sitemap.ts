@@ -16,6 +16,10 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${BASE_URL}/products/papyrus`, changeFrequency: 'monthly', priority: 0.9 },
   { url: `${BASE_URL}/trust/papyrus`, changeFrequency: 'monthly', priority: 0.8 },
   { url: `${BASE_URL}/design-partnerships`, changeFrequency: 'monthly', priority: 0.6 },
+  { url: `${BASE_URL}/design-partnerships/apply`, changeFrequency: 'monthly', priority: 0.5 },
+  { url: `${BASE_URL}/partners/csp`, changeFrequency: 'monthly', priority: 0.6 },
+  { url: `${BASE_URL}/support`, changeFrequency: 'yearly', priority: 0.4 },
+  { url: `${BASE_URL}/support/commercial`, changeFrequency: 'yearly', priority: 0.4 },
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

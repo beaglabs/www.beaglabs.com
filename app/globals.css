@@ -239,3 +239,9 @@
   padding: 6px 14px;
   box-shadow: 3px 3px 0px 0px #111;
 }
+
+@utility nb-panel {
+  border: 3px solid #111;
+  background: #fff;
+  box-shadow: 6px 6px 0px 0px #111;
+}
