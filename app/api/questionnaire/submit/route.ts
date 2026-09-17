@@ -195,7 +195,7 @@ export async function POST(request: Request) {
             from: process.env.RESEND_FROM_EMAIL || "no-reply@beaglabs.com",
             to: notify.to,
             cc: notify.cc,
-            reply_to: email,
+            replyTo: email,
             subject: notify.subject,
             text: body,
           })
