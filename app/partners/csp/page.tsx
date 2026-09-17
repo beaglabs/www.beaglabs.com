@@ -1,21 +1,23 @@
 import type { Metadata } from 'next'
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { ContactForm } from '@/components/contact-form'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
 /**
- * Public CSP partner page.
+ * Public CSP partner page, laid out as a bento grid like the rest of the site.
  *
- * This is the URL handed to Partner Center for the CSP channel, and the page we point
- * partners at. It is deliberately public: the program only requires marketing materials
- * plus channel contact information, and gating it would have meant managing a partner
- * account for every reseller before they can read anything.
- *
- * The consequence is that nothing confidential belongs on this page. Commercial terms
- * are "on request" rather than listed, because a partner price list published here is
- * readable by anyone with the link, including the customer's procurement team.
+ * The long-form prose that used to sit here is now in two places: the mechanics are bento
+ * cards, and the objections/questions are an accordion. Nothing confidential lives on the
+ * page — commercial terms are "on request" rather than listed, because a partner price
+ * list published here is readable by anyone with the link, including procurement.
  */
 
 const CONTACT_EMAIL = 'james@beaglabs.com'
@@ -31,26 +33,51 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-  return (
-    <section id={id} className="mb-12 scroll-mt-24">
-      <h2 className="text-xl font-bold tracking-[-0.02em] text-[#111] mb-4">{title}</h2>
-      <div className="space-y-4 text-[15px] leading-relaxed text-[#333]">{children}</div>
-    </section>
-  )
-}
+const DEPLOY_STEPS = [
+  { n: '01', t: 'Prerequisites', d: 'An Azure subscription, a Microsoft Entra tenant, and a model endpoint — Azure OpenAI in the customer\u2019s own tenant, or any OpenAI-compatible endpoint. Optional at deploy time.' },
+  { n: '02', t: 'Deploy the template', d: 'A hardened Ubuntu appliance with a dedicated data disk, supervised by systemd. You pick the VM size, region, and network posture.' },
+  { n: '03', t: 'First-run onboarding', d: 'The appliance serves an onboarding flow rather than the full product, gated by a setup token it prints to its log.' },
+  { n: '04', t: 'Bind identity + model', d: 'Entra is the only identity authority. Register the customer\u2019s model endpoint as a profile.' },
+]
 
-function Steps({ items }: { items: Array<{ title: string; body: React.ReactNode }> }) {
+const LICENSE_STEPS = [
+  { n: '01', t: 'Deploy', d: 'The customer or partner deploys the Azure Application into the customer\u2019s subscription.' },
+  { n: '02', t: 'Read the deployment ID', d: 'Printed to the appliance log on first boot. The licence binds to it.' },
+  { n: '03', t: 'Send it to us', d: 'The deployment ID is the only information we need to mint a licence.' },
+  { n: '04', t: 'We mint', d: 'A signed, offline licence — 90-day pilot or 365-day annual terms.' },
+  { n: '05', t: 'Activate', d: 'Activated by a Papyrus System Owner. Verified entirely offline.' },
+]
+
+const DIFFERENTIATORS = [
+  ['It runs where the data is.', 'No call to a Beag control plane. Workloads, prompts, and outputs never leave the customer\u2019s environment.'],
+  ['Entra is the only identity authority.', 'No local role database, no password store, no invitation flow.'],
+  ['The licence works offline.', 'A signed file, verified locally — no licence server, no activation call.'],
+  ['Sandboxed, or it does not run.', 'Landlock and seccomp with network denied. If a host cannot isolate, execution is off.'],
+  ['The agent proposes; policy releases.', 'Entra-authorized approvers release actions. Inline secrets are rejected.'],
+]
+
+const FAQ = [
+  ['Why not a hosted agent platform?', 'Because the data cannot leave. A hosted platform requires egress, an approved third-party model provider, and a vendor control plane in the path. Papyrus is bought by organisations that cannot accept any of those.'],
+  ['Is BYOL a hassle?', 'It is a file. We mint it against the deployment ID, you activate it, and it self-expires. There is no licence server to run and no per-user provisioning to reconcile — usually easier than the alternative, not harder.'],
+  ['Does it need internet access?', 'Not to us. Papyrus makes no vendor callback. The customer\u2019s chosen model endpoint must be reachable from the appliance, and in a restricted environment that endpoint is their own.'],
+  ['Which models can it use?', 'Any OpenAI-compatible or Azure OpenAI endpoint, including one in the customer\u2019s own tenant. Restricted and disconnected profiles refuse to fall back to a commercial endpoint.'],
+  ['What about GPU cost?', 'Optional, and it lands in the customer\u2019s subscription — so it counts toward their Azure commitment and flows through you as partner consumption. Model hosting is not required.'],
+  ['Can they draw committed Azure spend against the licence?', 'No. The software is invoiced by us, not Microsoft, so the licence fee cannot draw down Azure committed spend — infrastructure still counts. If a procurement gate needs the software itself transactable, tell us: it is a known constraint with known answers.'],
+  ['What happens when a licence expires?', 'It self-expires, silently, because nothing phones home. A lapsed licence stops unlocking its features until a new one is minted and activated. Put a renewal reminder on both sides at least 30 days out.'],
+  ['Should the onboarding port be public?', 'Exposing it is the simplest path; leaving it internal and reaching it over a private network is the better posture for a restricted environment. Raise it with the customer early.'],
+]
+
+function StepList({ items }: { items: Array<{ n: string; t: string; d: string }> }) {
   return (
     <ol className="space-y-4">
-      {items.map((item, index) => (
-        <li key={item.title} className="flex gap-4">
-          <span className="font-mono text-[11px] text-[#ff5f1f] pt-1 w-5 shrink-0">
-            {String(index + 1).padStart(2, '0')}
+      {items.map((item) => (
+        <li key={item.n} className="flex gap-3">
+          <span className="w-6 shrink-0 pt-0.5 font-mono text-[11px] font-bold text-[#ff5f1f]">
+            {item.n}
           </span>
           <div>
-            <p className="font-semibold text-[#111]">{item.title}</p>
-            <p className="text-[#333]">{item.body}</p>
+            <p className="text-[14px] font-bold text-[#111]">{item.t}</p>
+            <p className="text-[13px] leading-relaxed text-[#444]">{item.d}</p>
           </div>
         </li>
       ))}
@@ -58,280 +85,192 @@ function Steps({ items }: { items: Array<{ title: string; body: React.ReactNode 
   )
 }
 
+const CARD = 'nb-card flex flex-col bg-white p-7 transition-all hover:shadow-[8px_8px_0px_0px_#ff5f1f] hover:-translate-x-[1px] hover:-translate-y-[1px] lg:p-8'
+
 export default function CspPartnersPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#FAFAF9]">
-        <div className="max-w-[1100px] mx-auto px-6 py-16">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f] mb-3">
-            Cloud Solution Provider program
-          </p>
-          <h1 className="text-3xl font-bold tracking-[-0.03em] text-[#111] mb-4">
-            Partner with Beag Labs
-          </h1>
-          <p className="text-[15px] leading-relaxed text-[#555] max-w-3xl mb-8">
-            Papyrus is a customer-hosted durable agent runtime. We work with a small number of
-            Cloud Solution Providers who deploy it for their customers. This page covers how the
-            commercial model works, how deployment and licensing run, and who does what when
-            something goes wrong.
-          </p>
-          <div className="mb-16 max-w-3xl">
-            <ContactForm id="partnerships" />
+      <main className="bg-[#FAFAF9]">
+        {/* Hero */}
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+          <div className="mx-auto max-w-[1440px]">
+            <span className="nb-label mb-5 inline-block">Cloud Solution Provider program</span>
+            <h1 className="max-w-[760px] text-[46px] font-extrabold leading-[0.95] tracking-[-0.05em] text-[#111] lg:text-[64px]">
+              Partner with Beag Labs.
+            </h1>
+            <p className="mt-6 max-w-[560px] text-[17px] font-medium leading-[1.65] text-[#404040]">
+              Papyrus is a customer-hosted durable agent runtime. We work with a small number of
+              Cloud Solution Providers who deploy it for their customers.
+            </p>
           </div>
+        </section>
 
-          <div className="mt-16 max-w-3xl">
-            <Section id="commercial" title="1. How the commercial model works">
-              <p>Papyrus is bought two ways, and it matters which one applies to a given deal.</p>
-              <p>
-                <strong className="text-[#111]">Infrastructure.</strong> The appliance runs in the
-                customer&apos;s Azure subscription. As the partner you hold the billing
-                relationship, so the Azure consumption that deployment generates — the appliance
-                VM, its managed disk, and any GPU VMs behind it — flows through you at your normal
-                CSP margin. That is recurring for as long as the customer runs it, and on a
-                deployment with GPU capacity it is usually the larger number.
-              </p>
-              <p>
-                <strong className="text-[#111]">Software.</strong> Papyrus is licensed BYOL and
-                invoiced by us directly. Our Marketplace listing is a solution template, and
-                solution templates are not transactable, so there is no Microsoft-brokered
-                software margin on this offer. We would rather state that plainly than have you
-                discover it mid-deal.
-              </p>
-              <p>
-                <strong className="text-[#111]">Partner pricing and margin</strong> are set by
-                agreement and quoted per partner —{' '}
-                <a href={CONTACT_HREF} className="underline text-[#111]">
-                  email us
-                </a>{' '}
-                and we will walk you through it.
-              </p>
-              <p>
-                One procurement consequence worth knowing early: because the software is invoiced
-                by us rather than by Microsoft, a customer cannot draw committed Azure spend down
-                against the licence fee. Their infrastructure still counts toward that commitment.
-                If a customer&apos;s procurement gate requires the software itself to be
-                transactable, tell us — it is a known constraint with known answers, and better
-                found in the first call than at signature.
-              </p>
-            </Section>
+        {/* Bento */}
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+          <div className="mx-auto max-w-[1440px]">
+            <span className="nb-label mb-5 inline-block">How it works</span>
+            <h2 className="mb-12 max-w-[620px] text-[34px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[44px]">
+              The commercial model, the deployment, and the licence — in cards.
+            </h2>
 
-            <Section id="deployment" title="2. Deploying for a customer">
-              <p>
-                Deployment is a single Azure Application, offered as a solution template. You run
-                it against the customer&apos;s subscription using your delegated administrator
-                access. No Beag Labs involvement is required, and no data leaves their tenant.
-              </p>
-              <Steps
-                items={[
-                  {
-                    title: 'Confirm the prerequisites',
-                    body: (
-                      <>
-                        An Azure subscription, a Microsoft Entra tenant, and a model endpoint —
-                        Azure OpenAI in the customer&apos;s own tenant, any OpenAI-compatible
-                        endpoint, or a self-hosted one. No endpoint is needed at deploy time; it is
-                        configured during onboarding.
-                      </>
-                    ),
-                  },
-                  {
-                    title: 'Deploy the template',
-                    body: (
-                      <>
-                        Provisions a hardened Ubuntu appliance with a dedicated data disk for
-                        durable state, supervised by systemd. You choose the VM size, the region,
-                        whether the onboarding port is reachable outside the virtual network, and
-                        the allowed source address range.
-                      </>
-                    ),
-                  },
-                  {
-                    title: 'Complete first-run onboarding',
-                    body: (
-                      <>
-                        On first boot the appliance serves an onboarding flow rather than the full
-                        product. It prints a setup token to its log, which gates the flow.
-                      </>
-                    ),
-                  },
-                  {
-                    title: 'Bind identity and the model endpoint',
-                    body: (
-                      <>
-                        Entra is the only identity authority — there is no local role database and
-                        no invitation flow to reconcile. Register the customer&apos;s model
-                        endpoint as a model profile.
-                      </>
-                    ),
-                  },
-                ]}
-              />
-              <p>
-                Worth raising with the customer early: whether the onboarding port should be
-                reachable from outside their virtual network. Exposing it is the simplest path;
-                leaving it internal and reaching it over a private network is the better posture
-                for a restricted environment.
-              </p>
-            </Section>
-
-            <Section id="licensing" title="3. Licensing — walk the customer through this">
-              <p>
-                The licence is a file, not a service. There is no licence server and no call home
-                at any point, which is the point: it works in environments with no outbound
-                access.
-              </p>
-              <Steps
-                items={[
-                  {
-                    title: 'Deploy the appliance',
-                    body: (
-                      <>
-                        The customer or partner deploys the Azure Application into the
-                        customer&apos;s subscription.
-                      </>
-                    ),
-                  },
-                  {
-                    title: 'Read the deployment ID',
-                    body: (
-                      <>
-                        On first boot the appliance prints a <strong>deployment ID</strong> and a{' '}
-                        <strong>setup token</strong> to its log. The licence binds to that
-                        deployment ID, so it must come from that specific deployment.
-                      </>
-                    ),
-                  },
-                  {
-                    title: 'Send the deployment ID to Beag Labs',
-                    body: <>That is the only information we need to mint a licence.</>,
-                  },
-                  {
-                    title: 'We mint a signed licence',
-                    body: (
-                      <>
-                        Issued against that deployment ID, naming the deployment profile and the
-                        feature set it unlocks. Pilot terms are 90 days; annual terms are 365. It
-                        is signed with our offline authority key.
-                      </>
-                    ),
-                  },
-                  {
-                    title: 'Activate it on the appliance',
-                    body: (
-                      <>
-                        The signed licence is activated on the appliance by a principal holding the
-                        Papyrus System Owner Entra role. The appliance verifies the signature, the
-                        deployment match, the profile, and the expiry entirely offline, then stores
-                        it.
-                      </>
-                    ),
-                  },
-                ]}
-              />
-              <p>
-                <strong className="text-[#111]">Plan the renewal before the term ends.</strong>{' '}
-                Licences self-expire, and expiry is silent from our side because nothing phones
-                home. A lapsed licence stops unlocking its features until a new one is minted and
-                activated, so put a reminder on both sides at least 30 days out.
-              </p>
-            </Section>
-
-            <Section id="support" title="4. Support model">
-              <p>
-                Under the CSP program terms the publisher is responsible for break-fix support to
-                end customers. In practice the partner is the customer&apos;s first and only
-                contact, and we support the partner behind them.
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="border border-[#E2E0DB] bg-white p-4">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#6B6B6B] mb-2">
-                    Tier 1 — partner
-                  </p>
-                  <p className="text-[14px]">
-                    Deployment, configuration, onboarding walkthroughs, licence activation, and
-                    questions about the product&apos;s behaviour. First line for everything.
-                  </p>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className={`${CARD} lg:col-span-2`}>
+                <div className="mb-6 flex items-start justify-between gap-6">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                    01
+                  </span>
                 </div>
-                <div className="border border-[#E2E0DB] bg-white p-4">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#6B6B6B] mb-2">
-                    Tier 2 — Beag Labs
-                  </p>
-                  <p className="text-[14px]">
-                    Product defects, the execution sandbox, licence minting and replacement, and
-                    anything a partner cannot resolve from the documentation.
-                  </p>
+                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                  How the money works
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6b6b]">
+                      Infrastructure
+                    </p>
+                    <p className="text-[13px] leading-relaxed text-[#444]">
+                      Runs in the customer&apos;s Azure subscription. You hold the billing
+                      relationship, so consumption flows through you at normal CSP margin —
+                      recurring, and usually the larger number.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6b6b]">
+                      Software
+                    </p>
+                    <p className="text-[13px] leading-relaxed text-[#444]">
+                      BYOL, invoiced by us. Solution templates are not transactable, so there is
+                      no Microsoft-brokered software margin — stated plainly, not discovered
+                      mid-deal.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6b6b]">
+                      Partner margin
+                    </p>
+                    <p className="text-[13px] leading-relaxed text-[#444]">
+                      Set by agreement, quoted per partner.{' '}
+                      <a href={CONTACT_HREF} className="font-bold text-[#111] underline">
+                        Email us
+                      </a>{' '}
+                      and we will walk you through it.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </Section>
 
-            <Section id="positioning" title="5. Why Papyrus, and the objections you will hear">
-              <p>What actually differentiates it in a competitive deal:</p>
-              <ul className="space-y-3">
-                {[
-                  [
-                    'It runs where the data is.',
-                    "The appliance lives in the customer's subscription and makes no call to a Beag control plane. Nothing about their workloads, prompts, or outputs leaves their environment.",
-                  ],
-                  [
-                    'Entra is the only identity authority.',
-                    'No local role database, no password store, no invitation flow, no provisioning side-channel to reconcile with their directory.',
-                  ],
-                  [
-                    'The licence works offline.',
-                    'A signed file, verified locally. No licence server, no activation call, so it survives an environment with no outbound access.',
-                  ],
-                  [
-                    'Agent code is sandboxed, or it does not run.',
-                    'Under Landlock and seccomp with outbound network denied. On a host that cannot isolate, execution is switched off and the daemon says why rather than silently running unprotected.',
-                  ],
-                  [
-                    'The agent proposes; policy releases.',
-                    'Deterministic workflow policy plus an Entra-authorized approver release actions. Connectors take vault, certificate, or managed-identity references — inline secrets are rejected, not stored.',
-                  ],
-                ].map(([title, body]) => (
-                  <li key={title} className="border-l-2 border-[#E2E0DB] pl-4">
-                    <p className="font-semibold text-[#111]">{title}</p>
-                    <p>{body}</p>
-                  </li>
-                ))}
-              </ul>
+              <div className={CARD}>
+                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                  02
+                </span>
+                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                  Deploy
+                </h3>
+                <StepList items={DEPLOY_STEPS} />
+              </div>
 
-              <h3 className="text-[15px] font-bold text-[#111] pt-4">Objections you will hear</h3>
-              <dl className="space-y-4">
-                {[
-                  [
-                    'Why not a hosted agent platform?',
-                    'Because the data cannot leave. A hosted platform requires egress, an approved third-party model provider, and a vendor control plane in the path. Papyrus is bought by organisations that cannot accept any of those.',
-                  ],
-                  [
-                    'Is BYOL a hassle?',
-                    'It is a file. We mint it against the deployment ID, you activate it, and it self-expires. There is no licence server to run and no per-user provisioning to reconcile — usually easier than the alternative, not harder.',
-                  ],
-                  [
-                    'Does it need internet access?',
-                    "Not to us. Papyrus makes no vendor callback. The customer's chosen model endpoint must be reachable from the appliance, and in a restricted environment that endpoint is their own.",
-                  ],
-                  [
-                    'Which models can it use?',
-                    "Any OpenAI-compatible or Azure OpenAI endpoint, including one in the customer's own tenant. Restricted and disconnected profiles refuse to fall back to a commercial provider endpoint, so a closed environment stays closed.",
-                  ],
-                  [
-                    'What about GPU cost?',
-                    "Optional, and it lands in the customer's subscription — which means it counts toward their Azure commitment and flows through you as partner consumption. Model hosting is not required: most customers point at an endpoint they already have.",
-                  ],
-                ].map(([question, answer]) => (
-                  <div key={question}>
-                    <dt className="font-semibold text-[#111]">{question}</dt>
-                    <dd className="text-[#333]">{answer}</dd>
+              <div className={CARD}>
+                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                  03
+                </span>
+                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                  License
+                </h3>
+                <StepList items={LICENSE_STEPS} />
+              </div>
+
+              <div className={CARD}>
+                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                  04
+                </span>
+                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                  Support
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6b6b]">
+                      Tier 1 — partner
+                    </p>
+                    <p className="text-[13px] leading-relaxed text-[#444]">
+                      Deployment, configuration, onboarding, and licence activation. First line
+                      for everything.
+                    </p>
                   </div>
-                ))}
-              </dl>
-            </Section>
+                  <div>
+                    <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6b6b]">
+                      Tier 2 — Beag Labs
+                    </p>
+                    <p className="text-[13px] leading-relaxed text-[#444]">
+                      Defects, the sandbox, licence minting and replacement, and anything a
+                      partner cannot resolve from the docs.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            
+              <div className={`${CARD} lg:col-span-2`}>
+                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                  05
+                </span>
+                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                  Why Papyrus
+                </h3>
+                <ul className="grid gap-3 sm:grid-cols-2">
+                  {DIFFERENTIATORS.map(([title, body]) => (
+                    <li key={title} className="border-l-2 border-[#ff5f1f] pl-3">
+                      <p className="text-[14px] font-bold text-[#111]">{title}</p>
+                      <p className="text-[13px] leading-relaxed text-[#444]">{body}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+          <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <div>
+              <span className="nb-label mb-5 inline-block">FAQ</span>
+              <h2 className="mb-4 max-w-[460px] text-[34px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[44px]">
+                Objections, answered.
+              </h2>
+              <p className="max-w-[430px] text-[16px] font-medium leading-[1.65] text-[#404040]">
+                The questions a partner hears in a competitive deal, with the answers you need
+                to close it.
+              </p>
+            </div>
+
+            <Accordion type="single" collapsible className="w-full">
+              {FAQ.map(([question, answer], index) => (
+                <AccordionItem key={question} value={`faq-${index}`}>
+                  <AccordionTrigger>{question}</AccordionTrigger>
+                  <AccordionContent>{answer}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+          <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <div>
+              <span className="nb-label mb-5 inline-block">Partner with us</span>
+              <h2 className="mb-4 max-w-[460px] text-[34px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[44px]">
+                Tell us who you are.
+              </h2>
+              <p className="max-w-[430px] text-[16px] font-medium leading-[1.65] text-[#404040]">
+                Your CSP program ID if you have one, and roughly what a first customer looks
+                like. Only Direct Bill partners and Indirect Providers can be authorised to
+                resell — indirect resellers should work through their provider.
+              </p>
+            </div>
+            <ContactForm id="partnerships" />
+          </div>
+        </section>
       </main>
       <SiteFooter />
     </>
