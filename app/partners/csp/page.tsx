@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { ContactForm } from '@/components/contact-form'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
@@ -339,17 +340,12 @@ export default function CspPartnersPage() {
 
             <Section id="contact" title="6. Talk to us">
               <p>
-                Email{' '}
-                <a href={CONTACT_HREF} className="underline text-[#111]">
-                  {CONTACT_EMAIL}
-                </a>{' '}
-                and tell us: who you are, your CSP program ID if you have one, and roughly what a
+                Tell us who you are, your CSP program ID if you have one, and roughly what a
                 first customer looks like. Only Direct Bill partners and Indirect Providers can be
                 authorised to resell — indirect resellers should work through their provider, who
                 can pass access and margin on.
               </p>
-              <p>We will come back with partner pricing, the deployment runbook, and deal registration.</p>
-              <EmailCta />
+              <ContactForm id="partnerships" />
             </Section>
           </div>
         </div>

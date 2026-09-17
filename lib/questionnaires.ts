@@ -1,127 +1,175 @@
 /**
  * Concrete questionnaires.
  *
- * One definition drives both ends of the wire: the page in `app/design-partnerships/apply`
- * renders from it, and `app/api/questionnaire/submit` validates against it. Add a
- * questionnaire here and both ends know about it; there is no second schema to keep in
- * sync, which is the usual way a form and its endpoint drift apart.
+ * One definition drives both ends of the wire: the page renders from it, and
+ * `app/api/questionnaire/submit` validates against it. Add a questionnaire here and both
+ * ends know about it; there is no second schema to keep in sync.
+ *
+ * There are three contact forms, one per public inbox. They share the same core fields
+ * and differ only in what they ask and where the founder-contact mailto is addressed.
  */
 
-import type { QuestionnaireDefinition } from "@/lib/questionnaire"
+import type {
+  MailtoConfig,
+  QuestionnaireDefinition,
+  QuestionnaireField,
+} from "@/lib/questionnaire"
+
+/** Every form asks these. */
+const CORE_FIELDS: QuestionnaireField[] = [
+  {
+    name: "fullName",
+    kind: "text",
+    label: "Your name",
+    required: true,
+    placeholder: "Jane Okafor",
+  },
+  {
+    name: "email",
+    kind: "email",
+    label: "Work email",
+    required: true,
+    placeholder: "jane@company.com",
+  },
+  {
+    name: "company",
+    kind: "text",
+    label: "Organization",
+    required: true,
+    placeholder: "Acme Health",
+  },
+  {
+    name: "role",
+    kind: "select",
+    label: "Your role",
+    required: true,
+    placeholder: "Select a role",
+    options: [
+      { value: "founder-exec", label: "Founder / executive" },
+      { value: "engineering-lead", label: "Engineering or platform lead" },
+      { value: "data-lead", label: "Data / ML lead" },
+      { value: "procurement", label: "Procurement / contracting" },
+      { value: "partner", label: "Partner / reseller" },
+      { value: "other", label: "Something else" },
+    ],
+  },
+]
+
+const MESSAGE_FIELD: QuestionnaireField = {
+  name: "message",
+  kind: "textarea",
+  label: "What would you like to talk about?",
+  description: "A paragraph is enough — what you are trying to do, and what you need from us.",
+  required: true,
+  placeholder: "Tell us what you are working on.",
+}
 
 /**
- * Domain Intelligence Pilot intake. Three steps, eleven questions, and one field whose
- * control is swapped (`dataReadiness` renders as a slider instead of its `number` input
- * default) to show that a field's value type and its control are separate decisions.
+ * The question that gates founder contact. Answering "yes" opens the visitor's mail
+ * client addressed to the form's inbox (cc james@beaglabs.com) with their answers in the
+ * body; the submission is still recorded either way.
  */
-export const PILOT_APPLICATION: QuestionnaireDefinition = {
-  id: "pilot-application",
-  title: "Domain Intelligence Pilot application",
-  description:
-    "Twelve weeks, one domain, deployed in your environment. These questions are what we use to decide whether the pilot is a fit and what to scope it against.",
-  submitLabel: "Submit application",
-  successMessage:
-    "Application received. We read every one and reply within two business days — if it looks like a fit we will send times for a scoping call.",
+const FOUNDER_FIELD: QuestionnaireField = {
+  name: "founderContact",
+  kind: "single",
+  label: "Would you like to be contacted by the founder directly about potential collaborations?",
+  description: "Either way the submission is recorded. Answering yes also opens an email directly to the right inbox.",
+  required: true,
+  defaultValue: "no",
+  options: [
+    { value: "yes", label: "Yes — have the founder contact me directly" },
+    { value: "no", label: "No — a regular response is fine" },
+  ],
+}
 
+function mailto(to: string, subject: string): MailtoConfig {
+  return {
+    when: "founderContact",
+    equals: "yes",
+    to,
+    cc: ["james@beaglabs.com"],
+    subject,
+  }
+}
+
+/** Split the core fields into a two-column "about you" step plus a final founder step. */
+const STEPS = {
+  you: { id: "you", title: "About you", fields: ["fullName", "email", "company", "role"], columns: 2 as const },
+  founder: { id: "founder", title: "Founder contact", fields: ["founderContact"] },
+}
+
+export const PARTNERSHIPS_FORM: QuestionnaireDefinition = {
+  id: "partnerships",
+  title: "Partner with Beag Labs",
+  description:
+    "Tell us who you are and what a partnership could look like. We will come back with partner pricing, the deployment runbook, and deal registration.",
+  submitLabel: "Submit inquiry",
+  successMessage:
+    "Thanks — we will come back with partner pricing, the deployment runbook, and deal registration.",
+  mailto: mailto("partnerships@beaglabs.com", "Partnership inquiry"),
   fields: [
+    ...CORE_FIELDS,
     {
-      name: "fullName",
-      kind: "text",
-      label: "Your name",
+      name: "partnerType",
+      kind: "single",
+      label: "What kind of partnership?",
       required: true,
-      placeholder: "Jane Okafor",
-    },
-    {
-      name: "email",
-      kind: "email",
-      label: "Work email",
-      required: true,
-      placeholder: "jane@company.com",
-    },
-    {
-      name: "company",
-      kind: "text",
-      label: "Organization",
-      required: true,
-      placeholder: "Acme Health",
-    },
-    {
-      name: "role",
-      kind: "select",
-      label: "Your role",
-      required: true,
-      placeholder: "Select a role",
       options: [
-        { value: "founder-exec", label: "Founder / executive" },
-        { value: "engineering-lead", label: "Engineering or platform lead" },
-        { value: "data-lead", label: "Data / ML lead" },
-        { value: "domain-expert", label: "Domain expert or principal investigator" },
-        { value: "program-office", label: "Program office / contracting" },
+        { value: "csp", label: "Cloud Solution Provider (CSP)" },
+        { value: "technology", label: "Technology or integration partner" },
+        { value: "research", label: "Research or pilot collaboration" },
         { value: "other", label: "Something else" },
       ],
     },
+    MESSAGE_FIELD,
+    FOUNDER_FIELD,
+  ],
+  steps: [
+    STEPS.you,
+    { id: "ask", title: "The partnership", fields: ["partnerType", "message"] },
+    STEPS.founder,
+  ],
+}
+
+export const HELLO_FORM: QuestionnaireDefinition = {
+  id: "hello",
+  title: "Talk to us",
+  description:
+    "General enquiries, press, or anything that does not fit one of the other forms. It lands in the same place.",
+  submitLabel: "Send message",
+  successMessage: "Thanks — we read everything and reply within two business days.",
+  mailto: mailto("hello@beaglabs.com", "General inquiry"),
+  fields: [...CORE_FIELDS, MESSAGE_FIELD, FOUNDER_FIELD],
+  steps: [
+    STEPS.you,
+    { id: "ask", title: "Your message", fields: ["message"] },
+    STEPS.founder,
+  ],
+}
+
+export const SALES_FORM: QuestionnaireDefinition = {
+  id: "sales",
+  title: "Sales",
+  description:
+    "Tell us what you are evaluating. Budget and timeline are what let us answer yes or no instead of scheduling a discovery call.",
+  submitLabel: "Send inquiry",
+  successMessage: "Thanks — we will come back with pricing, a demo, or a scoping call.",
+  mailto: mailto("sales@beaglabs.com", "Sales inquiry"),
+  fields: [
+    ...CORE_FIELDS,
     {
-      name: "organizationSize",
+      name: "budget",
       kind: "single",
-      label: "How many people work in your organization?",
+      label: "What budget range are you working with?",
+      description: "A rough range is fine — it just changes which options we show you.",
       required: true,
       options: [
-        { value: "1-50", label: "1–50" },
-        { value: "51-500", label: "51–500" },
-        { value: "501-5000", label: "501–5,000" },
-        { value: "5000-plus", label: "More than 5,000" },
-      ],
-    },
-    {
-      name: "domain",
-      kind: "textarea",
-      label: "What domain should the pilot model?",
-      description:
-        "The narrower the better. \"Prior authorization appeals for a regional payer\" beats \"healthcare\".",
-      required: true,
-      placeholder:
-        "What kinds of questions do your experts answer today by hand, and where does the knowledge live?",
-    },
-    {
-      name: "dataSources",
-      kind: "multi",
-      label: "Where does the data live?",
-      description: "Select everything the pilot would need to read.",
-      required: true,
-      options: [
-        { value: "postgres-mysql", label: "Postgres / MySQL / SQL Server" },
-        { value: "warehouse", label: "Snowflake / BigQuery / Databricks / Synapse" },
-        { value: "object-storage", label: "S3 / Blob Storage / GCS" },
-        { value: "documents", label: "PDFs, scans, and office documents" },
-        { value: "wiki", label: "SharePoint / Confluence / Notion" },
-        { value: "apis", label: "Internal REST or GraphQL APIs" },
-        { value: "mainframe", label: "Mainframe, COBOL, or flat files" },
-      ],
-    },
-    {
-      name: "dataReadiness",
-      kind: "number",
-      label: "How well documented is that data today?",
-      description: "0 means nobody has written it down. 10 means there is a maintained schema and data dictionary.",
-      required: true,
-      min: 0,
-      max: 10,
-      step: 1,
-      defaultValue: 5,
-      // Value type is `number`; the control is a slider. Those are independent choices.
-      control: "slider",
-    },
-    {
-      name: "deploymentTarget",
-      kind: "single",
-      label: "Where would it run?",
-      required: true,
-      options: [
-        { value: "azure-gov", label: "Azure Government" },
-        { value: "azure-commercial", label: "Azure commercial" },
-        { value: "aws-govcloud", label: "AWS GovCloud" },
-        { value: "on-prem", label: "On-premises or air-gapped" },
-        { value: "undecided", label: "Not decided yet" },
+        { value: "under-50k", label: "Under $50K" },
+        { value: "50k-100k", label: "$50K – $100K" },
+        { value: "100k-250k", label: "$100K – $250K" },
+        { value: "250k-500k", label: "$250K – $500K" },
+        { value: "over-500k", label: "Over $500K" },
+        { value: "unknown", label: "Not established yet" },
       ],
     },
     {
@@ -137,73 +185,20 @@ export const PILOT_APPLICATION: QuestionnaireDefinition = {
         { value: "exploring", label: "Exploring, no date yet" },
       ],
     },
-    {
-      name: "budget",
-      kind: "single",
-      label: "What budget range is realistic for a 12-week pilot?",
-      description: "We would rather hear \"no budget yet\" than a number you cannot commit to.",
-      required: true,
-      options: [
-        { value: "under-100k", label: "Under $100K" },
-        { value: "100k-250k", label: "$100K – $250K" },
-        { value: "250k-500k", label: "$250K – $500K" },
-        { value: "over-500k", label: "Over $500K" },
-        { value: "unknown", label: "Not established yet" },
-      ],
-    },
-    {
-      name: "wantsCall",
-      kind: "switch",
-      label: "Scoping call",
-      description: "Turn this on if you would like us to send times rather than trade email.",
-      placeholder: "Yes, send me times",
-      defaultValue: true,
-    },
-    {
-      name: "notes",
-      kind: "textarea",
-      label: "Anything else we should know?",
-      description: "Constraints, incumbent vendors, procurement quirks, past attempts that failed.",
-      span: 2,
-      placeholder: "Optional",
-    },
+    MESSAGE_FIELD,
+    FOUNDER_FIELD,
   ],
-
   steps: [
-    {
-      id: "you",
-      title: "Who you are",
-      description: "So we know who we are replying to and how your organization is shaped.",
-      fields: ["fullName", "email", "company", "role", "organizationSize"],
-      columns: 2,
-    },
-    {
-      id: "pilot",
-      title: "What the pilot would cover",
-      description: "The domain, the data behind it, and where the result has to run.",
-      fields: ["domain", "dataSources", "dataReadiness", "deploymentTarget"],
-      columns: 1,
-    },
-    {
-      id: "commercials",
-      title: "Timing and budget",
-      description: "This is what lets us tell you yes or no instead of scheduling a discovery call.",
-      fields: ["timeline", "budget", "wantsCall", "notes"],
-      columns: 2,
-    },
+    STEPS.you,
+    { id: "ask", title: "What you are evaluating", fields: ["budget", "timeline", "message"], columns: 2 },
+    STEPS.founder,
   ],
-
-  /**
-   * Form-level swaps, keyed by kind. Every `single` question renders as a select here
-   * instead of the default radios — one line, every matching field, no field edits.
-   */
-  controls: {
-    single: "select",
-  },
 }
 
 export const QUESTIONNAIRES: Record<string, QuestionnaireDefinition> = {
-  [PILOT_APPLICATION.id]: PILOT_APPLICATION,
+  [PARTNERSHIPS_FORM.id]: PARTNERSHIPS_FORM,
+  [HELLO_FORM.id]: HELLO_FORM,
+  [SALES_FORM.id]: SALES_FORM,
 }
 
 export function getQuestionnaire(id: string): QuestionnaireDefinition | undefined {

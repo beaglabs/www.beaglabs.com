@@ -106,6 +106,22 @@ export interface QuestionnaireStep {
 
 export type QuestionnaireAnswers = Record<string, unknown>
 
+/**
+ * When a submission reaches a given answer (`equals`), the form also opens the visitor's
+ * mail client addressed to `to` (optionally `cc`), carrying the answers in the body. This
+ * is how a questionnaire hands a lead directly to a human inbox rather than only to the
+ * automated record.
+ */
+export interface MailtoConfig {
+  /** Field whose value gates the mailto. */
+  when: string
+  /** Value of that field that triggers it. */
+  equals: unknown
+  to: string
+  cc?: string[]
+  subject: string
+}
+
 export interface QuestionnaireDefinition {
   /** Id sent with the POST so the route knows which schema to enforce. */
   id: string
@@ -117,6 +133,7 @@ export interface QuestionnaireDefinition {
   controls?: Partial<Record<FieldKind, Control>>
   submitLabel?: string
   successMessage?: string
+  mailto?: MailtoConfig
 }
 
 /** Default control per kind. */
