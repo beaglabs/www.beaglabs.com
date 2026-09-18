@@ -17,7 +17,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${BASE_URL}/trust/papyrus`, changeFrequency: 'monthly', priority: 0.8 },
   { url: `${BASE_URL}/contact`, changeFrequency: 'monthly', priority: 0.6 },
   { url: `${BASE_URL}/sales`, changeFrequency: 'monthly', priority: 0.6 },
-  { url: `${BASE_URL}/partners/csp`, changeFrequency: 'monthly', priority: 0.6 },
+  { url: `${BASE_URL}/partners`, changeFrequency: 'monthly', priority: 0.6 },
   { url: `${BASE_URL}/support`, changeFrequency: 'yearly', priority: 0.4 },
   { url: `${BASE_URL}/support/commercial`, changeFrequency: 'yearly', priority: 0.4 },
 ]

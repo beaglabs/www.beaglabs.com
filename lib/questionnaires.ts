@@ -96,6 +96,7 @@ export const PARTNERSHIPS_FORM: QuestionnaireDefinition = {
       required: true,
       options: [
         { value: "csp", label: "Cloud Solution Provider (CSP)" },
+        { value: "prime", label: "Prime contractor" },
         { value: "technology", label: "Technology or integration partner" },
         { value: "research", label: "Research or pilot collaboration" },
         { value: "other", label: "Something else" },
