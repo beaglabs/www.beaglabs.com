@@ -3,7 +3,7 @@ import Link from 'next/link'
 const NAV_LINKS = [
   { label: 'Papyrus', href: '/products/papyrus' },
   { label: 'Trust', href: '/trust/papyrus' },
-  { label: 'Cookbook', href: '/cookbook' },
+  { label: 'Blog', href: '/blog' },
 ] as const
 
 export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
