@@ -21,7 +21,7 @@ export default function PartnersPage() {
     <>
       <Navbar />
       <main className="bg-[#FAFAF9]">
-        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-12 lg:px-9 lg:py-16">
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 pt-28 pb-16 lg:px-9 lg:pt-32 lg:pb-20">
           <div className="mx-auto max-w-[1440px]">
             <span className="nb-label mb-5 inline-block">Partners</span>
             <h1 className="max-w-[760px] text-[32px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[42px]">
