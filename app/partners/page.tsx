@@ -29,7 +29,7 @@ export default function PartnersPage() {
             </h1>
             <p className="mt-5 max-w-[560px] text-[17px] font-medium leading-[1.65] text-[#404040]">
               Two lanes. Resell and deploy Papyrus for your customers as a Cloud Solution
-              Provider \u2014 or team with us as a Prime to deliver AI capability inside your
+              Provider — or team with us as a Prime to deliver AI capability inside your
               programs. Either way, the data stays where it is.
             </p>
           </div>

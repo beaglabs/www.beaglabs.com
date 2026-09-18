@@ -11,39 +11,39 @@ const CARD =
   'nb-card flex flex-col bg-white p-5 transition-all hover:shadow-[8px_8px_0px_0px_#ff5f1f] hover:-translate-x-[1px] hover:-translate-y-[1px] lg:p-6'
 
 const DEPLOY_STEPS = [
-  { n: '01', t: 'Prerequisites', d: 'An Azure subscription, an Entra tenant, and a model endpoint \u2014 optional at deploy time.' },
+  { n: '01', t: 'Prerequisites', d: 'An Azure subscription, an Entra tenant, and a model endpoint — optional at deploy time.' },
   { n: '02', t: 'Deploy the template', d: 'A hardened Ubuntu appliance with a data disk, supervised by systemd.' },
   { n: '03', t: 'First-run onboarding', d: 'The appliance serves an onboarding flow gated by a setup token.' },
   { n: '04', t: 'Bind identity + model', d: 'Entra is the only identity authority. Register the model endpoint.' },
 ]
 
 const LICENSE_STEPS = [
-  { n: '01', t: 'Deploy', d: 'The Azure Application deploys into the customer\u2019s subscription.' },
+  { n: '01', t: 'Deploy', d: 'The Azure Application deploys into the customer’s subscription.' },
   { n: '02', t: 'Read the deployment ID', d: 'Printed on first boot. The licence binds to it.' },
   { n: '03', t: 'Send it to us', d: 'The deployment ID is all we need.' },
-  { n: '04', t: 'We mint', d: 'A signed, offline licence \u2014 90-day pilot or 365-day annual.' },
+  { n: '04', t: 'We mint', d: 'A signed, offline licence — 90-day pilot or 365-day annual.' },
   { n: '05', t: 'Activate', d: 'Activated by a System Owner, verified offline.' },
 ]
 
 const TEAMING_STEPS = [
   { n: '01', t: 'Teaming or sub', d: 'We join your program as a sub or teaming partner.' },
   { n: '02', t: 'Discovery', d: 'We map the data, workflows, and unanswered questions.' },
-  { n: '03', t: 'Build', d: 'Data extraction, an SLM, or agent UX \u2014 merged into your repo.' },
+  { n: '03', t: 'Build', d: 'Data extraction, an SLM, or agent UX — merged into your repo.' },
   { n: '04', t: 'Deliver', d: 'Deployed in your environment with a runbook. You own the result.' },
 ]
 
 const CAPABILITIES = [
-  ['Extract', 'Legacy Data Extraction \u2014 mainframes, COBOL, AS/400, and scans into validated records.'],
-  ['Build', 'AI-Enabled Software Development \u2014 a production AI feature in 6\u201310 weeks.'],
-  ['Design', 'Agent UX Consulting \u2014 the user-facing surface of your agent.'],
-  ['Assess', 'SLM Feasibility & Savings \u2014 a go/no-go with a 3-year cost projection.'],
-  ['Deploy', 'SLM Deployments \u2014 on-prem, air-gapped, VPC, or edge. You own the weights.'],
+  ['Extract', 'Legacy Data Extraction — mainframes, COBOL, AS/400, and scans into validated records.'],
+  ['Build', 'AI-Enabled Software Development — a production AI feature in 6–10 weeks.'],
+  ['Design', 'Agent UX Consulting — the user-facing surface of your agent.'],
+  ['Assess', 'SLM Feasibility & Savings — a go/no-go with a 3-year cost projection.'],
+  ['Deploy', 'SLM Deployments — on-prem, air-gapped, VPC, or edge. You own the weights.'],
 ]
 
 const DIFFERENTIATORS = [
   ['It runs where the data is.', 'No call to a Beag control plane. Nothing leaves the environment.'],
   ['Entra is the only identity authority.', 'No local role database, no password store, no invitation flow.'],
-  ['The licence works offline.', 'A signed file, verified locally \u2014 no licence server, no activation call.'],
+  ['The licence works offline.', 'A signed file, verified locally — no licence server, no activation call.'],
   ['Sandboxed, or it does not run.', 'Landlock and seccomp with network denied.'],
   ['The agent proposes; policy releases.', 'Entra-authorized approvers release actions. Inline secrets are rejected.'],
 ]
@@ -51,8 +51,8 @@ const DIFFERENTIATORS = [
 const CSP_FAQ = [
   ['Why not a hosted agent platform?', 'Because the data cannot leave. A hosted platform requires egress, an approved third-party model provider, and a vendor control plane in the path.'],
   ['Is BYOL a hassle?', 'It is a file. We mint it against the deployment ID, you activate it, and it self-expires. No licence server, no per-user provisioning.'],
-  ['What about GPU cost?', 'Optional, and it lands in the customer\u2019s subscription \u2014 counting toward their Azure commitment and flowing through you as partner consumption.'],
-  ['Can they draw committed Azure spend against the licence?', 'No. The software is invoiced by us, not Microsoft, so the licence fee cannot draw down committed spend \u2014 infrastructure still counts.'],
+  ['What about GPU cost?', 'Optional, and it lands in the customer’s subscription — counting toward their Azure commitment and flowing through you as partner consumption.'],
+  ['Can they draw committed Azure spend against the licence?', 'No. The software is invoiced by us, not Microsoft, so the licence fee cannot draw down committed spend — infrastructure still counts.'],
 ]
 
 const PRIME_FAQ = [
@@ -105,7 +105,7 @@ export function PartnerProgram() {
   const heading = isCsp ? 'Resell and deploy Papyrus for your customers.' : 'Deliver AI capability inside your programs.'
   const sub = isCsp
     ? 'The Cloud Solution Provider lane: you hold the billing relationship, we provide the software, the licence, and the runbook.'
-    : 'The Prime lane: team with Beag Labs to bring data extraction, SLMs, and agent UX to your programs \u2014 on your infrastructure, with your data staying put.'
+    : 'The Prime lane: team with Beag Labs to bring data extraction, SLMs, and agent UX to your programs — on your infrastructure, with your data staying put.'
   const faq = isCsp ? CSP_FAQ : PRIME_FAQ
 
   return (
@@ -146,12 +146,12 @@ export function PartnerProgram() {
           <>
             <Card num="01" title="Infrastructure">
               <p className="text-[13px] leading-relaxed text-[#444]">
-                Runs in the customer\u2019s Azure subscription. You hold the billing relationship, so consumption flows through you at normal CSP margin \u2014 recurring, and usually the larger number.
+                Runs in the customer’s Azure subscription. You hold the billing relationship, so consumption flows through you at normal CSP margin — recurring, and usually the larger number.
               </p>
             </Card>
             <Card num="02" title="Software">
               <p className="text-[13px] leading-relaxed text-[#444]">
-                BYOL, invoiced by us. Solution templates are not transactable, so there is no Microsoft-brokered software margin \u2014 stated plainly, not discovered mid-deal.
+                BYOL, invoiced by us. Solution templates are not transactable, so there is no Microsoft-brokered software margin — stated plainly, not discovered mid-deal.
               </p>
             </Card>
             <Card num="03" title="Partner margin">
@@ -167,8 +167,8 @@ export function PartnerProgram() {
             </Card>
             <Card num="06" title="Support">
               <div className="space-y-4">
-                <SubBlock label="Tier 1 \u2014 partner" body="Deployment, configuration, onboarding, and licence activation. First line for everything." />
-                <SubBlock label="Tier 2 \u2014 Beag Labs" body="Defects, the sandbox, licence minting and replacement, and anything a partner cannot resolve from the docs." />
+                <SubBlock label="Tier 1 — partner" body="Deployment, configuration, onboarding, and licence activation. First line for everything." />
+                <SubBlock label="Tier 2 — Beag Labs" body="Defects, the sandbox, licence minting and replacement, and anything a partner cannot resolve from the docs." />
               </div>
             </Card>
             <Card num="07" title="Why Papyrus" className="lg:col-span-3">
@@ -191,12 +191,12 @@ export function PartnerProgram() {
             </Card>
             <Card num="02" title="No data egress">
               <p className="text-[13px] leading-relaxed text-[#444]">
-                Nothing leaves the program\u2019s environment. Papyrus makes no vendor callback and the sandbox denies outbound network.
+                Nothing leaves the program’s environment. Papyrus makes no vendor callback and the sandbox denies outbound network.
               </p>
             </Card>
             <Card num="03" title="Clearance-aware">
               <p className="text-[13px] leading-relaxed text-[#444]">
-                Built for regulated and air-gapped environments where commercial APIs can\u2019t reach. We operate under your controls.
+                Built for regulated and air-gapped environments where commercial APIs can’t reach. We operate under your controls.
               </p>
             </Card>
             <Card num="04" title="How we team">
@@ -204,7 +204,7 @@ export function PartnerProgram() {
             </Card>
             <Card num="05" title="Papyrus on the program">
               <div className="space-y-4">
-                <SubBlock label="Customer-hosted" body="Runs in the program\u2019s own Azure, VPC, or air-gapped environment." />
+                <SubBlock label="Customer-hosted" body="Runs in the program’s own Azure, VPC, or air-gapped environment." />
                 <SubBlock label="Entra-authorized" body="Your directory is the only identity authority. No local role store." />
                 <SubBlock label="Sandboxed execution" body="Agent code runs under Landlock and seccomp with network denied." />
               </div>
