@@ -52,21 +52,21 @@ export { DEFAULT_CONTROLS } from "@/lib/questionnaire"
 /* -------------------------------------------------------------------------- */
 
 const INPUT_CLASS =
-  "w-full border-2 border-[#111] bg-white px-4 py-3 text-[14px] font-semibold text-[#111] outline-none transition-shadow placeholder:font-normal placeholder:text-[#b5b0a8] focus:shadow-[3px_3px_0px_0px_#111]"
+  "w-full border-2 border-[#111] bg-white px-3 py-2 text-[14px] font-semibold text-[#111] outline-none transition-shadow placeholder:font-normal placeholder:text-[#b5b0a8] focus:shadow-[3px_3px_0px_0px_#111]"
 
 const OPTION_BASE =
-  "flex w-full cursor-pointer items-start gap-3 border-[3px] border-[#111] bg-white px-4 py-3 text-left shadow-[4px_4px_0px_0px_#111]"
+  "flex w-full cursor-pointer items-start gap-3 border-[3px] border-[#111] bg-white px-3 py-2.5 text-left shadow-[4px_4px_0px_0px_#111]"
 
 const OPTION_SELECTED = "border-[#ff5f1f] bg-[#fff5ee]"
 
 const PRIMARY_BUTTON =
-  "border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
+  "border-[3px] border-[#111] bg-[#ff5f1f] px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
 
 const SECONDARY_BUTTON =
-  "border-[3px] border-[#111] bg-white px-6 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
+  "border-[3px] border-[#111] bg-white px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
 
 const PANEL =
-  "border-[3px] border-[#111] bg-white shadow-[6px_6px_0px_0px_#111]"
+  "border-[3px] border-[#111] bg-white shadow-[4px_4px_0px_0px_#111]"
 
 /* -------------------------------------------------------------------------- */
 /* Built-in controls                                                           */
@@ -411,13 +411,13 @@ export function Questionnaire({
   }
 
   return (
-    <div data-slot="questionnaire" className={cn("flex w-full min-w-0 flex-col gap-6", className)}>
+    <div data-slot="questionnaire" className={cn("flex w-full min-w-0 flex-col gap-4", className)}>
       {showProgress && resolvedSteps.length > 1 ? (
         <div className="flex flex-col gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Step {stepIndex + 1} of {resolvedSteps.length}
           </span>
-          <div className="h-[10px] w-full border-[3px] border-[#111] bg-white">
+          <div className="h-2 w-full border-[3px] border-[#111] bg-white">
             <div
               className="h-full bg-[#ff5f1f] transition-all"
               style={{ width: `${((stepIndex + 1) / resolvedSteps.length) * 100}%` }}
@@ -426,22 +426,22 @@ export function Questionnaire({
         </div>
       ) : null}
 
-      <section aria-labelledby={`${current.id}-title`} className={cn(PANEL, "p-6 sm:p-8")}>
-        <div className="flex min-w-0 flex-col gap-5">
+      <section aria-labelledby={`${current.id}-title`} className={cn(PANEL, "p-5 sm:p-6")}>
+        <div className="flex min-w-0 flex-col gap-4">
           {current.title ? (
             <header className="flex flex-col gap-2">
-              <h2 id={`${current.id}-title`} className="text-xl font-extrabold tracking-[-0.02em] text-[#111]">
+              <h2 id={`${current.id}-title`} className="text-lg font-extrabold tracking-[-0.02em] text-[#111]">
                 {current.title}
               </h2>
               {current.description ? (
-                <p className="text-[15px] font-medium leading-relaxed text-[#555]">{current.description}</p>
+                <p className="text-[14px] font-medium leading-relaxed text-[#555]">{current.description}</p>
               ) : null}
             </header>
           ) : null}
 
           <div
             data-slot="field-grid"
-            className={cn("grid min-w-0 gap-6", current.columns === 2 && "sm:grid-cols-2")}
+            className={cn("grid min-w-0 gap-4", current.columns === 2 && "sm:grid-cols-2")}
           >
             {current.fields.map((name) => {
               const field = fieldByName.get(name)
@@ -461,7 +461,7 @@ export function Questionnaire({
                 <div
                   key={field.name}
                   data-slot="questionnaire-field"
-                  className={cn("flex min-w-0 flex-col gap-2", field.span === 2 && "sm:col-span-2")}
+                  className={cn("flex min-w-0 flex-col gap-1.5", field.span === 2 && "sm:col-span-2")}
                 >
                   <label htmlFor={field.name} className="text-[14px] font-bold text-[#111]">
                     {field.label}
@@ -501,7 +501,7 @@ export function Questionnaire({
             </p>
           ) : null}
 
-          <div className="flex items-center justify-between gap-2 border-t-[3px] border-[#111] pt-5">
+          <div className="flex items-center justify-between gap-2 border-t-[3px] border-[#111] pt-4">
             <button
               type="button"
               disabled={stepIndex === 0 || pending}

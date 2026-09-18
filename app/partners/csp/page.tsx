@@ -85,7 +85,7 @@ function StepList({ items }: { items: Array<{ n: string; t: string; d: string }>
   )
 }
 
-const CARD = 'nb-card flex flex-col bg-white p-7 transition-all hover:shadow-[8px_8px_0px_0px_#ff5f1f] hover:-translate-x-[1px] hover:-translate-y-[1px] lg:p-8'
+const CARD = 'nb-card flex flex-col bg-white p-5 transition-all hover:shadow-[8px_8px_0px_0px_#ff5f1f] hover:-translate-x-[1px] hover:-translate-y-[1px] lg:p-6'
 
 export default function CspPartnersPage() {
   return (
@@ -93,10 +93,10 @@ export default function CspPartnersPage() {
       <Navbar />
       <main className="bg-[#FAFAF9]">
         {/* Hero */}
-        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-12 lg:px-9 lg:py-16">
           <div className="mx-auto max-w-[1440px]">
             <span className="nb-label mb-5 inline-block">Cloud Solution Provider program</span>
-            <h1 className="max-w-[760px] text-[46px] font-extrabold leading-[0.95] tracking-[-0.05em] text-[#111] lg:text-[64px]">
+            <h1 className="max-w-[760px] text-[32px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[42px]">
               Partner with Beag Labs.
             </h1>
             <p className="mt-6 max-w-[560px] text-[17px] font-medium leading-[1.65] text-[#404040]">
@@ -107,21 +107,21 @@ export default function CspPartnersPage() {
         </section>
 
         {/* Bento */}
-        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-12 lg:px-9 lg:py-16">
           <div className="mx-auto max-w-[1440px]">
             <span className="nb-label mb-5 inline-block">How it works</span>
-            <h2 className="mb-12 max-w-[620px] text-[34px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[44px]">
+            <h2 className="mb-8 max-w-[620px] text-[26px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111] lg:text-[32px]">
               The commercial model, the deployment, and the licence — in cards.
             </h2>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div className={`${CARD} lg:col-span-2`}>
-                <div className="mb-6 flex items-start justify-between gap-6">
+                <div className="mb-4 flex items-start justify-between gap-6">
                   <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                     01
                   </span>
                 </div>
-                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                <h3 className="mb-4 text-[17px] font-extrabold tracking-[-0.02em] text-[#111]">
                   How the money works
                 </h3>
                 <div className="grid gap-4 sm:grid-cols-3">
@@ -161,30 +161,30 @@ export default function CspPartnersPage() {
               </div>
 
               <div className={CARD}>
-                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                <span className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                   02
                 </span>
-                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                <h3 className="mb-4 text-[17px] font-extrabold tracking-[-0.02em] text-[#111]">
                   Deploy
                 </h3>
                 <StepList items={DEPLOY_STEPS} />
               </div>
 
               <div className={CARD}>
-                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                <span className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                   03
                 </span>
-                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                <h3 className="mb-4 text-[17px] font-extrabold tracking-[-0.02em] text-[#111]">
                   License
                 </h3>
                 <StepList items={LICENSE_STEPS} />
               </div>
 
               <div className={CARD}>
-                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                <span className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                   04
                 </span>
-                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                <h3 className="mb-4 text-[17px] font-extrabold tracking-[-0.02em] text-[#111]">
                   Support
                 </h3>
                 <div className="space-y-4">
@@ -210,10 +210,10 @@ export default function CspPartnersPage() {
               </div>
 
               <div className={`${CARD} lg:col-span-2`}>
-                <span className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
+                <span className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
                   05
                 </span>
-                <h3 className="mb-4 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                <h3 className="mb-4 text-[17px] font-extrabold tracking-[-0.02em] text-[#111]">
                   Why Papyrus
                 </h3>
                 <ul className="grid gap-3 sm:grid-cols-2">
@@ -230,11 +230,11 @@ export default function CspPartnersPage() {
         </section>
 
         {/* FAQ */}
-        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-12 lg:px-9 lg:py-16">
           <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <span className="nb-label mb-5 inline-block">FAQ</span>
-              <h2 className="mb-4 max-w-[460px] text-[34px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[44px]">
+              <h2 className="mb-4 max-w-[460px] text-[26px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111] lg:text-[32px]">
                 Objections, answered.
               </h2>
               <p className="max-w-[430px] text-[16px] font-medium leading-[1.65] text-[#404040]">
@@ -255,11 +255,11 @@ export default function CspPartnersPage() {
         </section>
 
         {/* Contact */}
-        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+        <section className="nb-section-divider bg-[#FAFAF9] px-6 py-12 lg:px-9 lg:py-16">
           <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <span className="nb-label mb-5 inline-block">Partner with us</span>
-              <h2 className="mb-4 max-w-[460px] text-[34px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[44px]">
+              <h2 className="mb-4 max-w-[460px] text-[26px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111] lg:text-[32px]">
                 Tell us who you are.
               </h2>
               <p className="max-w-[430px] text-[16px] font-medium leading-[1.65] text-[#404040]">

@@ -20,14 +20,14 @@ export default function SalesPage() {
     <>
       <Navbar />
       <main className="min-h-screen bg-[#FAFAF9]">
-        <div className="mx-auto max-w-[1100px] px-6 py-16">
+        <div className="mx-auto max-w-[1100px] px-6 py-12">
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Sales
           </p>
-          <h1 className="mb-4 text-3xl font-bold tracking-[-0.03em] text-[#111]">
+          <h1 className="mb-4 text-2xl font-bold tracking-[-0.03em] text-[#111]">
             Talk to sales
           </h1>
-          <p className="mb-10 max-w-2xl text-[15px] leading-relaxed text-[#555]">
+          <p className="mb-8 max-w-2xl text-[15px] leading-relaxed text-[#555]">
             Tell us what you are evaluating. Budget and timeline are what let us answer yes or no
             instead of scheduling a discovery call, and a rough range is always better than a
             number you cannot commit to.
