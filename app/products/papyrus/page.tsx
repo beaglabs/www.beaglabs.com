@@ -193,45 +193,6 @@ export default function PapyrusProductPage() {
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-white">
-        <div className="mx-auto grid max-w-[1440px] divide-y-[3px] divide-[#111] lg:grid-cols-3 lg:divide-x-[3px] lg:divide-y-0">
-          {artifacts.map((artifact) => {
-            const Icon = artifact.icon
-            return (
-            <article key={artifact.title} className="p-6 lg:p-8">
-              <div className="flex items-start justify-between gap-5">
-                {'logo' in artifact ? (
-                  <img src={artifact.logo} alt="FOSSA" className="h-10 w-10 rounded-md object-contain" />
-                ) : (
-                  <Icon className="h-7 w-7 text-[#ff5f1f]" strokeWidth={2.2} />
-                )}
-                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#777]">
-                  Published artifact
-                </span>
-              </div>
-              <h2 className="mt-8 text-xl font-extrabold tracking-[-0.025em]">{artifact.title}</h2>
-              <p className="mt-2 text-sm font-medium text-[#555]">{artifact.detail}</p>
-              <div className="mt-6 flex flex-wrap gap-4">
-                <a
-                  href={artifact.href}
-                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em]"
-                >
-                  <Download className="h-4 w-4" /> Download
-                </a>
-                <a
-                  href={artifact.source}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em] text-[#555]"
-                >
-                  Source <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
-            </article>
-            )
-          })}
-        </div>
-      </section>
 
       <section className="px-6 py-20 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
@@ -249,14 +210,12 @@ export default function PapyrusProductPage() {
           </div>
 
           <figure className="border-[3px] border-[#111] bg-white p-2 shadow-[8px_8px_0px_0px_#111] sm:p-3 lg:p-4">
-            <video
-              src="/papyrus_legacy.mp4"
-              alt="Papyrus canvas showing product, design, engineering, and security agents around a shared specification"
-              className="h-auto w-full border border-[#d6d3d1]"
-              autoPlay
-              loop
-              muted
-              playsInline
+            <iframe
+              src="https://player.vimeo.com/video/1227433711?autoplay=1&loop=1&muted=1&playsinline=1&title=0&byline=0&portrait=0"
+              title="Papyrus canvas showing product, design, engineering, and security agents around a shared specification"
+              className="aspect-video w-full border border-[#d6d3d1]"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
             />
             <figcaption className="flex flex-col gap-1 px-2 pb-1 pt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#666] sm:flex-row sm:items-center sm:justify-between">
               <span>Shared multi-agent canvas</span>
