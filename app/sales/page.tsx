@@ -20,7 +20,7 @@ export default function SalesPage() {
     <>
       <Navbar />
       <main className="min-h-screen bg-[#FAFAF9]">
-        <div className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
+        <div className="mx-auto w-full max-w-2xl px-6 pt-28 pb-16 sm:pt-32 sm:pb-20">
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Sales
           </p>
