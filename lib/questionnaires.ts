@@ -6,7 +6,7 @@
  * ends know about it; there is no second schema to keep in sync.
  *
  * There are three contact forms. They share the same core fields and differ only in what
- * they ask. Every submission opens one email thread: from sales@beaglabs.com to the
+ * they ask. Every submission opens one email thread: from the form's own mailbox to the
  * contact, with james@beaglabs.com cc'd.
  */
 
@@ -65,9 +65,9 @@ const MESSAGE_FIELD: QuestionnaireField = {
   placeholder: "Tell us what you are working on.",
 }
 
-function email(subject: string): EmailNotification {
+function email(from: string, subject: string): EmailNotification {
   return {
-    from: "sales@beaglabs.com",
+    from,
     cc: ["james@beaglabs.com"],
     subject,
   }
@@ -86,7 +86,7 @@ export const PARTNERSHIPS_FORM: QuestionnaireDefinition = {
   submitLabel: "Submit inquiry",
   successMessage:
     "Thanks — we will come back with partner pricing, the deployment runbook, and deal registration.",
-  email: email("Partnership inquiry"),
+  email: email("partnerships@mail.beaglabs.com", "Partnership inquiry"),
   fields: [
     ...CORE_FIELDS,
     {
@@ -117,7 +117,7 @@ export const HELLO_FORM: QuestionnaireDefinition = {
     "General enquiries, press, or anything that does not fit one of the other forms. It lands in the same place.",
   submitLabel: "Send message",
   successMessage: "Thanks — we read everything and reply within two business days.",
-  email: email("General inquiry"),
+  email: email("hello@mail.beaglabs.com", "General inquiry"),
   fields: [...CORE_FIELDS, MESSAGE_FIELD],
   steps: [
     STEPS.you,
@@ -132,7 +132,7 @@ export const SALES_FORM: QuestionnaireDefinition = {
     "Tell us what you are evaluating. Budget and timeline are what let us answer yes or no instead of scheduling a discovery call.",
   submitLabel: "Send inquiry",
   successMessage: "Thanks — we will come back with pricing, a demo, or a scoping call.",
-  email: email("Sales inquiry"),
+  email: email("sales@mail.beaglabs.com", "Sales inquiry"),
   fields: [
     ...CORE_FIELDS,
     {
