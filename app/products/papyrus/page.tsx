@@ -100,13 +100,6 @@ const artifacts = [
     icon: FileText,
     logo: 'https://avatars.githubusercontent.com/u/9543448?s=280&v=4',
   },
-  {
-    title: 'SPDX SBOM',
-    detail: 'SPDX 2.3 · 85 packages',
-    href: '/sbom.spdx.json',
-    source: 'https://github.com/beaglabs/papyrus/blob/main/sbom.spdx.json',
-    icon: FileJson2,
-  },
 ] as const
 
 export default function PapyrusProductPage() {
