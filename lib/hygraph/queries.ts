@@ -102,7 +102,7 @@ export const GET_BLOG_POST = `
 `
 
 export const GET_BLOG_POSTS_BY_CATEGORY = `
-  query GetBlogPostsByCategory($category: BlogPostCategory!, $first: Int!, $skip: Int!) {
+  query GetBlogPostsByCategory($category: Category!, $first: Int!, $skip: Int!) {
     blogPosts(
       where: { category: $category }
       first: $first

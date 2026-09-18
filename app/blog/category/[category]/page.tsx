@@ -1,22 +1,18 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { fetchHygraph } from '@/lib/hygraph/client'
-import { GET_BLOG_POSTS_BY_CATEGORY, GET_ALL_BLOG_CATEGORIES } from '@/lib/hygraph/queries'
+import { GET_BLOG_POSTS_BY_CATEGORY } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
+import {
+  BLOG_CATEGORIES,
+  blogCategoryLabel,
+  isBlogCategory,
+} from '@/lib/blog/categories'
 
 export async function generateStaticParams() {
-  try {
-    const data = await fetchHygraph<{ blogPostsGroup: { field: string }[] }>(
-      GET_ALL_BLOG_CATEGORIES
-    )
-    return data.blogPostsGroup.map((g) => ({
-      category: encodeURIComponent(g.field),
-    }))
-  } catch {
-    return []
-  }
+  return BLOG_CATEGORIES.map((c) => ({ category: c.value }))
 }
 
 export async function generateMetadata({
@@ -26,9 +22,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params
   const decoded = decodeURIComponent(category)
+  const label = blogCategoryLabel(decoded)
   return {
-    title: `${decoded} — Blog — Beag Labs`,
-    description: `Blog posts in the ${decoded} category.`,
+    title: `${label} — Blog — Beag Labs`,
+    description: `Blog posts in the ${label} category.`,
     alternates: {
       canonical: `https://www.beaglabs.com/blog/category/${category}`,
     },
@@ -46,6 +43,15 @@ export default async function BlogCategoryPage({
 }) {
   const { category } = await params
   const decoded = decodeURIComponent(category)
+
+  // The [category] segment must be a valid Hygraph BlogPostCategory enum value;
+  // anything else can never match a post, so 404 rather than issue a query that
+  // the Content API would reject.
+  if (!isBlogCategory(decoded)) {
+    notFound()
+  }
+
+  const label = blogCategoryLabel(decoded)
 
   const sp = await searchParams
   const page = Math.max(1, parseInt(sp.page || '1', 10))
@@ -75,7 +81,7 @@ export default async function BlogCategoryPage({
               Blog Category
             </div>
             <h1 className="mb-3 text-[42px] font-bold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-              {decoded}
+              {label}
             </h1>
           </div>
           <p className="max-w-[520px] text-[17px] leading-[1.72] text-[#4e4e4e] lg:justify-self-end">
@@ -89,7 +95,7 @@ export default async function BlogCategoryPage({
         </div>
         <BlogList
           posts={data.blogPosts}
-          emptyMessage={`No posts in ${decoded} yet.`}
+          emptyMessage={`No posts in ${label} yet.`}
         />
         <Pagination
           currentPage={page}
