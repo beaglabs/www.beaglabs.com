@@ -166,7 +166,8 @@ export const SALES_FORM: QuestionnaireDefinition = {
   ],
   steps: [
     STEPS.you,
-    { id: "ask", title: "What you are evaluating", fields: ["budget", "timeline", "message"], columns: 2 },
+    { id: "evaluating", title: "What you are evaluating", fields: ["budget", "timeline"] },
+    { id: "message", title: "Your message", fields: ["message"] },
   ],
 }
 
