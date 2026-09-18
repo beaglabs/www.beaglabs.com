@@ -25,7 +25,7 @@ const footerColumns = [
     title: 'Company',
     links: [
       { label: 'GitHub', href: 'https://github.com/beaglabs' },
-      { label: 'Contact', href: 'https://cal.com/comradelemoncake/meet-the-founder' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
   {

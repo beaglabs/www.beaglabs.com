@@ -81,7 +81,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
 
             <div className="flex flex-wrap items-center gap-3">
               <a
-                href={`mailto:james@beaglabs.com?subject=${encodeURIComponent(cap.title + " — inquiry")}`}
+                href="/contact"
                 className="nb-btn-orange group inline-flex items-center gap-2 px-6 py-3 text-[12px]"
               >
                 {cap.cta.headline}
@@ -247,7 +247,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="mailto:james@beaglabs.com"
+              href="/contact"
               className="nb-btn group inline-flex items-center gap-2 bg-[#111] px-6 py-3 text-[12px] text-white"
             >
               Email james@beaglabs.com

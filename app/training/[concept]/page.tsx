@@ -304,7 +304,7 @@ export default async function ConceptPage({ params }: ConceptPageProps) {
           )}
           <div className="flex flex-wrap gap-4">
             <Link
-              href="mailto:james@beaglabs.com"
+              href="/contact"
               className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
             >
               Chat with us &rarr;

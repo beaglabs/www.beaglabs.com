@@ -107,16 +107,14 @@ export interface QuestionnaireStep {
 export type QuestionnaireAnswers = Record<string, unknown>
 
 /**
- * A server-sent email. When a submission reaches a given answer (`equals`), the API route
- * sends the lead to `to` (with `cc` copied) rather than asking the visitor's mail client
- * to do it. This is how a questionnaire hands a lead directly to a human inbox.
+ * A server-sent email thread. On every submission the API route sends an email that puts
+ * `from`, the contact, and `cc` on the same thread: the contact is the recipient, replies
+ * come back to `from`, and `cc` is always copied.
  */
 export interface EmailNotification {
-  /** Field whose value gates the email. */
-  when: string
-  /** Value of that field that triggers it. */
-  equals: unknown
-  to: string
+  /** Sender address — replies on the thread come back here. */
+  from: string
+  /** Always cc'd on the thread. */
   cc?: string[]
   subject: string
 }

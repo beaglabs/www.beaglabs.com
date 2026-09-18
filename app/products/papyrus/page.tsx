@@ -126,7 +126,7 @@ export default function PapyrusProductPage() {
 
             <div className="mt-9 flex flex-wrap gap-4">
               <a
-                href="mailto:james@beaglabs.com?subject=Papyrus%20demonstration"
+                href="/sales"
                 className="nb-btn-orange inline-flex items-center gap-2 px-6 py-3.5 text-[12px] uppercase tracking-[0.08em]"
               >
                 Request a demonstration
@@ -313,7 +313,7 @@ export default function PapyrusProductPage() {
             </h2>
           </div>
           <a
-            href="mailto:james@beaglabs.com?subject=Papyrus%20demonstration"
+            href="/sales"
             className="nb-btn-white inline-flex shrink-0 items-center gap-2 px-6 py-3.5 text-[12px] uppercase tracking-[0.08em]"
           >
             Request a demonstration

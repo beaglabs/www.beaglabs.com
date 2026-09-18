@@ -1050,7 +1050,7 @@ function ActivationGate({ onActivate }: { onActivate: () => void }) {
 
           {/* CTA */}
           <div className="mt-8 space-y-3">
-            <a href="https://cal.com/comradelemoncake/meet-the-founder" target="_blank" rel="noopener noreferrer"
+            <a href="/contact"
               className="inline-block rounded-full bg-[#111] px-10 py-4 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white hover:bg-[#2a2a2a] transition-colors duration-200">
               Schedule Onboarding Session
             </a>

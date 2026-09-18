@@ -23,7 +23,7 @@ export function CTASection() {
 
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <a
-              href="mailto:contact@beaglabs.com"
+              href="/contact"
               className="inline-flex items-center gap-3 font-mono text-xs tracking-wide text-white bg-[#0a0a0a] px-7 py-4 hover:bg-[#ff5f1f] transition-colors"
               onClick={() => posthog.capture('contact_email_clicked', { location: 'cta_section' })}
             >
@@ -33,7 +33,7 @@ export function CTASection() {
               </svg>
             </a>
             <span className="font-mono text-xs text-[#6B7280] tracking-wide self-center">
-              contact@beaglabs.com
+              sales@beaglabs.com
             </span>
           </div>
         </div>

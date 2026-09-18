@@ -278,7 +278,7 @@ export default function PapyrusTrustCenter() {
                   offline licensing, sandboxed execution, and zero-inline-secrets architecture.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
-                  <a href="mailto:james@beaglabs.com?subject=Papyrus%20security%20review" className="underline decoration-2 underline-offset-4">
+                  <a href="/contact" className="underline decoration-2 underline-offset-4">
                     Request evidence
                   </a>
                   <a href="/privacy" className="underline decoration-2 underline-offset-4">
@@ -620,7 +620,7 @@ export default function PapyrusTrustCenter() {
             </h2>
           </div>
           <a
-            href="mailto:james@beaglabs.com?subject=Papyrus%20security%20review"
+            href="/contact"
             className="nb-btn-orange inline-flex items-center justify-center gap-2 px-6 py-4 text-xs uppercase tracking-[0.1em]"
           >
             Request evidence <ArrowUpRight className="h-4 w-4" />

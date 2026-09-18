@@ -244,7 +244,7 @@ export default async function ComparisonDetailPage({
                 </h2>
               </div>
               <a
-                href="https://cal.com/comradelemoncake/meet-the-founder"
+                href="/contact"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"

@@ -5,8 +5,9 @@
  * `app/api/questionnaire/submit` validates against it. Add a questionnaire here and both
  * ends know about it; there is no second schema to keep in sync.
  *
- * There are three contact forms, one per public inbox. They share the same core fields
- * and differ only in what they ask and where the founder-contact email is addressed.
+ * There are three contact forms. They share the same core fields and differ only in what
+ * they ask. Every submission opens one email thread: from sales@beaglabs.com to the
+ * contact, with james@beaglabs.com cc'd.
  */
 
 import type {
@@ -64,38 +65,17 @@ const MESSAGE_FIELD: QuestionnaireField = {
   placeholder: "Tell us what you are working on.",
 }
 
-/**
- * The question that gates founder contact. Answering "yes" opens the visitor's mail
- * client addressed to the form's inbox (cc james@beaglabs.com) with their answers in the
- * body; the submission is still recorded either way.
- */
-const FOUNDER_FIELD: QuestionnaireField = {
-  name: "founderContact",
-  kind: "single",
-  label: "Would you like to be contacted by the founder directly about potential collaborations?",
-  description: "Either way the submission is recorded. Answering yes also opens an email directly to the right inbox.",
-  required: true,
-  defaultValue: "no",
-  options: [
-    { value: "yes", label: "Yes — have the founder contact me directly" },
-    { value: "no", label: "No — a regular response is fine" },
-  ],
-}
-
-function email(to: string, subject: string): EmailNotification {
+function email(subject: string): EmailNotification {
   return {
-    when: "founderContact",
-    equals: "yes",
-    to,
+    from: "sales@beaglabs.com",
     cc: ["james@beaglabs.com"],
     subject,
   }
 }
 
-/** Split the core fields into a two-column "about you" step plus a final founder step. */
+/** Split the core fields into a two-column "about you" step. */
 const STEPS = {
   you: { id: "you", title: "About you", fields: ["fullName", "email", "company", "role"], columns: 2 as const },
-  founder: { id: "founder", title: "Founder contact", fields: ["founderContact"] },
 }
 
 export const PARTNERSHIPS_FORM: QuestionnaireDefinition = {
@@ -106,7 +86,7 @@ export const PARTNERSHIPS_FORM: QuestionnaireDefinition = {
   submitLabel: "Submit inquiry",
   successMessage:
     "Thanks — we will come back with partner pricing, the deployment runbook, and deal registration.",
-  email: email("partnerships@beaglabs.com", "Partnership inquiry"),
+  email: email("Partnership inquiry"),
   fields: [
     ...CORE_FIELDS,
     {
@@ -122,12 +102,10 @@ export const PARTNERSHIPS_FORM: QuestionnaireDefinition = {
       ],
     },
     MESSAGE_FIELD,
-    FOUNDER_FIELD,
   ],
   steps: [
     STEPS.you,
     { id: "ask", title: "The partnership", fields: ["partnerType", "message"] },
-    STEPS.founder,
   ],
 }
 
@@ -138,12 +116,11 @@ export const HELLO_FORM: QuestionnaireDefinition = {
     "General enquiries, press, or anything that does not fit one of the other forms. It lands in the same place.",
   submitLabel: "Send message",
   successMessage: "Thanks — we read everything and reply within two business days.",
-  email: email("hello@beaglabs.com", "General inquiry"),
-  fields: [...CORE_FIELDS, MESSAGE_FIELD, FOUNDER_FIELD],
+  email: email("General inquiry"),
+  fields: [...CORE_FIELDS, MESSAGE_FIELD],
   steps: [
     STEPS.you,
     { id: "ask", title: "Your message", fields: ["message"] },
-    STEPS.founder,
   ],
 }
 
@@ -154,7 +131,7 @@ export const SALES_FORM: QuestionnaireDefinition = {
     "Tell us what you are evaluating. Budget and timeline are what let us answer yes or no instead of scheduling a discovery call.",
   submitLabel: "Send inquiry",
   successMessage: "Thanks — we will come back with pricing, a demo, or a scoping call.",
-  email: email("sales@beaglabs.com", "Sales inquiry"),
+  email: email("Sales inquiry"),
   fields: [
     ...CORE_FIELDS,
     {
@@ -186,12 +163,10 @@ export const SALES_FORM: QuestionnaireDefinition = {
       ],
     },
     MESSAGE_FIELD,
-    FOUNDER_FIELD,
   ],
   steps: [
     STEPS.you,
     { id: "ask", title: "What you are evaluating", fields: ["budget", "timeline", "message"], columns: 2 },
-    STEPS.founder,
   ],
 }
 

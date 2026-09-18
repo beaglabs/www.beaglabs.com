@@ -141,7 +141,7 @@ export default function RaisePage() {
             </p>
             <div className="flex flex-wrap items-center gap-4">
               <Link
-                href="https://cal.com/comradelemoncake/meet-the-founder"
+                href="/contact"
                 target="_blank"
                 className="nb-btn inline-flex items-center gap-2 bg-[#111] px-8 py-4 text-[12px] uppercase text-white"
               >
@@ -777,7 +777,7 @@ export default function RaisePage() {
                 </ul>
               </div>
               <Link
-                href="mailto:james@beaglabs.com?subject=Investment%20Opportunity"
+                href="/contact"
                 target="_blank"
                 className="nb-btn inline-flex items-center gap-2 bg-[#111] px-8 py-4 text-[12px] uppercase text-white mt-8 self-start"
               >

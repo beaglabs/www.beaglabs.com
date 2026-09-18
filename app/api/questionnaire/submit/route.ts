@@ -160,10 +160,10 @@ export async function POST(request: Request) {
 
     await Promise.allSettled(calls)
 
-    // Founder contact: send the email server-side instead of opening the visitor's mail
-    // client. The record is already in Customer.io; this is the direct channel.
+    // Open the email thread on every submission: from sales@, to the contact, cc james@.
+    // The record is already in Customer.io; this is the direct channel.
     const notify = definition.email
-    if (notify && answers[notify.when] === notify.equals) {
+    if (notify && typeof email === "string") {
       const apiKey = process.env.RESEND_API_KEY
       if (!apiKey) {
         console.error("[questionnaire] RESEND_API_KEY not set — contact email not sent")
@@ -192,10 +192,9 @@ export async function POST(request: Request) {
           ].join("\n")
 
           const result = await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || "no-reply@beaglabs.com",
-            to: notify.to,
+            from: notify.from,
+            to: email,
             cc: notify.cc,
-            replyTo: email,
             subject: notify.subject,
             text: body,
           })

@@ -200,7 +200,7 @@ export default async function UseCaseDetailPage({
 
           <div className="flex flex-wrap items-end justify-start gap-4 lg:justify-end">
             <a
-              href="https://cal.com/comradelemoncake/meet-the-founder"
+              href="/contact"
               target="_blank"
               rel="noopener noreferrer"
               className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
