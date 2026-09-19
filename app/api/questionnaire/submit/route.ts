@@ -170,9 +170,14 @@ export async function POST(request: Request) {
       } else {
         try {
           const resend = new Resend(apiKey)
-          const body = [
-            `${definition.title} — ${definition.id}`,
+
+          const messageValue = answers.message
+          const messageText = typeof messageValue === "string" ? messageValue : ""
+
+          const responseInfo = [
             "",
+            "RESPONSE INFO:",
+            "────────────────",
             fields
               .map((field) => {
                 const value = answers[field.name]
@@ -191,14 +196,23 @@ export async function POST(request: Request) {
             `Submitted: ${submittedAt}`,
           ].join("\n")
 
-          const result = await resend.emails.send({
+          // Send to user with replyTo = james, so user's replies go to james
+          await resend.emails.send({
             from: notify.from,
-            to: [email, "james@beaglabs.com"],
+            to: email,
             replyTo: "james@beaglabs.com",
             subject: notify.subject,
-            text: body,
+            text: `Thanks for reaching out. We'll get back to you within two business days.\n\n${responseInfo}`,
           })
-          if (result.error) console.error("[questionnaire] Resend error:", result.error.message)
+
+          // Send to james with replyTo = user, so james's replies go to user
+          await resend.emails.send({
+            from: notify.from,
+            to: "james@beaglabs.com",
+            replyTo: email,
+            subject: notify.subject,
+            text: `${messageText}\n\n${responseInfo}`,
+          })
         } catch (err) {
           console.error("[questionnaire] Resend send failed:", err)
         }
