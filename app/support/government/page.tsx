@@ -5,29 +5,17 @@ import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
-/**
- * Commercial support page for Papyrus.
- *
- * This is the URL Partner Center points at for the Azure Marketplace offer, so it has to
- * stand on its own as a support statement: who to contact, how fast, for what, and what is
- * out of scope. Microsoft's certification checks that a support URL exists and actually
- * describes support; a page that is only a mailto link does not.
- *
- * Note what is deliberately absent: a phone number. There is no support queue to put on
- * the other end of one, and a dead phone line is worse than saying email is the channel.
- */
-
 const SUPPORT_EMAIL = 'james@beaglabs.com'
-const SUPPORT_HREF = `mailto:${SUPPORT_EMAIL}?subject=Papyrus%20support%20request`
+const SUPPORT_HREF = `mailto:${SUPPORT_EMAIL}?subject=Papyrus%20government%20support%20request`
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Commercial support',
+  title: 'Government support',
   description:
-    'Support for Papyrus commercial deployments: channels, response targets by severity, what is in scope, and what to include when you report an issue.',
-  path: '/support/commercial',
+    'Support for Papyrus government deployments in Azure Government and other accredited environments: channels, response targets by severity, what is in scope, and how to engage under your governing contract.',
+  path: '/support/government',
   label: 'Support',
   ogDescription:
-    'How to get support for a commercial Papyrus deployment — severity definitions, response targets, and the diagnostics we need from you.',
+    'How to get support for a government Papyrus deployment — severity definitions, response targets, and the diagnostics we need from you.',
 })
 
 const SEVERITIES: Array<{
@@ -39,7 +27,7 @@ const SEVERITIES: Array<{
   {
     level: 'Severity 1',
     definition:
-      'The appliance is down or unusable in production, no workaround exists, and work has stopped.',
+      'The appliance is down or unusable in production, no workaround exists, and mission-critical work has stopped.',
     firstResponse: '4 business hours',
     updates: 'Every business day until resolved',
   },
@@ -60,27 +48,30 @@ const SEVERITIES: Array<{
 ]
 
 const IN_SCOPE = [
-  'The Papyrus container image, its API, and its first-run onboarding.',
-  'The Azure Resource Manager templates and Bicep modules in our repository, including deployment failures.',
+  'The Papyrus container image, its API, and its first-run onboarding in Azure Government or other accredited environments.',
+  'The Azure Resource Manager templates and Bicep modules in our repository, including deployment failures in government clouds.',
   'Licence issuance, activation, and renewal for your deployment ID.',
-  'Model endpoint configuration — pointing Papyrus at Azure OpenAI, an OpenAI-compatible gateway, or your own inference host.',
+  'Model endpoint configuration — pointing Papyrus at Azure OpenAI in Azure Government, an OpenAI-compatible gateway, or your own inference host within the boundary.',
   'Upgrades between published image tags, and rollback guidance if one goes wrong.',
+  'Compliance evidence and artefacts referenced in your Authority to Operate (ATO) package.',
 ]
 
 const OUT_OF_SCOPE = [
-  'Azure platform incidents, quota limits, or region capacity. Those go to Microsoft support, and the Azure portal opens the case.',
-  'Your network, firewall, DNS, private endpoints, and egress policy.',
+  'Azure Government platform incidents, quota limits, or region capacity. Those go to Microsoft support through your existing channels.',
+  'Your network, firewall, DNS, private endpoints, and egress policy within the accredited boundary.',
   'The model endpoint itself. If it is your own inference host or a third-party gateway, availability and correctness there are outside Papyrus.',
   'Custom integrations, connectors, or prompts built during an engagement. Those are scoped separately.',
-  'The host VM operating system, its disks, and any hardening beyond what our templates apply.',
+  'The host VM operating system, its disks, and any hardening beyond what our templates apply, including STIG or CIS baseline enforcement.',
+  'FedRAMP, IL4/IL5, or other authorization package maintenance beyond the Papyrus component references we provide.',
 ]
 
 const DIAGNOSTICS = [
   ['Deployment ID', 'Shown on the appliance onboarding page, and returned by /api/config/public. It is the only identifier we need to find the licence record.'],
   ['Image tag', 'The tag you deployed, for example 0.1.1. `sudo docker ps --format "{{.Image}}"` prints it.'],
-  ['Azure context', 'Subscription region, VM size, and the output of `az deployment group show -g <rg> -n <deployment> --query properties.error` if the template itself failed.'],
+  ['Azure Government context', 'Subscription region (e.g., usgov-virginia, usgov-arizona), VM size, and the output of `az deployment group show -g <rg> -n <deployment> --query properties.error` if the template itself failed.'],
   ['Container state', '`sudo docker ps -a` and `sudo docker logs papyrus --tail 200`.'],
-  ['Timeline', 'When it last worked, and anything that changed in between — an image update, a network change, a model endpoint rotation.'],
+  ['Timeline', 'When it last worked, and anything that changed in between — an image update, a network change, a model endpoint rotation, or a boundary policy update.'],
+  ['Authorization artefacts', 'Relevant excerpts from your ATO, SSP, or POA&M that pertain to the Papyrus component, if the issue relates to compliance evidence.'],
 ]
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -92,31 +83,32 @@ function Section({ id, title, children }: { id: string; title: string; children:
   )
 }
 
-export default function CommercialSupportPage() {
+export default function GovernmentSupportPage() {
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-[#F5F4F0]">
         <div className="mx-auto max-w-[1100px] px-6 py-16">
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
-            Papyrus — commercial
+            Papyrus — government
           </p>
           <h1 className="mb-4 text-3xl font-bold tracking-[-0.03em] text-[#111]">
-            Commercial support
+            Government support
           </h1>
           <p className="mb-12 max-w-[680px] text-[16px] leading-relaxed text-[#333]">
-            Support for self-deployed Papyrus appliances. Email is the supported channel and it
-            reaches an engineer, not a queue. If you are running the government offer,{' '}
-            <Link href="/support#government" className="text-[#111] underline">
-              that has its own terms
-            </Link>
-            .
+            Support for Papyrus appliances deployed in Azure Government and other accredited
+            environments. The product is the same; support is handled under the governing contract
+            or agreement that covers your deployment. If you are running the commercial offer,{' '}
+            <Link href="/support/commercial" className="text-[#111] underline">
+              commercial support terms
+            </Link>{' '}
+            apply.
           </p>
 
           <div className="mb-12">
             <img
-              src="https://images.pexels.com/photos/39081904/pexels-photo-39081904.png"
-              alt="Commercial deployment workspace"
+              src="https://images.pexels.com/photos/4328661/pexels-photo-4328661.jpeg"
+              alt="Government deployment workspace"
               className="w-full max-w-[1100px] rounded-lg border-2 border-[#E2E0DB] shadow-sm"
             />
           </div>
@@ -142,6 +134,11 @@ export default function CommercialSupportPage() {
             <p>
               There is no phone support line and no customer portal. Both were considered and
               skipped: a mailbox an engineer monitors answers faster than a queue nobody staffs.
+            </p>
+            <p>
+              If your contract designates a specific contracting officer’s representative (COR),
+              programme manager, or security officer as the point of contact, include them on
+              the thread. We will respect the communication protocols defined in your agreement.
             </p>
           </Section>
 
@@ -232,7 +229,8 @@ export default function CommercialSupportPage() {
                 >
                   Azure deployment README
                 </a>{' '}
-                — parameters, disk layout, and the checks that confirm a healthy appliance.
+                — parameters, disk layout, and the checks that confirm a healthy appliance in
+                Azure Government.
               </li>
               <li>
                 <code className="text-[13px]">GET /api/config/public</code> on the appliance
@@ -261,6 +259,10 @@ export default function CommercialSupportPage() {
               target, say so plainly — that is the signal we act on, and there is no process to
               work around to reach someone with authority over the answer.
             </p>
+            <p>
+              If your agreement defines a formal dispute or escalation path, reference that
+              clause when you escalate and we will follow it.
+            </p>
           </Section>
 
           <Section id="security" title="Security reports">
@@ -273,6 +275,11 @@ export default function CommercialSupportPage() {
               Do not open a public issue. We acknowledge within one business day, and we will tell
               you what we intend to do and when rather than asking you to sit on a finding
               indefinitely.
+            </p>
+            <p>
+              If your environment requires coordinated vulnerability disclosure through a specific
+              channel (e.g., a DIB CSO, CISA, or internal SOC), note that in your report and we
+              will coordinate accordingly.
             </p>
           </Section>
 
