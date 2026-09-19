@@ -76,8 +76,8 @@ const DIAGNOSTICS = [
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="mb-12 scroll-mt-24">
-      <h2 className="mb-4 text-xl font-bold tracking-[-0.02em] text-[#111]">{title}</h2>
+    <section id={id} className="nb-section-divider py-12">
+      <h2 className="mb-6 text-[22px] font-extrabold tracking-[-0.02em] text-[#111]">{title}</h2>
       <div className="space-y-4 text-[15px] leading-relaxed text-[#333]">{children}</div>
     </section>
   )
@@ -109,70 +109,68 @@ export default function GovernmentSupportPage() {
             <img
               src="https://images.pexels.com/photos/4328661/pexels-photo-4328661.jpeg"
               alt="Government deployment workspace"
-              className="w-full max-w-[1100px] rounded-lg border-2 border-[#E2E0DB] shadow-sm"
+              className="w-full max-w-[1100px] nb-panel"
             />
           </div>
 
-          <Section id="contact" title="How to reach us">
-            <p>
-              Email{' '}
-              <a href={SUPPORT_HREF} className="text-[#111] underline">
-                {SUPPORT_EMAIL}
-              </a>
-              . Put the severity and your deployment ID in the subject line, for example{' '}
-              <span className="font-mono text-[13px]">
-                [Sev 2] 7f3a91c4 — onboarding completes but no licence accepted
-              </span>
-              .
-            </p>
-            <p>
-              Business hours are Monday to Friday, 09:00–18:00 US Eastern, excluding US
-              federal holidays. Severity 1 reports are read outside those hours on a
-              best-effort basis; there is no on-call rotation to page, and we will not pretend
-              otherwise.
-            </p>
-            <p>
-              There is no phone support line and no customer portal. Both were considered and
-              skipped: a mailbox an engineer monitors answers faster than a queue nobody staffs.
-            </p>
-            <p>
-              If your contract designates a specific contracting officer’s representative (COR),
-              programme manager, or security officer as the point of contact, include them on
-              the thread. We will respect the communication protocols defined in your agreement.
-            </p>
-          </Section>
-
-          <Section id="severity" title="Severity definitions and response targets">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-[14px]">
-                <thead>
-                  <tr className="border-b-2 border-[#111] text-left">
-                    <th className="py-3 pr-4 font-semibold text-[#111]">Severity</th>
-                    <th className="py-3 pr-4 font-semibold text-[#111]">Definition</th>
-                    <th className="py-3 pr-4 font-semibold text-[#111]">First response</th>
-                    <th className="py-3 font-semibold text-[#111]">Updates</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {SEVERITIES.map((row) => (
-                    <tr key={row.level} className="border-b border-[#E2E0DB] align-top">
-                      <td className="py-3 pr-4 font-semibold whitespace-nowrap text-[#111]">
-                        {row.level}
-                      </td>
-                      <td className="py-3 pr-4 text-[#333]">{row.definition}</td>
-                      <td className="py-3 pr-4 whitespace-nowrap text-[#333]">{row.firstResponse}</td>
-                      <td className="py-3 text-[#333]">{row.updates}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
+            <div className="nb-card p-6 lg:col-span-2">
+              <h3 className="mb-4 text-xl font-bold tracking-[-0.02em] text-[#111]">How to reach us</h3>
+              <p className="mb-4 text-[15px] leading-relaxed text-[#333]">
+                Email{' '}
+                <a href={SUPPORT_HREF} className="text-[#111] underline">
+                  {SUPPORT_EMAIL}
+                </a>
+                . Put the severity and your deployment ID in the subject line, for example{' '}
+                <span className="font-mono text-[13px]">
+                  [Sev 2] 7f3a91c4 — onboarding completes but no licence accepted
+                </span>
+                .
+              </p>
+              <p className="mb-4 text-[15px] leading-relaxed text-[#333]">
+                Business hours are Monday to Friday, 09:00–18:00 US Eastern, excluding US
+                federal holidays. Severity 1 reports are read outside those hours on a
+                best-effort basis; there is no on-call rotation to page, and we will not pretend
+                otherwise.
+              </p>
+              <p className="mb-4 text-[15px] leading-relaxed text-[#333]">
+                There is no phone support line and no customer portal. Both were considered and
+                skipped: a mailbox an engineer monitors answers faster than a queue nobody staffs.
+              </p>
+              <p className="mb-4 text-[15px] leading-relaxed text-[#333]">
+                If your contract designates a specific contracting officer's representative (COR),
+                programme manager, or security officer as the point of contact, include them on
+                the thread. We will respect the communication protocols defined in your agreement.
+              </p>
             </div>
-            <p>
-              These are targets for the first response, not a resolution guarantee. Resolution
-              depends on what the fault turns out to be, and we will tell you what we think it
-              is rather than leaving you without an answer.
-            </p>
-          </Section>
+
+            <div className="nb-card p-6">
+              <h3 className="mb-4 text-xl font-bold tracking-[-0.02em] text-[#111]">Severity targets</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-[13px]">
+                  <thead>
+                    <tr className="border-b-2 border-[#111] text-left">
+                      <th className="py-2 pr-3 font-semibold text-[#111]">Sev</th>
+                      <th className="py-2 pr-3 font-semibold text-[#111]">First response</th>
+                      <th className="py-2 font-semibold text-[#111]">Updates</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {SEVERITIES.map((row) => (
+                      <tr key={row.level} className="border-b border-[#E2E0DB] align-top">
+                        <td className="py-2 pr-3 font-semibold whitespace-nowrap text-[#111]">{row.level}</td>
+                        <td className="py-2 pr-3 whitespace-nowrap text-[#333]">{row.firstResponse}</td>
+                        <td className="py-2 text-[#333]">{row.updates}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3 text-[13px] text-[#555]">
+                Targets for first response, not a resolution guarantee.
+              </p>
+            </div>
+          </div>
 
           <Section id="diagnostics" title="What to include">
             <p>
@@ -193,7 +191,7 @@ export default function GovernmentSupportPage() {
 
           <Section id="scope" title="What is covered">
             <div className="grid gap-8 sm:grid-cols-2">
-              <div>
+              <div className="nb-card p-6">
                 <h3 className="mb-3 text-[15px] font-bold text-[#111]">In scope</h3>
                 <ul className="space-y-2 text-[14px]">
                   {IN_SCOPE.map((item) => (
@@ -204,7 +202,7 @@ export default function GovernmentSupportPage() {
                   ))}
                 </ul>
               </div>
-              <div>
+              <div className="nb-card p-6">
                 <h3 className="mb-3 text-[15px] font-bold text-[#111]">Out of scope</h3>
                 <ul className="space-y-2 text-[14px]">
                   {OUT_OF_SCOPE.map((item) => (
@@ -290,7 +288,7 @@ export default function GovernmentSupportPage() {
             </p>
             <a
               href={SUPPORT_HREF}
-              className="inline-block bg-[#111] px-6 py-3 text-[15px] font-semibold text-white"
+              className="nb-btn-orange inline-block px-6 py-3 text-[15px] font-extrabold uppercase tracking-[0.08em]"
             >
               Email {SUPPORT_EMAIL}
             </a>
