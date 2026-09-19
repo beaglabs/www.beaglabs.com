@@ -193,8 +193,8 @@ export async function POST(request: Request) {
 
           const result = await resend.emails.send({
             from: notify.from,
-            to: email,
-            cc: notify.cc,
+            to: [email, "james@beaglabs.com"],
+            replyTo: "james@beaglabs.com",
             subject: notify.subject,
             text: body,
           })
