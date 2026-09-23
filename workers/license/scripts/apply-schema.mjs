@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { createClient } from '@libsql/client'
+import { spawnSync } from 'node:child_process'
 
 const url = process.env.TURSO_DATABASE_URL
 const authToken = process.env.TURSO_AUTH_TOKEN
@@ -15,3 +16,6 @@ for (const file of ['../schema.sql', '../partner-schema.sql']) {
   console.log(`Applied workers/license/${file.split('/').at(-1)}`)
 }
 client.close()
+
+const migration = spawnSync(process.execPath, [new URL('./migrate-profile-v2.mjs', import.meta.url).pathname], { stdio: 'inherit', env: process.env })
+if (migration.status !== 0) process.exit(migration.status ?? 1)

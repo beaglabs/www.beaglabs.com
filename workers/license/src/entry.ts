@@ -2,6 +2,7 @@ import licenseApp from './index'
 import portalApp from './portal'
 import applicationApp from './application'
 import oauthPagesApp from './oauth-pages'
+import entitlementAddonsApp from './entitlement-addons'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -32,6 +33,10 @@ export default {
 
     if (path === '/partner/login' || path === '/oauth/consent') {
       return oauthPagesApp.fetch(request, env, ctx)
+    }
+
+    if (/^\/api\/v1\/entitlements\/[^/]+\/addons(?:\/[^/]+\/revoke)?\/?$/.test(path)) {
+      return entitlementAddonsApp.fetch(request, env, ctx)
     }
 
     if (usePortal(path)) {
