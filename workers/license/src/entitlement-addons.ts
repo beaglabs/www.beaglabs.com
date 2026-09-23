@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { secureHeaders } from 'hono/secure-headers'
 import { buildAuth } from './auth'
 import { first, getDb, parseJsonArray, rows } from './db'
 import { adminOids, CLASSIFICATION_BANNER_FEATURE, isClassificationLevel, type Bindings } from './env'
@@ -32,10 +33,14 @@ async function audit(env: Bindings, request: Request, actor: Admin, action: stri
   })
 }
 
+app.use('*', secureHeaders())
+app.use('*', async (c, next) => {
+  await next()
+  c.header('Cache-Control', 'no-store')
+})
 app.use('*', async (c, next) => {
   const actor = await admin(c.req.raw, c.env)
   if (!actor) return c.json({ error: 'unauthorized', message: 'Microsoft administrator sign-in required.' }, 401)
-  c.set('actor' as never, actor as never)
   await next()
 })
 
