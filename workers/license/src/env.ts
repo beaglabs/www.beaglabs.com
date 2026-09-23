@@ -15,18 +15,12 @@ export type Bindings = {
   LOGO_DEV_TOKEN: string
 }
 
-export const DEPLOYMENT_PROFILES = [
-  'commercial',
-  'government-il4',
-  'government-il6',
-  'gcc',
-  'gcch',
-  'dod',
-  'restricted',
-  'disconnected',
-] as const
-
+export const DEPLOYMENT_PROFILES = ['commercial', 'government', 'disconnected'] as const
 export type DeploymentProfile = (typeof DEPLOYMENT_PROFILES)[number]
+
+export const CLASSIFICATION_LEVELS = ['unclassified', 'cui', 'confidential', 'secret', 'top-secret', 'top-secret-sci'] as const
+export type ClassificationLevel = (typeof CLASSIFICATION_LEVELS)[number]
+export const CLASSIFICATION_BANNER_FEATURE = 'classification-banners' as const
 
 export function adminOids(env: Bindings): Set<string> {
   return new Set(
@@ -38,4 +32,8 @@ export function adminOids(env: Bindings): Set<string> {
 
 export function isDeploymentProfile(value: unknown): value is DeploymentProfile {
   return typeof value === 'string' && DEPLOYMENT_PROFILES.includes(value as DeploymentProfile)
+}
+
+export function isClassificationLevel(value: unknown): value is ClassificationLevel {
+  return typeof value === 'string' && CLASSIFICATION_LEVELS.includes(value as ClassificationLevel)
 }
