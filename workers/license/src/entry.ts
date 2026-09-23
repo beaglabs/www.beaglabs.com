@@ -9,6 +9,7 @@ function usePortal(path: string): boolean {
     path === '/login' ||
     path === '/admin' ||
     path.startsWith('/partner/') ||
+    path.startsWith('/partner-application/') ||
     path === '/portal' ||
     path.startsWith('/api/partner/') ||
     path.startsWith('/oauth/')
@@ -24,7 +25,7 @@ export default {
       return buildAuth(env).handler(request)
     }
 
-    if (path === '/partners/apply') {
+    if (path === '/partners/apply' || path === '/partners/apply/') {
       return applicationApp.fetch(request, env, ctx)
     }
 
