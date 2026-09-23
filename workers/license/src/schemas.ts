@@ -5,6 +5,7 @@ const nullableText = z.string().trim().min(1).max(512).nullable().optional()
 const optionalText = z.string().trim().min(1).max(512).optional()
 const cents = z.number().int().nonnegative()
 const isoDate = z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/))
+const withDefault = <T extends z.ZodTypeAny>(schema: T, value: z.output<T>) => schema.optional().transform((input) => input ?? value)
 
 export const organizationCreateSchema = z.object({
   organizationType: z.enum(['federal_agency', 'state_local', 'commercial', 'prime', 'distributor', 'reseller', 'integrator', 'partner']),
@@ -13,7 +14,7 @@ export const organizationCreateSchema = z.object({
   uei: nullableText,
   cageCode: nullableText,
   domain: nullableText,
-  status: z.enum(['active', 'inactive', 'prospect']).default('active'),
+  status: withDefault(z.enum(['active', 'inactive', 'prospect']), 'active'),
 })
 
 export const organizationPatchSchema = organizationCreateSchema.partial()
@@ -25,8 +26,8 @@ export const contactCreateSchema = z.object({
   title: nullableText,
   email: z.string().email().nullable().optional(),
   phone: nullableText,
-  contactType: z.enum(['mission_owner', 'contracting', 'technical', 'security', 'billing', 'partner_manager', 'sales', 'executive', 'other']).default('other'),
-  isPrimary: z.boolean().default(false),
+  contactType: withDefault(z.enum(['mission_owner', 'contracting', 'technical', 'security', 'billing', 'partner_manager', 'sales', 'executive', 'other']), 'other'),
+  isPrimary: withDefault(z.boolean(), false),
 })
 
 export const contactPatchSchema = contactCreateSchema.omit({ organizationId: true }).partial()
@@ -34,8 +35,8 @@ export const contactPatchSchema = contactCreateSchema.omit({ organizationId: tru
 export const partnerCreateSchema = z.object({
   organizationId: z.string().min(1),
   partnerType: z.enum(['distributor', 'reseller', 'prime', 'systems_integrator', 'referral', 'technology']),
-  partnerStatus: z.enum(['prospect', 'active', 'inactive', 'terminated']).default('prospect'),
-  agreementStatus: z.enum(['none', 'negotiating', 'active', 'expired', 'terminated']).default('none'),
+  partnerStatus: withDefault(z.enum(['prospect', 'active', 'inactive', 'terminated']), 'prospect'),
+  agreementStatus: withDefault(z.enum(['none', 'negotiating', 'active', 'expired', 'terminated']), 'none'),
   discountTier: nullableText,
   onboardedAt: isoDate.nullable().optional(),
 })
@@ -49,7 +50,7 @@ export const vehicleCreateSchema = z.object({
   holderOrganizationId: z.string().nullable().optional(),
   startDate: isoDate.nullable().optional(),
   endDate: isoDate.nullable().optional(),
-  status: z.enum(['planned', 'active', 'expired', 'inactive']).default('active'),
+  status: withDefault(z.enum(['planned', 'active', 'expired', 'inactive']), 'active'),
 })
 
 export const vehiclePatchSchema = vehicleCreateSchema.partial()
@@ -72,9 +73,9 @@ export const opportunityPatchSchema = opportunityCreateSchema.omit({ customerOrg
 export const orderItemCreateSchema = z.object({
   productId: z.string().optional(),
   sku: z.string().optional(),
-  quantity: z.number().int().positive().max(1000).default(1),
+  quantity: withDefault(z.number().int().positive().max(1000), 1),
   unitPriceCents: cents.optional(),
-  discountCents: cents.default(0),
+  discountCents: withDefault(cents, 0),
   serviceStart: isoDate.nullable().optional(),
   serviceEnd: isoDate.nullable().optional(),
 }).refine((value) => Boolean(value.productId || value.sku), { message: 'productId or sku is required' })
@@ -89,8 +90,8 @@ export const orderCreateSchema = z.object({
   contractNumber: nullableText,
   taskOrderNumber: nullableText,
   poNumber: nullableText,
-  status: z.enum(['draft', 'booked']).default('draft'),
-  currency: z.string().trim().length(3).default('USD'),
+  status: withDefault(z.enum(['draft', 'booked']), 'draft'),
+  currency: withDefault(z.string().trim().length(3), 'USD'),
   orderedAt: isoDate.nullable().optional(),
   startDate: isoDate.nullable().optional(),
   endDate: isoDate.nullable().optional(),
