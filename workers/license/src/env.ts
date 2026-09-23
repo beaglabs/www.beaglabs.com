@@ -9,6 +9,10 @@ export type Bindings = {
   ADMIN_MICROSOFT_OIDS: string
   PAPYRUS_LICENSE_KEY_ID: string
   PAPYRUS_LICENSE_PRIVATE_KEY_PEM: string
+  RESEND_API_KEY: string
+  PARTNERS_EMAIL: string
+  PARTNER_FROM_EMAIL: string
+  LOGO_DEV_TOKEN: string
 }
 
 export const DEPLOYMENT_PROFILES = [
