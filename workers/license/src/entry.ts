@@ -1,6 +1,7 @@
 import licenseApp from './index'
 import portalApp from './portal'
 import applicationApp from './application'
+import oauthPagesApp from './oauth-pages'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -27,6 +28,10 @@ export default {
 
     if (path === '/partners/apply' || path === '/partners/apply/') {
       return applicationApp.fetch(request, env, ctx)
+    }
+
+    if (path === '/partner/login' || path === '/oauth/consent') {
+      return oauthPagesApp.fetch(request, env, ctx)
     }
 
     if (usePortal(path)) {
