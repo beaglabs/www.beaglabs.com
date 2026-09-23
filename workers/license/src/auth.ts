@@ -25,7 +25,10 @@ export function buildAuth(env: Bindings) {
   const tenantId = env.MICROSOFT_TENANT_ID.toLowerCase()
 
   return betterAuth({
-    database: getAuthDb(env),
+    database: {
+      db: getAuthDb(env),
+      type: 'sqlite',
+    },
     baseURL: env.BASE_URL,
     basePath: '/api/auth',
     secret: env.BETTER_AUTH_SECRET,
