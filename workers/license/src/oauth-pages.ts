@@ -7,6 +7,14 @@ import { escapeHtml, page } from './ui'
 type Row = Record<string, unknown>
 const app = new Hono<{ Bindings: Bindings }>()
 
+app.use('*', async (c, next) => {
+  await next()
+  c.header('Cache-Control', 'no-store')
+  c.header('X-Frame-Options', 'DENY')
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('Referrer-Policy', 'no-referrer')
+})
+
 async function hasPartnerAccess(request: Request, env: Bindings): Promise<boolean> {
   const session = await buildAuth(env).api.getSession({ headers: request.headers })
   if (!session?.user?.id) return false
@@ -22,7 +30,8 @@ async function hasPartnerAccess(request: Request, env: Bindings): Promise<boolea
 }
 
 app.get('/partner/login', (c) => {
-  const oauthFlow = new URL(c.req.url).search.length > 1
+  const params = new URL(c.req.url).searchParams
+  const oauthFlow = params.has('sig') || params.has('client_id')
   const context = oauthFlow
     ? '<div class="notice">You are signing in to authorize a Beag Labs OAuth client. The authorization request is cryptographically signed and will continue after authentication.</div>'
     : ''
@@ -40,11 +49,10 @@ app.get('/oauth/consent', async (c) => {
   const url = new URL(c.req.url)
   const clientId = url.searchParams.get('client_id') ?? 'unknown-client'
   const scope = url.searchParams.get('scope') ?? 'openid profile email'
-  const claims = url.searchParams.get('claims')
   const scopes = scope.split(/\s+/).filter(Boolean)
 
   return c.html(page('Authorize application', `<div class="hero"><div><span class="eyebrow">Beag Labs OAuth</span><h1>Authorize application access.</h1><p class="lede">Client <span class="mono">${escapeHtml(clientId)}</span> is requesting access to your approved Beag Labs partner identity.</p><div class="notice">Only grant access if you recognize the application and expected this authorization request.</div></div><div class="card soft"><h3>Requested scopes</h3>${scopes.map((item) => `<div class="check"><strong class="mono">${escapeHtml(item)}</strong></div>`).join('')}</div></div><div class="actions"><button id="allow" class="btn orange">Allow</button><button id="deny" class="btn danger">Deny</button></div><div id="message"></div>`, 'partner', `
-async function consent(accept){const m=document.getElementById('message');m.innerHTML='<div class="notice">Recording decision…</div>';const oauth_query=window.location.search.slice(1);const body={accept,scope:${JSON.stringify(scope)},oauth_query};${claims ? `body.claims=${JSON.stringify(claims)};` : ''}const r=await fetch('/api/auth/oauth2/consent',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),redirect:'follow'});let b={};try{b=await r.clone().json()}catch{}if(r.redirected){location.assign(r.url);return}const target=b.url||b.redirectURI||b.redirectUri;if(target){location.assign(target);return}if(!r.ok){m.innerHTML='<div class="notice error">'+(b.message||b.error||'Unable to record consent.')+'</div>';return}m.innerHTML='<div class="notice ok">Authorization recorded.</div>'}document.getElementById('allow').onclick=()=>consent(true);document.getElementById('deny').onclick=()=>consent(false);`))
+async function consent(accept){const m=document.getElementById('message');m.innerHTML='<div class="notice">Recording decision…</div>';const oauth_query=window.location.search.slice(1);const body={accept,scope:${JSON.stringify(scope)},oauth_query};const r=await fetch('/api/auth/oauth2/consent',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),redirect:'follow'});let b={};try{b=await r.clone().json()}catch{}if(r.redirected){location.assign(r.url);return}const target=b.url||b.redirectURI||b.redirectUri;if(target){location.assign(target);return}if(!r.ok){m.innerHTML='<div class="notice error">'+(b.message||b.error||'Unable to record consent.')+'</div>';return}m.innerHTML='<div class="notice ok">Authorization recorded.</div>'}document.getElementById('allow').onclick=()=>consent(true);document.getElementById('deny').onclick=()=>consent(false);`))
 })
 
 export default app
