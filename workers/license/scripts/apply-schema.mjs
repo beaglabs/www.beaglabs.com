@@ -8,9 +8,10 @@ if (!url || !authToken) {
   throw new Error('TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are required')
 }
 
-const schema = await readFile(new URL('../schema.sql', import.meta.url), 'utf8')
 const client = createClient({ url, authToken })
-
-await client.executeMultiple(schema)
+for (const file of ['../schema.sql', '../partner-schema.sql']) {
+  const schema = await readFile(new URL(file, import.meta.url), 'utf8')
+  await client.executeMultiple(schema)
+  console.log(`Applied workers/license/${file.split('/').at(-1)}`)
+}
 client.close()
-console.log('Applied workers/license/schema.sql')
