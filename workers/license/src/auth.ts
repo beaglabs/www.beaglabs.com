@@ -39,11 +39,19 @@ export function buildAuth(env: Bindings) {
         },
       },
       validateUserInfo: ({ user, source }) => {
-        const mapped = user as typeof user & { entraOid?: string; entraTenantId?: string }
-        const oid = mapped.entraOid?.toLowerCase() ?? ''
-        const tid = mapped.entraTenantId?.toLowerCase() ?? ''
+        if (source.oauth?.providerId !== 'microsoft') {
+          return {
+            error: 'microsoft_required',
+            errorDescription: 'Microsoft Entra ID is required for Beag Labs licensing administration.',
+          }
+        }
 
-        if (source.oauth?.providerId !== 'microsoft' || !oid || !tid || tid !== tenantId || !allowed.has(oid)) {
+        const profile = (source.oauth.profile ?? {}) as Record<string, unknown>
+        const mapped = user as typeof user & { entraOid?: string; entraTenantId?: string }
+        const oid = String(profile.oid ?? mapped.entraOid ?? '').toLowerCase()
+        const tid = String(profile.tid ?? mapped.entraTenantId ?? '').toLowerCase()
+
+        if (!oid || !tid || tid !== tenantId || !allowed.has(oid)) {
           return {
             error: 'admin_not_allowed',
             errorDescription: 'This Microsoft Entra identity is not authorized to administer Beag Labs licensing.',
