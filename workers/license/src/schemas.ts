@@ -70,7 +70,17 @@ export const opportunityCreateSchema = z.object({
 
 export const opportunityPatchSchema = opportunityCreateSchema.omit({ customerOrganizationId: true }).partial()
 
-export const orderItemCreateSchema = z.object({
+type OrderItemBody = {
+  productId?: string
+  sku?: string
+  quantity: number
+  unitPriceCents?: number
+  discountCents: number
+  serviceStart?: string | null
+  serviceEnd?: string | null
+}
+
+const normalizedOrderItemSchema = z.object({
   productId: z.string().optional(),
   sku: z.string().optional(),
   quantity: withDefault(z.number().int().positive().max(1000), 1),
@@ -80,7 +90,29 @@ export const orderItemCreateSchema = z.object({
   serviceEnd: isoDate.nullable().optional(),
 }).refine((value) => Boolean(value.productId || value.sku), { message: 'productId or sku is required' })
 
-export const orderCreateSchema = z.object({
+export const orderItemCreateSchema = normalizedOrderItemSchema as unknown as z.ZodType<OrderItemBody>
+
+type OrderBody = {
+  customerOrganizationId: string
+  purchaserOrganizationId?: string | null
+  originatingPartnerId?: string | null
+  transactingPartnerId?: string | null
+  vehicleId?: string | null
+  opportunityId?: string | null
+  contractNumber?: string | null
+  taskOrderNumber?: string | null
+  poNumber?: string | null
+  status: 'draft' | 'booked'
+  currency: string
+  orderedAt?: string | null
+  startDate?: string | null
+  endDate?: string | null
+  primaryContactId?: string | null
+  billingContactId?: string | null
+  items: OrderItemBody[]
+}
+
+const normalizedOrderSchema = z.object({
   customerOrganizationId: z.string().min(1),
   purchaserOrganizationId: z.string().nullable().optional(),
   originatingPartnerId: z.string().nullable().optional(),
@@ -99,6 +131,8 @@ export const orderCreateSchema = z.object({
   billingContactId: z.string().nullable().optional(),
   items: z.array(orderItemCreateSchema).min(1).max(100),
 })
+
+export const orderCreateSchema = normalizedOrderSchema as unknown as z.ZodType<OrderBody>
 
 export const orderPatchSchema = z.object({
   status: z.enum(['draft', 'booked', 'fulfilled', 'cancelled', 'refunded']),
