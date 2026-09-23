@@ -30,3 +30,11 @@ jobs:
           node-version: '24'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run check
+      - name: Smoke test database migrations
+        run: |
+          cat > .dev.vars <<'EOF'
+          TURSO_DATABASE_URL="file:/tmp/beaglabs-license-ci.db"
+          TURSO_AUTH_TOKEN="ci-local-token"
+          BETTER_AUTH_SECRET="ci-placeholder-ci-placeholder-ci-placeholder"
+          EOF
+          env -u TURSO_DATABASE_URL -u TURSO_AUTH_TOKEN -u BETTER_AUTH_SECRET npm run db:apply
