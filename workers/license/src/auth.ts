@@ -72,7 +72,6 @@ export function buildAuth(env: Bindings) {
           const preferred = typeof profile.preferred_username === 'string' ? profile.preferred_username : undefined
           return {
             email: profile.email ?? preferred ?? `${oid || 'unknown'}@entra.invalid`,
-            image: null,
             entraOid: oid,
             entraTenantId: tid,
           }
