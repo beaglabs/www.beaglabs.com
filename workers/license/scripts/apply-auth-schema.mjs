@@ -24,6 +24,11 @@ const auth = betterAuth({
   },
   secret,
   baseURL: process.env.BASE_URL || 'https://license.beaglabs.com',
+  advanced: {
+    database: {
+      validateSchema: false,
+    },
+  },
   user: {
     additionalFields: {
       entraOid: { type: 'string', required: false, input: false, returned: true },
