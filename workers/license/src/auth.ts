@@ -28,13 +28,13 @@ export function buildAuth(env: Bindings) {
         entraOid: {
           type: 'string',
           required: false,
-          input: true,
+          input: false,
           returned: true,
         },
         entraTenantId: {
           type: 'string',
           required: false,
-          input: true,
+          input: false,
           returned: true,
         },
       },
