@@ -65,5 +65,12 @@ for (const table of ['products', 'entitlements']) {
   }
 }
 
+// Classification marking is a capability, not a deployment profile. It may be
+// sold for any of the three runtime profiles when the contract calls for it.
+await client.execute({
+  sql: 'UPDATE products SET allowed_profiles_json=?,updated_at=CURRENT_TIMESTAMP WHERE sku=?',
+  args: ['["commercial","government","disconnected"]', 'PAP-FED-CLASSIFICATION-1Y'],
+})
+
 client.close()
 console.log('Normalized legacy profile aliases')
