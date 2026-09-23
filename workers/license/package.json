@@ -1,6 +1,6 @@
 {
   "name": "@beaglabs/license-worker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,12 +8,16 @@
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && wrangler deploy --dry-run --outdir .wrangler-dry-run",
-    "db:apply": "node --env-file=.dev.vars scripts/apply-schema.mjs"
+    "db:apply": "node --env-file=.dev.vars scripts/apply-schema.mjs && node --env-file=.dev.vars scripts/apply-auth-schema.mjs"
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "^1.7.5",
     "@libsql/client": "^0.17.4",
     "better-auth": "^1.7.5",
     "hono": "^4.12.31",
+    "kysely": "^0.29.0",
+    "kysely-libsql": "^0.7.1",
+    "resend": "^6.17.2",
     "zod": "^3.24.1"
   },
   "devDependencies": {
