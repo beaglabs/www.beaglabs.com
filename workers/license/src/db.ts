@@ -1,46 +1,55 @@
 import { createClient, type Client, type ResultSet } from '@libsql/client/web'
 import type { Bindings } from './env'
 
-type Cache = { url: string; authToken: string; client: Client }
+type SqlArg = string | number | bigint | null | ArrayBuffer
+export type LooseStatement = string | { sql: string; args?: readonly unknown[] }
+
+export interface Database {
+  execute(statement: LooseStatement): Promise<ResultSet>
+  batch(statements: readonly LooseStatement[], mode?: 'write'): Promise<ResultSet[]>
+}
+
+type Cache = { url: string; authToken: string; database: Database }
 let cache: Cache | undefined
 
-export type SqlArg = string | number | bigint | boolean | null | ArrayBuffer | Uint8Array | Date
-
-export function sqlArgs(values: readonly unknown[]): SqlArg[] {
+function sqlArgs(values: readonly unknown[] = []): SqlArg[] {
   return values.map((value) => {
-    if (value === undefined) return null
-    if (
-      value === null ||
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'bigint' ||
-      typeof value === 'boolean' ||
-      value instanceof ArrayBuffer ||
-      value instanceof Uint8Array ||
-      value instanceof Date
-    ) {
-      return value
-    }
+    if (value === undefined || value === null) return null
+    if (typeof value === 'boolean') return value ? 1 : 0
+    if (value instanceof Date) return value.toISOString()
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint' || value instanceof ArrayBuffer) return value
     throw new TypeError(`Unsupported libSQL argument type: ${typeof value}`)
   })
 }
 
-export function statement(sql: string, values: readonly unknown[] = []) {
-  return { sql, args: sqlArgs(values) }
+function normalize(statement: LooseStatement) {
+  if (typeof statement === 'string') return statement
+  return { sql: statement.sql, args: sqlArgs(statement.args) }
 }
 
-export function getDb(env: Bindings): Client {
+function wrapClient(client: Client): Database {
+  return {
+    execute(statement) {
+      return client.execute(normalize(statement))
+    },
+    batch(statements, mode = 'write') {
+      return client.batch(statements.map(normalize), mode)
+    },
+  }
+}
+
+export function getDb(env: Bindings): Database {
   if (cache?.url === env.TURSO_DATABASE_URL && cache.authToken === env.TURSO_AUTH_TOKEN) {
-    return cache.client
+    return cache.database
   }
 
   const client = createClient({
     url: env.TURSO_DATABASE_URL,
     authToken: env.TURSO_AUTH_TOKEN,
   })
-
-  cache = { url: env.TURSO_DATABASE_URL, authToken: env.TURSO_AUTH_TOKEN, client }
-  return client
+  const database = wrapClient(client)
+  cache = { url: env.TURSO_DATABASE_URL, authToken: env.TURSO_AUTH_TOKEN, database }
+  return database
 }
 
 export function rows<T extends Record<string, unknown>>(result: ResultSet): T[] {
