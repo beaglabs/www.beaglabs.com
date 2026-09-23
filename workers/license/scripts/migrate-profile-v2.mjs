@@ -72,5 +72,10 @@ await client.execute({
   args: ['["commercial","government","disconnected"]', 'PAP-FED-CLASSIFICATION-1Y'],
 })
 
+const violations = await client.execute('PRAGMA foreign_key_check')
+if (violations.rows.length) {
+  throw new Error(`Profile migration left ${violations.rows.length} foreign-key violation(s)`)
+}
+
 client.close()
-console.log('Normalized legacy profile aliases')
+console.log('Normalized legacy profile aliases and verified foreign keys')
