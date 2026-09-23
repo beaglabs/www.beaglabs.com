@@ -45,6 +45,28 @@ const auth = betterAuth({
 const { toBeCreated, toBeAdded, runMigrations } = await getMigrations(auth.options)
 console.log(`Better Auth migrations: ${toBeCreated.length} tables to create, ${toBeAdded.length} fields to add`)
 await runMigrations()
+
+const requiredTables = [
+  'user',
+  'session',
+  'account',
+  'verification',
+  'jwks',
+  'oauthClient',
+  'oauthResource',
+  'oauthClientResource',
+  'oauthRefreshToken',
+  'oauthAccessToken',
+  'oauthConsent',
+  'oauthClientAssertion',
+]
+const schema = await client.execute("SELECT name FROM sqlite_master WHERE type='table'")
+const present = new Set(schema.rows.map((row) => String(row.name)))
+const missing = requiredTables.filter((table) => !present.has(table))
+if (missing.length) {
+  throw new Error(`Better Auth migration verification failed; missing tables: ${missing.join(', ')}`)
+}
+
 await db.destroy()
 client.close()
-console.log('Applied Better Auth schema')
+console.log(`Applied and verified Better Auth schema (${requiredTables.length} tables)`)
