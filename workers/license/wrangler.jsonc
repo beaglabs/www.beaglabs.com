@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "beaglabs-license",
-  "main": "src/index.ts",
+  "main": "src/entry.ts",
   "compatibility_date": "2026-09-23",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
@@ -15,7 +15,10 @@
     "enabled": true
   },
   "vars": {
-    "BASE_URL": "https://license.beaglabs.com"
+    "BASE_URL": "https://license.beaglabs.com",
+    "PARTNERS_EMAIL": "partners@beaglabs.com",
+    "PARTNER_FROM_EMAIL": "Beag Labs Partners <partners@beaglabs.com>",
+    "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ"
   },
   "secrets": {
     "required": [
@@ -27,7 +30,8 @@
       "MICROSOFT_TENANT_ID",
       "ADMIN_MICROSOFT_OIDS",
       "PAPYRUS_LICENSE_KEY_ID",
-      "PAPYRUS_LICENSE_PRIVATE_KEY_PEM"
+      "PAPYRUS_LICENSE_PRIVATE_KEY_PEM",
+      "RESEND_API_KEY"
     ]
   }
 }
