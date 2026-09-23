@@ -1,0 +1,13 @@
+# Copy to .dev.vars for local development only. Never commit real values.
+TURSO_DATABASE_URL="libsql://YOUR-DATABASE.turso.io"
+TURSO_AUTH_TOKEN=""
+BETTER_AUTH_SECRET=""
+MICROSOFT_CLIENT_ID=""
+MICROSOFT_CLIENT_SECRET=""
+MICROSOFT_TENANT_ID=""
+# Comma-separated Microsoft Entra object IDs (oid), not email addresses.
+ADMIN_MICROSOFT_OIDS=""
+# Must match a key in PAPYRUS_LICENSE_AUTHORITIES on Papyrus deployments.
+PAPYRUS_LICENSE_KEY_ID="beag-2026-01"
+# PKCS#8 or traditional PEM private key corresponding to the Papyrus authority public key.
+PAPYRUS_LICENSE_PRIVATE_KEY_PEM=""

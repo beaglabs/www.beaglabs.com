@@ -1,0 +1,32 @@
+name: License Worker
+
+on:
+  pull_request:
+    paths:
+      - 'workers/license/**'
+      - '.github/workflows/license-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/license
+    env:
+      TURSO_DATABASE_URL: libsql://example.turso.io
+      TURSO_AUTH_TOKEN: ci-placeholder
+      BETTER_AUTH_SECRET: ci-placeholder-ci-placeholder-ci-placeholder
+      MICROSOFT_CLIENT_ID: 00000000-0000-0000-0000-000000000000
+      MICROSOFT_CLIENT_SECRET: ci-placeholder
+      MICROSOFT_TENANT_ID: 00000000-0000-0000-0000-000000000000
+      ADMIN_MICROSOFT_OIDS: 00000000-0000-0000-0000-000000000000
+      PAPYRUS_LICENSE_KEY_ID: ci-test
+      PAPYRUS_LICENSE_PRIVATE_KEY_PEM: ci-placeholder
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run check
