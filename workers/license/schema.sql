@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS partners (
   partner_status TEXT NOT NULL DEFAULT 'prospect' CHECK (partner_status IN ('prospect','active','inactive','terminated')),
   agreement_status TEXT NOT NULL DEFAULT 'none' CHECK (agreement_status IN ('none','negotiating','active','expired','terminated')),
   discount_tier TEXT,
-  portal_enabled INTEGER NOT NULL DEFAULT 0 CHECK (portal_enabled IN (0,1)),
   onboarded_at TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
@@ -150,12 +149,13 @@ CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 
 CREATE TABLE IF NOT EXISTS entitlements (
   id TEXT PRIMARY KEY,
-  order_item_id TEXT NOT NULL REFERENCES order_items(id),
+  order_item_id TEXT NOT NULL UNIQUE REFERENCES order_items(id),
   customer_organization_id TEXT NOT NULL REFERENCES organizations(id),
   product_id TEXT NOT NULL REFERENCES products(id),
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('pending','active','expired','suspended','revoked')),
   valid_from TEXT NOT NULL,
   valid_until TEXT,
+  deployment_limit INTEGER NOT NULL DEFAULT 1 CHECK (deployment_limit > 0),
   feature_set_json TEXT NOT NULL DEFAULT '[]',
   allowed_profiles_json TEXT NOT NULL DEFAULT '[]',
   notes TEXT,
