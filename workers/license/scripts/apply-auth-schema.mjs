@@ -18,7 +18,10 @@ const client = createClient({ url, authToken })
 const db = new Kysely({ dialect: new LibsqlDialect({ client }) })
 
 const auth = betterAuth({
-  database: db,
+  database: {
+    db,
+    type: 'sqlite',
+  },
   secret,
   baseURL: process.env.BASE_URL || 'https://license.beaglabs.com',
   user: {
