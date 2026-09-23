@@ -11,3 +11,11 @@ ADMIN_MICROSOFT_OIDS=""
 PAPYRUS_LICENSE_KEY_ID="beag-2026-01"
 # PKCS#8 or traditional PEM private key corresponding to the Papyrus authority public key.
 PAPYRUS_LICENSE_PRIVATE_KEY_PEM=""
+# Resend API key used for partner application approvals, invitations, and magic-link sign in.
+RESEND_API_KEY=""
+
+# These are non-secret production vars in wrangler.jsonc; override locally if useful.
+BASE_URL="http://localhost:8787"
+PARTNERS_EMAIL="partners@beaglabs.com"
+PARTNER_FROM_EMAIL="Beag Labs Partners <partners@beaglabs.com>"
+LOGO_DEV_TOKEN="pk_PJhuwvcfSPKKCJJxJcElsQ"
