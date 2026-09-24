@@ -12,6 +12,7 @@ Cloudflare Worker for Beag Labs partner onboarding, commercial/provisioning stat
 - OAuth/OIDC issuer: Better Auth OAuth Provider
 - Partner self-service: catalog access and **draft order submission only**
 - Papyrus licensing: Beag-admin-only, deployment-bound signed offline JSON compatible with the existing Papyrus `LicenseService`
+- License signer: version-pinned Azure Key Vault key; the authority private key never enters the Worker
 
 Partner OAuth users cannot book orders, create entitlements, register deployments, issue licenses, or revoke licenses. Every `/api/v1/*` endpoint remains Microsoft-admin-only and requires an Entra tenant ID matching `MICROSOFT_TENANT_ID` plus an immutable object ID (`oid`) in `ADMIN_MICROSOFT_OIDS`.
 
@@ -100,7 +101,7 @@ The service does not infer contract acceptance from partner activity.
 5. Beag registers a Papyrus deployment using its activation `deploymentId` and deployment profile.
 6. Beag explicitly issues the signed deployment-bound license.
 
-The license issuance endpoint does **not** accept arbitrary license fields. Licensee, deployment ID, profile, features, and expiration are derived from Turso records.
+The license issuance endpoint does **not** accept arbitrary license fields. Licensee, deployment ID, profile, features, expiration, and provisioned branding are derived from Turso records. The final payload is signed by Azure Key Vault before the issuance row is committed.
 
 ## Products seeded by `schema.sql`
 
@@ -122,8 +123,10 @@ Required Worker secrets:
 - `MICROSOFT_CLIENT_SECRET`
 - `MICROSOFT_TENANT_ID`
 - `ADMIN_MICROSOFT_OIDS` — comma-separated Entra object IDs, not email addresses
-- `PAPYRUS_LICENSE_KEY_ID`
-- `PAPYRUS_LICENSE_PRIVATE_KEY_PEM`
+- `AZURE_KEY_VAULT_TENANT_ID` — tenant containing the dedicated license-signer service principal
+- `AZURE_KEY_VAULT_CLIENT_ID` — dedicated license-signer application/service principal client ID
+- `AZURE_KEY_VAULT_CLIENT_SECRET` — credential for the sign-only service principal
+- `AZURE_KEY_VAULT_KEY_ID` — full **versioned** Azure Key Vault key URI, for example `https://beag-license.vault.azure.net/keys/papyrus-license/<version>`
 - `RESEND_API_KEY`
 
 Configured non-secret vars:
@@ -133,7 +136,25 @@ Configured non-secret vars:
 - `PARTNER_FROM_EMAIL=Beag Labs Partners <partners@beaglabs.com>`
 - `LOGO_DEV_TOKEN` — Logo.dev publishable key
 
-The Papyrus authority public key must be configured in Papyrus under `PAPYRUS_LICENSE_AUTHORITIES` using the same `PAPYRUS_LICENSE_KEY_ID`.
+`PAPYRUS_LICENSE_PRIVATE_KEY_PEM` and `PAPYRUS_LICENSE_KEY_ID` are deprecated and are not required by the deployed Worker. The full versioned Azure Key Vault key URI is embedded in the signed document as `keyId`.
+
+## Azure Key Vault license authority
+
+Use an Azure Key Vault **Premium** vault with an HSM-backed RSA key. The Worker uses `RS256`; a 3072-bit `RSA-HSM` key keeps compatibility with Papyrus's existing SHA-256/RSA verification path while keeping the private key non-exportable.
+
+Create the signing key with sign/verify operations only and pin `AZURE_KEY_VAULT_KEY_ID` to the returned key **version**, not merely the key name. Key rotation then produces a new `keyId`, while already-issued licenses continue to identify the exact public key that signed them.
+
+The Worker authenticates to Key Vault with a dedicated Microsoft Entra service principal using client credentials. Grant that principal only `Microsoft.KeyVault/vaults/keys/sign/action` at the individual key scope (preferred custom role), or use `Key Vault Crypto User` scoped to the individual key if a built-in role is required. Do not grant key create, import, delete, rotate, secret access, or vault administration to the Worker identity.
+
+Papyrus must trust the corresponding public key through `PAPYRUS_LICENSE_AUTHORITIES`, using the exact versioned Azure key URI as the map key:
+
+```json
+{
+  "https://beag-license.vault.azure.net/keys/papyrus-license/<version>": "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+}
+```
+
+The private key is never exported to Cloudflare, GitHub, Turso, or a Papyrus deployment.
 
 ## Microsoft app registration
 
@@ -142,6 +163,8 @@ Register this production redirect URI in Microsoft Entra:
 `https://license.beaglabs.com/api/auth/callback/microsoft`
 
 Microsoft authentication is for Beag administrator access. Approved partner users use Beag passwordless identities, not your internal Microsoft tenant.
+
+The Key Vault signer should use a **separate** app registration/service principal from this interactive licensing-admin app. Compromise of the admin OAuth client must not automatically grant license-signing authority.
 
 ## Email setup
 

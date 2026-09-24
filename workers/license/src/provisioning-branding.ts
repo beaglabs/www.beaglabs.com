@@ -1,7 +1,8 @@
-import { first, getDb } from './db'
-import type { Bindings } from './env'
+import { first, getDb, parseJsonArray } from './db'
+import { isDeploymentProfile, type Bindings } from './env'
 import licenseApp from './index'
-import { payloadSha256, signLicense, type LicensePayload } from './license'
+import { payloadSha256, type LicensePayload } from './license'
+import { signLicenseWithAzureKeyVault } from './azure-key-vault-signer'
 
 type Row = Record<string, unknown>
 type ExecutionLike = any
@@ -11,6 +12,14 @@ type BrandingPayload = { branding: { entraAppLogoUrl: string } }
 
 function requestId(request: Request): string {
   return request.headers.get('cf-ray') ?? request.headers.get('x-request-id') ?? crypto.randomUUID()
+}
+
+function id(prefix: string): string {
+  return `${prefix}_${crypto.randomUUID()}`
+}
+
+function now(): string {
+  return new Date().toISOString()
 }
 
 function jsonError(status: number, code: string, message: string): Response {
@@ -122,44 +131,87 @@ async function updateBranding(request: Request, env: Bindings, ctx: ExecutionLik
 }
 
 async function issueLicense(request: Request, env: Bindings, ctx: ExecutionLike, deploymentId: string): Promise<Response> {
-  const response = await licenseApp.fetch(request, env, ctx)
-  if (response.status !== 201) return response
+  const auth = await adminIdentity(request, env, ctx)
+  if (auth.response || !auth.admin) return auth.response ?? jsonError(401, 'unauthorized', 'Microsoft administrator sign-in required.')
 
   const db = getDb(env)
-  const branding = first<Row>(await db.execute({ sql: 'SELECT entra_app_logo_url FROM deployment_branding WHERE deployment_id=?', args: [deploymentId] }))
-  const logoUrl = typeof branding?.entra_app_logo_url === 'string' ? branding.entra_app_logo_url.trim() : ''
-  if (!logoUrl) return response
+  const source = first<Row>(await db.execute({
+    sql: `SELECT d.id AS deployment_record_id,d.papyrus_deployment_id,d.deployment_profile,d.status AS deployment_status,
+                 e.id AS entitlement_id,e.status AS entitlement_status,e.valid_from,e.valid_until,e.feature_set_json,e.allowed_profiles_json,
+                 o.id AS organization_id,o.legal_name,o.display_name,b.entra_app_logo_url
+          FROM deployments d
+          JOIN entitlements e ON e.id=d.entitlement_id
+          JOIN organizations o ON o.id=d.customer_organization_id
+          LEFT JOIN deployment_branding b ON b.deployment_id=d.id
+          WHERE d.id=?`,
+    args: [deploymentId],
+  }))
+  if (!source) return jsonError(404, 'deployment_not_found', 'Deployment not found.')
+  if (!['registered', 'licensed'].includes(String(source.deployment_status))) return jsonError(409, 'deployment_inactive', 'Deployment is suspended or retired.')
+  if (source.entitlement_status !== 'active') return jsonError(409, 'entitlement_inactive', 'Entitlement must be active before a license can be issued.')
 
-  const result = await response.clone().json().catch(() => null) as { issuanceId?: unknown; document?: Record<string, unknown> } | null
-  if (!result || typeof result.issuanceId !== 'string' || !result.document) return response
-  const { signature: _signature, keyId: _keyId, ...basePayload } = result.document
+  const validFrom = Date.parse(String(source.valid_from))
+  const validUntil = source.valid_until ? Date.parse(String(source.valid_until)) : null
+  const currentTime = Date.now()
+  if (Number.isFinite(validFrom) && validFrom > currentTime) return jsonError(409, 'entitlement_not_started', 'Entitlement validity has not started.')
+  if (validUntil !== null && Number.isFinite(validUntil) && validUntil <= currentTime) return jsonError(409, 'entitlement_expired', 'Entitlement has expired.')
+  if (!isDeploymentProfile(source.deployment_profile)) return jsonError(422, 'invalid_profile', 'Deployment profile is invalid.')
+  const allowedProfiles = parseJsonArray(source.allowed_profiles_json)
+  if (!allowedProfiles.includes(source.deployment_profile)) return jsonError(409, 'profile_not_entitled', 'Deployment profile is no longer allowed by the entitlement.')
+
+  const issuedAt = now()
+  const licenseId = id('lic')
+  const logoUrl = typeof source.entra_app_logo_url === 'string' ? source.entra_app_logo_url.trim() : ''
   const payload = {
-    ...basePayload,
-    branding: { entraAppLogoUrl: logoUrl },
-  } as LicensePayload & BrandingPayload
-  const signed = signLicense(payload, env.PAPYRUS_LICENSE_KEY_ID, env.PAPYRUS_LICENSE_PRIVATE_KEY_PEM) as ReturnType<typeof signLicense> & BrandingPayload
-  const issuance = first<Row>(await db.execute({ sql: `SELECT li.issued_by_oid,d.customer_organization_id FROM license_issuances li JOIN deployments d ON d.id=li.deployment_id WHERE li.id=?`, args: [result.issuanceId] }))
-  const timestamp = new Date().toISOString()
+    licenseId,
+    licensee: String(source.display_name || source.legal_name),
+    deploymentId: String(source.papyrus_deployment_id),
+    profiles: [source.deployment_profile],
+    features: parseJsonArray(source.feature_set_json),
+    issuedAt,
+    expiresAt: source.valid_until ? new Date(String(source.valid_until)).toISOString() : null,
+    ...(logoUrl ? { branding: { entraAppLogoUrl: logoUrl } } : {}),
+  } as LicensePayload & Partial<BrandingPayload>
+
+  let signed
+  try {
+    signed = await signLicenseWithAzureKeyVault(env, payload)
+  } catch (error) {
+    console.error('Azure Key Vault license signing failed', error)
+    return jsonError(503, 'license_signer_unavailable', 'Azure Key Vault could not sign the license. No license was issued.')
+  }
+
+  const issuanceId = id('lsi')
   await db.batch([
+    { sql: `UPDATE license_issuances SET status='superseded' WHERE deployment_id=? AND status='issued'`, args: [deploymentId] },
     {
-      sql: 'UPDATE license_issuances SET payload_json=?,signed_document_json=?,payload_sha256=? WHERE id=?',
-      args: [JSON.stringify(payload), JSON.stringify(signed), payloadSha256(payload), result.issuanceId],
+      sql: `INSERT INTO license_issuances (id,license_id,deployment_id,entitlement_id,key_id,payload_json,signed_document_json,payload_sha256,status,issued_by_oid,issued_at,expires_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      args: [issuanceId, licenseId, deploymentId, source.entitlement_id, signed.keyId, JSON.stringify(payload), JSON.stringify(signed), payloadSha256(payload), 'issued', auth.admin.oid, issuedAt, payload.expiresAt],
     },
+    { sql: `UPDATE deployments SET status='licensed',updated_at=? WHERE id=?`, args: [issuedAt, deploymentId] },
     {
       sql: `INSERT INTO audit_events (id,actor_type,actor_id,action,resource_type,resource_id,organization_id,partner_id,request_id,source_ip,user_agent,before_json,after_json,created_at)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       args: [
-        `aud_${crypto.randomUUID()}`, 'admin', String(issuance?.issued_by_oid ?? 'unknown'), 'license.branding.sign', 'license', result.issuanceId,
-        issuance?.customer_organization_id ?? null, null, requestId(request), request.headers.get('cf-connecting-ip'), request.headers.get('user-agent'),
-        null, JSON.stringify({ branding: payload.branding }), timestamp,
+        id('aud'), 'admin', auth.admin.oid, 'license.issue', 'license', issuanceId, source.organization_id, null,
+        requestId(request), request.headers.get('cf-connecting-ip'), request.headers.get('user-agent'), null,
+        JSON.stringify({
+          licenseId,
+          deploymentId: payload.deploymentId,
+          profile: source.deployment_profile,
+          features: payload.features,
+          expiresAt: payload.expiresAt,
+          keyId: signed.keyId,
+          signer: 'azure-key-vault',
+          ...(logoUrl ? { branding: payload.branding } : {}),
+        }),
+        issuedAt,
       ],
     },
   ], 'write')
 
-  const headers = new Headers(response.headers)
-  headers.set('Content-Type', 'application/json; charset=utf-8')
-  headers.set('Cache-Control', 'no-store')
-  return new Response(JSON.stringify({ ...result, document: signed }), { status: 201, headers })
+  return Response.json({ issuanceId, document: signed }, { status: 201, headers: { 'Cache-Control': 'no-store' } })
 }
 
 export default {

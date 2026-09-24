@@ -7,10 +7,15 @@ MICROSOFT_CLIENT_SECRET=""
 MICROSOFT_TENANT_ID=""
 # Comma-separated Microsoft Entra object IDs (oid), not email addresses.
 ADMIN_MICROSOFT_OIDS=""
-# Must match a key in PAPYRUS_LICENSE_AUTHORITIES on Papyrus deployments.
-PAPYRUS_LICENSE_KEY_ID="beag-2026-01"
-# PKCS#8 or traditional PEM private key corresponding to the Papyrus authority public key.
-PAPYRUS_LICENSE_PRIVATE_KEY_PEM=""
+
+# Production license signing uses a version-pinned Azure Key Vault key.
+# Use a dedicated service principal that can sign with this key and nothing else.
+AZURE_KEY_VAULT_TENANT_ID=""
+AZURE_KEY_VAULT_CLIENT_ID=""
+AZURE_KEY_VAULT_CLIENT_SECRET=""
+# Full VERSIONED key URI, e.g. https://beag-license.vault.azure.net/keys/papyrus-license/<version>
+AZURE_KEY_VAULT_KEY_ID=""
+
 # Resend API key used for partner application approvals, invitations, and magic-link sign in.
 RESEND_API_KEY=""
 

@@ -7,8 +7,14 @@ export type Bindings = {
   MICROSOFT_CLIENT_SECRET: string
   MICROSOFT_TENANT_ID: string
   ADMIN_MICROSOFT_OIDS: string
-  PAPYRUS_LICENSE_KEY_ID: string
-  PAPYRUS_LICENSE_PRIVATE_KEY_PEM: string
+  AZURE_KEY_VAULT_TENANT_ID: string
+  AZURE_KEY_VAULT_CLIENT_ID: string
+  AZURE_KEY_VAULT_CLIENT_SECRET: string
+  AZURE_KEY_VAULT_KEY_ID: string
+  /** Deprecated. Production issuance uses Azure Key Vault. */
+  PAPYRUS_LICENSE_KEY_ID?: string
+  /** Deprecated. Production issuance uses Azure Key Vault and keeps the private key non-exportable. */
+  PAPYRUS_LICENSE_PRIVATE_KEY_PEM?: string
   RESEND_API_KEY: string
   PARTNERS_EMAIL: string
   PARTNER_FROM_EMAIL: string
