@@ -3,6 +3,7 @@ import portalApp from './portal'
 import applicationApp from './application'
 import oauthPagesApp from './oauth-pages'
 import entitlementAddonsApp from './entitlement-addons'
+import provisioningBrandingApp from './provisioning-branding'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -15,6 +16,12 @@ function usePortal(path: string): boolean {
     path === '/portal' ||
     path.startsWith('/api/partner/') ||
     path.startsWith('/oauth/')
+}
+
+function useProvisioningBranding(path: string, method: string): boolean {
+  return (path === '/api/v1/deployments' && method === 'POST') ||
+    (/^\/api\/v1\/deployments\/[^/]+\/branding\/?$/.test(path) && (method === 'PUT' || method === 'PATCH')) ||
+    (/^\/api\/v1\/deployments\/[^/]+\/licenses\/?$/.test(path) && method === 'POST')
 }
 
 export default {
@@ -37,6 +44,10 @@ export default {
 
     if (/^\/api\/v1\/entitlements\/[^/]+\/addons(?:\/[^/]+\/revoke)?\/?$/.test(path)) {
       return entitlementAddonsApp.fetch(request, env, ctx)
+    }
+
+    if (useProvisioningBranding(path, request.method)) {
+      return provisioningBrandingApp.fetch(request, env, ctx)
     }
 
     if (usePortal(path)) {
