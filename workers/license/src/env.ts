@@ -11,9 +11,10 @@ export type Bindings = {
   AZURE_KEY_VAULT_CLIENT_ID: string
   AZURE_KEY_VAULT_CLIENT_SECRET: string
   AZURE_KEY_VAULT_KEY_ID: string
-  /** Legacy direct signer fields retained only for the non-exported base Hono app. */
-  PAPYRUS_LICENSE_KEY_ID: string
-  PAPYRUS_LICENSE_PRIVATE_KEY_PEM: string
+  /** Deprecated. Production issuance uses Azure Key Vault. */
+  PAPYRUS_LICENSE_KEY_ID?: string
+  /** Deprecated. Production issuance uses Azure Key Vault and keeps the private key non-exportable. */
+  PAPYRUS_LICENSE_PRIVATE_KEY_PEM?: string
   RESEND_API_KEY: string
   PARTNERS_EMAIL: string
   PARTNER_FROM_EMAIL: string
