@@ -22,6 +22,8 @@ const UI_REDIRECTS = new Map<string, string>([
   ['/admin', '/licensing'],
   ['/partners/apply', '/partners/apply'],
   ['/partner/login', '/partners/login'],
+  ['/partner/invite', '/partners/invite'],
+  ['/partner-application/review', '/partners/review'],
   ['/portal', '/partners/portal'],
   ['/oauth/consent', '/partners/oauth/consent'],
 ])
@@ -102,8 +104,8 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
     return publicApp.fetch(request, env, ctx)
   }
 
-  // Retained for compatibility with existing direct links. Normal browser
-  // navigation is redirected above to the www application.
+  // Retained for compatibility with non-browser callers and legacy links. The
+  // normal human-facing GET routes above are redirected to the main site.
   if (path === '/partners/apply' || path === '/partners/apply/') {
     return applicationApp.fetch(request, env, ctx)
   }
