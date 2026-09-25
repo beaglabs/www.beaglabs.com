@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 import { ContactForm } from '@/components/contact-form'
 import { Navbar } from '@/components/navbar'
@@ -22,16 +23,26 @@ export default function PartnersPage() {
       <Navbar />
       <main className="bg-[#FAFAF9]">
         <section className="nb-section-divider bg-[#FAFAF9] px-6 pt-28 pb-16 lg:px-9 lg:pt-32 lg:pb-20">
-          <div className="mx-auto max-w-[1440px]">
-            <span className="nb-label mb-5 inline-block">Partners</span>
-            <h1 className="max-w-[760px] text-[32px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[42px]">
-              Partner with Beag Labs.
-            </h1>
-            <p className="mt-5 max-w-[560px] text-[17px] font-medium leading-[1.65] text-[#404040]">
-              Two lanes. Resell and deploy Papyrus for your customers as a Cloud Solution
-              Provider — or team with us as a Prime to deliver AI capability inside your
-              programs. Either way, the data stays where it is.
-            </p>
+          <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <span className="nb-label mb-5 inline-block">Partners</span>
+              <h1 className="max-w-[760px] text-[32px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[42px]">
+                Partner with Beag Labs.
+              </h1>
+              <p className="mt-5 max-w-[620px] text-[17px] font-medium leading-[1.65] text-[#404040]">
+                Two lanes. Resell and deploy Papyrus for your customers as a Cloud Solution
+                Provider — or team with us as a Prime to deliver AI capability inside your
+                programs. Either way, the data stays where it is.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+              <Link href="/partners/apply" className="nb-btn-orange inline-flex items-center justify-center px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[0.1em]">
+                Apply for partner access
+              </Link>
+              <Link href="/partners/login" className="nb-btn-white inline-flex items-center justify-center px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[0.1em]">
+                Partner sign in
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -50,7 +61,9 @@ export default function PartnersPage() {
               </h2>
               <p className="max-w-[430px] text-[16px] font-medium leading-[1.65] text-[#404040]">
                 Pick your lane above, then tell us what a first engagement looks like. We will
-                come back with partner pricing and the deployment runbook.
+                come back with partner pricing and the deployment runbook. For channel access,
+                use the structured partner application so the legal entity and federal identifiers
+                are tied to the correct account from the start.
               </p>
             </div>
             <ContactForm id="partnerships" />
