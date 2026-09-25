@@ -22,5 +22,5 @@ RESEND_API_KEY=""
 # These are non-secret production vars in wrangler.jsonc; override locally if useful.
 BASE_URL="http://localhost:8787"
 PARTNERS_EMAIL="partners@beaglabs.com"
-PARTNER_FROM_EMAIL="Beag Labs Partners <partners@beaglabs.com>"
+PARTNER_FROM_EMAIL="Beag Labs Partners <partners@mail.beaglabs.com>"
 LOGO_DEV_TOKEN="pk_PJhuwvcfSPKKCJJxJcElsQ"
