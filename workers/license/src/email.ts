@@ -1,6 +1,8 @@
 import { Resend } from 'resend'
 import type { Bindings } from './env'
 
+const WWW_ORIGIN = 'https://www.beaglabs.com'
+
 function esc(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)
 }
@@ -36,7 +38,7 @@ export async function sendApplicationReviewEmail(env: Bindings, input: {
   skus: string[]
   token: string
 }) {
-  const base = `${env.BASE_URL}/partner-application/review?token=${encodeURIComponent(input.token)}`
+  const base = `${WWW_ORIGIN}/partners/review?token=${encodeURIComponent(input.token)}`
   const rows = [
     ['Company', input.companyName],
     ['Domain', input.companyDomain],
@@ -56,7 +58,7 @@ export async function sendApplicationReviewEmail(env: Bindings, input: {
 }
 
 export async function sendPartnerInviteEmail(env: Bindings, input: { companyName: string; email: string; token: string }) {
-  const url = `${env.BASE_URL}/partner/invite?token=${encodeURIComponent(input.token)}`
+  const url = `${WWW_ORIGIN}/partners/invite?token=${encodeURIComponent(input.token)}`
   return send(env, input.email, `You're invited to the Beag Labs Partner Portal`, emailShell('Partner access approved', `
     <p><strong>${esc(input.companyName)}</strong> has been approved for Beag Labs partner access.</p>
     <p>Use the invitation below to register your Beag Labs identity. Sign-in is passwordless and restricted to approved partner email addresses.</p>
