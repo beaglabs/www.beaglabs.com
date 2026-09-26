@@ -14,15 +14,12 @@ export function ogImageUrl(params: {
   label?: string
   /** ISO date shown in the OG card's mono meta row. */
   date?: string
-  /** Absolute or root-relative image URL featured centered in the OG card. */
-  icon?: string
 }) {
   const searchParams = new URLSearchParams()
   searchParams.set('title', params.title)
   if (params.description) searchParams.set('description', params.description)
   if (params.label) searchParams.set('label', params.label)
   if (params.date) searchParams.set('date', params.date)
-  if (params.icon) searchParams.set('icon', params.icon)
   return `${BASE_URL}/api/og?${searchParams.toString()}`
 }
 
