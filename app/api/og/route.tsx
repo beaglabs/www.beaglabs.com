@@ -1,11 +1,29 @@
 import { ImageResponse } from 'next/og'
-import { googleFonts } from 'takumi-js/helpers'
 
 export const runtime = 'nodejs'
 
 const ORANGE = '#ff5f1f'
 const INK = '#111111'
 const WHITE = '#ffffff'
+
+const FONT_URLS = {
+  robotoCondensed:
+    'https://raw.githubusercontent.com/google/fonts/main/ofl/robotocondensed/RobotoCondensed%5Bwght%5D.ttf',
+  workSans:
+    'https://raw.githubusercontent.com/google/fonts/main/ofl/worksans/WorkSans%5Bwght%5D.ttf',
+  jetBrainsMono:
+    'https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf',
+} as const
+
+const fontData = Promise.all(
+  Object.values(FONT_URLS).map(async (url) => {
+    const response = await fetch(url, { cache: 'force-cache' })
+    if (!response.ok) {
+      throw new Error(`Failed to load OG font: ${response.status}`)
+    }
+    return response.arrayBuffer()
+  })
+)
 
 function truncate(value: string, max: number) {
   if (value.length <= max) return value
@@ -19,9 +37,9 @@ function getTitleSize(title: string) {
   return 88
 }
 
-// `next/og` uses Satori for JSX/CSS layout. Keep this route as the single
-// renderer for dynamic OG + Twitter cards so every pageMetadata() caller and
-// blog article inherits the same Beag Labs visual system.
+// `next/og` renders with Satori. This is the shared renderer for dynamic OG
+// and Twitter cards so pageMetadata() callers and blog articles inherit one
+// Beag Labs visual system.
 export async function GET(request: Request) {
   const { origin, searchParams } = new URL(request.url)
   const title = truncate(searchParams.get('title') ?? 'Beag Labs', 118)
@@ -47,12 +65,7 @@ export async function GET(request: Request) {
       })
     : ''
 
-  const fonts = await googleFonts([
-    { name: 'Roboto Condensed', weight: [900] },
-    { name: 'Work Sans', weight: [500, 600] },
-    { name: 'JetBrains Mono', weight: [700] },
-  ])
-
+  const [robotoCondensed, workSans, jetBrainsMono] = await fontData
   const titleSize = getTitleSize(title)
 
   return new ImageResponse(
@@ -316,7 +329,26 @@ export async function GET(request: Request) {
     {
       width: 1200,
       height: 630,
-      fonts,
+      fonts: [
+        {
+          name: 'Roboto Condensed',
+          data: robotoCondensed,
+          weight: 900,
+          style: 'normal',
+        },
+        {
+          name: 'Work Sans',
+          data: workSans,
+          weight: 600,
+          style: 'normal',
+        },
+        {
+          name: 'JetBrains Mono',
+          data: jetBrainsMono,
+          weight: 700,
+          style: 'normal',
+        },
+      ],
       headers: {
         'Cache-Control': 'public, immutable, no-transform, max-age=86400',
       },
