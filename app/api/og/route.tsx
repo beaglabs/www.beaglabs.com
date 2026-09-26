@@ -37,11 +37,10 @@ function getTitleSize(title: string) {
   return 88
 }
 
-// `next/og` renders with Satori. This is the shared renderer for dynamic OG
-// and Twitter cards so pageMetadata() callers and blog articles inherit one
-// Beag Labs visual system.
+// `next/og` renders with Satori. This route is the shared renderer for
+// dynamic OG + Twitter cards across Beag Labs.
 export async function GET(request: Request) {
-  const { origin, searchParams } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
   const title = truncate(searchParams.get('title') ?? 'Beag Labs', 118)
   const description = truncate(searchParams.get('description') ?? '', 156)
   const label = truncate(
@@ -49,13 +48,6 @@ export async function GET(request: Request) {
     42
   )
   const rawDate = searchParams.get('date') ?? ''
-  const rawIcon = searchParams.get('icon') ?? ''
-
-  const icon = rawIcon
-    ? rawIcon.startsWith('http')
-      ? rawIcon
-      : `${origin}${rawIcon.startsWith('/') ? '' : '/'}${rawIcon}`
-    : ''
 
   const date = rawDate
     ? new Date(rawDate).toLocaleDateString('en-US', {
@@ -187,13 +179,13 @@ export async function GET(request: Request) {
               <div
                 style={{
                   display: 'flex',
+                  maxWidth: '900px',
                   fontFamily: 'Roboto Condensed',
                   fontSize: `${titleSize}px`,
                   fontWeight: 900,
                   lineHeight: 0.9,
                   letterSpacing: '-0.045em',
                   textTransform: 'uppercase',
-                  maxWidth: icon ? '720px' : '900px',
                 }}
               >
                 {title}
@@ -214,7 +206,7 @@ export async function GET(request: Request) {
                 <div
                   style={{
                     display: 'flex',
-                    maxWidth: icon ? '680px' : '860px',
+                    maxWidth: '860px',
                     fontSize: '22px',
                     fontWeight: 600,
                     lineHeight: 1.32,
@@ -229,7 +221,7 @@ export async function GET(request: Request) {
             <div
               style={{
                 display: 'flex',
-                width: icon ? '330px' : '270px',
+                width: '270px',
                 borderLeft: `4px solid ${INK}`,
                 backgroundColor: INK,
                 color: WHITE,
@@ -238,52 +230,24 @@ export async function GET(request: Request) {
                 padding: '28px',
               }}
             >
-              {icon ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                    border: `3px solid ${WHITE}`,
-                    backgroundColor: WHITE,
-                    boxShadow: `10px 10px 0 ${ORANGE}`,
-                    padding: '22px',
-                  }}
-                >
-                  <img
-                    src={icon}
-                    alt=""
-                    width={240}
-                    height={240}
-                    style={{
-                      width: '240px',
-                      height: '240px',
-                      objectFit: 'contain',
-                    }}
-                  />
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '100%',
-                    fontFamily: 'Roboto Condensed',
-                    fontSize: '43px',
-                    fontWeight: 900,
-                    lineHeight: 0.92,
-                    letterSpacing: '-0.03em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  <span>Tools for</span>
-                  <span>a more</span>
-                  <span style={{ color: ORANGE }}>secure</span>
-                  <span>tomorrow.</span>
-                </div>
-              )}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: '100%',
+                  fontFamily: 'Roboto Condensed',
+                  fontSize: '43px',
+                  fontWeight: 900,
+                  lineHeight: 0.92,
+                  letterSpacing: '-0.03em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                <span>Tools for</span>
+                <span>a more</span>
+                <span style={{ color: ORANGE }}>secure</span>
+                <span>tomorrow.</span>
+              </div>
             </div>
           </div>
 
