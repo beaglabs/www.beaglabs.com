@@ -42,7 +42,7 @@
 @theme inline {
   --font-sans: var(--font-sans), 'Work Sans', sans-serif;
   --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
-  --font-display: var(--font-display), 'Big Shoulders', sans-serif;
+  --font-display: var(--font-display), 'Roboto Condensed', 'Arial Narrow', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -86,8 +86,6 @@
     @apply border-border outline-ring/50;
   }
   html {
-    /* Kill the rubber-band overscroll bounce (and the light gap it reveals
-       above the full-bleed colored hero bands) and pull-to-refresh. */
     overscroll-behavior-y: none;
     background-color: var(--background);
   }
@@ -96,9 +94,23 @@
     overscroll-behavior-y: none;
   }
   ::selection {
-    background: #ff5f1f;
-    color: #ff5f1ff;
+    background: #111111;
+    color: #ffffff;
   }
+}
+
+@utility marketing-grid {
+  background-image:
+    linear-gradient(to right, rgb(17 17 17 / 0.11) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(17 17 17 / 0.11) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+
+@utility display-black {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.035em;
 }
 
 /* ── neobrutalist utilities ── */
