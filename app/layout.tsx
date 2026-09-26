@@ -1,24 +1,26 @@
 import type { Metadata } from 'next'
-import { Work_Sans, JetBrains_Mono, Big_Shoulders } from 'next/font/google'
+import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const workSans = Work_Sans({
-  subsets: ["latin"],
+  subsets: ['latin'],
   variable: '--font-sans',
   weight: ['300', '400', '500', '600', '700', '800'],
-});
+})
+
 const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: '--font-mono'
-});
-const bigShoulders = Big_Shoulders({
-  subsets: ["latin"],
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
+
+const robotoCondensed = Roboto_Condensed({
+  subsets: ['latin'],
   variable: '--font-display',
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
+  weight: ['700', '800', '900'],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
@@ -88,7 +90,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-        <body className={`${workSans.variable} ${jetbrainsMono.variable} ${bigShoulders.variable} font-sans antialiased bg-background text-foreground`}>
+      <body
+        className={`${workSans.variable} ${jetbrainsMono.variable} ${robotoCondensed.variable} font-sans antialiased bg-background text-foreground`}
+      >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
