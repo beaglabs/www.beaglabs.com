@@ -10,6 +10,7 @@ import {
   blogCategoryLabel,
   isBlogCategory,
 } from '@/lib/blog/categories'
+import { ogImageUrl } from '@/lib/seo'
 
 export async function generateStaticParams() {
   return BLOG_CATEGORIES.map((c) => ({ category: c.value }))
@@ -23,11 +24,33 @@ export async function generateMetadata({
   const { category } = await params
   const decoded = decodeURIComponent(category)
   const label = blogCategoryLabel(decoded)
+  const title = `${label} — Blog — Beag Labs`
+  const description = `Blog posts in the ${label} category.`
+  const canonical = `https://www.beaglabs.com/blog/category/${category}`
+  const ogUrl = ogImageUrl({
+    title: label,
+    description,
+    label: 'Blog Category',
+  })
+
   return {
-    title: `${label} — Blog — Beag Labs`,
-    description: `Blog posts in the ${label} category.`,
+    title,
+    description,
     alternates: {
-      canonical: `https://www.beaglabs.com/blog/category/${category}`,
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: 'Beag Labs',
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: `Beag Labs — ${label}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogUrl],
     },
   }
 }
