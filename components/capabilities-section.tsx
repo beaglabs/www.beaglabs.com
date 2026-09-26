@@ -50,21 +50,18 @@ function slugFor(label: string): string {
 
 export function CapabilitiesSection() {
   return (
-    <section id="capabilities" className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+    <section id="capabilities" className="border-b-[3px] border-[#111] bg-[#ff5f1f] px-6 py-24 lg:px-9 lg:py-28">
       <div className="mx-auto max-w-[1440px]">
-        <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+        <div className="mb-14 grid grid-cols-1 gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
-            <span className="nb-label mb-5 inline-block">Capabilities</span>
-            <h2 className="max-w-[460px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+            <span className="nb-label mb-5 inline-block !bg-white">Capabilities</span>
+            <h2 className="display-black max-w-[620px] text-[48px] leading-[0.95] text-[#111] sm:text-[58px] lg:text-[72px]">
               Five ways we ship AI you actually own.
             </h2>
           </div>
-          <div>
-            <p className="max-w-[480px] text-[17px] leading-[1.65] text-[#404040] font-medium">
-              Every engagement ends with you owning the code, the model
-              weights, and the operational runbook. No managed-service
-              dependency, no per-inference fees, no data leaving your
-              perimeter.
+          <div className="border-l-[3px] border-[#111] pl-6 lg:pl-8">
+            <p className="max-w-[520px] text-[17px] font-semibold leading-[1.6] text-[#181818]">
+              Every engagement ends with you owning the code, the model weights, and the operational runbook. No managed-service dependency, no per-inference fees, no data leaving your perimeter.
             </p>
           </div>
         </div>
@@ -74,23 +71,15 @@ export function CapabilitiesSection() {
             <Link
               key={service.id}
               href={`/capability/${slugFor(service.label)}`}
-              className="nb-card group flex flex-col bg-white p-8 transition-all hover:shadow-[8px_8px_0px_0px_#ff5f1f] hover:-translate-x-[1px] hover:-translate-y-[1px] lg:p-10"
+              className="group flex min-h-[300px] flex-col border-[3px] border-[#111] bg-white p-8 shadow-[6px_6px_0px_0px_#111] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[9px_9px_0px_0px_#111] lg:p-9"
             >
-              <div className="mb-8 flex items-start justify-between gap-6">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5f1f]">
-                  {service.label}
-                </span>
-                <span className="font-mono text-[11px] font-bold text-[#8c8c8c]">
-                  {service.id}
-                </span>
+              <div className="mb-8 flex items-start justify-between gap-6 border-b-[2px] border-[#111] pb-4">
+                <span className="font-mono text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#ff5f1f]">{service.label}</span>
+                <span className="font-display text-[22px] font-black leading-none text-[#111]">{service.id}</span>
               </div>
-              <h3 className="mb-3 text-[22px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[#111]">
-                {service.title}
-              </h3>
-              <p className="text-[13.5px] leading-[1.7] text-[#444] lg:text-[14px]">
-                {service.description}
-              </p>
-              <span className="mt-6 inline-flex items-center gap-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#ff5f1f] transition-all group-hover:gap-2">
+              <h3 className="display-black mb-4 text-[30px] leading-[0.98] text-[#111]">{service.title}</h3>
+              <p className="text-[14px] leading-[1.65] text-[#333]">{service.description}</p>
+              <span className="mt-auto pt-7 font-mono text-[10px] font-extrabold uppercase tracking-[0.15em] text-[#111] transition-all group-hover:translate-x-1">
                 Read more →
               </span>
             </Link>
