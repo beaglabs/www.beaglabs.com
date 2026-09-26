@@ -6,6 +6,7 @@ import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { industries } from "@/data/use-cases/industries"
+import { ogImageUrl } from "@/lib/seo"
 
 interface UseCasePageProps {
   params: Promise<{ slug: string }>
@@ -27,6 +28,12 @@ export async function generateMetadata({
     return { title: "Not Found" }
   }
 
+  const ogUrl = ogImageUrl({
+    title: industry.title,
+    description: industry.metaDescription,
+    label: industry.industry,
+  })
+
   return {
     title: industry.title,
     description: industry.metaDescription,
@@ -39,7 +46,7 @@ export async function generateMetadata({
       url: `https://www.beaglabs.com/use-cases/${slug}`,
       images: [
         {
-          url: "/og-image.png",
+          url: ogUrl,
           width: 1200,
           height: 630,
           alt: `Beag Labs — ${industry.industry}`,
@@ -50,7 +57,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${industry.title} — Beag Labs`,
       description: industry.metaDescription,
-      images: ["/og-image.png"],
+      images: [ogUrl],
     },
   }
 }

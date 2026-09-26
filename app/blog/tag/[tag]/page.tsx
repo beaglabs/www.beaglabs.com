@@ -4,6 +4,7 @@ import { fetchHygraph } from '@/lib/hygraph/client'
 import { GET_BLOG_POSTS_BY_TAG, GET_ALL_BLOG_TAGS } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
+import { ogImageUrl } from '@/lib/seo'
 
 export async function generateStaticParams() {
   try {
@@ -25,11 +26,33 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { tag } = await params
   const decoded = decodeURIComponent(tag)
+  const title = `#${decoded} — Blog — Beag Labs`
+  const description = `Blog posts tagged ${decoded}.`
+  const canonical = `https://www.beaglabs.com/blog/tag/${tag}`
+  const ogUrl = ogImageUrl({
+    title: `#${decoded}`,
+    description,
+    label: 'Blog Tag',
+  })
+
   return {
-    title: `#${decoded} — Blog — Beag Labs`,
-    description: `Blog posts tagged ${decoded}.`,
+    title,
+    description,
     alternates: {
-      canonical: `https://www.beaglabs.com/blog/tag/${tag}`,
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: 'Beag Labs',
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: `Beag Labs — #${decoded}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogUrl],
     },
   }
 }

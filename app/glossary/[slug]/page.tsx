@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar"
 import { SiteFooter } from "@/components/site-footer"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { ogImageUrl } from "@/lib/seo"
 import {
   glossaryTerms,
   getGlossaryTerm,
@@ -32,6 +33,11 @@ export async function generateMetadata({
   }
 
   const canonical = `https://www.beaglabs.com/glossary/${slug}`
+  const ogUrl = ogImageUrl({
+    title: term.term,
+    description: term.shortDefinition,
+    label: "Glossary",
+  })
 
   return {
     title: `${term.term} — Beag Labs Glossary`,
@@ -47,7 +53,7 @@ export async function generateMetadata({
       type: "article",
       images: [
         {
-          url: "/og-image.png",
+          url: ogUrl,
           width: 1200,
           height: 630,
           alt: `Beag Labs — ${term.term}`,
@@ -58,7 +64,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${term.term} — Beag Labs Glossary`,
       description: term.shortDefinition,
-      images: ["/og-image.png"],
+      images: [ogUrl],
     },
   }
 }

@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { comparisons } from "@/data/comparisons/comparisons"
+import { ogImageUrl } from "@/lib/seo"
 
 interface ComparisonPageProps {
   params: Promise<{ slug: string }>
@@ -28,6 +29,11 @@ export async function generateMetadata({
   }
 
   const canonical = `https://www.beaglabs.com/compare/${slug}`
+  const ogUrl = ogImageUrl({
+    title: comparison.title,
+    description: comparison.metaDescription,
+    label: "Comparison",
+  })
 
   return {
     title: `${comparison.title} — Beag Labs`,
@@ -43,7 +49,7 @@ export async function generateMetadata({
       type: "article",
       images: [
         {
-          url: "/og-image.png",
+          url: ogUrl,
           width: 1200,
           height: 630,
           alt: `Beag Labs — ${comparison.title}`,
@@ -54,7 +60,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${comparison.title} — Beag Labs`,
       description: comparison.metaDescription,
-      images: ["/og-image.png"],
+      images: [ogUrl],
     },
   }
 }
