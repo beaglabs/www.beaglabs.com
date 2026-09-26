@@ -1,24 +1,35 @@
-import { ImageResponse } from 'takumi-js/response'
+import { ImageResponse } from 'next/og'
 import { googleFonts } from 'takumi-js/helpers'
 
 export const runtime = 'nodejs'
 
-// Renders a 1200x630 OG image that mirrors the /blog card UI (neobrutalist:
-// white card, 3px black border, hard offset shadow, dotted-grid media area,
-// orange category chip, mono date). Query params:
-//   title       (required) — card headline
-//   label       — category / eyebrow chip (defaults to a tagline)
-//   description — optional supporting line
-//   date        — ISO date; rendered in the mono meta row when present
-//   icon        — absolute or root-relative image URL to feature centered in
-//                 the media area (e.g. the Tradewinds Awardable badge)
-// The output is a stable PNG URL, so it can also be uploaded/used as a Hygraph
-// coverImage for a post.
+const ORANGE = '#ff5f1f'
+const INK = '#111111'
+const WHITE = '#ffffff'
+
+function truncate(value: string, max: number) {
+  if (value.length <= max) return value
+  return `${value.slice(0, max - 1).trimEnd()}…`
+}
+
+function getTitleSize(title: string) {
+  if (title.length > 90) return 58
+  if (title.length > 68) return 66
+  if (title.length > 46) return 76
+  return 88
+}
+
+// `next/og` uses Satori for JSX/CSS layout. Keep this route as the single
+// renderer for dynamic OG + Twitter cards so every pageMetadata() caller and
+// blog article inherits the same Beag Labs visual system.
 export async function GET(request: Request) {
   const { origin, searchParams } = new URL(request.url)
-  const title = searchParams.get('title') ?? 'Beag Labs'
-  const description = searchParams.get('description') ?? ''
-  const label = searchParams.get('label') ?? 'Small models. Deployable anywhere.'
+  const title = truncate(searchParams.get('title') ?? 'Beag Labs', 118)
+  const description = truncate(searchParams.get('description') ?? '', 156)
+  const label = truncate(
+    searchParams.get('label') ?? 'Tools for a more secure tomorrow.',
+    42
+  )
   const rawDate = searchParams.get('date') ?? ''
   const rawIcon = searchParams.get('icon') ?? ''
 
@@ -36,198 +47,268 @@ export async function GET(request: Request) {
       })
     : ''
 
-  const titleSize = title.length > 64 ? 44 : title.length > 42 ? 54 : 64
-
   const fonts = await googleFonts([
-    { name: 'Inter', weight: [500, 700, 800] },
+    { name: 'Roboto Condensed', weight: [900] },
+    { name: 'Work Sans', weight: [500, 600] },
     { name: 'JetBrains Mono', weight: [700] },
   ])
 
-  const ORANGE = '#ff5f1f'
-  const INK = '#111111'
-  const DOT_GRID: Record<string, string> = {
-    backgroundColor: '#f4f4f2',
-    backgroundImage: 'radial-gradient(#c9c9c4 2px, transparent 2px)',
-    backgroundSize: '26px 26px',
-  }
+  const titleSize = getTitleSize(title)
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: '100%',
-          height: '100%',
+          width: '1200px',
+          height: '630px',
           display: 'flex',
-          padding: '56px',
-          backgroundColor: '#FAFAF9',
-          backgroundImage: 'radial-gradient(#e4e4e0 2px, transparent 2px)',
-          backgroundSize: '26px 26px',
-          fontFamily: 'Inter',
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundColor: ORANGE,
+          color: INK,
+          backgroundImage:
+            'linear-gradient(to right, rgba(17,17,17,0.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,17,17,0.10) 1px, transparent 1px)',
+          backgroundSize: '42px 42px',
+          padding: '30px',
+          fontFamily: 'Work Sans',
         }}
       >
-        {/* Card */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
-            flex: 1,
+            width: '100%',
+            height: '100%',
             border: `4px solid ${INK}`,
-            boxShadow: `18px 18px 0px 0px ${INK}`,
-            backgroundColor: '#ffffff',
-            overflow: 'hidden',
+            backgroundColor: ORANGE,
           }}
         >
-          {/* Media area */}
           <div
             style={{
+              height: '92px',
               display: 'flex',
-              position: 'relative',
-              height: '312px',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'space-between',
               borderBottom: `4px solid ${INK}`,
-              ...(icon ? { backgroundColor: INK } : DOT_GRID),
+              padding: '0 34px',
             }}
           >
-            {icon ? (
-              <img
-                src={icon}
-                width={272}
-                height={272}
-                style={{ width: '272px', height: '272px', objectFit: 'contain' }}
-              />
-            ) : (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  border: `4px solid ${INK}`,
-                  backgroundColor: ORANGE,
-                  boxShadow: `8px 8px 0px 0px ${INK}`,
-                  padding: '14px 26px',
+                  justifyContent: 'center',
+                  width: '62px',
+                  height: '48px',
+                  backgroundColor: INK,
+                  color: WHITE,
+                  fontFamily: 'Roboto Condensed',
+                  fontSize: '30px',
+                  fontWeight: 900,
+                  letterSpacing: '-0.04em',
+                }}
+              >
+                B_
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  marginLeft: '18px',
                   fontFamily: 'JetBrains Mono',
-                  fontSize: '26px',
+                  fontSize: '17px',
                   fontWeight: 700,
-                  letterSpacing: '0.14em',
+                  letterSpacing: '0.18em',
                   textTransform: 'uppercase',
-                  color: INK,
+                }}
+              >
+                Beag Labs
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: `3px solid ${INK}`,
+                  backgroundColor: WHITE,
+                  padding: '9px 14px',
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
                 }}
               >
                 {label}
               </div>
-            )}
-
-            {/* Corner meta chip */}
-            <div
-              style={{
-                display: 'flex',
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                border: `3px solid ${INK}`,
-                backgroundColor: '#ffffff',
-                padding: '6px 12px',
-                fontFamily: 'JetBrains Mono',
-                fontSize: '16px',
-                fontWeight: 700,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: INK,
-              }}
-            >
-              beaglabs / blog
-            </div>
-
-            {/* CTA badge — conversion prompt, absolutely positioned so it
-                never affects the title/description layout below */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                position: 'absolute',
-                bottom: '20px',
-                left: '20px',
-                border: `3px solid ${INK}`,
-                backgroundColor: ORANGE,
-                boxShadow: `6px 6px 0px 0px ${INK}`,
-                padding: '10px 22px',
-                fontFamily: 'JetBrains Mono',
-                fontSize: '22px',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: INK,
-              }}
-            >
-              Read more →
+              {date ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    marginLeft: '12px',
+                    fontFamily: 'JetBrains Mono',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {date}
+                </div>
+              ) : null}
             </div>
           </div>
 
-          {/* Body */}
+          <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                justifyContent: 'center',
+                padding: '44px 42px 36px 42px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  fontFamily: 'Roboto Condensed',
+                  fontSize: `${titleSize}px`,
+                  fontWeight: 900,
+                  lineHeight: 0.9,
+                  letterSpacing: '-0.045em',
+                  textTransform: 'uppercase',
+                  maxWidth: icon ? '720px' : '900px',
+                }}
+              >
+                {title}
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  height: '4px',
+                  backgroundColor: INK,
+                  marginTop: '24px',
+                  marginBottom: description ? '20px' : '0px',
+                }}
+              />
+
+              {description ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    maxWidth: icon ? '680px' : '860px',
+                    fontSize: '22px',
+                    fontWeight: 600,
+                    lineHeight: 1.32,
+                    color: '#242424',
+                  }}
+                >
+                  {description}
+                </div>
+              ) : null}
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                width: icon ? '330px' : '270px',
+                borderLeft: `4px solid ${INK}`,
+                backgroundColor: INK,
+                color: WHITE,
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '28px',
+              }}
+            >
+              {icon ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '100%',
+                    border: `3px solid ${WHITE}`,
+                    backgroundColor: WHITE,
+                    boxShadow: `10px 10px 0 ${ORANGE}`,
+                    padding: '22px',
+                  }}
+                >
+                  <img
+                    src={icon}
+                    alt=""
+                    width={240}
+                    height={240}
+                    style={{
+                      width: '240px',
+                      height: '240px',
+                      objectFit: 'contain',
+                    }}
+                  />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                    fontFamily: 'Roboto Condensed',
+                    fontSize: '43px',
+                    fontWeight: 900,
+                    lineHeight: 0.92,
+                    letterSpacing: '-0.03em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  <span>Tools for</span>
+                  <span>a more</span>
+                  <span style={{ color: ORANGE }}>secure</span>
+                  <span>tomorrow.</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div
             style={{
+              height: '64px',
               display: 'flex',
-              flexDirection: 'column',
-              flex: 1,
-              justifyContent: 'center',
-              padding: '36px 48px',
-              backgroundColor: '#ffffff',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderTop: `4px solid ${INK}`,
+              padding: '0 34px',
+              backgroundColor: WHITE,
             }}
           >
             <div
               style={{
                 display: 'flex',
-                alignItems: 'center',
-                marginBottom: '18px',
                 fontFamily: 'JetBrains Mono',
-                fontSize: '20px',
+                fontSize: '13px',
                 fontWeight: 700,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
               }}
             >
-              <span style={{ color: ORANGE }}>{label}</span>
-              {date ? (
-                <span style={{ display: 'flex', color: '#555555' }}>
-                  <span style={{ padding: '0 12px', color: INK }}>·</span>
-                  {date}
-                </span>
-              ) : (
-                <span />
-              )}
+              www.beaglabs.com
             </div>
-
             <div
               style={{
                 display: 'flex',
-                fontSize: `${titleSize}px`,
-                fontWeight: 800,
-                lineHeight: 1.04,
-                letterSpacing: '-0.035em',
-                color: INK,
+                fontFamily: 'JetBrains Mono',
+                fontSize: '13px',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
               }}
             >
-              {title}
+              AI · DATA · INFRASTRUCTURE
             </div>
-
-            {description ? (
-              <div
-                style={{
-                  display: 'flex',
-                  marginTop: '18px',
-                  fontSize: '24px',
-                  fontWeight: 500,
-                  lineHeight: 1.4,
-                  color: '#555555',
-                }}
-              >
-                {description.length > 120
-                  ? `${description.slice(0, 117)}...`
-                  : description}
-              </div>
-            ) : (
-              <span />
-            )}
           </div>
         </div>
       </div>
