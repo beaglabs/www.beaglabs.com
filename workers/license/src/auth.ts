@@ -84,6 +84,16 @@ export function buildAuth(env: Bindings) {
     },
     account: {
       storeStateStrategy: 'cookie',
+      accountLinking: {
+        enabled: true,
+        // Admin Microsoft OAuth is already constrained below by both the configured
+        // tenant and immutable Entra OID allowlist. Trusting only this provider lets
+        // an approved admin attach Microsoft to an existing same-email Better Auth
+        // user (for example one created earlier by the partner magic-link flow)
+        // without weakening linking for any other provider.
+        trustedProviders: ['microsoft'],
+        allowDifferentEmails: false,
+      },
     },
     advanced: {
       database: {
