@@ -48,6 +48,21 @@ export async function GET(request: Request) {
     42
   )
   const rawDate = searchParams.get('date') ?? ''
+  const rawCoverImage = searchParams.get('coverImage') ?? ''
+  let coverImage: string | null = null
+  if (rawCoverImage) {
+    try {
+      const parsedImageUrl = new URL(rawCoverImage)
+      if (
+        parsedImageUrl.protocol === 'https:' &&
+        parsedImageUrl.hostname === 'media.graphassets.com'
+      ) {
+        coverImage = parsedImageUrl.toString()
+      }
+    } catch {
+      // Ignore invalid image URLs and render the standard branded card.
+    }
+  }
 
   const date = rawDate
     ? new Date(rawDate).toLocaleDateString('en-US', {
@@ -72,7 +87,7 @@ export async function GET(request: Request) {
           backgroundColor: ORANGE,
           color: INK,
           backgroundImage:
-            'linear-gradient(to right, rgba(17,17,17,0.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,17,17,0.10) 1px, transparent 1px)',
+            'linear-gradient(to right, rgba(17,17,17,0.11) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,17,17,0.11) 1px, transparent 1px)',
           backgroundSize: '42px 42px',
           padding: '30px',
           fontFamily: 'Work Sans',
@@ -85,7 +100,7 @@ export async function GET(request: Request) {
             width: '100%',
             height: '100%',
             border: `4px solid ${INK}`,
-            backgroundColor: ORANGE,
+            backgroundColor: 'rgba(255,95,31,0.90)',
           }}
         >
           <div
@@ -218,37 +233,57 @@ export async function GET(request: Request) {
               ) : null}
             </div>
 
-            <div
-              style={{
-                display: 'flex',
-                width: '270px',
-                borderLeft: `4px solid ${INK}`,
-                backgroundColor: INK,
-                color: WHITE,
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '28px',
-              }}
-            >
+            {coverImage ? (
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  width: '100%',
-                  fontFamily: 'Roboto Condensed',
-                  fontSize: '43px',
-                  fontWeight: 900,
-                  lineHeight: 0.92,
-                  letterSpacing: '-0.03em',
-                  textTransform: 'uppercase',
+                  width: '270px',
+                  borderLeft: `4px solid ${INK}`,
+                  backgroundColor: INK,
+                  alignItems: 'stretch',
+                  overflow: 'hidden',
                 }}
               >
-                <span>Tools for</span>
-                <span>a more</span>
-                <span style={{ color: ORANGE }}>secure</span>
-                <span>tomorrow.</span>
+                <img
+                  src={coverImage}
+                  width="266"
+                  height="410"
+                  style={{ width: '266px', height: '410px', objectFit: 'cover' }}
+                />
               </div>
-            </div>
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  width: '270px',
+                  borderLeft: `4px solid ${INK}`,
+                  backgroundColor: INK,
+                  color: WHITE,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '28px',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                    fontFamily: 'Roboto Condensed',
+                    fontSize: '43px',
+                    fontWeight: 900,
+                    lineHeight: 0.92,
+                    letterSpacing: '-0.03em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  <span>Tools for</span>
+                  <span>a more</span>
+                  <span style={{ color: ORANGE }}>secure</span>
+                  <span>tomorrow.</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div

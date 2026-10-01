@@ -16,7 +16,7 @@
   },
   "vars": {
     "BASE_URL": "https://license.beaglabs.com",
-    "PARTNERS_EMAIL": "partners@beaglabs.com",
+    "PARTNERS_EMAIL": "partnerships@beaglabs.com",
     "PARTNER_FROM_EMAIL": "Beag Labs Partners <partners@mail.beaglabs.com>",
     "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ"
   },

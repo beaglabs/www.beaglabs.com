@@ -7,6 +7,7 @@ import { BlogLayout } from '@/components/blog/blog-layout'
 import { BlocksRenderer } from '@/components/blog/blocks-renderer'
 import { PostTracker } from '@/components/blog/post-tracker'
 import { PostTags } from '@/components/blog/post-tags'
+import { PostCtaSocial } from '@/components/blog/post-cta-social'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ogImageUrl } from '@/lib/seo'
 
@@ -61,6 +62,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     description: data.blogPost.seoDescription || data.blogPost.exerpt,
     label: data.blogPost.category,
     date: data.blogPost.publishedAt,
+    coverImage: data.blogPost.coverImage?.url,
   })
 
   return {
@@ -207,6 +209,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
 
       <PostTags tags={post.tags} />
+      <PostCtaSocial title={post.title} url={canonicalUrl} />
       </BlogLayout>
     </>
   )

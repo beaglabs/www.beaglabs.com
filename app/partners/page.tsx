@@ -10,7 +10,7 @@ import { pageMetadata } from '@/lib/seo'
 export const metadata: Metadata = pageMetadata({
   title: 'Partners',
   description:
-    'Partner with Beag Labs. Two lanes: resell and deploy Papyrus as a Cloud Solution Provider, or team with us as a Prime to deliver AI capability inside your programs.',
+    'Partner with Beag Labs. Resell the transactable Papyrus Azure Marketplace VM offer as an authorized CSP partner, or team with us as a Prime to deliver AI capability inside your programs.',
   path: '/partners',
   label: 'Partners',
   ogDescription:
@@ -30,7 +30,7 @@ export default function PartnersPage() {
                 Partner with Beag Labs.
               </h1>
               <p className="mt-5 max-w-[620px] text-[17px] font-medium leading-[1.65] text-[#404040]">
-                Two lanes. Resell and deploy Papyrus for your customers as a Cloud Solution
+                Two lanes. Resell and deploy Papyrus through Microsoft Marketplace as an authorized Cloud Solution
                 Provider — or team with us as a Prime to deliver AI capability inside your
                 programs. Either way, the data stays where it is.
               </p>

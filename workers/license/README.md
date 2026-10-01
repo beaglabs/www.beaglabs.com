@@ -35,7 +35,7 @@ Required application fields:
 Flow:
 
 1. The application is stored in `partner_applications` with a one-time decision token.
-2. `partners@beaglabs.com` receives an approve/reject email.
+2. `partnerships@beaglabs.com` receives an approve/reject email.
 3. Email buttons open a review page; **GET never mutates approval state** so mail-security scanners cannot approve an application.
 4. A confirmed approval creates or links the commercial organization and partner record.
 5. The Main POC receives a 72-hour, single-use partner invitation.
@@ -132,8 +132,8 @@ Required Worker secrets:
 Configured non-secret vars:
 
 - `BASE_URL=https://license.beaglabs.com`
-- `PARTNERS_EMAIL=partners@beaglabs.com`
-- `PARTNER_FROM_EMAIL=Beag Labs Partners <partners@beaglabs.com>`
+- `PARTNERS_EMAIL=partnerships@beaglabs.com`
+- `PARTNER_FROM_EMAIL=Beag Labs Partners <partnerships@beaglabs.com>`
 - `LOGO_DEV_TOKEN` — Logo.dev publishable key
 
 `PAPYRUS_LICENSE_PRIVATE_KEY_PEM` and `PAPYRUS_LICENSE_KEY_ID` are deprecated and are not required by the deployed Worker. The full versioned Azure Key Vault key URI is embedded in the signed document as `keyId`.
@@ -170,7 +170,7 @@ The Key Vault signer should use a **separate** app registration/service principa
 
 The Worker uses Resend for:
 
-- application approval/rejection review emails to `partners@beaglabs.com`;
+- application approval/rejection review emails to `partnerships@beaglabs.com`;
 - approved partner invitations;
 - partner magic-link sign-in.
 
