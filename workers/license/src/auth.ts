@@ -13,6 +13,27 @@ const WWW_ORIGINS = [
   'http://127.0.0.1:3000',
 ] as const
 
+function authErrorDetails(error: unknown): Record<string, unknown> {
+  if (error instanceof Error) {
+    const cause = (error as Error & { cause?: unknown }).cause
+    return {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      cause: cause instanceof Error
+        ? { name: cause.name, message: cause.message, stack: cause.stack }
+        : cause,
+      ...Object.fromEntries(Object.entries(error)),
+    }
+  }
+
+  if (error && typeof error === 'object') {
+    return { ...(error as Record<string, unknown>) }
+  }
+
+  return { value: String(error) }
+}
+
 async function canUsePartnerEmail(env: Bindings, email: string): Promise<boolean> {
   const normalized = email.trim().toLowerCase()
   const row = first<Record<string, unknown>>(await getDb(env).execute({
@@ -88,6 +109,11 @@ export function buildAuth(env: Bindings) {
     basePath: '/api/auth',
     secret: env.BETTER_AUTH_SECRET,
     trustedOrigins: [env.BASE_URL, ...WWW_ORIGINS],
+    onAPIError: {
+      onError: (error) => {
+        console.error('Better Auth API error', authErrorDetails(error))
+      },
+    },
     session: {
       expiresIn: 60 * 60 * 8,
       cookieCache: {
