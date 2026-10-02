@@ -5,7 +5,9 @@ import oauthPagesApp from './oauth-pages'
 import publicApp from './public-api'
 import entitlementAddonsApp from './entitlement-addons'
 import provisioningBrandingApp from './provisioning-branding'
-import marketplaceApp, { syncMarketplaceVmUsage } from './marketplace'
+import marketplaceApp from './marketplace'
+import marketplaceLeadApp from './marketplace-leads'
+import marketplaceReportApp, { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -97,6 +99,17 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
     return buildAuth(env).handler(request)
   }
 
+  // These two routes intentionally override the legacy Marketplace handlers:
+  // lead ingestion enforces Microsoft ActionCode semantics, while VM analytics
+  // uses Partner Center's production Scheduled Reports API instead of the
+  // testQueryResult endpoint.
+  if (path === '/api/marketplace/leads' && request.method === 'POST') {
+    return marketplaceLeadApp.fetch(request, env, ctx)
+  }
+  if (path === '/api/v1/marketplace/sync' && request.method === 'POST') {
+    return marketplaceReportApp.fetch(request, env, ctx)
+  }
+
   if (path.startsWith('/api/marketplace/') || path.startsWith('/api/v1/marketplace/')) {
     return marketplaceApp.fetch(request, env, ctx)
   }
@@ -138,7 +151,7 @@ export default {
 
   async scheduled(_controller: any, env: Bindings, ctx: any): Promise<void> {
     ctx.waitUntil(
-      syncMarketplaceVmUsage(env).catch((error) => {
+      syncMarketplaceVmUsageScheduled(env).catch((error) => {
         console.error('scheduled Marketplace VM usage sync failed', error)
       }),
     )
