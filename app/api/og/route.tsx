@@ -15,15 +15,24 @@ const FONT_URLS = {
     'https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf',
 } as const
 
-const fontData = Promise.all(
-  Object.values(FONT_URLS).map(async (url) => {
+async function fetchAsset(url: string): Promise<ArrayBuffer | null> {
+  try {
     const response = await fetch(url, { cache: 'force-cache' })
-    if (!response.ok) {
-      throw new Error(`Failed to load OG font: ${response.status}`)
-    }
+    if (!response.ok) return null
     return response.arrayBuffer()
-  })
-)
+  } catch {
+    return null
+  }
+}
+
+// External font availability must never decide whether a social preview exists.
+// If a font host is temporarily unavailable, Satori falls back to its bundled
+// font rather than turning /api/og into a 500 response for link-preview bots.
+const fontData = Promise.all([
+  fetchAsset(FONT_URLS.robotoCondensed),
+  fetchAsset(FONT_URLS.workSans),
+  fetchAsset(FONT_URLS.jetBrainsMono),
+])
 
 function truncate(value: string, max: number) {
   if (value.length <= max) return value
@@ -35,6 +44,33 @@ function getTitleSize(title: string) {
   if (title.length > 68) return 66
   if (title.length > 46) return 76
   return 88
+}
+
+function isTrustedCoverHost(hostname: string) {
+  return hostname === 'media.graphassets.com' || hostname.endsWith('.graphassets.com')
+}
+
+async function resolveCoverImage(rawCoverImage: string): Promise<string | null> {
+  if (!rawCoverImage) return null
+
+  try {
+    const parsed = new URL(rawCoverImage)
+    if (parsed.protocol !== 'https:' || !isTrustedCoverHost(parsed.hostname)) return null
+
+    // Fetch the trusted Hygraph asset ourselves so a CDN hiccup cannot make
+    // Satori fail halfway through the entire card render. If it is unavailable,
+    // the branded black fallback panel is rendered instead.
+    const response = await fetch(parsed.toString(), { cache: 'force-cache' })
+    if (!response.ok) return null
+    const contentType = response.headers.get('content-type')?.split(';')[0] ?? ''
+    if (!contentType.startsWith('image/')) return null
+
+    const bytes = Buffer.from(await response.arrayBuffer())
+    if (bytes.byteLength > 8 * 1024 * 1024) return null
+    return `data:${contentType};base64,${bytes.toString('base64')}`
+  } catch {
+    return null
+  }
 }
 
 // `next/og` renders with Satori. This route is the shared renderer for
@@ -49,20 +85,7 @@ export async function GET(request: Request) {
   )
   const rawDate = searchParams.get('date') ?? ''
   const rawCoverImage = searchParams.get('coverImage') ?? ''
-  let coverImage: string | null = null
-  if (rawCoverImage) {
-    try {
-      const parsedImageUrl = new URL(rawCoverImage)
-      if (
-        parsedImageUrl.protocol === 'https:' &&
-        parsedImageUrl.hostname === 'media.graphassets.com'
-      ) {
-        coverImage = parsedImageUrl.toString()
-      }
-    } catch {
-      // Ignore invalid image URLs and render the standard branded card.
-    }
-  }
+  const coverImage = await resolveCoverImage(rawCoverImage)
 
   const date = rawDate
     ? new Date(rawDate).toLocaleDateString('en-US', {
@@ -74,6 +97,19 @@ export async function GET(request: Request) {
 
   const [robotoCondensed, workSans, jetBrainsMono] = await fontData
   const titleSize = getTitleSize(title)
+  const headlineFont = robotoCondensed ? 'Roboto Condensed' : 'sans-serif'
+  const bodyFont = workSans ? 'Work Sans' : 'sans-serif'
+  const monoFont = jetBrainsMono ? 'JetBrains Mono' : 'monospace'
+  const fonts: Array<{
+    name: string
+    data: ArrayBuffer
+    weight: 600 | 700 | 900
+    style: 'normal'
+  }> = []
+
+  if (robotoCondensed) fonts.push({ name: 'Roboto Condensed', data: robotoCondensed, weight: 900, style: 'normal' })
+  if (workSans) fonts.push({ name: 'Work Sans', data: workSans, weight: 600, style: 'normal' })
+  if (jetBrainsMono) fonts.push({ name: 'JetBrains Mono', data: jetBrainsMono, weight: 700, style: 'normal' })
 
   return new ImageResponse(
     (
@@ -90,7 +126,7 @@ export async function GET(request: Request) {
             'linear-gradient(to right, rgba(17,17,17,0.11) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,17,17,0.11) 1px, transparent 1px)',
           backgroundSize: '42px 42px',
           padding: '30px',
-          fontFamily: 'Work Sans',
+          fontFamily: bodyFont,
         }}
       >
         <div
@@ -123,7 +159,7 @@ export async function GET(request: Request) {
                   height: '48px',
                   backgroundColor: INK,
                   color: WHITE,
-                  fontFamily: 'Roboto Condensed',
+                  fontFamily: headlineFont,
                   fontSize: '30px',
                   fontWeight: 900,
                   letterSpacing: '-0.04em',
@@ -135,7 +171,7 @@ export async function GET(request: Request) {
                 style={{
                   display: 'flex',
                   marginLeft: '18px',
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: monoFont,
                   fontSize: '17px',
                   fontWeight: 700,
                   letterSpacing: '0.18em',
@@ -154,7 +190,7 @@ export async function GET(request: Request) {
                   border: `3px solid ${INK}`,
                   backgroundColor: WHITE,
                   padding: '9px 14px',
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: monoFont,
                   fontSize: '14px',
                   fontWeight: 700,
                   letterSpacing: '0.12em',
@@ -168,7 +204,7 @@ export async function GET(request: Request) {
                   style={{
                     display: 'flex',
                     marginLeft: '12px',
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: monoFont,
                     fontSize: '14px',
                     fontWeight: 700,
                     letterSpacing: '0.08em',
@@ -195,7 +231,7 @@ export async function GET(request: Request) {
                 style={{
                   display: 'flex',
                   maxWidth: '900px',
-                  fontFamily: 'Roboto Condensed',
+                  fontFamily: headlineFont,
                   fontSize: `${titleSize}px`,
                   fontWeight: 900,
                   lineHeight: 0.9,
@@ -269,7 +305,7 @@ export async function GET(request: Request) {
                     display: 'flex',
                     flexDirection: 'column',
                     width: '100%',
-                    fontFamily: 'Roboto Condensed',
+                    fontFamily: headlineFont,
                     fontSize: '43px',
                     fontWeight: 900,
                     lineHeight: 0.92,
@@ -300,7 +336,7 @@ export async function GET(request: Request) {
             <div
               style={{
                 display: 'flex',
-                fontFamily: 'JetBrains Mono',
+                fontFamily: monoFont,
                 fontSize: '13px',
                 fontWeight: 700,
                 letterSpacing: '0.14em',
@@ -312,7 +348,7 @@ export async function GET(request: Request) {
             <div
               style={{
                 display: 'flex',
-                fontFamily: 'JetBrains Mono',
+                fontFamily: monoFont,
                 fontSize: '13px',
                 fontWeight: 700,
                 letterSpacing: '0.12em',
@@ -328,28 +364,10 @@ export async function GET(request: Request) {
     {
       width: 1200,
       height: 630,
-      fonts: [
-        {
-          name: 'Roboto Condensed',
-          data: robotoCondensed,
-          weight: 900,
-          style: 'normal',
-        },
-        {
-          name: 'Work Sans',
-          data: workSans,
-          weight: 600,
-          style: 'normal',
-        },
-        {
-          name: 'JetBrains Mono',
-          data: jetBrainsMono,
-          weight: 700,
-          style: 'normal',
-        },
-      ],
+      ...(fonts.length ? { fonts } : {}),
       headers: {
-        'Cache-Control': 'public, immutable, no-transform, max-age=86400',
+        'Cache-Control': 'public, no-transform, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+        'Content-Type': 'image/png',
       },
     }
   )

@@ -42,6 +42,14 @@ function extractHeadings(markdown: string) {
   return headings
 }
 
+function formatPostDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  })
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params
   const { isEnabled: isDraft } = await draftMode()
@@ -64,6 +72,14 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     date: data.blogPost.publishedAt,
     coverImage: data.blogPost.coverImage?.url,
   })
+  const coverFallback = data.blogPost.coverImage
+    ? [{
+        url: data.blogPost.coverImage.url,
+        width: data.blogPost.coverImage.width,
+        height: data.blogPost.coverImage.height,
+        alt: data.blogPost.title,
+      }]
+    : []
 
   return {
     title: data.blogPost.seoTitle || data.blogPost.title,
@@ -80,7 +96,10 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       publishedTime: data.blogPost.publishedAt,
       modifiedTime: data.blogPost.updatedAt,
       url: canonicalUrl,
-      images: [{ url: ogUrl, width: 1200, height: 630, alt: data.blogPost.title }],
+      images: [
+        { url: ogUrl, width: 1200, height: 630, alt: data.blogPost.title, type: 'image/png' },
+        ...coverFallback,
+      ],
     },
     twitter: {
       card: 'summary_large_image' as const,
@@ -108,6 +127,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = data.blogPost
   const toc = extractHeadings(post.body)
   const canonicalUrl = `https://www.beaglabs.com/blog/${slug}`
+  const formattedDate = formatPostDate(post.publishedAt)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -160,18 +180,27 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       {/* ─── HERO BAND ─── */}
       <section className="border-b-[3px] border-[#111] bg-[#ff5f1f]">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-6 py-14 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-16 lg:px-9 lg:py-16">
-          <p className="font-mono text-[13px] font-bold uppercase tracking-[0.2em] text-[#111]">
-            [{' '}
-            <time dateTime={post.publishedAt}>
-              {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: '2-digit',
-              })}
-            </time>{' '}
-            ]
-          </p>
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-6 py-10 lg:grid-cols-[minmax(320px,460px)_1fr] lg:items-center lg:gap-16 lg:px-9 lg:py-14">
+          {post.coverImage ? (
+            <div className="relative aspect-[16/10] overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[7px_7px_0px_0px_#111]">
+              <img
+                src={post.coverImage.url}
+                alt={post.title}
+                className="h-full w-full object-cover"
+              />
+              <time
+                dateTime={post.publishedAt}
+                className="absolute bottom-4 left-4 border-[2px] border-[#111] bg-white px-3 py-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[3px_3px_0px_0px_#111]"
+              >
+                [ {formattedDate} ]
+              </time>
+            </div>
+          ) : (
+            <p className="font-mono text-[13px] font-bold uppercase tracking-[0.2em] text-[#111]">
+              [ <time dateTime={post.publishedAt}>{formattedDate}</time> ]
+            </p>
+          )}
+
           <div className="max-w-[820px] lg:justify-self-end">
             <span className="mb-5 inline-block border-[2px] border-[#111] bg-[#111] px-3 py-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ff5f1f]">
               {post.category}
@@ -193,23 +222,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           { name: post.title, url: `/blog/${slug}` },
         ]} />
 
-      {post.coverImage && (
-        <img
-          src={post.coverImage.url}
-          alt={post.title}
-          className="mb-10 w-full rounded-[24px] border-[3px] border-[#111] shadow-[6px_6px_0px_0px_#111]"
+        <BlocksRenderer
+          markdown={post.body}
+          mathBlocks={post.mathBlock ?? []}
+          mermaidBlocks={post.mermaidBlock ?? []}
+          tableBlocks={post.tableBlock ?? []}
         />
-      )}
 
-      <BlocksRenderer
-        markdown={post.body}
-        mathBlocks={post.mathBlock ?? []}
-        mermaidBlocks={post.mermaidBlock ?? []}
-        tableBlocks={post.tableBlock ?? []}
-      />
-
-      <PostTags tags={post.tags} />
-      <PostCtaSocial title={post.title} url={canonicalUrl} />
+        <PostTags tags={post.tags} />
+        <PostCtaSocial title={post.title} url={canonicalUrl} />
       </BlogLayout>
     </>
   )
