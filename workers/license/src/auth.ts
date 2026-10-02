@@ -75,47 +75,6 @@ async function microsoftOidForUser(env: Bindings, userId: string): Promise<strin
   return ''
 }
 
-/**
- * Better Auth >=1.6.11 deliberately refuses implicit OAuth linking when the
- * existing local user row is not already email-verified. That protects ordinary
- * accounts from pre-account hijacking and must stay enabled globally.
- *
- * The licensing admin flow is narrower: before this helper can run, Microsoft
- * OAuth has already been constrained to the configured Beag tenant and the
- * immutable Entra OID has matched ADMIN_MICROSOFT_OIDS. For that already-approved
- * identity, promote only the same-email local row so Better Auth can attach the
- * Microsoft account without disabling its verification gate for anyone else.
- */
-async function verifyExistingUserEmailForApprovedAdmin(env: Bindings, email: string): Promise<void> {
-  const normalized = email.trim().toLowerCase()
-  if (!normalized) return
-
-  const db = getDb(env)
-  const updates = [
-    {
-      sql: `UPDATE "user" SET email_verified=1 WHERE lower(email)=?`,
-      args: [normalized],
-    },
-    {
-      sql: `UPDATE "user" SET emailVerified=1 WHERE lower(email)=?`,
-      args: [normalized],
-    },
-  ]
-
-  let lastError: unknown
-  for (const update of updates) {
-    try {
-      await db.execute(update)
-      return
-    } catch (error) {
-      lastError = error
-    }
-  }
-
-  if (lastError instanceof Error) throw lastError
-  throw new Error('Unable to mark the existing Better Auth user as email verified')
-}
-
 export function buildAuth(env: Bindings) {
   const allowed = adminOids(env)
   const tenantId = env.MICROSOFT_TENANT_ID.toLowerCase()
@@ -141,11 +100,11 @@ export function buildAuth(env: Bindings) {
       storeStateStrategy: 'cookie',
       accountLinking: {
         enabled: true,
-        // Admin Microsoft OAuth is already constrained below by both the configured
-        // tenant and immutable Entra OID allowlist. Trusting only this provider lets
-        // an approved admin attach Microsoft to an existing same-email Better Auth
-        // user (for example one created earlier by the partner magic-link flow)
-        // without weakening linking for any other provider.
+        // Admin Microsoft OAuth is constrained below by both the configured
+        // tenant and immutable Entra OID allowlist. Better Auth 1.7 treats a
+        // trusted provider as sufficient for implicit same-email linking, so no
+        // pre-link mutation of the local user's email verification state is
+        // required here.
         trustedProviders: ['microsoft'],
         allowDifferentEmails: false,
       },
@@ -179,7 +138,7 @@ export function buildAuth(env: Bindings) {
           returned: true,
         },
       },
-      validateUserInfo: async ({ user, source }) => {
+      validateUserInfo: async ({ source }) => {
         // Magic-link partner accounts are admitted by sendMagicLink below. Any
         // OAuth-created account is reserved for the Beag admin Microsoft tenant.
         if (!source.oauth) return
@@ -199,13 +158,6 @@ export function buildAuth(env: Bindings) {
             error: 'admin_not_allowed',
             errorDescription: 'This Microsoft Entra identity is not authorized to administer Beag Labs licensing.',
           }
-        }
-
-        // Better Auth's post-1.6.11 anti-hijacking gate requires an existing local
-        // row to be verified before implicit linking. Repair only that row, and only
-        // after the Microsoft tenant + immutable admin OID checks above succeeded.
-        if (source.action === 'link-account' && user.email) {
-          await verifyExistingUserEmailForApprovedAdmin(env, user.email)
         }
       },
     },
