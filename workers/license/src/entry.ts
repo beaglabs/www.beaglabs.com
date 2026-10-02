@@ -5,6 +5,7 @@ import oauthPagesApp from './oauth-pages'
 import publicApp from './public-api'
 import entitlementAddonsApp from './entitlement-addons'
 import provisioningBrandingApp from './provisioning-branding'
+import marketplaceApp, { syncMarketplaceVmUsage } from './marketplace'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -69,7 +70,7 @@ function withCors(request: Request, response: Response): Response {
   wrapped.headers.set('Access-Control-Allow-Origin', origin)
   wrapped.headers.set('Access-Control-Allow-Credentials', 'true')
   wrapped.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
-  wrapped.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  wrapped.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Beag-Signature, X-Beag-Timestamp')
   wrapped.headers.set('Access-Control-Expose-Headers', 'Content-Disposition')
   appendVary(wrapped.headers, 'Origin')
   return wrapped
@@ -87,25 +88,23 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
   const url = new URL(request.url)
   const path = url.pathname
 
-  // Human-facing surfaces live at www.beaglabs.com. Keep this origin focused on
-  // auth, partner APIs, licensing state, audit, and Azure-backed license signing.
   if (request.method === 'GET') {
     const redirect = uiRedirect(url)
     if (redirect) return redirect
   }
 
-  // OAuth/OIDC discovery lives at the origin root rather than under
-  // Better Auth's /api/auth base path.
   if (path.startsWith('/.well-known/')) {
     return buildAuth(env).handler(request)
+  }
+
+  if (path.startsWith('/api/marketplace/') || path.startsWith('/api/v1/marketplace/')) {
+    return marketplaceApp.fetch(request, env, ctx)
   }
 
   if (path.startsWith('/api/public/')) {
     return publicApp.fetch(request, env, ctx)
   }
 
-  // Retained for compatibility with non-browser callers and legacy links. The
-  // normal human-facing GET routes above are redirected to the main site.
   if (path === '/partners/apply' || path === '/partners/apply/') {
     return applicationApp.fetch(request, env, ctx)
   }
@@ -134,7 +133,14 @@ export default {
     if (request.method === 'OPTIONS' && allowedOrigin(request)) {
       return withCors(request, new Response(null, { status: 204 }))
     }
-
     return withCors(request, await route(request, env, ctx))
+  },
+
+  async scheduled(_controller: ScheduledController, env: Bindings, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(
+      syncMarketplaceVmUsage(env).catch((error) => {
+        console.error('scheduled Marketplace VM usage sync failed', error)
+      }),
+    )
   },
 }
