@@ -153,6 +153,12 @@ export function buildAuth(env: Bindings) {
     advanced: {
       database: {
         joins: false,
+        // Better Auth 1.7 validates Kysely schemas by introspecting the live
+        // database at runtime. Turso/libSQL's remote Hrana path can reject that
+        // metadata introspection even when ordinary queries are healthy, causing
+        // every auth request to fail before session lookup. Migrations and CI
+        // remain the source of truth for schema validation.
+        validateSchema: false,
       },
     },
     user: {
