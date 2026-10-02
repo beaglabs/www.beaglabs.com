@@ -31,16 +31,15 @@ export default function PartnersPage() {
               </h1>
               <p className="mt-5 max-w-[620px] text-[17px] font-medium leading-[1.65] text-[#404040]">
                 Two lanes. Resell and deploy Papyrus through Microsoft Marketplace as an authorized Cloud Solution
-                Provider — or team with us as a Prime to deliver AI capability inside your
-                programs. Either way, the data stays where it is.
+                Provider — or team with us as a Prime to deliver AI capability inside your programs. Either way, the data stays where it is.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-              <Link href="/partners/apply" className="nb-btn-orange inline-flex items-center justify-center px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[0.1em]">
-                Apply for partner access
+              <Link href="/partners/portal" className="nb-btn-orange inline-flex items-center justify-center px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[0.1em]">
+                Marketplace channel
               </Link>
-              <Link href="/partners/login" className="nb-btn-white inline-flex items-center justify-center px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[0.1em]">
-                Partner sign in
+              <Link href="/support/commercial" className="nb-btn-white inline-flex items-center justify-center px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[0.1em]">
+                Contact commercial
               </Link>
             </div>
           </div>
@@ -60,10 +59,7 @@ export default function PartnersPage() {
                 Tell us who you are.
               </h2>
               <p className="max-w-[430px] text-[16px] font-medium leading-[1.65] text-[#404040]">
-                Pick your lane above, then tell us what a first engagement looks like. We will
-                come back with partner pricing and the deployment runbook. For channel access,
-                use the structured partner application so the legal entity and federal identifiers
-                are tied to the correct account from the start.
+                Pick your lane above and tell us what the customer or program needs. There is no separate deal-registration portal: Marketplace handles the transaction, while we coordinate private-offer terms, implementation, and deployment support directly with you.
               </p>
             </div>
             <ContactForm id="partnerships" />
