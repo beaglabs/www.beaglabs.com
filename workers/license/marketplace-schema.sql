@@ -71,3 +71,20 @@ CREATE TABLE IF NOT EXISTS marketplace_sync_runs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_marketplace_sync_runs_started ON marketplace_sync_runs(started_at DESC);
+
+CREATE TABLE IF NOT EXISTS marketplace_report_state (
+  state_key TEXT PRIMARY KEY,
+  query_id TEXT NOT NULL,
+  report_id TEXT,
+  report_name TEXT,
+  report_status TEXT,
+  last_execution_id TEXT,
+  last_execution_status TEXT,
+  last_generated_at TEXT,
+  last_synced_execution_id TEXT,
+  last_synced_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_marketplace_report_state_report ON marketplace_report_state(report_id);
