@@ -104,6 +104,11 @@ export function buildAuth(env: Bindings) {
     database: {
       db: getAuthDb(env),
       type: 'sqlite',
+      // Turso/libSQL is reached from this Worker over its HTTP/Hrana transport.
+      // Better Auth social callbacks otherwise wrap user/account/session creation
+      // in an interactive Kysely transaction, which is not reliable on this
+      // serverless transport. Run the writes sequentially instead.
+      transaction: false,
     },
     baseURL: env.BASE_URL,
     basePath: '/api/auth',
