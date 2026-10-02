@@ -136,7 +136,7 @@ export default {
     return withCors(request, await route(request, env, ctx))
   },
 
-  async scheduled(_controller: ScheduledController, env: Bindings, ctx: ExecutionContext): Promise<void> {
+  async scheduled(_controller: any, env: Bindings, ctx: any): Promise<void> {
     ctx.waitUntil(
       syncMarketplaceVmUsage(env).catch((error) => {
         console.error('scheduled Marketplace VM usage sync failed', error)
