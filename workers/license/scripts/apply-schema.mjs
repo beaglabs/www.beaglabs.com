@@ -10,7 +10,7 @@ if (!url || !authToken) {
 }
 
 let client = createClient({ url, authToken })
-for (const file of ['../schema.sql', '../partner-schema.sql']) {
+for (const file of ['../schema.sql', '../partner-schema.sql', '../marketplace-schema.sql']) {
   const schema = await readFile(new URL(file, import.meta.url), 'utf8')
   await client.executeMultiple(schema)
   console.log(`Applied workers/license/${file.split('/').at(-1)}`)
