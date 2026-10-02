@@ -16,11 +16,22 @@ AZURE_KEY_VAULT_CLIENT_SECRET=""
 # Full VERSIONED key URI, e.g. https://beag-license.vault.azure.net/keys/papyrus-license/<version>
 AZURE_KEY_VAULT_KEY_ID=""
 
-# Resend API key used for partner application approvals, invitations, and magic-link sign in.
+# Resend API key used for Marketplace lead threads and legacy partner email flows.
 RESEND_API_KEY=""
+
+# Logic Apps / Power Automate forwards Microsoft Marketplace leads here using:
+# X-Beag-Timestamp + X-Beag-Signature = HMAC-SHA256(secret, `${timestamp}.${rawBody}`)
+MARKETPLACE_LEAD_WEBHOOK_SECRET=""
+
+# Optional dedicated Partner Center analytics app credentials. If omitted, the Worker
+# falls back to MICROSOFT_CLIENT_ID / MICROSOFT_CLIENT_SECRET / MICROSOFT_TENANT_ID.
+MARKETPLACE_ANALYTICS_TENANT_ID=""
+MARKETPLACE_ANALYTICS_CLIENT_ID=""
+MARKETPLACE_ANALYTICS_CLIENT_SECRET=""
 
 # These are non-secret production vars in wrangler.jsonc; override locally if useful.
 BASE_URL="http://localhost:8787"
 PARTNERS_EMAIL="partnerships@beaglabs.com"
 PARTNER_FROM_EMAIL="Beag Labs Partners <partners@mail.beaglabs.com>"
+MARKETPLACE_FROM_EMAIL="Beag Labs Marketplace <sales@mail.beaglabs.com>"
 LOGO_DEV_TOKEN="pk_PJhuwvcfSPKKCJJxJcElsQ"

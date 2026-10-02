@@ -11,6 +11,9 @@
       "custom_domain": true
     }
   ],
+  "triggers": {
+    "crons": ["17 */6 * * *"]
+  },
   "observability": {
     "enabled": true
   },
@@ -18,6 +21,7 @@
     "BASE_URL": "https://license.beaglabs.com",
     "PARTNERS_EMAIL": "partnerships@beaglabs.com",
     "PARTNER_FROM_EMAIL": "Beag Labs Partners <partners@mail.beaglabs.com>",
+    "MARKETPLACE_FROM_EMAIL": "Beag Labs Marketplace <sales@mail.beaglabs.com>",
     "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ"
   },
   "secrets": {
@@ -33,7 +37,8 @@
       "AZURE_KEY_VAULT_CLIENT_ID",
       "AZURE_KEY_VAULT_CLIENT_SECRET",
       "AZURE_KEY_VAULT_KEY_ID",
-      "RESEND_API_KEY"
+      "RESEND_API_KEY",
+      "MARKETPLACE_LEAD_WEBHOOK_SECRET"
     ]
   }
 }

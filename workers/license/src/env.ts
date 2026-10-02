@@ -19,6 +19,11 @@ export type Bindings = {
   PARTNERS_EMAIL: string
   PARTNER_FROM_EMAIL: string
   LOGO_DEV_TOKEN: string
+  MARKETPLACE_LEAD_WEBHOOK_SECRET: string
+  MARKETPLACE_FROM_EMAIL?: string
+  MARKETPLACE_ANALYTICS_TENANT_ID?: string
+  MARKETPLACE_ANALYTICS_CLIENT_ID?: string
+  MARKETPLACE_ANALYTICS_CLIENT_SECRET?: string
 }
 
 export const DEPLOYMENT_PROFILES = ['commercial', 'government', 'disconnected'] as const
