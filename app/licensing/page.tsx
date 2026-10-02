@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
-import { LicensingPageClient } from '@/components/licensing/licensing-page-client'
+import { LicensingConsole } from '@/components/licensing/licensing-console'
+import { OrderLifecycleManager } from '@/components/licensing/order-lifecycle-manager'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 
@@ -31,7 +32,8 @@ export default function LicensingPage() {
               <span className="font-mono text-[9px] font-black uppercase tracking-[0.14em] text-[#333]">Headless control plane</span>
             </div>
           </div>
-          <LicensingPageClient />
+          <OrderLifecycleManager />
+          <LicensingConsole />
         </div>
       </main>
       <SiteFooter />
