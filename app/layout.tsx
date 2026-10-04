@@ -3,6 +3,7 @@ import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
 import { Toaster } from '@/components/ui/sonner'
+import { ogImageUrl } from '@/lib/seo'
 import './globals.css'
 
 const workSans = Work_Sans({
@@ -22,6 +23,15 @@ const robotoCondensed = Roboto_Condensed({
   weight: ['700', '800', '900'],
 })
 
+const homeDescription =
+  'We develop tools and infrastructure aligned with frameworks like NIST AI RMF to help high-trust organizations get commercial-level agent capabilities on their own infrastructure.'
+
+const homeOgImage = ogImageUrl({
+  title: 'Mission-Ready Agentic Dominance',
+  description: homeDescription,
+  label: 'Custom AI. On Your Infra.',
+})
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
   title: {
@@ -38,17 +48,17 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Beag Labs — Small models for government and high-trust industries. Deployable anywhere.',
-    description:
-      'Small models for government and high-trust industries. Deployable anywhere.',
+    title: 'Mission-Ready Agentic Dominance — Beag Labs',
+    description: homeDescription,
     url: 'https://www.beaglabs.com',
     siteName: 'Beag Labs',
     images: [
       {
-        url: '/og-image.png',
+        url: homeOgImage,
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Small models deployed anywhere',
+        alt: 'Beag Labs — Mission-Ready Agentic Dominance',
+        type: 'image/png',
       },
     ],
     locale: 'en_US',
@@ -56,10 +66,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Beag Labs — Small models for government and high-trust industries. Deployable anywhere.',
-    description:
-      'Small models for government and high-trust industries. Deployable anywhere.',
-    images: ['/og-image.png'],
+    title: 'Mission-Ready Agentic Dominance — Beag Labs',
+    description: homeDescription,
+    images: [homeOgImage],
     creator: '@beaglabs',
   },
 }
