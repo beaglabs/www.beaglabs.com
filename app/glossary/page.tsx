@@ -5,37 +5,17 @@ import { SiteFooter } from "@/components/site-footer"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { BrutalistPhoto } from "@/components/brutalist-photo"
 import { glossaryTerms, glossaryCategories } from "@/data/glossary/terms"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "ML/AI Glossary — Beag Labs",
-  description:
-    "A comprehensive glossary of machine learning and AI terminology — from LoRA and GRPO to flow matching and world models. Clear, technically precise definitions for practitioners.",
-  alternates: {
-    canonical: "https://www.beaglabs.com/glossary",
-  },
-  openGraph: {
-    title: "ML/AI Glossary — Beag Labs",
-    description:
-      "A comprehensive glossary of machine learning and AI terminology — from LoRA and GRPO to flow matching and world models. Clear, technically precise definitions for practitioners.",
-    url: "https://www.beaglabs.com/glossary",
-    siteName: "Beag Labs",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — ML/AI Glossary",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "ML/AI Glossary — Beag Labs",
-    description:
-      "A comprehensive glossary of machine learning and AI terminology — from LoRA and GRPO to flow matching and world models.",
-    images: ["/og-image.png"],
-  },
-}
+const glossaryDescription =
+  "A comprehensive glossary of machine learning and AI terminology — from LoRA and GRPO to flow matching and world models. Clear, technically precise definitions for practitioners."
+
+export const metadata: Metadata = pageMetadata({
+  title: "ML/AI Glossary",
+  description: glossaryDescription,
+  path: "/glossary",
+  label: "Reference",
+})
 
 export default function GlossaryPage() {
   const termsByCategory = glossaryCategories.map((category) => ({
