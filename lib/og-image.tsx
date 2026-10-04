@@ -8,6 +8,36 @@ const ORANGE = '#ff5f1f'
 const INK = '#111111'
 const WHITE = '#ffffff'
 
+// Keep the social cards on the same typography system as app/layout.tsx:
+// Roboto Condensed for display, Work Sans for body copy, and JetBrains Mono
+// for labels/meta. These are the exact upstream font files used by next/font.
+const FONT_URLS = {
+  display:
+    'https://raw.githubusercontent.com/google/fonts/main/ofl/robotocondensed/RobotoCondensed%5Bwght%5D.ttf',
+  body:
+    'https://raw.githubusercontent.com/google/fonts/main/ofl/worksans/WorkSans%5Bwght%5D.ttf',
+  mono:
+    'https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf',
+} as const
+
+async function fetchFont(url: string): Promise<ArrayBuffer | null> {
+  try {
+    const response = await fetch(url, { cache: 'force-cache' })
+    if (!response.ok) return null
+    return response.arrayBuffer()
+  } catch {
+    return null
+  }
+}
+
+// Module-level promise means a warm Satori function reuses the font bytes.
+// If a font host is unavailable, the image still renders with a safe fallback.
+const brandFonts = Promise.all([
+  fetchFont(FONT_URLS.display),
+  fetchFont(FONT_URLS.body),
+  fetchFont(FONT_URLS.mono),
+])
+
 export type OgImageInput = {
   title: string
   description?: string
@@ -39,11 +69,48 @@ function formatDate(raw?: string) {
   })
 }
 
-export function renderOgImage(input: OgImageInput) {
+export async function renderOgImage(input: OgImageInput) {
   const title = truncate(input.title || 'Beag Labs', 118)
   const description = truncate(input.description || '', 170)
   const label = truncate(input.label || 'MISSION-READY', 40)
   const date = formatDate(input.date)
+  const [displayFontData, bodyFontData, monoFontData] = await brandFonts
+
+  const fonts: Array<{
+    name: string
+    data: ArrayBuffer
+    weight: 600 | 700 | 900
+    style: 'normal'
+  }> = []
+
+  if (displayFontData) {
+    fonts.push({
+      name: 'Roboto Condensed',
+      data: displayFontData,
+      weight: 900,
+      style: 'normal',
+    })
+  }
+  if (bodyFontData) {
+    fonts.push({
+      name: 'Work Sans',
+      data: bodyFontData,
+      weight: 600,
+      style: 'normal',
+    })
+  }
+  if (monoFontData) {
+    fonts.push({
+      name: 'JetBrains Mono',
+      data: monoFontData,
+      weight: 700,
+      style: 'normal',
+    })
+  }
+
+  const displayFamily = displayFontData ? 'Roboto Condensed' : 'sans-serif'
+  const bodyFamily = bodyFontData ? 'Work Sans' : 'sans-serif'
+  const monoFamily = monoFontData ? 'JetBrains Mono' : 'monospace'
 
   return new ImageResponse(
     (
@@ -60,7 +127,7 @@ export function renderOgImage(input: OgImageInput) {
             'linear-gradient(to right, rgba(17,17,17,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,17,17,0.12) 1px, transparent 1px)',
           backgroundSize: '44px 44px',
           padding: '28px',
-          fontFamily: 'sans-serif',
+          fontFamily: bodyFamily,
         }}
       >
         <div
@@ -93,6 +160,7 @@ export function renderOgImage(input: OgImageInput) {
                   justifyContent: 'center',
                   backgroundColor: INK,
                   color: WHITE,
+                  fontFamily: displayFamily,
                   fontSize: '28px',
                   fontWeight: 900,
                   letterSpacing: '-0.04em',
@@ -104,7 +172,7 @@ export function renderOgImage(input: OgImageInput) {
                 style={{
                   display: 'flex',
                   marginLeft: '18px',
-                  fontFamily: 'monospace',
+                  fontFamily: monoFamily,
                   fontSize: '16px',
                   fontWeight: 700,
                   letterSpacing: '0.18em',
@@ -123,7 +191,7 @@ export function renderOgImage(input: OgImageInput) {
                   border: `3px solid ${INK}`,
                   backgroundColor: WHITE,
                   padding: '9px 14px',
-                  fontFamily: 'monospace',
+                  fontFamily: monoFamily,
                   fontSize: '13px',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
@@ -137,7 +205,7 @@ export function renderOgImage(input: OgImageInput) {
                   style={{
                     display: 'flex',
                     marginLeft: '14px',
-                    fontFamily: 'monospace',
+                    fontFamily: monoFamily,
                     fontSize: '13px',
                     fontWeight: 700,
                     letterSpacing: '0.08em',
@@ -164,6 +232,7 @@ export function renderOgImage(input: OgImageInput) {
                 style={{
                   display: 'flex',
                   maxWidth: '825px',
+                  fontFamily: displayFamily,
                   fontSize: `${titleSize(title)}px`,
                   fontWeight: 900,
                   lineHeight: 0.92,
@@ -190,6 +259,7 @@ export function renderOgImage(input: OgImageInput) {
                   style={{
                     display: 'flex',
                     maxWidth: '820px',
+                    fontFamily: bodyFamily,
                     fontSize: '21px',
                     fontWeight: 600,
                     lineHeight: 1.28,
@@ -217,6 +287,7 @@ export function renderOgImage(input: OgImageInput) {
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
+                  fontFamily: displayFamily,
                   fontSize: '42px',
                   fontWeight: 900,
                   lineHeight: 0.92,
@@ -245,7 +316,7 @@ export function renderOgImage(input: OgImageInput) {
             <div
               style={{
                 display: 'flex',
-                fontFamily: 'monospace',
+                fontFamily: monoFamily,
                 fontSize: '12px',
                 fontWeight: 700,
                 letterSpacing: '0.13em',
@@ -257,7 +328,7 @@ export function renderOgImage(input: OgImageInput) {
             <div
               style={{
                 display: 'flex',
-                fontFamily: 'monospace',
+                fontFamily: monoFamily,
                 fontSize: '12px',
                 fontWeight: 700,
                 letterSpacing: '0.11em',
@@ -272,6 +343,7 @@ export function renderOgImage(input: OgImageInput) {
     ),
     {
       ...OG_SIZE,
+      ...(fonts.length ? { fonts } : {}),
       headers: {
         'Cache-Control':
           'public, no-transform, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
