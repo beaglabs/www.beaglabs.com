@@ -8,30 +8,50 @@ const ORANGE = '#ff5f1f'
 const INK = '#111111'
 const WHITE = '#ffffff'
 
-// Keep the social cards on the same typography system as app/layout.tsx:
-// Roboto Condensed for display, Work Sans for body copy, and JetBrains Mono
-// for labels/meta. These are the exact upstream font files used by next/font.
+// Satori is most reliable with static TTF/OTF/WOFF font files. Do not use the
+// variable Google Fonts sources here: they can parse incorrectly in the OG
+// renderer and surface as `Offset is outside the bounds of the DataView`.
+// These immutable static TTFs match the font families used by app/layout.tsx.
 const FONT_URLS = {
   display:
-    'https://raw.githubusercontent.com/google/fonts/main/ofl/robotocondensed/RobotoCondensed%5Bwght%5D.ttf',
+    'https://raw.githubusercontent.com/biswas08433/soulmate/9173666f41eb7b29a903cc719f0b75e642efeb69/assets/fonts/Roboto_Condensed/static/RobotoCondensed-Black.ttf',
   body:
-    'https://raw.githubusercontent.com/google/fonts/main/ofl/worksans/WorkSans%5Bwght%5D.ttf',
+    'https://raw.githubusercontent.com/ZigZagExchange/zksync-lite-frontend/854a5f04d2c9a62913dc6c431df29e4126ed544b/src/assets/fonts/WorkSans-SemiBold.ttf',
   mono:
-    'https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf',
+    'https://raw.githubusercontent.com/JetBrains/JetBrainsMono/19371302b95d218af43299bce79ddbddd0bc364d/fonts/ttf/JetBrainsMono-Bold.ttf',
 } as const
+
+function isSupportedFontBuffer(data: ArrayBuffer) {
+  if (data.byteLength < 12) return false
+
+  const bytes = new Uint8Array(data, 0, 4)
+  const tag = String.fromCharCode(...bytes)
+  const sfntVersion = new DataView(data).getUint32(0, false)
+
+  return (
+    sfntVersion === 0x00010000 ||
+    tag === 'OTTO' ||
+    tag === 'true' ||
+    tag === 'ttcf' ||
+    tag === 'wOFF'
+  )
+}
 
 async function fetchFont(url: string): Promise<ArrayBuffer | null> {
   try {
     const response = await fetch(url, { cache: 'force-cache' })
     if (!response.ok) return null
-    return response.arrayBuffer()
+
+    const data = await response.arrayBuffer()
+    return isSupportedFontBuffer(data) ? data : null
   } catch {
     return null
   }
 }
 
 // Module-level promise means a warm Satori function reuses the font bytes.
-// If a font host is unavailable, the image still renders with a safe fallback.
+// If a font host is unavailable or returns invalid bytes, the image still
+// renders with safe fallbacks instead of passing corrupt data into Satori.
 const brandFonts = Promise.all([
   fetchFont(FONT_URLS.display),
   fetchFont(FONT_URLS.body),
@@ -346,7 +366,7 @@ export async function renderOgImage(input: OgImageInput) {
       ...(fonts.length ? { fonts } : {}),
       headers: {
         'Cache-Control':
-          'public, no-transform, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+          'public, no-transform, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
       },
     }
   )
