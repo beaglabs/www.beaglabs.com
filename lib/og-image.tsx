@@ -1,62 +1,28 @@
 import { ImageResponse } from 'next/og'
 
-// `next/og` is the App Router entrypoint for Vercel OG. ImageResponse is
-// rendered by Vercel's Satori engine and rasterized to PNG for social crawlers.
 export const OG_SIZE = { width: 1200, height: 630 } as const
 
 const ORANGE = '#ff5f1f'
 const INK = '#111111'
 const WHITE = '#ffffff'
 
-// Satori is most reliable with static TTF/OTF/WOFF font files. Do not use the
-// variable Google Fonts sources here: they can parse incorrectly in the OG
-// renderer and surface as `Offset is outside the bounds of the DataView`.
-// These immutable static TTFs match the font families used by app/layout.tsx.
-const FONT_URLS = {
-  display:
-    'https://raw.githubusercontent.com/biswas08433/soulmate/9173666f41eb7b29a903cc719f0b75e642efeb69/assets/fonts/Roboto_Condensed/static/RobotoCondensed-Black.ttf',
-  body:
-    'https://raw.githubusercontent.com/ZigZagExchange/zksync-lite-frontend/854a5f04d2c9a62913dc6c431df29e4126ed544b/src/assets/fonts/WorkSans-SemiBold.ttf',
-  mono:
-    'https://raw.githubusercontent.com/JetBrains/JetBrainsMono/19371302b95d218af43299bce79ddbddd0bc364d/fonts/ttf/JetBrainsMono-Bold.ttf',
-} as const
+const DISPLAY_FONT_URL =
+  'https://raw.githubusercontent.com/biswas08433/soulmate/9173666f41eb7b29a903cc719f0b75e642efeb69/assets/fonts/Roboto_Condensed/static/RobotoCondensed-Black.ttf'
 
-function isSupportedFontBuffer(data: ArrayBuffer) {
-  if (data.byteLength < 12) return false
-
-  const bytes = new Uint8Array(data, 0, 4)
-  const tag = String.fromCharCode(...bytes)
-  const sfntVersion = new DataView(data).getUint32(0, false)
-
-  return (
-    sfntVersion === 0x00010000 ||
-    tag === 'OTTO' ||
-    tag === 'true' ||
-    tag === 'ttcf' ||
-    tag === 'wOFF'
-  )
-}
-
-async function fetchFont(url: string): Promise<ArrayBuffer | null> {
+async function fetchDisplayFont(): Promise<ArrayBuffer | null> {
   try {
-    const response = await fetch(url, { cache: 'force-cache' })
+    const response = await fetch(DISPLAY_FONT_URL, { cache: 'force-cache' })
     if (!response.ok) return null
-
     const data = await response.arrayBuffer()
-    return isSupportedFontBuffer(data) ? data : null
+    if (data.byteLength < 12) return null
+    const sfntVersion = new DataView(data).getUint32(0, false)
+    return sfntVersion === 0x00010000 ? data : null
   } catch {
     return null
   }
 }
 
-// Module-level promise means a warm Satori function reuses the font bytes.
-// If a font host is unavailable or returns invalid bytes, the image still
-// renders with safe fallbacks instead of passing corrupt data into Satori.
-const brandFonts = Promise.all([
-  fetchFont(FONT_URLS.display),
-  fetchFont(FONT_URLS.body),
-  fetchFont(FONT_URLS.mono),
-])
+const displayFontPromise = fetchDisplayFont()
 
 export type OgImageInput = {
   title: string
@@ -94,43 +60,8 @@ export async function renderOgImage(input: OgImageInput) {
   const description = truncate(input.description || '', 170)
   const label = truncate(input.label || 'MISSION-READY', 40)
   const date = formatDate(input.date)
-  const [displayFontData, bodyFontData, monoFontData] = await brandFonts
-
-  const fonts: Array<{
-    name: string
-    data: ArrayBuffer
-    weight: 600 | 700 | 900
-    style: 'normal'
-  }> = []
-
-  if (displayFontData) {
-    fonts.push({
-      name: 'Roboto Condensed',
-      data: displayFontData,
-      weight: 900,
-      style: 'normal',
-    })
-  }
-  if (bodyFontData) {
-    fonts.push({
-      name: 'Work Sans',
-      data: bodyFontData,
-      weight: 600,
-      style: 'normal',
-    })
-  }
-  if (monoFontData) {
-    fonts.push({
-      name: 'JetBrains Mono',
-      data: monoFontData,
-      weight: 700,
-      style: 'normal',
-    })
-  }
-
-  const displayFamily = displayFontData ? 'Roboto Condensed' : 'sans-serif'
-  const bodyFamily = bodyFontData ? 'Work Sans' : 'sans-serif'
-  const monoFamily = monoFontData ? 'JetBrains Mono' : 'monospace'
+  const displayFontData = await displayFontPromise
+  const displayFamily = displayFontData ? 'Roboto Condensed' : 'Arial Narrow'
 
   return new ImageResponse(
     (
@@ -147,7 +78,7 @@ export async function renderOgImage(input: OgImageInput) {
             'linear-gradient(to right, rgba(17,17,17,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,17,17,0.12) 1px, transparent 1px)',
           backgroundSize: '44px 44px',
           padding: '28px',
-          fontFamily: bodyFamily,
+          fontFamily: 'sans-serif',
         }}
       >
         <div
@@ -188,50 +119,17 @@ export async function renderOgImage(input: OgImageInput) {
               >
                 B_
               </div>
-              <div
-                style={{
-                  display: 'flex',
-                  marginLeft: '18px',
-                  fontFamily: monoFamily,
-                  fontSize: '16px',
-                  fontWeight: 700,
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                }}
-              >
+              <div style={{ display: 'flex', marginLeft: '18px', fontSize: '16px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
                 Beag Labs
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  border: `3px solid ${INK}`,
-                  backgroundColor: WHITE,
-                  padding: '9px 14px',
-                  fontFamily: monoFamily,
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-              >
+              <div style={{ display: 'flex', alignItems: 'center', border: `3px solid ${INK}`, backgroundColor: WHITE, padding: '9px 14px', fontSize: '13px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                 {label}
               </div>
               {date ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    marginLeft: '14px',
-                    fontFamily: monoFamily,
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                  }}
-                >
+                <div style={{ display: 'flex', marginLeft: '14px', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   {date}
                 </div>
               ) : null}
@@ -239,82 +137,22 @@ export async function renderOgImage(input: OgImageInput) {
           </div>
 
           <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                justifyContent: 'center',
-                padding: '38px 42px 34px 42px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  maxWidth: '825px',
-                  fontFamily: displayFamily,
-                  fontSize: `${titleSize(title)}px`,
-                  fontWeight: 900,
-                  lineHeight: 0.92,
-                  letterSpacing: '-0.045em',
-                  textTransform: 'uppercase',
-                }}
-              >
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'center', padding: '38px 42px 34px 42px' }}>
+              <div style={{ display: 'flex', maxWidth: '825px', fontFamily: displayFamily, fontSize: `${titleSize(title)}px`, fontWeight: 900, lineHeight: 0.92, letterSpacing: '-0.045em', textTransform: 'uppercase' }}>
                 {title}
               </div>
 
-              <div
-                style={{
-                  width: '100%',
-                  height: '4px',
-                  display: 'flex',
-                  backgroundColor: INK,
-                  marginTop: '22px',
-                  marginBottom: description ? '18px' : '0px',
-                }}
-              />
+              <div style={{ width: '100%', height: '4px', display: 'flex', backgroundColor: INK, marginTop: '22px', marginBottom: description ? '18px' : '0px' }} />
 
               {description ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    maxWidth: '820px',
-                    fontFamily: bodyFamily,
-                    fontSize: '21px',
-                    fontWeight: 600,
-                    lineHeight: 1.28,
-                    color: '#242424',
-                  }}
-                >
+                <div style={{ display: 'flex', maxWidth: '820px', fontSize: '21px', fontWeight: 600, lineHeight: 1.28, color: '#242424' }}>
                   {description}
                 </div>
               ) : null}
             </div>
 
-            <div
-              style={{
-                width: '250px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                borderLeft: `4px solid ${INK}`,
-                backgroundColor: INK,
-                color: WHITE,
-                padding: '30px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  fontFamily: displayFamily,
-                  fontSize: '42px',
-                  fontWeight: 900,
-                  lineHeight: 0.92,
-                  letterSpacing: '-0.035em',
-                  textTransform: 'uppercase',
-                }}
-              >
+            <div style={{ width: '250px', display: 'flex', flexDirection: 'column', justifyContent: 'center', borderLeft: `4px solid ${INK}`, backgroundColor: INK, color: WHITE, padding: '30px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', fontFamily: displayFamily, fontSize: '42px', fontWeight: 900, lineHeight: 0.92, letterSpacing: '-0.035em', textTransform: 'uppercase' }}>
                 <span>Custom AI.</span>
                 <span style={{ color: ORANGE }}>On your</span>
                 <span>infra.</span>
@@ -322,39 +160,11 @@ export async function renderOgImage(input: OgImageInput) {
             </div>
           </div>
 
-          <div
-            style={{
-              height: '60px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderTop: `4px solid ${INK}`,
-              padding: '0 32px',
-              backgroundColor: WHITE,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                fontFamily: monoFamily,
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.13em',
-                textTransform: 'uppercase',
-              }}
-            >
+          <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `4px solid ${INK}`, padding: '0 32px', backgroundColor: WHITE }}>
+            <div style={{ display: 'flex', fontSize: '12px', fontWeight: 700, letterSpacing: '0.13em', textTransform: 'uppercase' }}>
               www.beaglabs.com
             </div>
-            <div
-              style={{
-                display: 'flex',
-                fontFamily: monoFamily,
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.11em',
-                textTransform: 'uppercase',
-              }}
-            >
+            <div style={{ display: 'flex', fontSize: '12px', fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase' }}>
               AI · DATA · INFRASTRUCTURE
             </div>
           </div>
@@ -363,10 +173,20 @@ export async function renderOgImage(input: OgImageInput) {
     ),
     {
       ...OG_SIZE,
-      ...(fonts.length ? { fonts } : {}),
+      ...(displayFontData
+        ? {
+            fonts: [
+              {
+                name: 'Roboto Condensed',
+                data: displayFontData,
+                weight: 900 as const,
+                style: 'normal' as const,
+              },
+            ],
+          }
+        : {}),
       headers: {
-        'Cache-Control':
-          'public, no-transform, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': 'public, no-store, max-age=0',
       },
     }
   )
