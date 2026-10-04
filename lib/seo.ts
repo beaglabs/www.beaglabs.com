@@ -1,4 +1,5 @@
 export const BASE_URL = 'https://www.beaglabs.com'
+const OG_IMAGE_VERSION = '2026-10-04-static-fonts'
 
 export function canonical(path: string) {
   return {
@@ -18,6 +19,7 @@ export function ogImageUrl(params: {
   coverImage?: string
 }) {
   const searchParams = new URLSearchParams()
+  searchParams.set('v', OG_IMAGE_VERSION)
   searchParams.set('title', params.title)
   if (params.description) searchParams.set('description', params.description)
   if (params.label) searchParams.set('label', params.label)
