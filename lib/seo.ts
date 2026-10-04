@@ -14,7 +14,7 @@ export function ogImageUrl(params: {
   label?: string
   /** ISO date shown in the OG card's mono meta row. */
   date?: string
-  /** Optional article cover image rendered in the OG card. */
+  /** Kept for call-site compatibility; the branded Satori card no longer fetches remote cover art. */
   coverImage?: string
 }) {
   const searchParams = new URLSearchParams()
@@ -22,8 +22,7 @@ export function ogImageUrl(params: {
   if (params.description) searchParams.set('description', params.description)
   if (params.label) searchParams.set('label', params.label)
   if (params.date) searchParams.set('date', params.date)
-  if (params.coverImage) searchParams.set('coverImage', params.coverImage)
-  return `${BASE_URL}/api/og?${searchParams.toString()}`
+  return `${BASE_URL}/og?${searchParams.toString()}`
 }
 
 export function pageMetadata(opts: {

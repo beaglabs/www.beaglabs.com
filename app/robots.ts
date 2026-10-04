@@ -1,48 +1,51 @@
 import type { MetadataRoute } from 'next'
 
+const publicAllow = ['/', '/og', '/api/og']
+const privateDisallow = [
+  '/api/',
+  '/model-service/',
+  '/login',
+  '/onboarding',
+  '/delete-account',
+]
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/model-service/',
-          '/login',
-          '/onboarding',
-          '/delete-account',
-        ],
+        allow: publicAllow,
+        disallow: privateDisallow,
       },
       {
         userAgent: 'GPTBot',
-        allow: '/',
-        disallow: ['/api/', '/model-service/', '/login', '/onboarding', '/delete-account'],
+        allow: publicAllow,
+        disallow: privateDisallow,
       },
       {
         userAgent: 'ChatGPT-User',
-        allow: '/',
-        disallow: ['/api/', '/model-service/', '/login', '/onboarding', '/delete-account'],
+        allow: publicAllow,
+        disallow: privateDisallow,
       },
       {
         userAgent: 'ClaudeBot',
-        allow: '/',
-        disallow: ['/api/', '/model-service/', '/login', '/onboarding', '/delete-account'],
+        allow: publicAllow,
+        disallow: privateDisallow,
       },
       {
         userAgent: 'anthropic-ai',
-        allow: '/',
-        disallow: ['/api/', '/model-service/', '/login', '/onboarding', '/delete-account'],
+        allow: publicAllow,
+        disallow: privateDisallow,
       },
       {
         userAgent: 'PerplexityBot',
-        allow: '/',
-        disallow: ['/api/', '/model-service/', '/login', '/onboarding', '/delete-account'],
+        allow: publicAllow,
+        disallow: privateDisallow,
       },
       {
         userAgent: 'Google-Extended',
-        allow: '/',
-        disallow: ['/api/', '/model-service/', '/login', '/onboarding', '/delete-account'],
+        allow: publicAllow,
+        disallow: privateDisallow,
       },
       {
         userAgent: 'CCBot',
