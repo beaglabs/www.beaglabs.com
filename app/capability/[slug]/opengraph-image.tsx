@@ -1,8 +1,7 @@
-import { GET as renderOgImage } from '@/app/api/og/route'
 import { capabilityBySlug } from '@/data/capabilities'
-import { ogImageUrl } from '@/lib/seo'
+import { renderOgImage } from '@/lib/og-image'
 
-export const runtime = 'nodejs'
+export const runtime = 'edge'
 export const alt = 'Beag Labs capability'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -15,13 +14,11 @@ export default async function Image({
   const { slug } = await params
   const capability = capabilityBySlug(slug)
 
-  const url = ogImageUrl({
+  return renderOgImage({
     title: capability?.title ?? 'Beag Labs Capability',
     description:
       capability?.metaDescription ??
       'Mission-ready AI systems for high-trust organizations.',
     label: capability?.eyebrow ?? 'Capability',
   })
-
-  return renderOgImage(new Request(url))
 }
