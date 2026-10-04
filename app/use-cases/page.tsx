@@ -6,36 +6,17 @@ import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 import { BrutalistPhoto } from "@/components/brutalist-photo"
 import { industries } from "@/data/use-cases/industries"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+const useCasesDescription =
+  "Custom small language models for legal, healthcare, finance, and government & defense. Classification, extraction, and relevance tasks — deployed on-prem, air-gapped, or in your VPC."
+
+export const metadata: Metadata = pageMetadata({
   title: "Use Cases",
-  description:
-    "Custom small language models for legal, healthcare, finance, and government & defense. Classification, extraction, and relevance tasks — deployed on-prem, air-gapped, or in your VPC.",
-  alternates: {
-    canonical: "https://www.beaglabs.com/use-cases",
-  },
-  openGraph: {
-    title: "Use Cases — Beag Labs",
-    description:
-      "Custom small language models for legal, healthcare, finance, and government & defense. Classification, extraction, and relevance tasks — deployed on-prem, air-gapped, or in your VPC.",
-    url: "https://www.beaglabs.com/use-cases",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — Use Cases",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Use Cases — Beag Labs",
-    description:
-      "Custom small language models for legal, healthcare, finance, and government & defense. Classification, extraction, and relevance tasks — deployed on-prem, air-gapped, or in your VPC.",
-    images: ["/og-image.png"],
-  },
-}
+  description: useCasesDescription,
+  path: "/use-cases",
+  label: "Use Cases",
+})
 
 export default function UseCasesPage() {
   return (
