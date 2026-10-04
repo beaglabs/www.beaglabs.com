@@ -1,18 +1,16 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
+const deleteAccountDescription =
+  "How to permanently delete your Gardens account and what data is removed."
+
+export const metadata: Metadata = pageMetadata({
   title: "Delete Account",
-  description:
-    "How to permanently delete your Gardens account and what data is removed.",
-  openGraph: {
-    title: "Delete Account — Beag Labs",
-    description:
-      "How to permanently delete your Gardens account and what data is removed.",
-    url: "https://beaglabs.com/delete-account",
-    siteName: "Beag Labs",
-  },
-}
+  description: deleteAccountDescription,
+  path: "/delete-account",
+  label: "Account",
+})
 
 const deletedData = [
   "Your user row and authentication artifacts (sessions, key packages, auth challenges)",

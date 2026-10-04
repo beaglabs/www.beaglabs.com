@@ -3,10 +3,15 @@ import type { Metadata } from 'next'
 import { MarketplaceConsole } from '@/components/licensing/marketplace-console'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
+import { pageMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = {
-  title: 'Marketplace Operations',
-  description: 'Private Beag Labs Microsoft Marketplace operations and customer administration.',
+  ...pageMetadata({
+    title: 'Marketplace Operations',
+    description: 'Private Beag Labs Microsoft Marketplace operations and customer administration.',
+    path: '/licensing',
+    label: 'Marketplace',
+  }),
   robots: { index: false, follow: false },
 }
 

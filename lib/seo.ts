@@ -35,7 +35,13 @@ export function pageMetadata(opts: {
   ogDescription?: string
   type?: 'website' | 'article'
   publishedTime?: string
-  images?: Array<{ url: string; width?: number; height?: number; alt?: string }>
+  images?: Array<{
+    url: string
+    width?: number
+    height?: number
+    alt?: string
+    type?: string
+  }>
 }) {
   const ogTitle = opts.ogTitle || `${opts.title} — Beag Labs`
   const ogDescription = opts.ogDescription || opts.description
@@ -51,6 +57,7 @@ export function pageMetadata(opts: {
           width: 1200,
           height: 630,
           alt: ogTitle,
+          type: 'image/png',
         },
       ]
 
@@ -75,6 +82,7 @@ export function pageMetadata(opts: {
       title: ogTitle,
       description: ogDescription,
       images: ogImage.map((img) => img.url),
+      creator: '@beaglabs',
     },
   }
 }

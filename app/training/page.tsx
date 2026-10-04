@@ -7,26 +7,17 @@ import { SiteFooter } from "@/components/site-footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { BrutalistPhoto } from "@/components/brutalist-photo"
 import { trainingConcepts } from "@/data/training/concepts"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Training Techniques — Beag Labs",
-  description: "52 modern training techniques every AI engineer should know — from GRPO and Flow Matching to World Models and Data Flywheels. Plus quantization-aware training.",
-  alternates: {
-    canonical: "https://www.beaglabs.com/training",
-  },
-  openGraph: {
-    title: "Training Techniques — Beag Labs",
-    description: "52 modern training techniques every AI engineer should know.",
-    url: "https://www.beaglabs.com/training",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Beag Labs" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Training Techniques — Beag Labs",
-    description: "52 modern training techniques every AI engineer should know.",
-    images: ["/og-image.png"],
-  },
-}
+const trainingDescription =
+  "52 modern training techniques every AI engineer should know — from GRPO and Flow Matching to World Models and Data Flywheels. Plus quantization-aware training."
+
+export const metadata: Metadata = pageMetadata({
+  title: "Training Techniques",
+  description: trainingDescription,
+  path: "/training",
+  label: "Training",
+})
 
 const parts = [
   { name: "Language Models", index: 1 },

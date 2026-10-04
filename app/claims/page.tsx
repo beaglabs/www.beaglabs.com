@@ -4,12 +4,17 @@ import { AnnouncementBanner } from '@/components/announcement-banner'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { claims } from '@/lib/claims'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Claim Ledger — Beag Labs',
-  description: 'A source-linked ledger of verified claims, approved language, and usage boundaries.',
-  alternates: { canonical: 'https://www.beaglabs.com/claims' },
-}
+const claimsDescription =
+  'A source-linked ledger of verified claims, approved language, and usage boundaries.'
+
+export const metadata: Metadata = pageMetadata({
+  title: 'Claim Ledger',
+  description: claimsDescription,
+  path: '/claims',
+  label: 'Reference',
+})
 
 export default function ClaimsPage() {
   return (

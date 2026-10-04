@@ -7,6 +7,7 @@ import { ClaimDiagram } from '@/components/claims/claim-diagram'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { claims, getClaim } from '@/lib/claims'
+import { pageMetadata } from '@/lib/seo'
 
 interface ClaimPageProps {
   params: Promise<{ claimId: string }>
@@ -23,17 +24,13 @@ export async function generateMetadata({ params }: ClaimPageProps): Promise<Meta
   const claim = getClaim(claimId)
   if (!claim) return { title: 'Claim Not Found' }
 
-  return {
+  return pageMetadata({
     title: `${claim.claimId} — Claim Ledger`,
     description: claim.allowedLanguage,
-    alternates: { canonical: `https://www.beaglabs.com/claims/${encodeURIComponent(claim.claimId)}` },
-    openGraph: {
-      title: `${claim.claimId} — Claim Ledger | Beag Labs`,
-      description: claim.allowedLanguage,
-      type: 'article',
-      url: `https://www.beaglabs.com/claims/${encodeURIComponent(claim.claimId)}`,
-    },
-  }
+    path: `/claims/${encodeURIComponent(claim.claimId)}`,
+    label: claim.sourceOrganization,
+    type: 'article',
+  })
 }
 
 export default async function ClaimPage({ params }: ClaimPageProps) {

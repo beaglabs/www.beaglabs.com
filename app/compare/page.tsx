@@ -5,37 +5,17 @@ import { SiteFooter } from "@/components/site-footer"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { BrutalistPhoto } from "@/components/brutalist-photo"
 import { comparisons } from "@/data/comparisons/comparisons"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Comparisons — Beag Labs",
-  description:
-    "Side-by-side comparisons of Beag Labs custom SLMs vs frontier APIs and cloud AI. Cost, privacy, latency, customization, compliance, model ownership, and vendor lock-in.",
-  alternates: {
-    canonical: "https://www.beaglabs.com/compare",
-  },
-  openGraph: {
-    title: "Comparisons — Beag Labs",
-    description:
-      "Side-by-side comparisons of Beag Labs custom SLMs vs frontier APIs and cloud AI. Cost, privacy, latency, customization, compliance, model ownership, and vendor lock-in.",
-    url: "https://www.beaglabs.com/compare",
-    siteName: "Beag Labs",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Beag Labs — Comparisons",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Comparisons — Beag Labs",
-    description:
-      "Side-by-side comparisons of Beag Labs custom SLMs vs frontier APIs and cloud AI.",
-    images: ["/og-image.png"],
-  },
-}
+const compareDescription =
+  "Side-by-side comparisons of Beag Labs custom SLMs vs frontier APIs and cloud AI. Cost, privacy, latency, customization, compliance, model ownership, and vendor lock-in."
+
+export const metadata: Metadata = pageMetadata({
+  title: "Comparisons",
+  description: compareDescription,
+  path: "/compare",
+  label: "Comparisons",
+})
 
 export default function ComparePage() {
   return (
