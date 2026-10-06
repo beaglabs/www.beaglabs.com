@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "components/licensing/crm-avatar.tsx",
+    "components/licensing/crm-console.tsx",
+    "components/licensing/crm-data-table.tsx",
+    "components/licensing/crm-record-detail.tsx",
+    "components/ui/attachment.tsx",
+    "components/ui/avatar.tsx",
+    "components/ui/resizable.tsx",
+    "components/ui/table.tsx",
+    "lib/license-control-plane.ts",
+    "lib/utils.ts"
+  ]
+}

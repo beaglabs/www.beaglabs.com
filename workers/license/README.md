@@ -250,3 +250,35 @@ Papyrus disconnected deployments do not phone home. Marking a license issuance `
 The website console at https://www.beaglabs.com/licensing now supports organization licenses on the Entitlements tab. These allow unlimited VMs within approved Entra tenants, optional exact hostnames, and a mandatory expiry. Scope approval and issuance require Beag Microsoft administrator identity; all license rights derive from booked customer entitlements.
 
 See [administration and rollout](../../docs/organization-licensing.md) for generation, download, setup, migration order, renewal, and offline enforcement limits. Apply `organization-license-schema.sql` before deploying this Worker; `scripts/apply-schema.mjs` includes it. No per-VM deployment registration is needed for organization issuance. Existing deployment-bound licenses and issuance tables remain supported.
+
+
+## CRM data + attachments
+
+The private CRM at `/licensing` uses the same Turso database as the license control plane. Its additive schema lives in `crm-schema.sql` and is applied by the normal migration command:
+
+```bash
+cd workers/license
+npm run db:apply
+```
+
+CRM contract/supporting-file uploads use a private Cloudflare R2 bucket bound as `CRM_ATTACHMENTS`. Create the production bucket once before deploying the Worker version that contains the CRM:
+
+```bash
+npx wrangler r2 bucket create beaglabs-license-attachments
+```
+
+The bucket is intentionally not public. Files are downloaded through the authenticated Worker route.
+
+### Clear CRM/business data
+
+The CRM reset intentionally preserves the product catalog and Better Auth/session/JWKS tables so a sales-data reset does not rotate signing/auth state or lock administrators out.
+
+From the CLI, with the production Turso credentials in the environment:
+
+```bash
+CRM_RESET_CONFIRM=RESET_CRM_DATA npm run db:reset-crm
+```
+
+The same reset is available in the private CRM under **Settings → CRM reset** after this Worker version is deployed. The in-app reset also removes objects from `CRM_ATTACHMENTS`.
+
+Do not run the reset command against production unless you intend to delete customer, lead, opportunity, order, entitlement, deployment, Marketplace, attachment-metadata, reference, and audit records.

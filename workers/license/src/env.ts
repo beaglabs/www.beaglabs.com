@@ -1,3 +1,16 @@
+export type R2ObjectLike = {
+  body: ReadableStream<Uint8Array>
+  size?: number
+  httpMetadata?: { contentType?: string }
+}
+
+export type R2BucketLike = {
+  put(key: string, value: ReadableStream | ArrayBuffer | string, options?: { httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string> }): Promise<unknown>
+  get(key: string): Promise<R2ObjectLike | null>
+  delete(key: string | string[]): Promise<void>
+  list(options?: { prefix?: string; cursor?: string; limit?: number }): Promise<{ objects: Array<{ key: string }>; truncated: boolean; cursor?: string }>
+}
+
 export type Bindings = {
   BASE_URL: string
   TURSO_DATABASE_URL: string
@@ -24,6 +37,7 @@ export type Bindings = {
   MARKETPLACE_ANALYTICS_TENANT_ID?: string
   MARKETPLACE_ANALYTICS_CLIENT_ID?: string
   MARKETPLACE_ANALYTICS_CLIENT_SECRET?: string
+  CRM_ATTACHMENTS?: R2BucketLike
 }
 
 export const DEPLOYMENT_PROFILES = ['commercial', 'government', 'disconnected'] as const

@@ -14,6 +14,12 @@
   "triggers": {
     "crons": ["17 */6 * * *"]
   },
+  "r2_buckets": [
+    {
+      "binding": "CRM_ATTACHMENTS",
+      "bucket_name": "beaglabs-license-attachments"
+    }
+  ],
   "observability": {
     "enabled": true
   },
