@@ -406,6 +406,7 @@ export function CrmConsole() {
               <Field label="Last name"><input required className="nb-input w-full" value={personForm.lastName} onChange={(e)=>setPersonForm({...personForm,lastName:e.target.value})} /></Field>
               <Field label="Title"><input className="nb-input w-full" value={personForm.title} onChange={(e)=>setPersonForm({...personForm,title:e.target.value})} placeholder="Program Manager" /></Field>
               <Field label="Email"><input type="email" className="nb-input w-full" value={personForm.email} onChange={(e)=>setPersonForm({...personForm,email:e.target.value})} /></Field>
+              <Field label="Phone"><input type="tel" className="nb-input w-full" value={personForm.phone} onChange={(e)=>setPersonForm({...personForm,phone:e.target.value})} /></Field>
               <Field label="LinkedIn URL" hint="Used to resolve and cache the profile image when public metadata is available."><input type="url" className="nb-input w-full" value={personForm.linkedinUrl} onChange={(e)=>setPersonForm({...personForm,linkedinUrl:e.target.value})} placeholder="https://www.linkedin.com/in/…" /></Field>
               <Field label="Customer account"><select className="nb-input w-full" value={personForm.organizationId} onChange={(e)=>setPersonForm({...personForm,organizationId:e.target.value})}><option value="">Unattached lead</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
               <Field label="Lead stage"><select className="nb-input w-full" value={personForm.leadStage} onChange={(e)=>setPersonForm({...personForm,leadStage:e.target.value})}>{['new','contacted','qualified','nurture','customer','closed','do_not_contact'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
@@ -443,11 +444,12 @@ export function CrmConsole() {
         <div className="space-y-8">
           <section className="nb-panel p-6 lg:p-7">
             <PanelTitle eyebrow="Pipeline" title="Opportunities" copy="Track the buying motion independently from the eventual order. SAM.gov and prime-contract references belong in the opportunity drilldown." />
-            <form onSubmit={createOpportunity} className="mt-6 grid gap-4 border-t-2 border-[#111] pt-6 md:grid-cols-2 xl:grid-cols-5">
+            <form onSubmit={createOpportunity} className="mt-6 grid gap-4 border-t-2 border-[#111] pt-6 md:grid-cols-2 xl:grid-cols-6">
               <Field label="Customer"><select required className="nb-input w-full" value={opportunityForm.customerOrganizationId} onChange={(e)=>setOpportunityForm({...opportunityForm,customerOrganizationId:e.target.value})}><option value="">Select account…</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
               <Field label="Opportunity name"><input required className="nb-input w-full" value={opportunityForm.name} onChange={(e)=>setOpportunityForm({...opportunityForm,name:e.target.value})} /></Field>
               <Field label="Stage"><select className="nb-input w-full" value={opportunityForm.stage} onChange={(e)=>setOpportunityForm({...opportunityForm,stage:e.target.value})}>{['identified','qualified','pilot_proposed','technical_validation','procurement','verbal','closed_won','closed_lost'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
               <Field label="Est. value"><input type="number" min="0" step="0.01" className="nb-input w-full" value={opportunityForm.estimatedValueDollars} onChange={(e)=>setOpportunityForm({...opportunityForm,estimatedValueDollars:e.target.value})} /></Field>
+              <Field label="Expected close"><input type="date" className="nb-input w-full" value={opportunityForm.expectedCloseDate} onChange={(e)=>setOpportunityForm({...opportunityForm,expectedCloseDate:e.target.value})} /></Field>
               <div className="flex items-end"><button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase">Create opportunity</button></div>
             </form>
           </section>
