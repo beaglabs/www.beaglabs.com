@@ -5,6 +5,7 @@ import { buildAuth } from './auth'
 import { first, getDb, parseJsonArray, rows } from './db'
 import { adminOids, isDeploymentProfile, type Bindings } from './env'
 import { deploymentIdForPublicKey, payloadSha256, signLicense, type LicensePayload } from './license'
+import crmApp from './crm'
 import {
   contactCreateSchema,
   contactPatchSchema,
@@ -58,7 +59,7 @@ app.all('/api/auth/*', (c) => buildAuth(c.env).handler(c.req.raw))
 
 app.get('/health', async (c) => {
   await getDb(c.env).execute('SELECT 1 AS ok')
-  return c.json({ ok: true, service: 'beaglabs-license' })
+  return c.json({ ok: true, service: 'beaglabs-license', apiRelease: 'crm-v2' })
 })
 
 app.get('/login', (c) => c.html(`<!doctype html>
@@ -101,6 +102,11 @@ app.get('/admin', async (c) => {
     note: 'This service has no partner self-service surface.',
   })
 })
+
+// Defense-in-depth: CRM v2 is normally dispatched by entry.ts. Keep the
+// canonical license app aware of the same routes so an alternate/fallback
+// dispatch path cannot turn a valid CRM request into the legacy 404.
+app.all('/api/v2/crm/*', (c) => crmApp.fetch(c.req.raw, c.env, c.executionCtx))
 
 app.use('/api/v1/*', async (c, next) => {
   const admin = await getAdmin(c)
