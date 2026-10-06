@@ -11,6 +11,7 @@ import {
   LogIn,
   LogOut,
   PackageCheck,
+  Plus,
   RefreshCw,
   RotateCcw,
   ShoppingCart,
@@ -23,6 +24,14 @@ import { toast } from 'sonner'
 import { CrmAvatar } from './crm-avatar'
 import { CrmDataTable, type CrmColumn } from './crm-data-table'
 import { OrganizationLicensePanel } from './organization-license-panel'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   LicenseControlPlaneError,
   licenseFetch,
@@ -119,6 +128,47 @@ function Empty({ children }: { children: React.ReactNode }) {
   return <div className="border-2 border-dashed border-[#aaa] bg-[#FAFAF9] px-5 py-8 text-center text-[13px] font-semibold text-[#777]">{children}</div>
 }
 
+function RecordListHeader({
+  eyebrow,
+  title,
+  copy,
+  count,
+  countLabel,
+  actionLabel,
+  onAction,
+}: {
+  eyebrow: string
+  title: string
+  copy: string
+  count: number
+  countLabel: string
+  actionLabel: string
+  onAction: () => void
+}) {
+  return (
+    <div className="flex flex-col gap-4 border-b-[3px] border-[#111] pb-5 md:flex-row md:items-end md:justify-between">
+      <div className="min-w-0">
+        <span className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">{eyebrow}</span>
+        <h2 className="mt-1 text-[25px] font-extrabold tracking-[-0.035em]">{title}</h2>
+        <p className="mt-1.5 max-w-3xl text-[12px] font-medium leading-5 text-[#666]">{copy}</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-3">
+        <span className="border-2 border-[#111] bg-[#fff0a6] px-3 py-2 font-mono text-[9px] font-black uppercase">
+          {count} {countLabel}
+        </span>
+        <button
+          type="button"
+          onClick={onAction}
+          className="nb-btn-orange inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase tracking-[0.08em]"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          {actionLabel}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function CrmConsole() {
   const [admin, setAdmin] = useState<Admin | null>(null)
   const [checking, setChecking] = useState(true)
@@ -135,6 +185,7 @@ export function CrmConsole() {
   const [audit, setAudit] = useState<Row[]>([])
   const [issuance, setIssuance] = useState<{ issuanceId: string; document: Record<string, unknown> } | null>(null)
   const [resetConfirm, setResetConfirm] = useState('')
+  const [createDialog, setCreateDialog] = useState<'person' | 'customer' | 'opportunity' | 'order' | null>(null)
 
   const [personForm, setPersonForm] = useState({
     firstName: '', lastName: '', title: '', email: '', phone: '', linkedinUrl: '', organizationId: '',
@@ -222,6 +273,7 @@ export function CrmConsole() {
       })
       toast.success('Person added to CRM.')
       setPersonForm({ firstName: '', lastName: '', title: '', email: '', phone: '', linkedinUrl: '', organizationId: '', leadStage: 'new', leadSource: 'LinkedIn' })
+      setCreateDialog(null)
       await loadAll()
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Unable to create person.') }
   }
@@ -244,6 +296,7 @@ export function CrmConsole() {
       })
       toast.success('Customer account created.')
       setCustomerForm({ organizationType: 'federal_agency', legalName: '', displayName: '', uei: '', cageCode: '', domain: '', websiteUrl: '' })
+      setCreateDialog(null)
       await loadAll()
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Unable to create customer.') }
   }
@@ -265,6 +318,7 @@ export function CrmConsole() {
       })
       toast.success('Opportunity created.')
       setOpportunityForm({ customerOrganizationId: '', name: '', stage: 'identified', estimatedValueDollars: '', expectedCloseDate: '' })
+      setCreateDialog(null)
       await loadAll()
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Unable to create opportunity.') }
   }
@@ -286,6 +340,7 @@ export function CrmConsole() {
       })
       toast.success('Commercial order recorded.')
       setOrderForm({ customerOrganizationId: '', sku: '', unitPriceDollars: '', status: 'booked', opportunityId: '' })
+      setCreateDialog(null)
       await loadAll()
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Unable to create order.') }
   }
@@ -398,80 +453,160 @@ export function CrmConsole() {
       )}
 
       {tab === 'people' && (
-        <div className="space-y-8">
-          <section className="nb-panel p-6 lg:p-7">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between"><PanelTitle eyebrow="People" title="Leads & contacts" copy="Track people before or after they are attached to a customer account. LinkedIn profile images are resolved server-side when possible." /><div className="border-2 border-[#111] bg-[#fff0a6] px-3 py-2 font-mono text-[9px] font-black uppercase">{people.length} people</div></div>
-            <form onSubmit={createPerson} className="mt-6 grid gap-4 border-t-2 border-[#111] pt-6 md:grid-cols-2 xl:grid-cols-4">
-              <Field label="First name"><input required className="nb-input w-full" value={personForm.firstName} onChange={(e)=>setPersonForm({...personForm,firstName:e.target.value})} /></Field>
-              <Field label="Last name"><input required className="nb-input w-full" value={personForm.lastName} onChange={(e)=>setPersonForm({...personForm,lastName:e.target.value})} /></Field>
-              <Field label="Title"><input className="nb-input w-full" value={personForm.title} onChange={(e)=>setPersonForm({...personForm,title:e.target.value})} placeholder="Program Manager" /></Field>
-              <Field label="Email"><input type="email" className="nb-input w-full" value={personForm.email} onChange={(e)=>setPersonForm({...personForm,email:e.target.value})} /></Field>
-              <Field label="Phone"><input type="tel" className="nb-input w-full" value={personForm.phone} onChange={(e)=>setPersonForm({...personForm,phone:e.target.value})} /></Field>
-              <Field label="LinkedIn URL" hint="Used to resolve and cache the profile image when public metadata is available."><input type="url" className="nb-input w-full" value={personForm.linkedinUrl} onChange={(e)=>setPersonForm({...personForm,linkedinUrl:e.target.value})} placeholder="https://www.linkedin.com/in/…" /></Field>
-              <Field label="Customer account"><select className="nb-input w-full" value={personForm.organizationId} onChange={(e)=>setPersonForm({...personForm,organizationId:e.target.value})}><option value="">Unattached lead</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
-              <Field label="Lead stage"><select className="nb-input w-full" value={personForm.leadStage} onChange={(e)=>setPersonForm({...personForm,leadStage:e.target.value})}>{['new','contacted','qualified','nurture','customer','closed','do_not_contact'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
-              <div className="flex items-end"><button className="nb-btn-orange inline-flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-[10px] font-black uppercase"><UserPlus className="h-4 w-4" /> Add person</button></div>
-            </form>
-          </section>
-          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[6px_6px_0_#111]">
+        <div className="space-y-5">
+          <RecordListHeader
+            eyebrow="People"
+            title="Leads & contacts"
+            copy="Track people before or after they are attached to a customer account. LinkedIn profile images are resolved server-side when possible."
+            count={people.length}
+            countLabel="people"
+            actionLabel="Add person"
+            onAction={() => setCreateDialog('person')}
+          />
+          <Dialog open={createDialog === 'person'} onOpenChange={(open) => setCreateDialog(open ? 'person' : null)}>
+            <DialogContent className="max-h-[88vh] overflow-y-auto rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[8px_8px_0_#111] sm:max-w-3xl">
+              <DialogHeader className="border-b-[3px] border-[#111] bg-[#fff1e9] p-6 pr-14">
+                <div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">People</div>
+                <DialogTitle className="text-[26px] font-extrabold tracking-[-0.035em]">Add person</DialogTitle>
+                <DialogDescription className="text-[12px] leading-5 text-[#666]">Create the lead first. You can attach them to an account now or leave them unattached until the buying organization is known.</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={createPerson}>
+                <div className="grid gap-5 p-6 md:grid-cols-2">
+                  <Field label="First name"><input autoFocus required className="nb-input w-full" value={personForm.firstName} onChange={(e)=>setPersonForm({...personForm,firstName:e.target.value})} /></Field>
+                  <Field label="Last name"><input required className="nb-input w-full" value={personForm.lastName} onChange={(e)=>setPersonForm({...personForm,lastName:e.target.value})} /></Field>
+                  <Field label="Title"><input className="nb-input w-full" value={personForm.title} onChange={(e)=>setPersonForm({...personForm,title:e.target.value})} placeholder="Program Manager" /></Field>
+                  <Field label="Email"><input type="email" className="nb-input w-full" value={personForm.email} onChange={(e)=>setPersonForm({...personForm,email:e.target.value})} /></Field>
+                  <Field label="Phone"><input type="tel" className="nb-input w-full" value={personForm.phone} onChange={(e)=>setPersonForm({...personForm,phone:e.target.value})} /></Field>
+                  <Field label="LinkedIn URL" hint="Used to resolve and cache the profile image when public metadata is available."><input type="url" className="nb-input w-full" value={personForm.linkedinUrl} onChange={(e)=>setPersonForm({...personForm,linkedinUrl:e.target.value})} placeholder="https://www.linkedin.com/in/…" /></Field>
+                  <Field label="Customer account"><select className="nb-input w-full" value={personForm.organizationId} onChange={(e)=>setPersonForm({...personForm,organizationId:e.target.value})}><option value="">Unattached lead</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
+                  <Field label="Lead stage"><select className="nb-input w-full" value={personForm.leadStage} onChange={(e)=>setPersonForm({...personForm,leadStage:e.target.value})}>{['new','contacted','qualified','nurture','customer','closed','do_not_contact'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
+                </div>
+                <DialogFooter className="border-t-[3px] border-[#111] bg-[#FAFAF9] p-4 sm:justify-between">
+                  <button type="button" onClick={() => setCreateDialog(null)} className="nb-btn-white px-4 py-2.5 font-mono text-[9px] font-black uppercase">Cancel</button>
+                  <button className="nb-btn-orange inline-flex items-center justify-center gap-2 px-5 py-2.5 font-mono text-[9px] font-black uppercase"><UserPlus className="h-4 w-4" /> Add person</button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[5px_5px_0_#111]">
             <CrmDataTable rows={people} columns={peopleColumns} rowKey={(row)=>text(row,'id')} searchText={(row)=>[text(row,'first_name'),text(row,'last_name'),text(row,'title'),text(row,'email'),text(row,'organization_name'),text(row,'linkedin_url')].join(' ')} searchPlaceholder="Search people, titles, accounts, LinkedIn…" empty="No people yet." onRowClick={(row)=>window.location.assign(`/licensing/people/${encodeURIComponent(text(row,'id'))}`)} />
           </section>
         </div>
       )}
 
       {tab === 'customers' && (
-        <div className="space-y-8">
-          <section className="nb-panel p-6 lg:p-7">
-            <PanelTitle eyebrow="Accounts" title="Customer organizations" copy="Accounts own opportunities, orders, entitlements, procurement references, files, and linked people." />
-            <form onSubmit={createCustomer} className="mt-6 grid gap-4 border-t-2 border-[#111] pt-6 md:grid-cols-2 xl:grid-cols-4">
-              <Field label="Type"><select className="nb-input w-full" value={customerForm.organizationType} onChange={(e)=>setCustomerForm({...customerForm,organizationType:e.target.value})}>{['federal_agency','state_local','commercial','prime','distributor','reseller','integrator','partner'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
-              <Field label="Legal name"><input required className="nb-input w-full" value={customerForm.legalName} onChange={(e)=>setCustomerForm({...customerForm,legalName:e.target.value})} /></Field>
-              <Field label="Display name"><input className="nb-input w-full" value={customerForm.displayName} onChange={(e)=>setCustomerForm({...customerForm,displayName:e.target.value})} /></Field>
-              <Field label="Domain"><input className="nb-input w-full" value={customerForm.domain} onChange={(e)=>setCustomerForm({...customerForm,domain:e.target.value})} placeholder="agency.gov" /></Field>
-              <Field label="UEI"><input className="nb-input w-full font-mono" value={customerForm.uei} onChange={(e)=>setCustomerForm({...customerForm,uei:e.target.value})} /></Field>
-              <Field label="CAGE"><input className="nb-input w-full font-mono" value={customerForm.cageCode} onChange={(e)=>setCustomerForm({...customerForm,cageCode:e.target.value})} /></Field>
-              <Field label="Website"><input type="url" className="nb-input w-full" value={customerForm.websiteUrl} onChange={(e)=>setCustomerForm({...customerForm,websiteUrl:e.target.value})} /></Field>
-              <div className="flex items-end"><button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase">Create account</button></div>
-            </form>
-          </section>
-          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[6px_6px_0_#111]">
+        <div className="space-y-5">
+          <RecordListHeader
+            eyebrow="Accounts"
+            title="Customer organizations"
+            copy="Accounts own opportunities, orders, entitlements, procurement references, files, and linked people."
+            count={customers.length}
+            countLabel="accounts"
+            actionLabel="Add customer"
+            onAction={() => setCreateDialog('customer')}
+          />
+          <Dialog open={createDialog === 'customer'} onOpenChange={(open) => setCreateDialog(open ? 'customer' : null)}>
+            <DialogContent className="max-h-[88vh] overflow-y-auto rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[8px_8px_0_#111] sm:max-w-3xl">
+              <DialogHeader className="border-b-[3px] border-[#111] bg-[#fff1e9] p-6 pr-14">
+                <div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">Accounts</div>
+                <DialogTitle className="text-[26px] font-extrabold tracking-[-0.035em]">Add customer account</DialogTitle>
+                <DialogDescription className="text-[12px] leading-5 text-[#666]">Create the organization record. UEI, CAGE, domain, people, opportunities, contracts, and licensing all hang off this account.</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={createCustomer}>
+                <div className="grid gap-5 p-6 md:grid-cols-2">
+                  <Field label="Type"><select autoFocus className="nb-input w-full" value={customerForm.organizationType} onChange={(e)=>setCustomerForm({...customerForm,organizationType:e.target.value})}>{['federal_agency','state_local','commercial','prime','distributor','reseller','integrator','partner'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
+                  <Field label="Legal name"><input required className="nb-input w-full" value={customerForm.legalName} onChange={(e)=>setCustomerForm({...customerForm,legalName:e.target.value})} /></Field>
+                  <Field label="Display name"><input className="nb-input w-full" value={customerForm.displayName} onChange={(e)=>setCustomerForm({...customerForm,displayName:e.target.value})} /></Field>
+                  <Field label="Domain"><input className="nb-input w-full" value={customerForm.domain} onChange={(e)=>setCustomerForm({...customerForm,domain:e.target.value})} placeholder="agency.gov" /></Field>
+                  <Field label="UEI"><input className="nb-input w-full font-mono" value={customerForm.uei} onChange={(e)=>setCustomerForm({...customerForm,uei:e.target.value})} /></Field>
+                  <Field label="CAGE"><input className="nb-input w-full font-mono" value={customerForm.cageCode} onChange={(e)=>setCustomerForm({...customerForm,cageCode:e.target.value})} /></Field>
+                  <Field label="Website"><input type="url" className="nb-input w-full md:col-span-2" value={customerForm.websiteUrl} onChange={(e)=>setCustomerForm({...customerForm,websiteUrl:e.target.value})} /></Field>
+                </div>
+                <DialogFooter className="border-t-[3px] border-[#111] bg-[#FAFAF9] p-4 sm:justify-between">
+                  <button type="button" onClick={() => setCreateDialog(null)} className="nb-btn-white px-4 py-2.5 font-mono text-[9px] font-black uppercase">Cancel</button>
+                  <button className="nb-btn-orange px-5 py-2.5 font-mono text-[9px] font-black uppercase">Create account</button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[5px_5px_0_#111]">
             <CrmDataTable rows={customers} columns={customerColumns} rowKey={(row)=>text(row,'id')} searchText={(row)=>[text(row,'legal_name'),text(row,'display_name'),text(row,'uei'),text(row,'cage_code'),text(row,'domain')].join(' ')} searchPlaceholder="Search accounts, UEI, CAGE, domain…" empty="No customer accounts yet." onRowClick={(row)=>window.location.assign(`/licensing/customers/${encodeURIComponent(text(row,'id'))}`)} />
           </section>
         </div>
       )}
 
       {tab === 'opportunities' && (
-        <div className="space-y-8">
-          <section className="nb-panel p-6 lg:p-7">
-            <PanelTitle eyebrow="Pipeline" title="Opportunities" copy="Track the buying motion independently from the eventual order. SAM.gov and prime-contract references belong in the opportunity drilldown." />
-            <form onSubmit={createOpportunity} className="mt-6 grid gap-4 border-t-2 border-[#111] pt-6 md:grid-cols-2 xl:grid-cols-6">
-              <Field label="Customer"><select required className="nb-input w-full" value={opportunityForm.customerOrganizationId} onChange={(e)=>setOpportunityForm({...opportunityForm,customerOrganizationId:e.target.value})}><option value="">Select account…</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
-              <Field label="Opportunity name"><input required className="nb-input w-full" value={opportunityForm.name} onChange={(e)=>setOpportunityForm({...opportunityForm,name:e.target.value})} /></Field>
-              <Field label="Stage"><select className="nb-input w-full" value={opportunityForm.stage} onChange={(e)=>setOpportunityForm({...opportunityForm,stage:e.target.value})}>{['identified','qualified','pilot_proposed','technical_validation','procurement','verbal','closed_won','closed_lost'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
-              <Field label="Est. value"><input type="number" min="0" step="0.01" className="nb-input w-full" value={opportunityForm.estimatedValueDollars} onChange={(e)=>setOpportunityForm({...opportunityForm,estimatedValueDollars:e.target.value})} /></Field>
-              <Field label="Expected close"><input type="date" className="nb-input w-full" value={opportunityForm.expectedCloseDate} onChange={(e)=>setOpportunityForm({...opportunityForm,expectedCloseDate:e.target.value})} /></Field>
-              <div className="flex items-end"><button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase">Create opportunity</button></div>
-            </form>
-          </section>
-          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[6px_6px_0_#111]">
+        <div className="space-y-5">
+          <RecordListHeader
+            eyebrow="Pipeline"
+            title="Opportunities"
+            copy="Track the buying motion independently from the eventual order. SAM.gov and prime-contract references belong in the opportunity drilldown."
+            count={opportunities.length}
+            countLabel="opportunities"
+            actionLabel="Add opportunity"
+            onAction={() => setCreateDialog('opportunity')}
+          />
+          <Dialog open={createDialog === 'opportunity'} onOpenChange={(open) => setCreateDialog(open ? 'opportunity' : null)}>
+            <DialogContent className="max-h-[88vh] overflow-y-auto rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[8px_8px_0_#111] sm:max-w-2xl">
+              <DialogHeader className="border-b-[3px] border-[#111] bg-[#fff1e9] p-6 pr-14">
+                <div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">Pipeline</div>
+                <DialogTitle className="text-[26px] font-extrabold tracking-[-0.035em]">Add opportunity</DialogTitle>
+                <DialogDescription className="text-[12px] leading-5 text-[#666]">Create the buying motion now; procurement references and contract files can be added from its drilldown page.</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={createOpportunity}>
+                <div className="grid gap-5 p-6 md:grid-cols-2">
+                  <Field label="Customer"><select autoFocus required className="nb-input w-full" value={opportunityForm.customerOrganizationId} onChange={(e)=>setOpportunityForm({...opportunityForm,customerOrganizationId:e.target.value})}><option value="">Select account…</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
+                  <Field label="Opportunity name"><input required className="nb-input w-full" value={opportunityForm.name} onChange={(e)=>setOpportunityForm({...opportunityForm,name:e.target.value})} /></Field>
+                  <Field label="Stage"><select className="nb-input w-full" value={opportunityForm.stage} onChange={(e)=>setOpportunityForm({...opportunityForm,stage:e.target.value})}>{['identified','qualified','pilot_proposed','technical_validation','procurement','verbal','closed_won','closed_lost'].map((value)=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></Field>
+                  <Field label="Estimated value"><input type="number" min="0" step="0.01" className="nb-input w-full" value={opportunityForm.estimatedValueDollars} onChange={(e)=>setOpportunityForm({...opportunityForm,estimatedValueDollars:e.target.value})} /></Field>
+                  <Field label="Expected close"><input type="date" className="nb-input w-full" value={opportunityForm.expectedCloseDate} onChange={(e)=>setOpportunityForm({...opportunityForm,expectedCloseDate:e.target.value})} /></Field>
+                </div>
+                <DialogFooter className="border-t-[3px] border-[#111] bg-[#FAFAF9] p-4 sm:justify-between">
+                  <button type="button" onClick={() => setCreateDialog(null)} className="nb-btn-white px-4 py-2.5 font-mono text-[9px] font-black uppercase">Cancel</button>
+                  <button className="nb-btn-orange px-5 py-2.5 font-mono text-[9px] font-black uppercase">Create opportunity</button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[5px_5px_0_#111]">
             <CrmDataTable rows={opportunities} columns={opportunityColumns} rowKey={(row)=>text(row,'id')} searchText={(row)=>[text(row,'name'),text(row,'customer_name'),text(row,'stage')].join(' ')} searchPlaceholder="Search opportunities and customers…" empty="No opportunities yet." onRowClick={(row)=>window.location.assign(`/licensing/opportunities/${encodeURIComponent(text(row,'id'))}`)} />
           </section>
         </div>
       )}
 
       {tab === 'orders' && (
-        <div className="space-y-8">
-          <section className="nb-panel p-6 lg:p-7">
-            <PanelTitle eyebrow="Commercial records" title="Orders" copy="Record the negotiated software transaction here. Open the order to attach SAM.gov notice/award IDs, prime contract IDs, people, and contract files." />
-            <form onSubmit={createOrder} className="mt-6 grid gap-4 border-t-2 border-[#111] pt-6 md:grid-cols-2 xl:grid-cols-5">
-              <Field label="Customer"><select required className="nb-input w-full" value={orderForm.customerOrganizationId} onChange={(e)=>setOrderForm({...orderForm,customerOrganizationId:e.target.value,opportunityId:''})}><option value="">Select account…</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
-              <Field label="Internal SKU"><select required className="nb-input w-full" value={orderForm.sku} onChange={(e)=>setOrderForm({...orderForm,sku:e.target.value})}><option value="">Select SKU…</option>{products.filter((row)=>text(row,'provisioning_type')==='license').map((row)=><option key={text(row,'sku')} value={text(row,'sku')}>{text(row,'sku')} — {text(row,'name')}</option>)}</select></Field>
-              <Field label="Agreed price"><input type="number" min="0" step="0.01" className="nb-input w-full" value={orderForm.unitPriceDollars} onChange={(e)=>setOrderForm({...orderForm,unitPriceDollars:e.target.value})} /></Field>
-              <Field label="Opportunity"><select className="nb-input w-full" value={orderForm.opportunityId} onChange={(e)=>setOrderForm({...orderForm,opportunityId:e.target.value})}><option value="">None</option>{opportunities.filter((row)=>!orderForm.customerOrganizationId || text(row,'customer_organization_id')===orderForm.customerOrganizationId).map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'name')}</option>)}</select></Field>
-              <div className="flex items-end"><button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase">Record order</button></div>
-            </form>
-          </section>
-          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[6px_6px_0_#111]">
+        <div className="space-y-5">
+          <RecordListHeader
+            eyebrow="Commercial records"
+            title="Orders"
+            copy="Record the negotiated software transaction. Open an order to attach SAM.gov notice/award IDs, prime contract IDs, people, and contract files."
+            count={orders.length}
+            countLabel="orders"
+            actionLabel="Add order"
+            onAction={() => setCreateDialog('order')}
+          />
+          <Dialog open={createDialog === 'order'} onOpenChange={(open) => setCreateDialog(open ? 'order' : null)}>
+            <DialogContent className="max-h-[88vh] overflow-y-auto rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[8px_8px_0_#111] sm:max-w-2xl">
+              <DialogHeader className="border-b-[3px] border-[#111] bg-[#fff1e9] p-6 pr-14">
+                <div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">Commercial record</div>
+                <DialogTitle className="text-[26px] font-extrabold tracking-[-0.035em]">Add order</DialogTitle>
+                <DialogDescription className="text-[12px] leading-5 text-[#666]">Record the negotiated transaction. Contract numbers, SAM.gov references, people, files, and entitlement details stay on the order drilldown.</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={createOrder}>
+                <div className="grid gap-5 p-6 md:grid-cols-2">
+                  <Field label="Customer"><select autoFocus required className="nb-input w-full" value={orderForm.customerOrganizationId} onChange={(e)=>setOrderForm({...orderForm,customerOrganizationId:e.target.value,opportunityId:''})}><option value="">Select account…</option>{customers.map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'display_name','legal_name')}</option>)}</select></Field>
+                  <Field label="Internal SKU"><select required className="nb-input w-full" value={orderForm.sku} onChange={(e)=>setOrderForm({...orderForm,sku:e.target.value})}><option value="">Select SKU…</option>{products.filter((row)=>text(row,'provisioning_type')==='license').map((row)=><option key={text(row,'sku')} value={text(row,'sku')}>{text(row,'sku')} — {text(row,'name')}</option>)}</select></Field>
+                  <Field label="Agreed price"><input type="number" min="0" step="0.01" className="nb-input w-full" value={orderForm.unitPriceDollars} onChange={(e)=>setOrderForm({...orderForm,unitPriceDollars:e.target.value})} /></Field>
+                  <Field label="Opportunity"><select className="nb-input w-full" value={orderForm.opportunityId} onChange={(e)=>setOrderForm({...orderForm,opportunityId:e.target.value})}><option value="">None</option>{opportunities.filter((row)=>!orderForm.customerOrganizationId || text(row,'customer_organization_id')===orderForm.customerOrganizationId).map((row)=><option key={text(row,'id')} value={text(row,'id')}>{text(row,'name')}</option>)}</select></Field>
+                </div>
+                <DialogFooter className="border-t-[3px] border-[#111] bg-[#FAFAF9] p-4 sm:justify-between">
+                  <button type="button" onClick={() => setCreateDialog(null)} className="nb-btn-white px-4 py-2.5 font-mono text-[9px] font-black uppercase">Cancel</button>
+                  <button className="nb-btn-orange px-5 py-2.5 font-mono text-[9px] font-black uppercase">Record order</button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[5px_5px_0_#111]">
             <CrmDataTable rows={orders} columns={orderColumns} rowKey={(row)=>text(row,'id')} searchText={(row)=>[text(row,'customer_name'),text(row,'id'),text(row,'contract_number'),text(row,'po_number'),text(row,'status')].join(' ')} searchPlaceholder="Search orders, customers, contract IDs…" empty="No orders yet." onRowClick={(row)=>window.location.assign(`/licensing/orders/${encodeURIComponent(text(row,'id'))}`)} />
           </section>
         </div>
