@@ -334,6 +334,13 @@ export function CrmConsole() {
     { id: 'refs', label: 'Refs / files', sortValue: (row) => numberValue(row,'reference_count') + numberValue(row,'attachment_count'), render: (row) => <span className="font-mono text-[10px] font-black">{numberValue(row,'reference_count')} refs · {numberValue(row,'attachment_count')} files</span> },
   ], [])
 
+  const dashboardCards: Array<[string, number, typeof Users, string]> = [
+    ['People', dashboard.people, Users, '#fff0a6'],
+    ['Customer accounts', dashboard.customers, Building2, '#fff'],
+    ['Open opportunities', dashboard.openOpportunities, BriefcaseBusiness, '#ffd7c7'],
+    ['Follow-ups due', dashboard.followUpsDue, Activity, '#d9f99d'],
+  ]
+
   const orderColumns = useMemo<CrmColumn<Row>[]>(() => [
     { id: 'customer', label: 'Customer', sortValue: (row) => text(row,'customer_name'), render: (row) => <div><div className="font-extrabold">{text(row,'customer_name')}</div><div className="mt-1 font-mono text-[9px] text-[#888]">{text(row,'id')}</div></div> },
     { id: 'status', label: 'Status', sortValue: (row) => text(row,'status'), render: (row) => <Status value={row.status} /> },
@@ -376,12 +383,7 @@ export function CrmConsole() {
       {tab === 'overview' && (
         <div className="space-y-8">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {[
-              ['People', dashboard.people, Users, '#fff0a6'],
-              ['Customer accounts', dashboard.customers, Building2, '#fff'],
-              ['Open opportunities', dashboard.openOpportunities, BriefcaseBusiness, '#ffd7c7'],
-              ['Follow-ups due', dashboard.followUpsDue, Activity, '#d9f99d'],
-            ].map(([label,value,Icon,bg]) => <div key={String(label)} className="border-[3px] border-[#111] p-5 shadow-[5px_5px_0_#111]" style={{background:String(bg)}}><div className="flex justify-between"><div><div className="font-mono text-[9px] font-black uppercase tracking-[0.14em] text-[#666]">{String(label)}</div><div className="mt-2 text-[38px] font-extrabold">{String(value)}</div></div><Icon className="h-5 w-5" /></div></div>)}
+            {dashboardCards.map(([label,value,Icon,bg]) => <div key={label} className="border-[3px] border-[#111] p-5 shadow-[5px_5px_0_#111]" style={{background:bg}}><div className="flex justify-between"><div><div className="font-mono text-[9px] font-black uppercase tracking-[0.14em] text-[#666]">{label}</div><div className="mt-2 text-[38px] font-extrabold">{value}</div></div><Icon className="h-5 w-5" /></div></div>)}
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             <section className="nb-panel p-6"><PanelTitle eyebrow="Pipeline" title={money(dashboard.pipelineValueCents)} copy="Estimated value across opportunities that are still open." /><div className="mt-6 border-t-2 border-[#111] pt-5 font-mono text-[11px] font-black uppercase">{dashboard.openOpportunities} open opportunities</div></section>
