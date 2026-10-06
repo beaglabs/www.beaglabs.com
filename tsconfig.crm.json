@@ -13,6 +13,8 @@
     "components/ui/resizable.tsx",
     "components/ui/table.tsx",
     "lib/license-control-plane.ts",
-    "lib/utils.ts"
+    "lib/utils.ts",
+    "components/licensing/capture-console.tsx",
+    "components/licensing/capture-record-detail.tsx"
   ]
 }
