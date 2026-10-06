@@ -135,18 +135,27 @@ async function issueLicense(request: Request, env: Bindings, ctx: ExecutionLike,
   if (auth.response || !auth.admin) return auth.response ?? jsonError(401, 'unauthorized', 'Microsoft administrator sign-in required.')
 
   const db = getDb(env)
-  const source = first<Row>(await db.execute({
+  const sourceSql = (includeScope: boolean) => ({
     sql: `SELECT d.id AS deployment_record_id,d.papyrus_deployment_id,d.deployment_profile,d.status AS deployment_status,
                  e.id AS entitlement_id,e.status AS entitlement_status,e.valid_from,e.valid_until,e.feature_set_json,e.allowed_profiles_json,
-                 o.id AS organization_id,o.legal_name,o.display_name,b.entra_app_logo_url,s.scope AS license_scope
+                 o.id AS organization_id,o.legal_name,o.display_name,b.entra_app_logo_url,${includeScope ? 's.scope' : 'NULL'} AS license_scope
           FROM deployments d
           JOIN entitlements e ON e.id=d.entitlement_id
           JOIN organizations o ON o.id=d.customer_organization_id
           LEFT JOIN deployment_branding b ON b.deployment_id=d.id
-          LEFT JOIN entitlement_license_scopes s ON s.entitlement_id=e.id
+          ${includeScope ? 'LEFT JOIN entitlement_license_scopes s ON s.entitlement_id=e.id' : ''}
           WHERE d.id=?`,
     args: [deploymentId],
-  }))
+  })
+  let source: Row | undefined
+  try {
+    source = first<Row>(await db.execute(sourceSql(true)))
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (!message.includes('no such table: entitlement_license_scopes')) throw error
+    console.warn('Organization-license schema is not applied yet; using legacy deployment-license lookup.')
+    source = first<Row>(await db.execute(sourceSql(false)))
+  }
   if (!source) return jsonError(404, 'deployment_not_found', 'Deployment not found.')
   if (source.license_scope === 'organization') return jsonError(409, 'organization_scope', 'Issue this organization license from its entitlement, rather than a deployment.')
   if (!['registered', 'licensed'].includes(String(source.deployment_status))) return jsonError(409, 'deployment_inactive', 'Deployment is suspended or retired.')
