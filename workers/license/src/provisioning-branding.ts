@@ -147,7 +147,7 @@ async function issueLicense(request: Request, env: Bindings, ctx: ExecutionLike,
           WHERE d.id=?`,
     args: [deploymentId],
   })
-  let source: Row | undefined
+  let source: Row | null
   try {
     source = first<Row>(await db.execute(sourceSql(true)))
   } catch (error) {
