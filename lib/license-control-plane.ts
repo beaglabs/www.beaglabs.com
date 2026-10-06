@@ -15,7 +15,8 @@ export class LicenseControlPlaneError extends Error {
 
 export async function licenseFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
-  if (init.body && !headers.has('content-type')) headers.set('content-type', 'application/json')
+  const isFormData = typeof FormData !== 'undefined' && init.body instanceof FormData
+  if (init.body && !isFormData && !headers.has('content-type')) headers.set('content-type', 'application/json')
 
   const response = await fetch(`${LICENSE_CONTROL_PLANE_ORIGIN}${path}`, {
     ...init,
