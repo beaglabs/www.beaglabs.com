@@ -171,6 +171,50 @@ async function findOrCreateContact(env: Bindings, organizationId: string, lead: 
   return recordId
 }
 
+
+async function findOrCreateCrmPerson(env: Bindings, organizationId: string, lead: {
+  firstName: string
+  lastName: string
+  title: string
+  email: string
+  phone: string
+  leadSource: string
+}, stage: 'new' | 'qualified' | 'customer' | 'closed'): Promise<string | null> {
+  if (!lead.email && !lead.firstName && !lead.lastName) return null
+  const db = getDb(env)
+  const firstName = lead.firstName || 'Marketplace'
+  const lastName = lead.lastName || 'Lead'
+  let existing: Row | null = null
+  if (lead.email) {
+    existing = first<Row>(await db.execute({ sql: 'SELECT * FROM crm_people WHERE lower(email)=lower(?) LIMIT 1', args: [lead.email] }))
+  }
+  const timestamp = now()
+  if (existing) {
+    const recordId = String(existing.id)
+    await db.execute({
+      sql: `UPDATE crm_people SET organization_id=?,first_name=?,last_name=?,title=?,phone=?,lead_stage=?,lead_source=?,relationship_type=?,status='active',updated_at=? WHERE id=?`,
+      args: [
+        organizationId, firstName, lastName, lead.title || null, lead.phone || null,
+        stage, lead.leadSource || 'Microsoft Marketplace', stage === 'customer' ? 'customer' : 'lead', timestamp, recordId,
+      ],
+    })
+    return recordId
+  }
+
+  const recordId = id('per')
+  await db.execute({
+    sql: `INSERT INTO crm_people
+      (id,organization_id,first_name,last_name,title,email,phone,lead_stage,lead_source,relationship_type,status,tags_json,created_at,updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    args: [
+      recordId, organizationId, firstName, lastName, lead.title || null, lead.email || null, lead.phone || null,
+      stage, lead.leadSource || 'Microsoft Marketplace', stage === 'customer' ? 'customer' : 'lead', 'active',
+      '["marketplace"]', timestamp, timestamp,
+    ],
+  })
+  return recordId
+}
+
 async function sendLeadThread(env: Bindings, lead: {
   firstName: string
   lastName: string
@@ -270,6 +314,7 @@ app.post('/api/marketplace/leads', async (c) => {
   if (!suppressContact) {
     organizationId = await findOrCreateOrganization(c.env, { companyName, domain, active: status === 'customer' })
     contactId = await findOrCreateContact(c.env, organizationId, lead)
+    await findOrCreateCrmPerson(c.env, organizationId, lead, status)
   }
 
   const recordId = id('mkl')
