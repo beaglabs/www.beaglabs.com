@@ -7,6 +7,7 @@ on:
       - 'components/licensing/**'
       - 'components/ui/attachment.tsx'
       - 'lib/license-control-plane.ts'
+      - 'tsconfig.crm.json'
       - '.github/workflows/crm-ui.yml'
 
 jobs:
