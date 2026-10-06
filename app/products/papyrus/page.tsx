@@ -46,7 +46,7 @@ export default function PapyrusProductPage() {
             <h1 className="mx-auto max-w-[1100px] font-[family-name:var(--font-display)] text-[56px] font-black uppercase leading-[.93] tracking-[-.035em] sm:text-[78px] xl:text-[94px]">The Agentic Modernization Factory</h1>
             <p className="mx-auto mt-7 max-w-[850px] text-[17px] font-medium leading-[1.75] text-[#444]">{description}</p>
             <div className="mt-9 flex flex-wrap justify-center gap-4">
-              <Link href="/sales" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Discuss your deployment<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+              <Link href="/sales" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider"><Image src="/products/papyrus/azure.webp" alt="" width={24} height={24} className="h-6 w-6 object-contain" />Request Azure private offer<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
               <a href="#showcase" className="nb-btn-white inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider"><Play className="h-4 w-4" aria-hidden="true" />See it in action</a>
             </div>
             <div className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-2 font-mono text-[10px] font-bold uppercase tracking-wider text-[#555]"><span>Documents → requirements</span><span>Prompts → apps</span><span>Legacy → usable</span></div>
@@ -81,16 +81,24 @@ export default function PapyrusProductPage() {
         ['Reusable skills and artifacts', 'Keep the outputs and working methods that help the next task move faster.'],
       ].map(([title, body]) => <div key={title} className="border-t-2 border-[#ff5f1f] pt-4"><h3 className="text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-[#c6c6c6]">{body}</p></div>)}</div></div></section>
 
-      <section id="pricing" className="scroll-mt-24 border-b-[3px] border-[#111] bg-white px-6 py-16 lg:px-9 lg:py-24">
+      <section id="procurement" className="scroll-mt-24 border-b-[3px] border-[#111] bg-white px-6 py-16 lg:px-9 lg:py-24">
         <div className="mx-auto max-w-[1440px]">
-          <span className="nb-label mb-5 inline-block">Papyrus pricing</span>
-          <h2 className="text-[38px] font-extrabold leading-[1.05] tracking-[-.045em] sm:text-[52px]">Prove the workflow. Scale across your organization.</h2>
-          <p className="mt-5 max-w-[780px] text-base leading-7 text-[#555]">Direct enterprise agreements for customer-hosted modernization. Start with a scoped pilot or license Papyrus across your organization, including offline environments.</p>
-          <div className="mt-9 grid gap-6 md:grid-cols-2">{[
-            { plan: 'Pilot engagement', total: '$250,000', period: '90 days', body: 'A scoped modernization pilot with implementation, integrations, and dedicated live support.', scope: 'Deliverables, acceptance criteria, support coverage, and response targets are agreed before kickoff.' },
-            { plan: 'Enterprise license', total: '$2,000,000', period: '2 years', body: 'Unlimited customer-hosted VMs within the licensed organization, including offline deployment.', scope: 'Implementation, maintenance, and support scope are defined in the enterprise agreement.' },
-          ].map(({ plan, total, period, body, scope }) => <article key={plan} className="border-[3px] border-[#111] bg-[#fafaf9] p-7 shadow-[5px_5px_0_#111]"><h3 className="font-mono text-xs font-bold uppercase tracking-wider">{plan}</h3><p className="mt-5 text-[42px] font-black tracking-tight tabular-nums sm:text-[52px]">{total}</p><p className="mt-3 font-mono text-xs font-bold uppercase tracking-wider text-[#b63700]">{period}</p><p className="mt-5 text-base leading-7">{body}</p><p className="mt-4 border-t-2 border-[#111] pt-4 text-xs leading-6 text-[#555]">{scope}</p></article>)}</div>
-          <div className="mt-9"><Link href="/sales" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Discuss your deployment<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
+          <span className="nb-label mb-5 inline-block">Procurement + licensing</span>
+          <h2 className="max-w-[900px] text-[38px] font-extrabold leading-[1.05] tracking-[-.045em] sm:text-[52px]">Commercial terms follow the deployment you actually need.</h2>
+          <p className="mt-5 max-w-[820px] text-base leading-7 text-[#555]">Papyrus is customer-hosted. Beag Labs can transact through an Azure Marketplace private offer or a direct agreement for controlled and disconnected environments. We do not publish a one-size-fits-all public price card.</p>
+          <div className="mt-9 grid gap-6 md:grid-cols-2">
+            <article className="border-[3px] border-[#111] bg-[#fafaf9] p-7 shadow-[5px_5px_0_#111]">
+              <div className="flex items-center gap-3"><Image src="/products/papyrus/azure.webp" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><h3 className="text-xl font-extrabold">Azure private offer</h3></div>
+              <p className="mt-5 text-base leading-7">Deploy the Papyrus VM into your Azure subscription with commercial terms scoped to your organization, program, and support requirements.</p>
+              <p className="mt-4 border-t-2 border-[#111] pt-4 text-xs leading-6 text-[#555]">Marketplace is a purchasing and deployment channel. Your signed Papyrus entitlement remains customer-specific rather than a public plan.</p>
+            </article>
+            <article className="border-[3px] border-[#111] bg-[#fafaf9] p-7 shadow-[5px_5px_0_#111]">
+              <h3 className="text-xl font-extrabold">Direct + disconnected</h3>
+              <p className="mt-5 text-base leading-7">For on-premises, restricted, or disconnected environments, Beag Labs can issue a signed offline organization license tied to approved Entra tenants and optional exact hostnames.</p>
+              <p className="mt-4 border-t-2 border-[#111] pt-4 text-xs leading-6 text-[#555]">One organization license can cover unlimited permitted Papyrus VMs for the agreed term; single-deployment licenses remain available when a contract requires tighter scope.</p>
+            </article>
+          </div>
+          <div className="mt-9"><Link href="/sales" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Discuss commercial terms<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
         </div>
       </section>
 

@@ -165,7 +165,7 @@ export function LicensingConsole() {
   const [issuance, setIssuance] = useState<LicenseIssuance | null>(null)
 
   const [orgForm, setOrgForm] = useState({ legalName: '', displayName: '', organizationType: 'federal_agency' })
-  const [orderForm, setOrderForm] = useState({ customerOrganizationId: '', sku: 'PAP-FED-PILOT-90', quantity: '1', status: 'booked' })
+  const [orderForm, setOrderForm] = useState({ customerOrganizationId: '', sku: '', quantity: '1', status: 'booked', unitPriceDollars: '' })
   const [entitlementForm, setEntitlementForm] = useState({ orderId: '', orderItemId: '' })
   const [deploymentForm, setDeploymentForm] = useState({
     entitlementId: '',
@@ -299,6 +299,8 @@ export function LicensingConsole() {
   const createOrder = async (event: React.FormEvent) => {
     event.preventDefault()
     try {
+      const agreedPrice = orderForm.unitPriceDollars.trim() ? Number(orderForm.unitPriceDollars) : null
+      if (agreedPrice !== null && (!Number.isFinite(agreedPrice) || agreedPrice < 0)) throw new Error('Enter a valid agreed software price.')
       await licenseFetch('/api/v1/orders', {
         method: 'POST',
         body: JSON.stringify({
@@ -309,10 +311,12 @@ export function LicensingConsole() {
             sku: orderForm.sku,
             quantity: Number(orderForm.quantity),
             discountCents: 0,
+            ...(agreedPrice !== null ? { unitPriceCents: Math.round(agreedPrice * 100) } : {}),
           }],
         }),
       })
-      toast.success(orderForm.status === 'booked' ? 'Order booked.' : 'Draft order created.')
+      toast.success(orderForm.status === 'booked' ? 'Commercial agreement recorded.' : 'Draft commercial record created.')
+      setOrderForm({ customerOrganizationId: '', sku: '', quantity: '1', status: 'booked', unitPriceDollars: '' })
       await loadAll()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unable to create order.')
@@ -446,7 +450,7 @@ export function LicensingConsole() {
             Licensing operations without putting the signing key in the app.
           </h2>
           <p className="mt-6 max-w-[590px] text-[16px] font-medium leading-7 text-[#d5d5d5]">
-            Orders, entitlements, deployment binding, branding, audit, and signed Papyrus license issuance stay behind the dedicated licensing control plane. Production signatures are produced by the version-pinned Azure Key Vault key.
+            Customers, commercial records, entitlements, approved organization scope, deployment exceptions, audit, and signed Papyrus license issuance stay behind the dedicated licensing control plane. Production signatures are produced by the version-pinned Azure Key Vault key.
           </p>
           <div className="mt-10 grid gap-3 sm:grid-cols-3">
             {[
@@ -537,9 +541,9 @@ export function LicensingConsole() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
               ['Customers', organizations.length, Building2, '#ffffff'],
-              ['Booked / draft orders', orders.length, ShoppingCart, '#fff0a6'],
+              ['Commercial records', orders.length, ShoppingCart, '#fff0a6'],
               ['Active entitlements', activeEntitlements, PackageCheck, '#d9f99d'],
-              ['Deployments', deployments.length, ServerCog, '#ffd7c7'],
+              ['Deployment records', deployments.length, ServerCog, '#ffd7c7'],
             ].map(([label, value, Icon, background]) => (
               <div key={String(label)} className="border-[3px] border-[#111] p-5 shadow-[5px_5px_0px_0px_#111]" style={{ background: String(background) }}>
                 <div className="flex items-start justify-between gap-4">
@@ -558,10 +562,10 @@ export function LicensingConsole() {
               <PanelTitle eyebrow="Provisioning path" title="Order → entitlement → approved scope → signed license" copy="Each state transition is explicit and audited. Choose a single deployment or approve an organization’s tenants and hostnames before Azure Key Vault signs the license." />
               <div className="grid gap-3 sm:grid-cols-2">
                 {[
-                  ['1', 'Book order', 'Select an active Papyrus SKU and the legal customer entity.'],
-                  ['2', 'Issue entitlement', 'Activate the purchased feature set and term.'],
-                  ['3', 'Bind deployment', 'Register the exact Papyrus deployment ID and runtime profile.'],
-                  ['4', 'Sign license', 'Azure Key Vault signs the canonical deployment-bound payload.'],
+                  ['1', 'Record agreement', 'Create the customer commercial record using the internal SKU and agreed price.'],
+                  ['2', 'Issue entitlement', 'Activate the agreed feature set, profiles, and finite term.'],
+                  ['3', 'Approve scope', 'Choose organization-wide tenant/hostname scope or a single deployment exception.'],
+                  ['4', 'Issue license', 'Azure Key Vault signs the persisted entitlement and approved scope.'],
                 ].map(([n, title, copy]) => (
                   <div key={n} className="border-2 border-[#111] bg-[#FAFAF9] p-4">
                     <div className="mb-3 inline-flex h-7 w-7 items-center justify-center border-2 border-[#111] bg-[#ff5f1f] font-mono text-[10px] font-black">{n}</div>
@@ -577,11 +581,11 @@ export function LicensingConsole() {
                 <ShieldCheck className="h-6 w-6 text-[#ff5f1f]" />
                 <div className="font-mono text-[10px] font-black uppercase tracking-[0.16em] text-[#ff5f1f]">Signing posture</div>
               </div>
-              <h2 className="mt-5 text-[27px] font-extrabold tracking-[-0.035em]">Private key stays in Azure Key Vault.</h2>
-              <p className="mt-4 text-[14px] font-medium leading-6 text-[#ccc]">The Worker sends a SHA-256 digest to the version-pinned RSA-HSM key for RS256 signing. Papyrus verifies with the corresponding public authority key.</p>
+              <h2 className="mt-5 text-[27px] font-extrabold tracking-[-0.035em]">Commercial terms become signed local policy.</h2>
+              <p className="mt-4 text-[14px] font-medium leading-6 text-[#ccc]">The Worker derives claims from the persisted entitlement and approved scope, then sends a SHA-256 digest to the version-pinned RSA-HSM key. Papyrus verifies the resulting document locally with the corresponding public authority key.</p>
               <div className="mt-7 space-y-3 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-[#ddd]">
                 <div className="border border-white/30 p-3">✓ HSM-backed authority key</div>
-                <div className="border border-white/30 p-3">✓ Deployment-bound payload</div>
+                <div className="border border-white/30 p-3">✓ Organization or deployment scope</div>
                 <div className="border border-white/30 p-3">✓ Fail-closed issuance</div>
               </div>
             </section>
@@ -643,7 +647,7 @@ export function LicensingConsole() {
       {tab === 'orders' ? (
         <div className="grid gap-8 xl:grid-cols-[0.76fr_1.24fr]">
           <form onSubmit={createOrder} className="nb-panel h-fit p-6 lg:p-8">
-            <PanelTitle eyebrow="Commercial record" title="Create Papyrus order" copy="Book the customer purchase before issuing an entitlement. Quote-required SKUs can still be recorded with their agreed order price through the API." />
+            <PanelTitle eyebrow="Commercial record" title="Record customer agreement" copy="Internal SKUs describe what was sold; they are not public plans. Record the agreed software price here before issuing an entitlement." />
             <div className="space-y-5">
               <Field label="Customer">
                 <select required className="nb-input w-full" value={orderForm.customerOrganizationId} onChange={(event) => setOrderForm((current) => ({ ...current, customerOrganizationId: event.target.value }))}>
@@ -651,16 +655,20 @@ export function LicensingConsole() {
                   {organizations.map((row) => <option key={text(row, 'id')} value={text(row, 'id')}>{text(row, 'display_name', 'legal_name')}</option>)}
                 </select>
               </Field>
-              <Field label="SKU">
+              <Field label="Internal SKU" hint="Commercial packaging only; this does not imply a public Marketplace plan.">
                 <select required className="nb-input w-full" value={orderForm.sku} onChange={(event) => setOrderForm((current) => ({ ...current, sku: event.target.value }))}>
-                  {products.map((row) => <option key={text(row, 'sku')} value={text(row, 'sku')}>{text(row, 'sku')} — {text(row, 'name')} — {money(row.list_price_cents)}</option>)}
+                  <option value="">Select SKU…</option>
+                  {products.map((row) => <option key={text(row, 'sku')} value={text(row, 'sku')}>{text(row, 'sku')} — {text(row, 'name')}</option>)}
                 </select>
+              </Field>
+              <Field label="Agreed software price (USD)" hint="Optional when the SKU has an internal default price; enter the negotiated amount for quote/private-offer records.">
+                <input className="nb-input w-full" type="number" min="0" step="0.01" value={orderForm.unitPriceDollars} onChange={(event) => setOrderForm((current) => ({ ...current, unitPriceDollars: event.target.value }))} placeholder="250000" />
               </Field>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Quantity"><input className="nb-input w-full" type="number" min="1" max="1000" value={orderForm.quantity} onChange={(event) => setOrderForm((current) => ({ ...current, quantity: event.target.value }))} /></Field>
                 <Field label="State"><select className="nb-input w-full" value={orderForm.status} onChange={(event) => setOrderForm((current) => ({ ...current, status: event.target.value }))}><option value="booked">Booked</option><option value="draft">Draft</option></select></Field>
               </div>
-              <button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase tracking-[0.12em]">Create order</button>
+              <button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase tracking-[0.12em]">Record agreement</button>
             </div>
           </form>
 
@@ -674,7 +682,7 @@ export function LicensingConsole() {
       {tab === 'entitlements' ? (
         <div className="grid gap-8 xl:grid-cols-[0.76fr_1.24fr]">
           <form onSubmit={createEntitlement} className="nb-panel h-fit p-6 lg:p-8">
-            <PanelTitle eyebrow="Grant" title="Issue entitlement" copy="Entitlements can only be created from booked order items. Product term, features, deployment limit, and allowed profiles are derived server-side." />
+            <PanelTitle eyebrow="Grant" title="Issue entitlement" copy="Entitlements can only be created from booked order items. The internal SKU contributes defaults, while signed license rights ultimately derive from this persisted entitlement and its approved scope." />
             <div className="space-y-5">
               <Field label="Booked order">
                 <select required className="nb-input w-full" value={entitlementForm.orderId} onChange={(event) => setEntitlementForm({ orderId: event.target.value, orderItemId: '' })}>
@@ -704,7 +712,7 @@ export function LicensingConsole() {
         <div className="space-y-8">
           <div className="grid gap-8 xl:grid-cols-2">
             <form onSubmit={createDeployment} className="nb-panel p-6 lg:p-8">
-              <PanelTitle eyebrow="Deployment binding" title="Register Papyrus deployment" copy="Bind an entitlement to the exact Papyrus deployment ID and runtime profile. Optional Entra branding is signed into the license payload." />
+              <PanelTitle eyebrow="Single-deployment scope" title="Register deployment-bound license" copy="Use this only when the agreement is intentionally bound to one Papyrus deployment. Organization licenses do not require a deployment record for every VM." />
               <div className="space-y-5">
                 <Field label="Entitlement">
                   <select required className="nb-input w-full" value={deploymentForm.entitlementId} onChange={(event) => setDeploymentForm((current) => ({ ...current, entitlementId: event.target.value }))}>
@@ -735,7 +743,7 @@ export function LicensingConsole() {
           </div>
 
           <section className="nb-panel overflow-hidden">
-            <div className="border-b-[3px] border-[#111] p-6"><PanelTitle eyebrow="Deployment registry" title={`${deployments.length} Papyrus deployments`} copy="License issuance is an explicit administrator action. A signer error leaves the issuance table unchanged." /></div>
+            <div className="border-b-[3px] border-[#111] p-6"><PanelTitle eyebrow="Deployment exceptions" title={`${deployments.length} deployment-bound records`} copy="Use this registry for single-deployment licenses and operational exceptions. Organization licenses are issued from the entitlement and do not require per-VM registration." /></div>
             {deployments.length === 0 ? <div className="p-6"><Empty>No registered deployments yet.</Empty></div> : <div className="overflow-x-auto"><table className="w-full min-w-[980px] text-left"><thead className="bg-[#FAFAF9] font-mono text-[9px] font-black uppercase tracking-[0.12em]"><tr><th className="border-b-2 border-[#111] px-5 py-3">Deployment</th><th className="border-b-2 border-[#111] px-5 py-3">Profile</th><th className="border-b-2 border-[#111] px-5 py-3">Status</th><th className="border-b-2 border-[#111] px-5 py-3">Papyrus ID</th><th className="border-b-2 border-[#111] px-5 py-3">Action</th></tr></thead><tbody>{deployments.map((row) => <tr key={text(row, 'id')} className="border-b border-[#ddd] last:border-0"><td className="px-5 py-4"><div className="font-extrabold">{text(row, 'deployment_name')}</div><div className="mt-1 font-mono text-[9px] text-[#888]">{shortId(row.id, 20)}</div></td><td className="px-5 py-4 text-[13px] font-bold">{text(row, 'deployment_profile')}</td><td className="px-5 py-4"><Status value={row.status} /></td><td className="px-5 py-4 font-mono text-[9px] text-[#666]" title={text(row, 'papyrus_deployment_id')}>{shortId(row.papyrus_deployment_id, 24)}</td><td className="px-5 py-4"><button type="button" onClick={() => void issueLicense(text(row, 'id'))} className="nb-btn-orange inline-flex items-center gap-2 px-3 py-2 font-mono text-[9px] font-black uppercase tracking-[0.08em]"><FileKey2 className="h-3.5 w-3.5" /> Issue signed license</button></td></tr>)}</tbody></table></div>}
           </section>
 

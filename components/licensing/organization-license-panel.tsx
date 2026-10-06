@@ -45,14 +45,15 @@ export function OrganizationLicensePanel({ entitlements, onIssued }: { entitleme
     setBusy(true); setError('')
     try {
       const result = await licenseFetch<Issuance>(`/api/v1/entitlements/${encodeURIComponent(entitlementId)}/licenses`, { method: 'POST', body: '{}' })
-      onIssued(result); toast.success('Organization license signed. Download the JSON document below.')
+      const issuances = await licenseFetch<{ items: Row[] }>(`/api/v1/entitlements/${encodeURIComponent(entitlementId)}/licenses`)
+      setHistory(issuances.items); onIssued(result); toast.success('Organization license signed. Download the JSON document below.')
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Unable to issue license.') }
     finally { setBusy(false) }
   }
   return <section className="nb-panel p-6 lg:p-8 xl:col-span-2">
     <p className="font-mono text-[10px] font-black uppercase tracking-[0.15em] text-[#666]">Organization licensing</p>
-    <h2 className="mt-2 text-[27px] font-extrabold tracking-[-0.035em]">One organization. Every deployment.</h2>
-    <p className="mt-3 max-w-3xl text-sm leading-6 text-[#666]">Generate an offline license for unlimited customer-hosted VMs within the approved Entra tenants. Add exact hostnames when the contract requires them. The entitlement sets the features and expiry.</p>
+    <h2 className="mt-2 text-[27px] font-extrabold tracking-[-0.035em]">License the organization, not every VM.</h2>
+    <p className="mt-3 max-w-3xl text-sm leading-6 text-[#666]">For the normal enterprise motion, issue one offline organization license for unlimited customer-hosted Papyrus VMs within approved Entra tenants. Add exact hostnames only when the agreement requires them. The entitlement controls features, profiles, and expiry.</p>
     <div className="mt-6 grid gap-6 lg:grid-cols-2">
       <div className="space-y-4">
         <label className="block text-sm font-bold">Entitlement
