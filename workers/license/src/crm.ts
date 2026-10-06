@@ -817,6 +817,8 @@ app.post('/api/v2/crm/admin/reset', async (c) => {
   const found = await db.execute("SELECT name FROM sqlite_master WHERE type='table'")
   const existing = new Set(found.rows.map((row) => String(row.name)))
   const deletionOrder = [
+    'crm_capture_references','crm_engagements','crm_documents','crm_submissions','crm_pursuit_people','crm_pursuit_entities','crm_pursuits',
+    'crm_vehicle_entities','crm_vehicle_profiles','crm_entity_profiles_v2',
     'crm_activities','crm_attachments','crm_references','crm_record_people','crm_organization_profiles','crm_people',
     'organization_license_issuances','entitlement_license_scopes','deployment_branding','license_issuances','deployments',
     'entitlement_addons','entitlements','partner_order_submissions','order_items','orders','opportunities','partner_invites',
