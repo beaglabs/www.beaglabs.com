@@ -148,9 +148,35 @@ function withTags(row: Row) {
   return { ...row, tags: parseArray(row.tags_json) }
 }
 
-function withEntityArrays(row: Row) {
+function logoForEntity(env: Bindings, row: Row): string | null {
+  if (typeof row.logo_url === 'string' && row.logo_url.trim()) return row.logo_url.trim()
+
+  const rawDomain = typeof row.domain === 'string' ? row.domain.trim() : ''
+  const rawWebsite = typeof row.website_url === 'string' ? row.website_url.trim() : ''
+  let host = rawDomain
+
+  if (!host && rawWebsite) {
+    try {
+      host = new URL(rawWebsite).hostname
+    } catch {
+      host = rawWebsite
+    }
+  }
+
+  host = host
+    .replace(/^https?:\/\//i, '')
+    .split('/')[0]
+    .replace(/^www\./i, '')
+    .trim()
+
+  if (!host || !env.LOGO_DEV_TOKEN) return null
+  return 'https://img.logo.dev/' + encodeURIComponent(host) + '?token=' + encodeURIComponent(env.LOGO_DEV_TOKEN) + '&size=128&format=png'
+}
+
+function withEntityArrays(row: Row, env?: Bindings) {
   return {
     ...row,
+    logo_url: env ? logoForEntity(env, row) : row.logo_url,
     tags: parseArray(row.tags_json),
     naics: parseArray(row.naics_json),
     psc: parseArray(row.psc_json),
@@ -239,7 +265,7 @@ app.get('/api/v2/capture/entities', async (c) => {
     "(SELECT COUNT(*) FROM crm_vehicle_entities ve WHERE ve.organization_id=o.id) AS vehicle_count " +
     "FROM organizations o LEFT JOIN crm_entity_profiles_v2 ep ON ep.organization_id=o.id ORDER BY o.updated_at DESC LIMIT 500"
   )
-  return c.json({ items: rows<Row>(result).map(withEntityArrays) })
+  return c.json({ items: rows<Row>(result).map((row) => withEntityArrays(row, c.env)) })
 })
 
 app.post('/api/v2/capture/entities', async (c) => {
@@ -277,7 +303,7 @@ app.get('/api/v2/capture/entities/:id', async (c) => {
     db.execute({ sql: "SELECT * FROM crm_documents WHERE resource_type='entity' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
     db.execute({ sql: "SELECT * FROM crm_capture_references WHERE resource_type='entity' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
   ])
-  return c.json({ ...withEntityArrays(entity), people: rows<Row>(people), pursuits: rows<Row>(pursuits).map(withTags), vehicles: rows<Row>(vehicles), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
+  return c.json({ ...withEntityArrays(entity, c.env), people: rows<Row>(people), pursuits: rows<Row>(pursuits).map(withTags), vehicles: rows<Row>(vehicles), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
 })
 
 app.get('/api/v2/capture/vehicles', async (c) => {
