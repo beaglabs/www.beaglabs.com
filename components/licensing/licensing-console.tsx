@@ -299,6 +299,8 @@ export function LicensingConsole() {
   const createOrder = async (event: React.FormEvent) => {
     event.preventDefault()
     try {
+      const agreedPrice = orderForm.unitPriceDollars.trim() ? Number(orderForm.unitPriceDollars) : null
+      if (agreedPrice !== null && (!Number.isFinite(agreedPrice) || agreedPrice < 0)) throw new Error('Enter a valid agreed software price.')
       await licenseFetch('/api/v1/orders', {
         method: 'POST',
         body: JSON.stringify({
@@ -309,11 +311,12 @@ export function LicensingConsole() {
             sku: orderForm.sku,
             quantity: Number(orderForm.quantity),
             discountCents: 0,
-            ...(orderForm.unitPriceDollars.trim() ? { unitPriceCents: Math.round(Number(orderForm.unitPriceDollars) * 100) } : {}),
+            ...(agreedPrice !== null ? { unitPriceCents: Math.round(agreedPrice * 100) } : {}),
           }],
         }),
       })
-      toast.success(orderForm.status === 'booked' ? 'Order booked.' : 'Draft order created.')
+      toast.success(orderForm.status === 'booked' ? 'Commercial agreement recorded.' : 'Draft commercial record created.')
+      setOrderForm({ customerOrganizationId: '', sku: '', quantity: '1', status: 'booked', unitPriceDollars: '' })
       await loadAll()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unable to create order.')
@@ -538,7 +541,7 @@ export function LicensingConsole() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
               ['Customers', organizations.length, Building2, '#ffffff'],
-              ['Booked / draft orders', orders.length, ShoppingCart, '#fff0a6'],
+              ['Commercial records', orders.length, ShoppingCart, '#fff0a6'],
               ['Active entitlements', activeEntitlements, PackageCheck, '#d9f99d'],
               ['Deployment records', deployments.length, ServerCog, '#ffd7c7'],
             ].map(([label, value, Icon, background]) => (
@@ -665,7 +668,7 @@ export function LicensingConsole() {
                 <Field label="Quantity"><input className="nb-input w-full" type="number" min="1" max="1000" value={orderForm.quantity} onChange={(event) => setOrderForm((current) => ({ ...current, quantity: event.target.value }))} /></Field>
                 <Field label="State"><select className="nb-input w-full" value={orderForm.status} onChange={(event) => setOrderForm((current) => ({ ...current, status: event.target.value }))}><option value="booked">Booked</option><option value="draft">Draft</option></select></Field>
               </div>
-              <button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase tracking-[0.12em]">Create order</button>
+              <button className="nb-btn-orange w-full px-4 py-3 font-mono text-[10px] font-black uppercase tracking-[0.12em]">Record agreement</button>
             </div>
           </form>
 
