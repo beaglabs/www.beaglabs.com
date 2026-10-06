@@ -236,7 +236,7 @@ export function CaptureConsole() {
   ],[])
 
   const entityColumns=useMemo<CrmColumn<Row>[]>(()=>[
-    {id:'entity',label:'Entity',sortValue:(r)=>text(r,'display_name','legal_name'),render:(r)=><div><div className="font-extrabold">{text(r,'display_name','legal_name')}</div><div className="mt-1 text-[11px] text-[#777]">{text(r,'entity_kind').replaceAll('_',' ')}</div></div>},
+    {id:'entity',label:'Entity',sortValue:(r)=>text(r,'display_name','legal_name'),render:(r)=><div className="flex items-center gap-3">{r.logo_url?<img src={String(r.logo_url)} alt="" className="h-10 w-10 shrink-0 border-2 border-[#111] bg-white object-contain p-1 shadow-[2px_2px_0_#111]"/>:<div className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-[#111] bg-[#ffd7c7] font-mono text-[10px] font-black shadow-[2px_2px_0_#111]">{text(r,'display_name','legal_name').slice(0,2).toUpperCase()}</div>}<div><div className="font-extrabold">{text(r,'display_name','legal_name')}</div><div className="mt-1 text-[11px] text-[#777]">{text(r,'entity_kind').replaceAll('_',' ')}</div></div></div>},
     {id:'uei',label:'UEI / CAGE',sortValue:(r)=>text(r,'uei'),render:(r)=><span className="font-mono text-[10px]">{text(r,'uei')} / {text(r,'cage_code')}</span>},
     {id:'people',label:'People',sortValue:(r)=>numberValue(r,'people_count'),render:(r)=><span className="font-mono font-black">{numberValue(r,'people_count')}</span>},
     {id:'pursuits',label:'Pursuits',sortValue:(r)=>numberValue(r,'pursuit_count'),render:(r)=><span className="font-mono font-black">{numberValue(r,'pursuit_count')}</span>},
