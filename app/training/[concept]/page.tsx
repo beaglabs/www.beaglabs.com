@@ -7,6 +7,7 @@ import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { trainingConcepts } from "@/data/training/concepts"
+import { pageMetadata } from "@/lib/seo"
 
 interface ConceptPageProps {
   params: Promise<{ concept: string }>
@@ -24,25 +25,13 @@ export async function generateMetadata({
 
   if (!c) return { title: "Not Found" }
 
-  return {
-    title: `${c.title} Training — Beag Labs`,
+  return pageMetadata({
+    title: `${c.title} Training`,
     description: c.description.slice(0, 160),
-    alternates: {
-      canonical: `https://www.beaglabs.com/training/${c.slug}`,
-    },
-    openGraph: {
-      title: `${c.title} — Beag Labs Training`,
-      description: c.description.slice(0, 160),
-      url: `https://www.beaglabs.com/training/${c.slug}`,
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Beag Labs" }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${c.title} — Beag Labs Training`,
-      description: c.description.slice(0, 160),
-      images: ["/og-image.png"],
-    },
-  }
+    path: `/training/${c.slug}`,
+    label: c.part || 'Training',
+    ogTitle: `${c.title} — Beag Labs Training`,
+  })
 }
 
 function PaperIcon() {

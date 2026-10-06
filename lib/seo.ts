@@ -1,5 +1,5 @@
 export const BASE_URL = 'https://www.beaglabs.com'
-const OG_IMAGE_VERSION = '2026-10-04-static-fonts'
+const OG_IMAGE_VERSION = '2026-10-05-shared-satori'
 
 export function canonical(path: string) {
   return {
@@ -36,31 +36,22 @@ export function pageMetadata(opts: {
   ogDescription?: string
   type?: 'website' | 'article'
   publishedTime?: string
-  images?: Array<{
-    url: string
-    width?: number
-    height?: number
-    alt?: string
-    type?: string
-  }>
 }) {
   const ogTitle = opts.ogTitle || `${opts.title} — Beag Labs`
   const ogDescription = opts.ogDescription || opts.description
-  const ogImage = opts.images?.length
-    ? opts.images
-    : [
-        {
-          url: ogImageUrl({
-            title: opts.title,
-            description: ogDescription,
-            label: opts.label,
-          }),
-          width: 1200,
-          height: 630,
-          alt: ogTitle,
-          type: 'image/png',
-        },
-      ]
+  const ogImage = [
+    {
+      url: ogImageUrl({
+        title: opts.title,
+        description: ogDescription,
+        label: opts.label,
+      }),
+      width: 1200,
+      height: 630,
+      alt: ogTitle,
+      type: 'image/png',
+    },
+  ]
 
   return {
     title: opts.title,

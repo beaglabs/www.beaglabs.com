@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 import { PartnerPortal } from '@/components/licensing/partner-portal'
@@ -5,8 +6,12 @@ import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 
 export const metadata: Metadata = {
-  title: 'Marketplace Partners',
-  description: 'Beag Labs Microsoft Marketplace channel and commercial support.',
+  ...pageMetadata({
+    title: 'Marketplace Partners',
+    description: 'Beag Labs Microsoft Marketplace channel and commercial support.',
+    path: '/partners/portal',
+    label: 'Partners',
+  }),
   robots: { index: false, follow: false },
 }
 

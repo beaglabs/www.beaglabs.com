@@ -1,3 +1,6 @@
+import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/seo'
+
 import { RunDetail } from "./run-detail";
 import type { TrainingRun } from "@/lib/model-training/types";
 
@@ -29,4 +32,14 @@ export default async function RunDetailPage({ params }: { params: Params }) {
   }
 
   return <RunDetail initialRun={run} />;
+}
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { runId } = await params
+  return pageMetadata({
+    title: 'Training Run',
+    description: 'View a model training run and its progress.',
+    path: `/model-service/runs/${encodeURIComponent(runId)}`,
+    label: 'Training',
+  })
 }

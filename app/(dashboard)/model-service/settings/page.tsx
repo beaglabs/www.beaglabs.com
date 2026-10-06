@@ -1,3 +1,15 @@
+import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/seo'
+
+export const metadata: Metadata = {
+  ...pageMetadata({
+    title: 'Training Settings',
+    description: 'Configure organization settings and model training preferences.',
+    path: '/model-service/settings',
+    label: 'Training',
+  }),
+}
+
 export default function SettingsPage() {
   return (
     <div>

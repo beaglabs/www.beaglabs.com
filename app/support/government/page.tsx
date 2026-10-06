@@ -12,14 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
       'Support for Papyrus government deployments in accredited and disconnected environments: support channels, response targets, scope, diagnostics, and contract-aware escalation.',
     path: '/support/government',
     label: 'Support',
-    images: [
-      {
-        url: 'https://images.pexels.com/photos/4328661/pexels-photo-4328661.jpeg',
-        width: 2047,
-        height: 1167,
-        alt: 'Government deployment workspace',
-      },
-    ],
   })
 }
 

@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
@@ -6,8 +7,12 @@ import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 
 export const metadata: Metadata = {
-  title: 'Authorize Partner Application',
-  description: 'Review a Beag Labs partner OAuth authorization request.',
+  ...pageMetadata({
+    title: 'Authorize Partner Application',
+    description: 'Review a Beag Labs partner OAuth authorization request.',
+    path: '/partners/oauth/consent',
+    label: 'Partners',
+  }),
   robots: { index: false, follow: false },
 }
 

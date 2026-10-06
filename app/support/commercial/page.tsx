@@ -12,14 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
       'Support for Papyrus commercial deployments: channels, response targets by severity, what is in scope, and what to include when you report an issue.',
     path: '/support/commercial',
     label: 'Support',
-    images: [
-      {
-        url: 'https://images.pexels.com/photos/39081904/pexels-photo-39081904.png',
-        width: 2047,
-        height: 1167,
-        alt: 'Commercial deployment workspace',
-      },
-    ],
   })
 }
 

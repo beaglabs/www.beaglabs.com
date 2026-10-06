@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/seo'
 import { auth } from "@/lib/auth-server"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -7,8 +8,12 @@ import { SignOutButton } from "./sign-out-button"
 import { OrgPicker } from "./org-picker"
 
 export const metadata: Metadata = {
-  title: "Model Training",
-  description: "Train domain-specific models on your data.",
+  ...pageMetadata({
+    title: "Model Training",
+    description: "Train domain-specific models on your data.",
+    path: '/model-service',
+    label: 'Training',
+  }),
   robots: { index: false, follow: false },
 }
 

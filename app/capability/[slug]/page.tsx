@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { capabilities, capabilityBySlug } from '@/data/capabilities'
 import { company } from '@/data/company'
+import { pageMetadata } from '@/lib/seo'
 
 type Params = Promise<{ slug: string }>
 
@@ -19,24 +20,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { slug } = await params
   const cap = capabilityBySlug(slug)
   if (!cap) return {}
-  const url = `https://www.beaglabs.com/capability/${cap.slug}`
-  return {
-    title: `${cap.title} — Beag Labs`,
+  return pageMetadata({
+    title: cap.title,
     description: cap.metaDescription,
-    alternates: { canonical: url },
-    openGraph: {
-      title: `${cap.title} — Beag Labs`,
-      description: cap.metaDescription,
-      url,
-      images: [{ url: cap.hero.src, width: 1200, height: 1200, alt: cap.hero.alt }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${cap.title} — Beag Labs`,
-      description: cap.metaDescription,
-      images: [cap.hero.src],
-    },
-  }
+    path: `/capability/${cap.slug}`,
+    label: cap.eyebrow || 'Capability',
+  })
 }
 
 export default async function CapabilityPage({ params }: { params: Params }) {

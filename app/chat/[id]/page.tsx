@@ -1,3 +1,6 @@
+import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/seo'
+
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { AnnouncementBanner } from '@/components/announcement-banner'
@@ -26,4 +29,14 @@ export default async function ChatPage({
       <SiteFooter />
     </div>
   )
+}
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { id } = await params
+  return pageMetadata({
+    title: 'Chat with Beag Labs',
+    description: 'Explore AI, data, and infrastructure questions with Beag Labs.',
+    path: `/chat/${encodeURIComponent(id)}`,
+    label: 'Chat',
+  })
 }

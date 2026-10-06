@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "videodb": {
+      "source": "video-db/skills",
+      "sourceType": "github",
+      "skillPath": "python/SKILL.md",
+      "computedHash": "47ae2fd5b7f09df85f7669c7429d4cebbb8845d4dd726dc0bd464fdcabcb920c"
+    }
+  }
+}
