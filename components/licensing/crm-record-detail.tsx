@@ -86,7 +86,21 @@ function LabelValue({ label, children }: { label: string; children: React.ReactN
 }
 
 const endpointFor = (kind: Kind, id: string) => `/api/v2/crm/${kind}/${encodeURIComponent(id)}`
-const resourceTypeFor = (kind: Kind) => kind === 'people' ? 'person' : kind === 'customers' ? 'organization' : kind.slice(0, -1)
+const RESOURCE_TYPE_BY_KIND = {
+  people: 'person',
+  customers: 'organization',
+  opportunities: 'opportunity',
+  orders: 'order',
+} as const
+
+const RECORD_LABEL_BY_KIND = {
+  people: 'person',
+  customers: 'customer',
+  opportunities: 'opportunity',
+  orders: 'order',
+} as const
+
+const resourceTypeFor = (kind: Kind) => RESOURCE_TYPE_BY_KIND[kind]
 
 export function CrmRecordDetail({ kind, id }: { kind: Kind; id: string }) {
   const [record, setRecord] = useState<Row | null>(null)
@@ -298,7 +312,7 @@ export function CrmRecordDetail({ kind, id }: { kind: Kind; id: string }) {
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/licensing" className="nb-btn-white inline-flex h-10 w-10 shrink-0 items-center justify-center p-0"><ArrowLeft className="h-4 w-4" /></Link>
           {kind === 'people' ? <CrmAvatar firstName={text(record,'first_name')} lastName={text(record,'last_name')} avatarUrl={record.avatar_url ? String(record.avatar_url) : null} linkedinUrl={record.linkedin_url ? String(record.linkedin_url) : null} size="lg" /> : null}
-          <div className="min-w-0"><div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">{kind.slice(0,-1)} record</div><h1 className="mt-1 truncate text-[28px] font-extrabold tracking-[-0.04em]">{title}</h1><div className="mt-2 flex flex-wrap items-center gap-2"><Status value={status} /><span className="font-mono text-[9px] text-[#888]">{id}</span></div></div>
+          <div className="min-w-0"><div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">{RECORD_LABEL_BY_KIND[kind]} record</div><h1 className="mt-1 truncate text-[28px] font-extrabold tracking-[-0.04em]">{title}</h1><div className="mt-2 flex flex-wrap items-center gap-2"><Status value={status} /><span className="font-mono text-[9px] text-[#888]">{id}</span></div></div>
         </div>
         <button type="button" onClick={() => void load()} disabled={loading} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />Refresh</button>
       </div>
