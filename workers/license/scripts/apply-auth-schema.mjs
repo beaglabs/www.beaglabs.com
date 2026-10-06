@@ -32,6 +32,13 @@ const auth = betterAuth({
       validateSchema: false,
     },
   },
+  // SQLite/libSQL stores Better Auth's logical string[] OAuth fields as TEXT.
+  // getMigrations() can emit type-mismatch warnings even when the generated
+  // schema is complete. This migration-only auth instance keeps true errors
+  // visible while suppressing those known planner warnings.
+  logger: {
+    level: 'error',
+  },
   user: {
     additionalFields: {
       entraOid: { type: 'string', required: false, input: false, returned: true },
