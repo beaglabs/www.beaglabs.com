@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "deploy": "npm run db:apply && npm run deploy:worker",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && wrangler deploy --dry-run --outdir .wrangler-dry-run",
-    "db:apply": "node --env-file=.dev.vars scripts/apply-schema.mjs && node --env-file=.dev.vars scripts/apply-auth-schema.mjs"
+    "db:apply": "node --env-file-if-exists=.dev.vars scripts/apply-schema.mjs && node --env-file-if-exists=.dev.vars scripts/apply-auth-schema.mjs",
+    "deploy:worker": "wrangler deploy"
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.7.5",

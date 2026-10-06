@@ -151,7 +151,15 @@ export default {
     if (request.method === 'OPTIONS' && allowedOrigin(request)) {
       return withCors(request, new Response(null, { status: 204 }))
     }
-    return withCors(request, await route(request, env, ctx))
+    try {
+      return withCors(request, await route(request, env, ctx))
+    } catch (error) {
+      console.error('license-worker unhandled request error', error)
+      return withCors(request, Response.json(
+        { error: 'internal_error', message: 'Internal server error.' },
+        { status: 500, headers: { 'Cache-Control': 'no-store' } },
+      ))
+    }
   },
 
   async scheduled(_controller: any, env: Bindings, ctx: any): Promise<void> {
