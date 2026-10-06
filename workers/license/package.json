@@ -13,9 +13,9 @@
     "db:reset-crm": "node --env-file-if-exists=.dev.vars scripts/reset-crm-data.mjs"
   },
   "dependencies": {
-    "@better-auth/oauth-provider": "^1.7.5",
+    "@better-auth/oauth-provider": "^1.7.7",
     "@libsql/client": "^0.17.4",
-    "better-auth": "^1.7.5",
+    "better-auth": "^1.7.7",
     "hono": "^4.12.31",
     "kysely": "^0.29.0",
     "kysely-libsql": "^0.7.1",
