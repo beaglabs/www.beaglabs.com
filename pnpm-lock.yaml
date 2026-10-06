@@ -169,7 +169,7 @@ importers:
         version: 8.6.0(react@19.2.4)
       hono:
         specifier: ^4.12.31
-        version: 4.13.7
+        version: 4.13.13
       input-otp:
         specifier: 1.4.2
         version: 1.4.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -260,7 +260,7 @@ importers:
     devDependencies:
       '@flue/cli':
         specifier: ^1.0.0-beta.9
-        version: 1.0.0-beta.9(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@types/node@22.20.2)(bufferutil@4.1.0)(esbuild@0.28.2)(hono@4.13.7)(jiti@2.7.0)(supports-color@10.2.2)(tsx@4.23.13)(typebox@1.1.38)(typescript@5.7.3)(wrangler@4.130.0(bufferutil@4.1.0))(ws@8.21.3(bufferutil@4.1.0))(yaml@2.9.0)(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
+        version: 1.0.0-beta.9(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@types/node@22.20.2)(bufferutil@4.1.0)(esbuild@0.28.2)(hono@4.13.13)(jiti@2.7.0)(supports-color@10.2.2)(tsx@4.23.13)(typebox@1.1.38)(typescript@5.7.3)(wrangler@4.130.0(bufferutil@4.1.0))(ws@8.21.3(bufferutil@4.1.0))(yaml@2.9.0)(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
       '@tailwindcss/postcss':
         specifier: ^4.2.0
         version: 4.3.3
@@ -5072,8 +5072,8 @@ packages:
     resolution: {integrity: sha512-7fvVPbB92zNRsQke+uiRGwtTuef0tB2Dg4hWxYfFNvkQhIltWoyi0ONReM5LWA+jJWS3nfT5lTq+qbsIpX0IQw==}
     engines: {node: '>=16.9.0'}
 
-  hono@4.13.7:
-    resolution: {integrity: sha512-c8/gF9ac8Y78/agExVocyLevgR+JlpNB444Py0FSX8pJoPdYUfUzRcXtYEYGwt6l19qIlVZPN5Mfsw9jFShmQQ==}
+  hono@4.13.13:
+    resolution: {integrity: sha512-CQ46U0ZkAGmbT/4UxdzzGJpacP2IeKgY4a5/tOI9AABbpOMfK739wfDXmv1usCk+3RkKj1hQy4/fjhiwa2xlrA==}
     engines: {node: '>=16.9.0'}
 
   hsl-to-hex@1.0.0:
@@ -7919,12 +7919,12 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@flue/cli@1.0.0-beta.9(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@types/node@22.20.2)(bufferutil@4.1.0)(esbuild@0.28.2)(hono@4.13.7)(jiti@2.7.0)(supports-color@10.2.2)(tsx@4.23.13)(typebox@1.1.38)(typescript@5.7.3)(wrangler@4.130.0(bufferutil@4.1.0))(ws@8.21.3(bufferutil@4.1.0))(yaml@2.9.0)(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)':
+  '@flue/cli@1.0.0-beta.9(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@types/node@22.20.2)(bufferutil@4.1.0)(esbuild@0.28.2)(hono@4.13.13)(jiti@2.7.0)(supports-color@10.2.2)(tsx@4.23.13)(typebox@1.1.38)(typescript@5.7.3)(wrangler@4.130.0(bufferutil@4.1.0))(ws@8.21.3(bufferutil@4.1.0))(yaml@2.9.0)(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)':
     dependencies:
       '@cloudflare/vite-plugin': 1.54.6(bufferutil@4.1.0)(vite@8.2.2(@types/node@22.20.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))(wrangler@4.130.0(bufferutil@4.1.0))
       '@flue/runtime': 1.0.0-beta.9(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(bufferutil@4.1.0)(supports-color@10.2.2)(typebox@1.1.38)(typescript@5.7.3)(ws@8.21.3(bufferutil@4.1.0))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
       '@flue/sdk': 1.0.0-beta.9
-      '@hono/node-server': 2.1.1(hono@4.13.7)
+      '@hono/node-server': 2.1.1(hono@4.13.13)
       '@vercel/detect-agent': 1.2.5
       debug: 4.4.3(supports-color@10.2.2)
       minisearch: 7.2.0
@@ -8000,14 +8000,14 @@ snapshots:
     dependencies:
       '@earendil-works/pi-agent-core': 0.80.10(@modelcontextprotocol/sdk@1.30.0(supports-color@10.2.2)(zod@3.25.76))(bufferutil@4.1.0)(supports-color@10.2.2)(ws@8.21.3(bufferutil@4.1.0))(zod@3.25.76)
       '@earendil-works/pi-ai': 0.80.10(@modelcontextprotocol/sdk@1.30.0(supports-color@10.2.2)(zod@3.25.76))(bufferutil@4.1.0)(supports-color@10.2.2)(ws@8.21.3(bufferutil@4.1.0))(zod@3.25.76)
-      '@hono/node-server': 2.1.1(hono@4.13.7)
-      '@hono/standard-validator': 0.2.3(@standard-schema/spec@1.1.0)(hono@4.13.7)
+      '@hono/node-server': 2.1.1(hono@4.13.13)
+      '@hono/standard-validator': 0.2.3(@standard-schema/spec@1.1.0)(hono@4.13.13)
       '@modelcontextprotocol/sdk': 1.30.0(supports-color@10.2.2)(zod@3.25.76)
       '@standard-community/standard-json': 0.3.6(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
       '@standard-community/standard-openapi': 0.2.10(@standard-community/standard-json@0.3.6(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76))(@standard-schema/spec@1.1.0)(openapi-types@12.1.3)(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod@3.25.76)
       '@valibot/to-json-schema': 1.7.1(valibot@1.5.0(typescript@5.7.3))
-      hono: 4.13.7
-      hono-openapi: 1.3.2(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(hono@4.13.7)(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
+      hono: 4.13.13
+      hono-openapi: 1.3.2(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(hono@4.13.13)(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
       js-yaml: 4.3.2
       just-bash: 3.4.2(supports-color@10.2.2)
       openapi-types: 12.1.3
@@ -8060,19 +8060,19 @@ snapshots:
       protobufjs: 7.6.6
       yargs: 17.7.3
 
-  '@hono/node-server@2.1.1(hono@4.13.7)':
+  '@hono/node-server@2.1.1(hono@4.13.13)':
     dependencies:
-      hono: 4.13.7
+      hono: 4.13.13
 
-  '@hono/standard-validator@0.2.3(@standard-schema/spec@1.1.0)(hono@4.13.7)':
+  '@hono/standard-validator@0.2.3(@standard-schema/spec@1.1.0)(hono@4.13.13)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      hono: 4.13.7
+      hono: 4.13.13
 
-  '@hono/standard-validator@0.4.0(@standard-schema/spec@1.1.0)(hono@4.13.7)':
+  '@hono/standard-validator@0.4.0(@standard-schema/spec@1.1.0)(hono@4.13.13)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      hono: 4.13.7
+      hono: 4.13.13
 
   '@hookform/resolvers@3.10.0(react-hook-form@7.87.0(react@19.2.4))':
     dependencies:
@@ -8426,7 +8426,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.30.0(supports-color@10.2.2)(zod@3.25.76)':
     dependencies:
-      '@hono/node-server': 2.1.1(hono@4.13.7)
+      '@hono/node-server': 2.1.1(hono@4.13.13)
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
       content-type: 1.0.5
@@ -8436,7 +8436,7 @@ snapshots:
       eventsource-parser: 3.1.1
       express: 5.2.1(supports-color@10.2.2)
       express-rate-limit: 8.7.0(express@5.2.1(supports-color@10.2.2))(supports-color@10.2.2)
-      hono: 4.13.7
+      hono: 4.13.13
       jose: 6.2.12
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -12027,14 +12027,14 @@ snapshots:
     dependencies:
       parse-passwd: 1.0.0
 
-  hono-openapi@1.3.2(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(hono@4.13.7)(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76):
+  hono-openapi@1.3.2(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(hono@4.13.13)(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76):
     dependencies:
-      '@hono/standard-validator': 0.4.0(@standard-schema/spec@1.1.0)(hono@4.13.7)
+      '@hono/standard-validator': 0.4.0(@standard-schema/spec@1.1.0)(hono@4.13.13)
       '@standard-community/standard-json': 0.3.6(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
       '@standard-community/standard-openapi': 0.2.10(@standard-community/standard-json@0.3.6(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(@valibot/to-json-schema@1.7.1(valibot@1.5.0(typescript@5.7.3)))(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76))(@standard-schema/spec@1.1.0)(openapi-types@12.1.3)(typebox@1.1.38)(valibot@1.5.0(typescript@5.7.3))(zod@3.25.76)
       '@standard-schema/spec': 1.1.0
       '@types/json-schema': 7.0.15
-      hono: 4.13.7
+      hono: 4.13.13
       openapi-types: 12.1.3
     transitivePeerDependencies:
       - '@valibot/to-json-schema'
@@ -12049,7 +12049,7 @@ snapshots:
 
   hono@4.12.22: {}
 
-  hono@4.13.7: {}
+  hono@4.13.13: {}
 
   hsl-to-hex@1.0.0:
     dependencies:
