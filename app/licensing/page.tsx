@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { CrmConsole } from '@/components/licensing/crm-console'
+import { CaptureConsole } from '@/components/licensing/capture-console'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: 'Customer & Licensing Operations',
+    title: 'Capture & Relationship Operations',
     description: 'Private Beag Labs CRM for people, customer accounts, opportunities, orders, contracts, attachments, and licensing.',
     path: '/licensing',
     label: 'Licensing',
@@ -26,10 +26,10 @@ export default function LicensingPage() {
             <div>
               <span className="nb-label mb-5 inline-block">Customer & Licensing Operations</span>
               <h1 className="max-w-[920px] text-[38px] font-extrabold leading-[0.98] tracking-[-0.045em] text-[#111] lg:text-[56px]">
-                People, accounts, pipeline, orders, contracts, and licensing.
+                People, entities, vehicles, pursuits, submissions, orders, and licensing.
               </h1>
               <p className="mt-5 max-w-[820px] text-[16px] font-medium leading-[1.7] text-[#505050] lg:text-[17px]">
-                Track individual people before they become customers, connect them to accounts and buying motions, keep SAM.gov and prime contract references on the right record, attach contract files, and carry a won order through entitlement and signed organization licensing.
+                Track agencies, offices, primes, partners, people, vehicles, solicitations, direct sales, subcontracting outreach, teaming motions, submission packages, and downstream licensing in one flexible relationship model.
               </p>
             </div>
             <div className="flex h-fit items-center gap-3 border-[3px] border-[#111] bg-white px-4 py-3 shadow-[4px_4px_0px_0px_#111]">
@@ -42,7 +42,7 @@ export default function LicensingPage() {
               Azure channel activity
             </Link>
           </div>
-          <CrmConsole />
+          <CaptureConsole />
         </div>
       </main>
       <SiteFooter />

@@ -104,6 +104,17 @@ const submissionSchema = z.object({
   notes: nullableText,
 })
 
+
+const referenceSchema = z.object({
+  resourceType: z.enum(['entity','vehicle','pursuit','submission','order']),
+  resourceId: z.string().min(1),
+  referenceType: z.string().trim().min(1).max(128),
+  identifier: z.string().trim().min(1).max(256),
+  url: nullableUrl,
+  label: nullableShort,
+  notes: nullableText,
+})
+
 const engagementSchema = z.object({
   organizationId: z.string().nullable().optional(),
   personId: z.string().nullable().optional(),
@@ -258,13 +269,15 @@ app.get('/api/v2/capture/entities/:id', async (c) => {
     args: [recordId],
   }))
   if (!entity) return c.json({ error: 'entity_not_found', message: 'Entity not found.' }, 404)
-  const [people, pursuits, vehicles, engagements] = await Promise.all([
+  const [people, pursuits, vehicles, engagements, documents, references] = await Promise.all([
     db.execute({ sql: "SELECT * FROM crm_people WHERE organization_id=? AND status!='archived' ORDER BY updated_at DESC", args: [recordId] }),
     db.execute({ sql: "SELECT DISTINCT p.* FROM crm_pursuits p LEFT JOIN crm_pursuit_entities pe ON pe.pursuit_id=p.id WHERE p.target_entity_id=? OR pe.organization_id=? ORDER BY p.updated_at DESC", args: [recordId, recordId] }),
     db.execute({ sql: "SELECT DISTINCT v.*,vp.vehicle_kind,ve.role FROM vehicles v LEFT JOIN crm_vehicle_profiles vp ON vp.vehicle_id=v.id LEFT JOIN crm_vehicle_entities ve ON ve.vehicle_id=v.id WHERE vp.owner_entity_id=? OR vp.managing_entity_id=? OR ve.organization_id=? ORDER BY v.updated_at DESC", args: [recordId, recordId, recordId] }),
     db.execute({ sql: 'SELECT * FROM crm_engagements WHERE organization_id=? ORDER BY occurred_at DESC LIMIT 200', args: [recordId] }),
+    db.execute({ sql: "SELECT * FROM crm_documents WHERE resource_type='entity' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
+    db.execute({ sql: "SELECT * FROM crm_capture_references WHERE resource_type='entity' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
   ])
-  return c.json({ ...withEntityArrays(entity), people: rows<Row>(people), pursuits: rows<Row>(pursuits).map(withTags), vehicles: rows<Row>(vehicles), engagements: rows<Row>(engagements) })
+  return c.json({ ...withEntityArrays(entity), people: rows<Row>(people), pursuits: rows<Row>(pursuits).map(withTags), vehicles: rows<Row>(vehicles), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
 })
 
 app.get('/api/v2/capture/vehicles', async (c) => {
@@ -308,12 +321,14 @@ app.get('/api/v2/capture/vehicles/:id', async (c) => {
     args: [recordId],
   }))
   if (!vehicle) return c.json({ error: 'vehicle_not_found', message: 'Vehicle not found.' }, 404)
-  const [entities, pursuits, engagements] = await Promise.all([
+  const [entities, pursuits, engagements, documents, references] = await Promise.all([
     db.execute({ sql: 'SELECT o.*,ve.role,ve.contract_number,ve.notes,ve.is_primary FROM crm_vehicle_entities ve JOIN organizations o ON o.id=ve.organization_id WHERE ve.vehicle_id=? ORDER BY ve.is_primary DESC,o.legal_name', args: [recordId] }),
     db.execute({ sql: 'SELECT * FROM crm_pursuits WHERE primary_vehicle_id=? ORDER BY updated_at DESC', args: [recordId] }),
     db.execute({ sql: 'SELECT * FROM crm_engagements WHERE vehicle_id=? ORDER BY occurred_at DESC LIMIT 200', args: [recordId] }),
+    db.execute({ sql: "SELECT * FROM crm_documents WHERE resource_type='vehicle' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
+    db.execute({ sql: "SELECT * FROM crm_capture_references WHERE resource_type='vehicle' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
   ])
-  return c.json({ ...withTags(vehicle), entities: rows<Row>(entities), pursuits: rows<Row>(pursuits).map(withTags), engagements: rows<Row>(engagements) })
+  return c.json({ ...withTags(vehicle), entities: rows<Row>(entities), pursuits: rows<Row>(pursuits).map(withTags), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
 })
 
 app.post('/api/v2/capture/vehicles/:id/entities', async (c) => {
@@ -361,13 +376,15 @@ app.get('/api/v2/capture/pursuits/:id', async (c) => {
     args: [recordId],
   }))
   if (!pursuit) return c.json({ error: 'pursuit_not_found', message: 'Pursuit not found.' }, 404)
-  const [entities, people, submissions, engagements] = await Promise.all([
+  const [entities, people, submissions, engagements, documents, references] = await Promise.all([
     db.execute({ sql: 'SELECT o.*,pe.role,pe.is_primary,pe.notes FROM crm_pursuit_entities pe JOIN organizations o ON o.id=pe.organization_id WHERE pe.pursuit_id=? ORDER BY pe.is_primary DESC,o.legal_name', args: [recordId] }),
     db.execute({ sql: 'SELECT p.*,pp.role,pp.is_primary,pp.notes FROM crm_pursuit_people pp JOIN crm_people p ON p.id=pp.person_id WHERE pp.pursuit_id=? ORDER BY pp.is_primary DESC,p.last_name,p.first_name', args: [recordId] }),
     db.execute({ sql: 'SELECT * FROM crm_submissions WHERE pursuit_id=? ORDER BY due_at IS NULL,due_at,created_at DESC', args: [recordId] }),
     db.execute({ sql: 'SELECT * FROM crm_engagements WHERE pursuit_id=? ORDER BY occurred_at DESC LIMIT 200', args: [recordId] }),
+    db.execute({ sql: "SELECT * FROM crm_documents WHERE (resource_type='pursuit' AND resource_id=?) OR (resource_type='submission' AND resource_id IN (SELECT id FROM crm_submissions WHERE pursuit_id=?)) ORDER BY created_at DESC", args: [recordId, recordId] }),
+    db.execute({ sql: "SELECT * FROM crm_capture_references WHERE resource_type='pursuit' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
   ])
-  return c.json({ ...withTags(pursuit), entities: rows<Row>(entities), people: rows<Row>(people), submissions: rows<Row>(submissions), engagements: rows<Row>(engagements) })
+  return c.json({ ...withTags(pursuit), entities: rows<Row>(entities), people: rows<Row>(people), submissions: rows<Row>(submissions), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
 })
 
 app.post('/api/v2/capture/pursuits/:id/entities', async (c) => {
@@ -414,6 +431,67 @@ app.post('/api/v2/capture/engagements', async (c) => {
     args: [recordId, body.organizationId ?? null, body.personId ?? null, body.pursuitId ?? null, body.vehicleId ?? null, body.channel, body.direction, body.status, body.subject ?? null, body.body ?? null, body.outcome ?? null, body.externalUrl ?? null, body.occurredAt ?? timestamp, body.followUpAt ?? null, c.get('admin').oid, timestamp],
   })
   return c.json({ id: recordId }, 201)
+})
+
+
+app.post('/api/v2/capture/references', async (c) => {
+  const body = await parseBody(c, referenceSchema)
+  const recordId = makeId('cref')
+  const timestamp = now()
+  await getDb(c.env).execute({
+    sql: 'INSERT INTO crm_capture_references (id,resource_type,resource_id,reference_type,identifier,url,label,notes,created_by_oid,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+    args: [recordId, body.resourceType, body.resourceId, body.referenceType, body.identifier, body.url ?? null, body.label ?? null, body.notes ?? null, c.get('admin').oid, timestamp, timestamp],
+  })
+  return c.json({ id: recordId }, 201)
+})
+
+app.post('/api/v2/capture/documents', async (c) => {
+  if (!c.env.CRM_ATTACHMENTS) return c.json({ error: 'storage_not_configured', message: 'CRM attachment storage is not configured.' }, 503)
+  const form = await c.req.raw.formData()
+  const file = form.get('file')
+  if (!(file instanceof File)) return c.json({ error: 'file_required', message: 'A file is required.' }, 422)
+  if (file.size > 25 * 1024 * 1024) return c.json({ error: 'file_too_large', message: 'Files are limited to 25 MB.' }, 413)
+  const resourceType = String(form.get('resourceType') ?? '')
+  const resourceId = String(form.get('resourceId') ?? '')
+  if (!resourceType || !resourceId) return c.json({ error: 'resource_required', message: 'resourceType and resourceId are required.' }, 422)
+
+  const recordId = makeId('doc')
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'document'
+  const storageKey = 'capture/' + resourceType + '/' + resourceId + '/' + recordId + '/' + safeName
+  await c.env.CRM_ATTACHMENTS.put(storageKey, file.stream(), {
+    httpMetadata: { contentType: file.type || 'application/octet-stream' },
+    customMetadata: { originalName: file.name, resourceType, resourceId },
+  })
+
+  const timestamp = now()
+  await getDb(c.env).execute({
+    sql: 'INSERT INTO crm_documents (id,resource_type,resource_id,file_name,content_type,size_bytes,storage_key,direction,document_type,status,description,created_by_oid,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    args: [
+      recordId, resourceType, resourceId, file.name, file.type || null, file.size, storageKey,
+      String(form.get('direction') ?? 'reference'),
+      String(form.get('documentType') ?? 'other'),
+      String(form.get('status') ?? 'reference'),
+      String(form.get('description') ?? '') || null,
+      c.get('admin').oid, timestamp, timestamp,
+    ],
+  })
+  return c.json({ id: recordId }, 201)
+})
+
+app.get('/api/v2/capture/documents/:id/download', async (c) => {
+  const document = first<Row>(await getDb(c.env).execute({ sql: 'SELECT * FROM crm_documents WHERE id=?', args: [c.req.param('id')] }))
+  if (!document) return c.json({ error: 'document_not_found', message: 'Document not found.' }, 404)
+  if (document.external_url) return c.redirect(String(document.external_url), 302)
+  if (!document.storage_key || !c.env.CRM_ATTACHMENTS) return c.json({ error: 'document_unavailable', message: 'Document storage unavailable.' }, 503)
+  const object = await c.env.CRM_ATTACHMENTS.get(String(document.storage_key))
+  if (!object) return c.json({ error: 'document_missing', message: 'Document object not found.' }, 404)
+  return new Response(object.body, {
+    headers: {
+      'Content-Type': String(document.content_type || object.httpMetadata?.contentType || 'application/octet-stream'),
+      'Content-Disposition': 'attachment; filename="' + String(document.file_name).replaceAll('"', '') + '"',
+      'Cache-Control': 'private, no-store',
+    },
+  })
 })
 
 app.onError((error, c) => {
