@@ -5,6 +5,7 @@ on:
     paths:
       - 'workers/license/**'
       - '.github/workflows/license-worker.yml'
+      - '.github/workflows/deploy-license-worker.yml'
   workflow_dispatch:
 
 jobs:
