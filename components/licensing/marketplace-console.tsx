@@ -16,7 +16,7 @@ const tabs: Array<{ id: Tab; label: string; icon: typeof Activity }> = [
   { id: 'overview', label: 'Overview', icon: Activity },
   { id: 'leads', label: 'Leads', icon: Mail },
   { id: 'customers', label: 'Customers', icon: Users },
-  { id: 'marketplace', label: 'Marketplace', icon: Cloud },
+  { id: 'marketplace', label: 'Azure data', icon: Cloud },
   { id: 'deployments', label: 'Deployments', icon: ServerCog },
   { id: 'activity', label: 'Activity', icon: Activity },
   { id: 'settings', label: 'Settings', icon: Settings2 },
@@ -153,7 +153,7 @@ export function MarketplaceConsole() {
     <div className="mx-auto max-w-[1440px] space-y-8">
       <div className="flex flex-col gap-4 border-[3px] border-[#111] bg-white p-5 shadow-[5px_5px_0_#111] md:flex-row md:items-center md:justify-between">
         <div><div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#777]">Azure channel administrator</div><div className="mt-1 text-[16px] font-extrabold">{admin.name || admin.email || 'Beag Labs Admin'}</div></div>
-        <div className="flex flex-wrap gap-3"><button onClick={() => void loadAll()} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh</button><button onClick={() => void sync()} disabled={syncing} className="nb-btn-orange inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase disabled:opacity-60"><Cloud className="h-3.5 w-3.5" /> {syncing ? 'Syncing…' : 'Sync Marketplace'}</button><button onClick={() => void signOut()} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><LogOut className="h-3.5 w-3.5" /> Sign out</button></div>
+        <div className="flex flex-wrap gap-3"><button onClick={() => void loadAll()} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh</button><button onClick={() => void sync()} disabled={syncing} className="nb-btn-orange inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase disabled:opacity-60"><Cloud className="h-3.5 w-3.5" /> {syncing ? 'Syncing…' : 'Sync Azure'}</button><button onClick={() => void signOut()} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><LogOut className="h-3.5 w-3.5" /> Sign out</button></div>
       </div>
 
       <div className="overflow-x-auto border-[3px] border-[#111] bg-[#111] p-2"><div className="flex min-w-max gap-2">{tabs.map((item) => { const Icon = item.icon; const active = item.id === tab; return <button key={item.id} onClick={() => setTab(item.id)} className={`flex items-center gap-2 border-2 px-4 py-2.5 font-mono text-[10px] font-black uppercase tracking-[0.1em] ${active ? 'border-[#111] bg-[#ff5f1f]' : 'border-white/40 bg-white'}`}><Icon className="h-3.5 w-3.5" />{item.label}</button> })}</div></div>
