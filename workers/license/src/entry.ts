@@ -10,6 +10,7 @@ import marketplaceApp from './marketplace'
 import marketplaceLeadApp from './marketplace-leads'
 import marketplaceReportApp, { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
 import crmApp from './crm'
+import captureApp from './capture'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -118,6 +119,10 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
 
   if (path.startsWith('/api/public/')) {
     return publicApp.fetch(request, env, ctx)
+  }
+
+  if (path.startsWith('/api/v2/capture/')) {
+    return captureApp.fetch(request, env, ctx)
   }
 
   if (path.startsWith('/api/v2/crm/')) {

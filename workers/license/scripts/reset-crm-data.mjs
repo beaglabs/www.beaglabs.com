@@ -14,6 +14,16 @@ const found = await client.execute("SELECT name FROM sqlite_master WHERE type='t
 const existing = new Set(found.rows.map((row) => String(row.name)))
 
 const deletionOrder = [
+  'crm_capture_references',
+  'crm_engagements',
+  'crm_documents',
+  'crm_submissions',
+  'crm_pursuit_people',
+  'crm_pursuit_entities',
+  'crm_pursuits',
+  'crm_vehicle_entities',
+  'crm_vehicle_profiles',
+  'crm_entity_profiles_v2',
   'crm_activities',
   'crm_attachments',
   'crm_references',
