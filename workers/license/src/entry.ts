@@ -3,6 +3,7 @@ import portalApp from './portal'
 import applicationApp from './application'
 import oauthPagesApp from './oauth-pages'
 import publicApp from './public-api'
+import organizationLicensingApp from './organization-licensing'
 import entitlementAddonsApp from './entitlement-addons'
 import provisioningBrandingApp from './provisioning-branding'
 import marketplaceApp from './marketplace'
@@ -124,6 +125,10 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
 
   if (path === '/partner/login' || path === '/oauth/consent') {
     return oauthPagesApp.fetch(request, env, ctx)
+  }
+
+  if (/^\/api\/v1\/entitlements\/[^/]+\/(?:license-scope|licenses)\/?$/.test(path)) {
+    return organizationLicensingApp.fetch(request, env, ctx)
   }
 
   if (/^\/api\/v1\/entitlements\/[^/]+\/addons(?:\/[^/]+\/revoke)?\/?$/.test(path)) {

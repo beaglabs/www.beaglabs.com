@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { OrganizationLicensePanel } from './organization-license-panel'
 
 import {
   LicenseControlPlaneError,
@@ -554,7 +555,7 @@ export function LicensingConsole() {
 
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
             <section className="nb-panel p-6 lg:p-8">
-              <PanelTitle eyebrow="Provisioning path" title="Order → entitlement → deployment → signed license" copy="Each state transition is explicit and audited. Deployment identity and provisioned branding are derived from licensing records before Azure Key Vault signs the final document." />
+              <PanelTitle eyebrow="Provisioning path" title="Order → entitlement → approved scope → signed license" copy="Each state transition is explicit and audited. Choose a single deployment or approve an organization’s tenants and hostnames before Azure Key Vault signs the license." />
               <div className="grid gap-3 sm:grid-cols-2">
                 {[
                   ['1', 'Book order', 'Select an active Papyrus SKU and the legal customer entity.'],
@@ -693,8 +694,9 @@ export function LicensingConsole() {
 
           <section className="nb-panel overflow-hidden">
             <div className="border-b-[3px] border-[#111] p-6"><PanelTitle eyebrow="Entitlements" title={`${entitlements.length} grants`} /></div>
-            {entitlements.length === 0 ? <div className="p-6"><Empty>No entitlements yet.</Empty></div> : <div className="overflow-x-auto"><table className="w-full min-w-[840px] text-left"><thead className="bg-[#FAFAF9] font-mono text-[9px] font-black uppercase tracking-[0.12em]"><tr><th className="border-b-2 border-[#111] px-5 py-3">ID</th><th className="border-b-2 border-[#111] px-5 py-3">Status</th><th className="border-b-2 border-[#111] px-5 py-3">Valid from</th><th className="border-b-2 border-[#111] px-5 py-3">Valid until</th><th className="border-b-2 border-[#111] px-5 py-3">Deployments</th></tr></thead><tbody>{entitlements.map((row) => <tr key={text(row, 'id')} className="border-b border-[#ddd] last:border-0"><td className="px-5 py-4 font-mono text-[10px]" title={text(row, 'id')}>{shortId(row.id, 20)}</td><td className="px-5 py-4"><Status value={row.status} /></td><td className="px-5 py-4 text-[12px] font-medium">{dateTime(row.valid_from)}</td><td className="px-5 py-4 text-[12px] font-medium">{dateTime(row.valid_until)}</td><td className="px-5 py-4 font-mono text-[11px] font-bold">{numberValue(row, 'deployment_limit')}</td></tr>)}</tbody></table></div>}
+            {entitlements.length === 0 ? <div className="p-6"><Empty>No entitlements yet.</Empty></div> : <div className="overflow-x-auto"><table className="w-full min-w-[840px] text-left"><thead className="bg-[#FAFAF9] font-mono text-[9px] font-black uppercase tracking-[0.12em]"><tr><th className="border-b-2 border-[#111] px-5 py-3">ID</th><th className="border-b-2 border-[#111] px-5 py-3">Status</th><th className="border-b-2 border-[#111] px-5 py-3">Valid from</th><th className="border-b-2 border-[#111] px-5 py-3">Valid until</th><th className="border-b-2 border-[#111] px-5 py-3">Deployment-scope limit</th></tr></thead><tbody>{entitlements.map((row) => <tr key={text(row, 'id')} className="border-b border-[#ddd] last:border-0"><td className="px-5 py-4 font-mono text-[10px]" title={text(row, 'id')}>{shortId(row.id, 20)}</td><td className="px-5 py-4"><Status value={row.status} /></td><td className="px-5 py-4 text-[12px] font-medium">{dateTime(row.valid_from)}</td><td className="px-5 py-4 text-[12px] font-medium">{dateTime(row.valid_until)}</td><td className="px-5 py-4 font-mono text-[11px] font-bold">{numberValue(row, 'deployment_limit')}</td></tr>)}</tbody></table></div>}
           </section>
+          <OrganizationLicensePanel entitlements={entitlements} onIssued={result => { setIssuance(result); setTab('deployments') }} />
         </div>
       ) : null}
 

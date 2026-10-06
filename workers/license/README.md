@@ -11,7 +11,7 @@ Cloudflare Worker for Beag Labs partner onboarding, commercial/provisioning stat
 - Partner authentication: approved-invite-only Better Auth magic links
 - OAuth/OIDC issuer: Better Auth OAuth Provider
 - Partner self-service: catalog access and **draft order submission only**
-- Papyrus licensing: Beag-admin-only, deployment-bound signed offline JSON compatible with the existing Papyrus `LicenseService`
+- Papyrus licensing: Beag-admin-only signed offline JSON with deployment or explicitly approved organization scope
 - License signer: version-pinned Azure Key Vault key; the authority private key never enters the Worker
 
 Partner OAuth users cannot book orders, create entitlements, register deployments, issue licenses, or revoke licenses. Every `/api/v1/*` endpoint remains Microsoft-admin-only and requires an Entra tenant ID matching `MICROSOFT_TENANT_ID` plus an immutable object ID (`oid`) in `ADMIN_MICROSOFT_OIDS`.
@@ -98,8 +98,8 @@ The service does not infer contract acceptance from partner activity.
 2. Beag validates pricing, customer identity, and contract/vehicle flow.
 3. Beag explicitly moves the order to `booked` or `fulfilled` after the commercial event is known.
 4. Beag explicitly creates an entitlement from a license-product order item.
-5. Beag registers a Papyrus deployment using its activation `deploymentId` and deployment profile.
-6. Beag explicitly issues the signed deployment-bound license.
+5. Beag approves an organization scope with customer Entra tenants and optional exact hostnames, or registers a single deployment using its activation identity.
+6. Beag explicitly issues the signed license from its deployment or organization entitlement.
 
 The license issuance endpoint does **not** accept arbitrary license fields. Licensee, deployment ID, profile, features, expiration, and provisioned branding are derived from Turso records. The final payload is signed by Azure Key Vault before the issuance row is committed.
 
@@ -244,3 +244,9 @@ Microsoft admin:
 ## Offline revocation semantics
 
 Papyrus disconnected deployments do not phone home. Marking a license issuance `revoked` records Beag Labs' commercial/admin state but cannot retroactively invalidate a license document already imported into an offline deployment. Expiration or replacement is the enforcement mechanism available to the disconnected runtime.
+
+## Organization licenses
+
+The website console at https://www.beaglabs.com/licensing now supports organization licenses on the Entitlements tab. These allow unlimited VMs within approved Entra tenants, optional exact hostnames, and a mandatory expiry. Scope approval and issuance require Beag Microsoft administrator identity; all license rights derive from booked customer entitlements.
+
+See [administration and rollout](../../docs/organization-licensing.md) for generation, download, setup, migration order, renewal, and offline enforcement limits. Apply `organization-license-schema.sql` before deploying this Worker; `scripts/apply-schema.mjs` includes it. No per-VM deployment registration is needed for organization issuance. Existing deployment-bound licenses and issuance tables remain supported.

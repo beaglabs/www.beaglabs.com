@@ -1,20 +1,29 @@
 import { createHash, sign } from 'node:crypto'
 import type { DeploymentProfile } from './env'
 
-export interface LicensePayload {
+export interface LicenseBase {
   licenseId: string
   licensee: string
-  deploymentId: string
   profiles: DeploymentProfile[]
   features: string[]
   issuedAt: string
   expiresAt: string | null
 }
-
-export interface SignedLicense extends LicensePayload {
-  keyId: string
-  signature: string
+export interface DeploymentLicensePayload extends LicenseBase {
+  scope?: 'deployment'
+  deploymentId: string
 }
+export interface OrganizationLicensePayload extends LicenseBase {
+  scope: 'organization'
+  organizationId: string
+  entitlementId: string
+  allowedTenantIds: string[]
+  allowedDomains?: string[]
+  expiresAt: string
+  deploymentId?: never
+}
+export type LicensePayload = DeploymentLicensePayload | OrganizationLicensePayload
+export type SignedLicense = LicensePayload & { keyId: string; signature: string }
 
 export function canonical(value: unknown): string {
   if (value === null || typeof value !== 'object') return JSON.stringify(value)

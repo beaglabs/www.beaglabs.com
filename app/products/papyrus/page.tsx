@@ -9,14 +9,14 @@ import { DocumentDemo } from '@/components/papyrus/document-demo'
 import { LegacyAppDemo } from '@/components/papyrus/legacy-app-demo'
 import { BASE_URL, pageMetadata } from '@/lib/seo'
 
-const description = 'Papyrus is a customer-hosted Agentic Modernization Engine for document automation, internal app creation, and legacy system enablement—with Microsoft Entra identity and governed execution.'
+const description = 'Papyrus is the customer-hosted Agentic Modernization Factory for document automation, internal app creation, and legacy system enablement—with Microsoft Entra identity and governed execution.'
 
 const baseMetadata = pageMetadata({
-  title: 'Papyrus — Agentic Modernization Engine',
+  title: 'Papyrus — The Agentic Modernization Factory',
   description,
   path: '/products/papyrus',
   label: 'Papyrus',
-  ogTitle: 'Papyrus — Agentic Modernization Engine',
+  ogTitle: 'Papyrus — The Agentic Modernization Factory',
   ogDescription: 'Customer-hosted document automation, internal app creation, and legacy system enablement—with Microsoft Entra identity and governed execution.',
 })
 
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
   ...baseMetadata,
   openGraph: {
     ...baseMetadata.openGraph,
-    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-05-factory`, width: 1200, height: 630, alt: 'Papyrus app factory and legacy enablement: a TN3270 terminal connected to a modern USWDS service intake app with Login.gov and OIDC.', type: 'image/png' }],
+    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-06-brand-fonts`, width: 1200, height: 630, alt: 'Papyrus: The Agentic Modernization Factory. Document automation, internal apps, and legacy system enablement.', type: 'image/png' }],
   },
-  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-05-factory`] },
+  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-06-brand-fonts`] },
 }
 
 const outcomes = [
@@ -43,10 +43,10 @@ export default function PapyrusProductPage() {
         <div className="mx-auto max-w-[1440px]">
           <div className="px-6 py-16 text-center lg:px-9 lg:py-24">
             <span className="nb-label mb-7 inline-flex items-center gap-2"><span className="h-2 w-2 bg-[#ff5f1f]" />Papyrus / Put your knowledge to work</span>
-            <h1 className="mx-auto max-w-[1100px] font-[family-name:var(--font-display)] text-[56px] font-black uppercase leading-[.93] tracking-[-.035em] sm:text-[78px] xl:text-[94px]">Agentic Modernization Engine</h1>
+            <h1 className="mx-auto max-w-[1100px] font-[family-name:var(--font-display)] text-[56px] font-black uppercase leading-[.93] tracking-[-.035em] sm:text-[78px] xl:text-[94px]">The Agentic Modernization Factory</h1>
             <p className="mx-auto mt-7 max-w-[850px] text-[17px] font-medium leading-[1.75] text-[#444]">{description}</p>
             <div className="mt-9 flex flex-wrap justify-center gap-4">
-              <Link href="https://marketplace.microsoft.com/en-us/product/virtual-machine/beaglabs.papyrus_public?tab=Overview" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider"><Image src="/products/papyrus/azure.webp" alt="" width={24} height={24} className="h-6 w-6 object-contain" />Deploy on Azure<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+              <Link href="/sales" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Discuss your deployment<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
               <a href="#showcase" className="nb-btn-white inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider"><Play className="h-4 w-4" aria-hidden="true" />See it in action</a>
             </div>
             <div className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-2 font-mono text-[10px] font-bold uppercase tracking-wider text-[#555]"><span>Documents → requirements</span><span>Prompts → apps</span><span>Legacy → usable</span></div>
@@ -84,24 +84,12 @@ export default function PapyrusProductPage() {
       <section id="pricing" className="scroll-mt-24 border-b-[3px] border-[#111] bg-white px-6 py-16 lg:px-9 lg:py-24">
         <div className="mx-auto max-w-[1440px]">
           <span className="nb-label mb-5 inline-block">Papyrus pricing</span>
-          <h2 className="text-[38px] font-extrabold leading-[1.05] tracking-[-.045em] sm:text-[52px]">Pay as you go. Save when you commit.</h2>
-          <p className="mt-5 max-w-[780px] text-base leading-7 text-[#555]">Pay-as-you-go starts at $5 per hour. A 1-year commitment saves 10%; a 3-year commitment saves 20%. The equivalents below assume continuous 24/7 operation: 8,760 hours per year, averaged across 12 months.</p>
-          <div className="mt-9 overflow-x-auto border-[3px] border-[#111] shadow-[6px_6px_0_#111]">
-            <table className="w-full min-w-[640px] border-collapse text-left">
-              <caption className="sr-only">Papyrus pricing at 8,760 hours per year. Monthly figures are annual costs divided by 12.</caption>
-              <thead className="bg-[#111] text-white"><tr>{['Pricing plan', 'Hourly rate', 'Monthly equivalent', 'Annual equivalent'].map(label => <th key={label} scope="col" className="px-5 py-5 font-mono text-[11px] font-bold uppercase tracking-wider">{label}</th>)}</tr></thead>
-              <tbody>{[
-                { plan: 'Pay-as-you-go', savings: null, hourly: '$5.00', monthly: '$3,650', annual: '$43,800' },
-                { plan: '1-year commitment', savings: '10% off · Save $4,380 / year', hourly: '$4.50', monthly: '$3,285', annual: '$39,420' },
-                { plan: '3-year commitment', savings: '20% off · Save $8,760 / year', hourly: '$4.00', monthly: '$2,920', annual: '$35,040' },
-              ].map(({ plan, savings, hourly, monthly, annual }) => <tr key={plan} className="border-t-2 border-[#111] even:bg-[#fafaf9]"><th scope="row" className="px-5 py-6 text-sm font-extrabold">{plan}{savings && <span className="mt-2 block text-xs font-bold text-[#166534]">{savings}</span>}</th>{[hourly, monthly, annual].map((value, i) => <td key={i} className="px-5 py-6 text-base font-bold tabular-nums">{value}</td>)}</tr>)}</tbody>
-            </table>
-          </div>
-          <h3 className="mb-5 mt-12 text-2xl font-extrabold tracking-tight">Total contract values</h3>
-          <div className="grid gap-6 md:grid-cols-2">{[
-            { plan: '1-year commitment', total: '$39,420', savings: 'Saves $4,380 vs. PAYG', period: '8,760 hours over 1 year' },
-            { plan: '3-year commitment', total: '$105,120', savings: 'Saves $26,280 vs. PAYG', period: '26,280 hours over 3 years' },
-          ].map(({ plan, total, savings, period }) => <article key={plan} className="border-[3px] border-[#111] bg-[#fafaf9] p-7 shadow-[5px_5px_0_#111]"><h4 className="font-mono text-xs font-bold uppercase tracking-wider">{plan}</h4><p className="mt-5 text-[42px] font-black tracking-tight tabular-nums sm:text-[52px]">{total}</p><p className="mt-3 text-base font-bold text-[#166534]">{savings}</p><p className="mt-3 text-xs leading-5 text-[#555]">{period}. Savings compare the same operating hours at the $5/hour PAYG rate.</p></article>)}</div>
+          <h2 className="text-[38px] font-extrabold leading-[1.05] tracking-[-.045em] sm:text-[52px]">Prove the workflow. Scale across your organization.</h2>
+          <p className="mt-5 max-w-[780px] text-base leading-7 text-[#555]">Direct enterprise agreements for customer-hosted modernization. Start with a scoped pilot or license Papyrus across your organization, including offline environments.</p>
+          <div className="mt-9 grid gap-6 md:grid-cols-2">{[
+            { plan: 'Pilot engagement', total: '$250,000', period: '90 days', body: 'A scoped modernization pilot with implementation, integrations, and dedicated live support.', scope: 'Deliverables, acceptance criteria, support coverage, and response targets are agreed before kickoff.' },
+            { plan: 'Enterprise license', total: '$2,000,000', period: '2 years', body: 'Unlimited customer-hosted VMs within the licensed organization, including offline deployment.', scope: 'Implementation, maintenance, and support scope are defined in the enterprise agreement.' },
+          ].map(({ plan, total, period, body, scope }) => <article key={plan} className="border-[3px] border-[#111] bg-[#fafaf9] p-7 shadow-[5px_5px_0_#111]"><h3 className="font-mono text-xs font-bold uppercase tracking-wider">{plan}</h3><p className="mt-5 text-[42px] font-black tracking-tight tabular-nums sm:text-[52px]">{total}</p><p className="mt-3 font-mono text-xs font-bold uppercase tracking-wider text-[#b63700]">{period}</p><p className="mt-5 text-base leading-7">{body}</p><p className="mt-4 border-t-2 border-[#111] pt-4 text-xs leading-6 text-[#555]">{scope}</p></article>)}</div>
           <div className="mt-9"><Link href="/sales" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Discuss your deployment<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
         </div>
       </section>
