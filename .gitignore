@@ -17,6 +17,7 @@ node_modules/
 .DS_Store
 .env
 *.mp4
+!public/products/papyrus/papyrus-showcase-branded.mp4
 *.spdx.json
 
 # Python
