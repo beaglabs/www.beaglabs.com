@@ -26,7 +26,7 @@ export function FinalCTASection() {
           </p>
 
           <a
-            href="/contact"
+            href="/products/papyrus"
             className="group mb-4 inline-flex items-center gap-3 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#fff] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:bg-white hover:shadow-[6px_6px_0px_0px_#ff5f1f]"
           >
             View Papyrus
