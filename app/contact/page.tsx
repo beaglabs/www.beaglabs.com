@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
-import { ArrowUpRight, CalendarDays, Mail } from 'lucide-react'
+import { ArrowUpRight, Mail } from 'lucide-react'
 
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
 const BOOKING_URL =
-  'https://bookings.cloud.microsoft/bookwithme/user/be687874d69f4ede995ae233db37c9e4@beaglabs.com/meetingtype/-0-zLXxC0k2YsZBckNCG6Q2?anonymous&ismsaljsauthenabled&ep=mlink'
+  'https://bookings.cloud.microsoft/book/BeagLabsBookings@beaglabs.com/?ismsaljsauthenabled'
 
 export const metadata: Metadata = pageMetadata({
   title: 'Book a meeting',
@@ -23,8 +23,8 @@ export default function ContactPage() {
     <>
       <Navbar />
       <main className="min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-28 lg:px-9 lg:pb-28 lg:pt-32">
-        <div className="mx-auto w-full max-w-[980px]">
-          <div className="mx-auto max-w-[720px] text-center">
+        <div className="mx-auto w-full max-w-[1180px]">
+          <div className="mx-auto mb-9 max-w-[760px] text-center">
             <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-[#ff5f1f]">
               Contact / Schedule
             </p>
@@ -37,49 +37,49 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <section className="mx-auto mt-10 max-w-[760px] border-[3px] border-[#111] bg-white shadow-[8px_8px_0_#111]">
-            <div className="border-b-[3px] border-[#111] bg-[#fff1e9] px-6 py-5 text-center">
-              <CalendarDays className="mx-auto h-7 w-7" />
-              <p className="mt-3 font-mono text-[9px] font-black uppercase tracking-[0.16em] text-[#ff5f1f]">
-                Microsoft Bookings
-              </p>
-              <h2 className="mt-2 text-[24px] font-extrabold tracking-[-0.035em]">
-                Choose an available time
-              </h2>
-              <p className="mx-auto mt-2 max-w-[520px] text-[13px] leading-6 text-[#666]">
-                Microsoft will show live availability and add the meeting to the calendar after you confirm.
-              </p>
-            </div>
-
-            <div className="p-6 sm:p-8">
+          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[8px_8px_0_#111]">
+            <div className="flex flex-col gap-3 border-b-[3px] border-[#111] bg-[#fff1e9] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-mono text-[9px] font-black uppercase tracking-[0.14em] text-[#ff5f1f]">
+                  Microsoft Bookings
+                </p>
+                <p className="mt-1 text-[14px] font-extrabold text-[#111]">Choose an available time</p>
+              </div>
               <a
                 href={BOOKING_URL}
-                className="nb-btn-orange flex w-full items-center justify-center gap-3 px-6 py-4 text-center font-mono text-[11px] font-black uppercase tracking-[0.1em]"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nb-btn-white inline-flex w-fit items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase tracking-[0.1em]"
               >
-                Book a meeting
-                <ArrowUpRight className="h-4 w-4" />
+                Open in new tab
+                <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
+            </div>
 
-              <div className="my-6 flex items-center gap-4">
-                <div className="h-px flex-1 bg-[#bbb]" />
-                <span className="font-mono text-[9px] font-black uppercase tracking-[0.12em] text-[#777]">or</span>
-                <div className="h-px flex-1 bg-[#bbb]" />
-              </div>
-
-              <a
-                href="mailto:james@beaglabs.com"
-                className="nb-btn-white flex w-full items-center justify-center gap-3 px-6 py-4 text-center font-mono text-[10px] font-black uppercase tracking-[0.1em]"
-              >
-                <Mail className="h-4 w-4" />
-                Email james@beaglabs.com
-              </a>
+            <div className="h-[1050px] w-full bg-white sm:h-[1120px]">
+              <iframe
+                src={BOOKING_URL}
+                title="Schedule a meeting with Beag Labs"
+                width="100%"
+                height="100%"
+                scrolling="yes"
+                className="block h-full w-full border-0 bg-white"
+              />
             </div>
           </section>
 
-          <p className="mx-auto mt-7 max-w-[640px] text-center text-[11px] leading-5 text-[#777]">
-            Microsoft Personal Bookings blocks third-party iframe embedding in browsers such as Firefox,
-            so the scheduler opens directly on Microsoft&apos;s secure booking page.
-          </p>
+          <div className="mx-auto mt-8 max-w-[760px] text-center">
+            <p className="text-[12px] leading-6 text-[#666]">
+              Prefer email?{' '}
+              <a
+                href="mailto:james@beaglabs.com"
+                className="inline-flex items-center gap-1 font-bold underline decoration-2 underline-offset-4"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                james@beaglabs.com
+              </a>
+            </p>
+          </div>
         </div>
       </main>
       <SiteFooter />
