@@ -33,7 +33,7 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
             </Link>
           ))}
           <a
-            href="/contact"
+            href="/products/papyrus"
             className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[3px_3px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111]"
           >
             <img src="/papyrus-logo.svg" alt="" className="h-4 w-4" />
