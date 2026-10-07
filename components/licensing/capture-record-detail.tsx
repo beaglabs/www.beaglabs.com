@@ -223,18 +223,18 @@ export function CaptureRecordDetail({kind,id}:{kind:Kind;id:string}) {
       <button onClick={()=>void load()} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><RefreshCw className={loading?'h-3.5 w-3.5 animate-spin':'h-3.5 w-3.5'}/>Refresh</button>
     </div>
 
-    <div className="hidden min-h-[730px] border-[3px] border-[#111] bg-white shadow-[7px_7px_0_#111] lg:block">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={31} minSize={24}><div className="h-full overflow-y-auto bg-[#FAFAF9] p-6">{summary}</div></ResizablePanel>
+    <div className="hidden h-[720px] min-h-0 overflow-hidden border-[3px] border-[#111] bg-white shadow-[7px_7px_0_#111] lg:block xl:h-[calc(100dvh-12rem)] xl:min-h-[720px] xl:max-h-[980px]">
+      <ResizablePanelGroup direction="horizontal" className="h-full min-h-0">
+        <ResizablePanel defaultSize={31} minSize={24} className="min-h-0 min-w-0"><div className="h-full min-h-0 overflow-y-auto bg-[#FAFAF9] p-6">{summary}</div></ResizablePanel>
         <ResizableHandle withHandle className="w-[3px] bg-[#111]"/>
-        <ResizablePanel defaultSize={69} minSize={42}><Workspace/></ResizablePanel>
+        <ResizablePanel defaultSize={69} minSize={42} className="min-h-0 min-w-0 overflow-hidden"><Workspace/></ResizablePanel>
       </ResizablePanelGroup>
     </div>
     <div className="space-y-5 lg:hidden"><section className="nb-panel p-5">{summary}</section><section className="nb-panel overflow-hidden"><Workspace/></section></div>
   </div>
 
   function Workspace(){
-    return <div className="h-full overflow-y-auto bg-white">
+    return <div className="h-full min-h-0 overflow-y-auto bg-white">
       <div className="sticky top-0 z-10 flex overflow-x-auto border-b-[3px] border-[#111] bg-[#111] p-2">{tabs.map((value)=><button key={value} onClick={()=>setTab(value)} className={'border-2 px-4 py-2 font-mono text-[9px] font-black uppercase tracking-[0.1em] '+(tab===value?'border-[#111] bg-[#ff5f1f]':'border-white/40 bg-white')}>{value}</button>)}</div>
       <div className="p-5 lg:p-7">
         {tab==='overview'?<Overview kind={kind} record={record as Row}/>:null}
