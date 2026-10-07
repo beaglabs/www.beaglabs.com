@@ -296,7 +296,7 @@ export function CaptureConsole() {
   ],[])
 
   const entityTreeRows=useMemo<Row[]>(()=>{
-    const byId=new Map(entities.map((row)=>[String(row.id??''),row]).filter(([id])=>Boolean(id)))
+    const byId=new Map<string,Row>(entities.map((row)=>[String(row.id??''),row] as const).filter(([id])=>Boolean(id)))
     const children=new Map<string,Row[]>()
     const roots:Row[]=[]
     for(const row of entities){
