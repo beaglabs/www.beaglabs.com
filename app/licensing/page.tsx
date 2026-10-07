@@ -1,6 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-
 import { CaptureConsole } from '@/components/licensing/capture-console'
 import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
@@ -36,11 +34,6 @@ export default function LicensingPage() {
               <span className="h-2.5 w-2.5 bg-[#59d45c]" />
               <span className="font-mono text-[9px] font-black uppercase tracking-[0.14em] text-[#333]">Commercial CRM</span>
             </div>
-          </div>
-          <div className="mb-8 flex flex-wrap gap-3">
-            <Link href="/licensing/marketplace" className="nb-btn-white inline-flex items-center px-4 py-2.5 font-mono text-[10px] font-black uppercase tracking-[0.1em]">
-              Azure channel activity
-            </Link>
           </div>
           <CaptureConsole />
         </div>
