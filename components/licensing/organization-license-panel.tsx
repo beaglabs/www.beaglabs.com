@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { FileKey2, Download } from 'lucide-react'
 import { toast } from 'sonner'
+
+import { CrmCombobox } from './crm-combobox'
 import { licenseFetch } from '@/lib/license-control-plane'
 
 type Row = Record<string, unknown>
@@ -56,19 +58,14 @@ export function OrganizationLicensePanel({ entitlements, onIssued }: { entitleme
     <p className="mt-3 max-w-3xl text-sm leading-6 text-[#666]">For the normal enterprise motion, issue one offline organization license for unlimited customer-hosted Papyrus VMs within approved Entra tenants. Add exact hostnames only when the agreement requires them. The entitlement controls features, profiles, and expiry.</p>
     <div className="mt-6 grid gap-6 lg:grid-cols-2">
       <div className="space-y-4">
-        <label className="block text-sm font-bold">Entitlement
-          <select className="nb-input mt-2 w-full" value={entitlementId} disabled={busy} onChange={event => setEntitlementId(event.target.value)}>
-            <option value="">Select entitlement…</option>
-            {entitlements.map(row => <option key={String(row.id)} value={String(row.id)}>{String(row.customer_name ?? row.customer_organization_id ?? '')} — {String(row.id)}</option>)}
-          </select>
-        </label>
+        <div className="block text-sm font-bold">Entitlement
+          <CrmCombobox className="mt-2" value={entitlementId} disabled={busy} onValueChange={setEntitlementId} options={entitlements.map(row => ({value:String(row.id),label:String(row.customer_name ?? row.customer_organization_id ?? '')+' — '+String(row.id)}))} placeholder="Select entitlement…" searchPlaceholder="Search entitlements…"/>
+        </div>
         {approved && <>
           <div className="border-2 border-[#111] bg-[#FAFAF9] p-4 text-sm"><strong>{approved.organizationName}</strong><p className="mt-1">Expires {approved.expiresAt ? new Date(approved.expiresAt).toLocaleDateString() : 'not set — a finite term is required for organization licensing'}</p></div>
-          <label className="block text-sm font-bold">License scope
-            <select className="nb-input mt-2 w-full" disabled={busy} value={form.scope} onChange={event => setForm({ ...form, scope: event.target.value as Scope['scope'] })}>
-              <option value="deployment">Single deployment</option><option value="organization">Organization · unlimited VMs</option>
-            </select>
-          </label>
+          <div className="block text-sm font-bold">License scope
+            <CrmCombobox className="mt-2" disabled={busy} value={form.scope} onValueChange={value => setForm({ ...form, scope: value as Scope['scope'] })} options={[{value:'deployment',label:'Single deployment'},{value:'organization',label:'Organization · unlimited VMs'}]}/>
+          </div>
           {form.scope === 'organization' && <>
             <label className="block text-sm font-bold">Approved Entra tenant IDs
               <textarea className="nb-input mt-2 min-h-24 w-full font-mono text-xs" disabled={busy} value={form.tenants} placeholder="One directory UUID per line" onChange={event => setForm({ ...form, tenants: event.target.value })} />
