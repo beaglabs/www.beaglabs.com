@@ -12,6 +12,7 @@ import {
   Mail,
   Network,
   Paperclip,
+  Pencil,
   Plus,
   RefreshCw,
   Send,
@@ -124,6 +125,7 @@ export function CaptureRecordDetail({kind,id}:{kind:Kind;id:string}) {
   const [loading,setLoading]=useState(true)
   const [busy,setBusy]=useState(false)
   const [deleteOpen,setDeleteOpen]=useState(false)
+  const [editOpen,setEditOpen]=useState(false)
   const [tab,setTab]=useState<Tab>('overview')
 
   const [entityLink,setEntityLink]=useState({organizationId:'',role:kind==='vehicle'?'prime_holder':'prime',notes:''})
@@ -132,6 +134,7 @@ export function CaptureRecordDetail({kind,id}:{kind:Kind;id:string}) {
   const [submissionForm,setSubmissionForm]=useState({name:'',submissionType:'capability_statement',status:'planned',dueAt:'',deliveryMethod:'email',destination:'',notes:''})
   const [engagementForm,setEngagementForm]=useState({channel:'linkedin',direction:'outbound',status:'completed',organizationId:'',personId:'',subject:'',body:'',outcome:'',followUpAt:''})
   const [referenceForm,setReferenceForm]=useState({referenceType:'sam_notice',identifier:'',url:'',label:''})
+  const [entityEdit,setEntityEdit]=useState({entityKind:'other',legalName:'',displayName:'',uei:'',cageCode:'',domain:'',parentEntityId:'',websiteUrl:'',linkedinUrl:'',logoUrl:'',trackingStatus:'active',summary:''})
   const [documentTarget,setDocumentTarget]=useState<{resourceType:Kind|'submission';resourceId:string;direction:string;documentType:string;status:string;description:string}>({resourceType:kind,resourceId:id,direction:'reference',documentType:'other',status:'reference',description:''})
 
   const endpoint=kind==='entity'?'/api/v2/capture/entities/'+encodeURIComponent(id):kind==='vehicle'?'/api/v2/capture/vehicles/'+encodeURIComponent(id):'/api/v2/capture/pursuits/'+encodeURIComponent(id)
@@ -145,6 +148,20 @@ export function CaptureRecordDetail({kind,id}:{kind:Kind;id:string}) {
         licenseFetch<Collection>('/api/v2/crm/people?limit=500'),
       ])
       setRecord(detail)
+      if(kind==='entity') setEntityEdit({
+        entityKind:String(detail.entity_kind??'other'),
+        legalName:String(detail.legal_name??''),
+        displayName:String(detail.display_name??''),
+        uei:String(detail.uei??''),
+        cageCode:String(detail.cage_code??''),
+        domain:String(detail.domain??''),
+        parentEntityId:String(detail.parent_organization_id??''),
+        websiteUrl:String(detail.website_url??''),
+        linkedinUrl:String(detail.linkedin_url??''),
+        logoUrl:String(detail.custom_logo_url??''),
+        trackingStatus:String(detail.tracking_status??detail.status??'active'),
+        summary:String(detail.summary??''),
+      })
       setAllEntities(entities.items)
       setAllPeople(people.items)
       if(kind==='entity') setEngagementForm((value)=>({...value,organizationId:id}))
@@ -229,6 +246,35 @@ export function CaptureRecordDetail({kind,id}:{kind:Kind;id:string}) {
     }catch(error){toast.error(error instanceof Error?error.message:'Unable to add reference.')}finally{setBusy(false)}
   }
 
+  const updateEntity=async(event:React.FormEvent)=>{
+    event.preventDefault()
+    if(kind!=='entity')return
+    setBusy(true)
+    try{
+      await licenseFetch(endpoint,{method:'PUT',body:JSON.stringify({
+        ...entityEdit,
+        displayName:entityEdit.displayName||null,
+        uei:entityEdit.uei||null,
+        cageCode:entityEdit.cageCode||null,
+        domain:entityEdit.domain||null,
+        parentEntityId:entityEdit.parentEntityId||null,
+        websiteUrl:entityEdit.websiteUrl||null,
+        linkedinUrl:entityEdit.linkedinUrl||null,
+        logoUrl:entityEdit.logoUrl||null,
+        summary:entityEdit.summary||null,
+        tags:Array.isArray(record?.tags)?record.tags:[],
+        naics:Array.isArray(record?.naics)?record.naics:[],
+        psc:Array.isArray(record?.psc)?record.psc:[],
+        smallBusinessPrograms:Array.isArray(record?.smallBusinessPrograms)?record.smallBusinessPrograms:[],
+      })})
+      setEditOpen(false)
+      toast.success('Entity updated.')
+      await load()
+    }catch(error){
+      toast.error(error instanceof Error?error.message:'Unable to update entity.')
+    }finally{setBusy(false)}
+  }
+
   const deleteRecord=async()=>{
     setBusy(true)
     try{
@@ -268,7 +314,7 @@ export function CaptureRecordDetail({kind,id}:{kind:Kind;id:string}) {
   return <div className="mx-auto max-w-[1500px]">
     <div className="mb-6 flex flex-col gap-4 border-[3px] border-[#111] bg-white p-5 shadow-[5px_5px_0_#111] lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-center gap-4"><Link href="/licensing" className="nb-btn-white inline-flex h-10 w-10 items-center justify-center p-0"><ArrowLeft className="h-4 w-4"/></Link><div><div className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#ff5f1f]">{kind}</div><h1 className="mt-1 text-[28px] font-extrabold tracking-[-0.04em]">{title}</h1><div className="mt-2"><Status value={record.stage??record.status??record.tracking_status}/></div></div></div>
-      <div className="flex flex-wrap items-center gap-3"><button onClick={()=>void load()} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><RefreshCw className={loading?'h-3.5 w-3.5 animate-spin':'h-3.5 w-3.5'}/>Refresh</button><AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}><AlertDialogTrigger asChild><button type="button" disabled={busy} className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-[#fee2e2] px-4 py-2.5 font-mono text-[9px] font-black uppercase shadow-[3px_3px_0_#111] disabled:opacity-50"><Trash2 className="h-3.5 w-3.5"/>Delete</button></AlertDialogTrigger><AlertDialogContent className="rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[7px_7px_0_#111]"><AlertDialogHeader className="border-b-[3px] border-[#111] bg-[#fee2e2] p-6"><AlertDialogTitle>Delete {kind}?</AlertDialogTitle><AlertDialogDescription>This permanently deletes <strong>{title}</strong> and removes CRM links owned by this record. This cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="p-5"><AlertDialogCancel disabled={busy} className="nb-btn-white rounded-none">Cancel</AlertDialogCancel><AlertDialogAction disabled={busy} onClick={(event)=>{event.preventDefault();void deleteRecord()}} className="rounded-none border-[3px] border-[#111] bg-[#ef4444] px-5 py-2.5 font-mono text-[9px] font-black uppercase text-white shadow-[3px_3px_0_#111] hover:bg-[#dc2626]">{busy?'Deleting…':'Delete permanently'}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div>
+      <div className="flex flex-wrap items-center gap-3">{kind==='entity'?<Dialog open={editOpen} onOpenChange={setEditOpen}><DialogTrigger asChild><button type="button" className="nb-btn-orange inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><Pencil className="h-3.5 w-3.5"/>Edit entity</button></DialogTrigger><DialogContent className="max-h-[90vh] overflow-y-auto rounded-none border-[3px] border-[#111] p-0 sm:max-w-4xl"><DialogHeader className="border-b-[3px] border-[#111] bg-[#fff1e9] p-6"><DialogTitle>Edit entity</DialogTitle><DialogDescription>Update the entity identity, hierarchy, links, and logo. Custom logos override the automatic Logo.dev result.</DialogDescription></DialogHeader><form onSubmit={updateEntity}><div className="grid gap-x-6 gap-y-5 p-7 md:grid-cols-2"><label><span className="text-[11px] font-bold">Entity type</span><CrmCombobox className="mt-1.5" value={entityEdit.entityKind} onValueChange={(value)=>setEntityEdit({...entityEdit,entityKind:value})} options={['federal_agency','office','program','contracting_office','prime','integrator','reseller','distributor','commercial','university','state_local','nonprofit','partner','other'].map((value)=>({value,label:value.replaceAll('_',' ')}))} searchPlaceholder="Search entity types…"/></label><label><span className="text-[11px] font-bold">Tracking status</span><CrmCombobox className="mt-1.5" value={entityEdit.trackingStatus} onValueChange={(value)=>setEntityEdit({...entityEdit,trackingStatus:value})} options={['active','watching','inactive','archived'].map((value)=>({value,label:value}))}/></label><label><span className="text-[11px] font-bold">Legal name</span><input required className="nb-input mt-1.5 w-full" value={entityEdit.legalName} onChange={(e)=>setEntityEdit({...entityEdit,legalName:e.target.value})}/></label><label><span className="text-[11px] font-bold">Display name</span><input className="nb-input mt-1.5 w-full" value={entityEdit.displayName} onChange={(e)=>setEntityEdit({...entityEdit,displayName:e.target.value})}/></label><label><span className="text-[11px] font-bold">Parent entity</span><CrmCombobox className="mt-1.5" value={entityEdit.parentEntityId} onValueChange={(value)=>setEntityEdit({...entityEdit,parentEntityId:value})} options={[{value:'',label:'None'},...allEntities.filter((entity)=>text(entity,'id')!==id).map((entity)=>({value:text(entity,'id'),label:text(entity,'display_name','legal_name')}))]} searchPlaceholder="Search parent entities…"/></label><label><span className="text-[11px] font-bold">Domain</span><input className="nb-input mt-1.5 w-full" value={entityEdit.domain} onChange={(e)=>setEntityEdit({...entityEdit,domain:e.target.value})}/></label><label><span className="text-[11px] font-bold">UEI</span><input className="nb-input mt-1.5 w-full font-mono" value={entityEdit.uei} onChange={(e)=>setEntityEdit({...entityEdit,uei:e.target.value})}/></label><label><span className="text-[11px] font-bold">CAGE</span><input className="nb-input mt-1.5 w-full font-mono" value={entityEdit.cageCode} onChange={(e)=>setEntityEdit({...entityEdit,cageCode:e.target.value})}/></label><label><span className="text-[11px] font-bold">Website</span><input type="url" className="nb-input mt-1.5 w-full" value={entityEdit.websiteUrl} onChange={(e)=>setEntityEdit({...entityEdit,websiteUrl:e.target.value})}/></label><label><span className="text-[11px] font-bold">LinkedIn</span><input type="url" className="nb-input mt-1.5 w-full" value={entityEdit.linkedinUrl} onChange={(e)=>setEntityEdit({...entityEdit,linkedinUrl:e.target.value})}/></label><label className="md:col-span-2"><span className="text-[11px] font-bold">Custom logo URL</span><div className="mt-1.5 grid gap-3 sm:grid-cols-[1fr_auto]"><input type="url" className="nb-input w-full" value={entityEdit.logoUrl} onChange={(e)=>setEntityEdit({...entityEdit,logoUrl:e.target.value})} placeholder="https://…/logo.png"/>{(entityEdit.logoUrl||record.logo_url)?<img src={entityEdit.logoUrl||String(record.logo_url)} alt="" className="h-12 w-12 border-2 border-[#111] bg-white object-contain p-1 shadow-[2px_2px_0_#111]"/>:null}</div><span className="mt-2 block text-[10px] leading-4 text-[#666]">Leave blank to use the automatic domain-based Logo.dev image. Entering a URL overwrites any existing custom logo.</span></label><label className="md:col-span-2"><span className="text-[11px] font-bold">Summary</span><textarea className="nb-input mt-1.5 min-h-28 w-full" value={entityEdit.summary} onChange={(e)=>setEntityEdit({...entityEdit,summary:e.target.value})}/></label></div><DialogFooter className="border-t-[3px] border-[#111] p-5"><button type="button" onClick={()=>setEditOpen(false)} className="nb-btn-white px-5 py-2.5 font-mono text-[9px] font-black uppercase">Cancel</button><button disabled={busy} className="nb-btn-orange px-5 py-2.5 font-mono text-[9px] font-black uppercase disabled:opacity-50">{busy?'Saving…':'Save changes'}</button></DialogFooter></form></DialogContent></Dialog>:null}<button onClick={()=>void load()} className="nb-btn-white inline-flex items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase"><RefreshCw className={loading?'h-3.5 w-3.5 animate-spin':'h-3.5 w-3.5'}/>Refresh</button><AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}><AlertDialogTrigger asChild><button type="button" disabled={busy} className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-[#fee2e2] px-4 py-2.5 font-mono text-[9px] font-black uppercase shadow-[3px_3px_0_#111] disabled:opacity-50"><Trash2 className="h-3.5 w-3.5"/>Delete</button></AlertDialogTrigger><AlertDialogContent className="rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[7px_7px_0_#111]"><AlertDialogHeader className="border-b-[3px] border-[#111] bg-[#fee2e2] p-6"><AlertDialogTitle>Delete {kind}?</AlertDialogTitle><AlertDialogDescription>This permanently deletes <strong>{title}</strong> and removes CRM links owned by this record. This cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="p-5"><AlertDialogCancel disabled={busy} className="nb-btn-white rounded-none">Cancel</AlertDialogCancel><AlertDialogAction disabled={busy} onClick={(event)=>{event.preventDefault();void deleteRecord()}} className="rounded-none border-[3px] border-[#111] bg-[#ef4444] px-5 py-2.5 font-mono text-[9px] font-black uppercase text-white shadow-[3px_3px_0_#111] hover:bg-[#dc2626]">{busy?'Deleting…':'Delete permanently'}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div>
     </div>
 
     <div className="hidden h-[720px] min-h-0 overflow-hidden border-[3px] border-[#111] bg-white shadow-[7px_7px_0_#111] lg:block xl:h-[calc(100dvh-12rem)] xl:min-h-[720px] xl:max-h-[980px]">
