@@ -455,6 +455,34 @@ app.patch('/api/v1/entitlements/:id', async (c) => {
   return c.json(await patchRow(c, 'entitlements', c.req.param('id'), body as Record<string, unknown>, { status: 'status', notes: 'notes' }, 'entitlement'))
 })
 
+app.delete('/api/v1/entitlements/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const before = first<Row>(await db.execute({ sql: 'SELECT * FROM entitlements WHERE id=?', args: [recordId] }))
+  if (!before) throw new ApiError(404, 'entitlement_not_found', 'Entitlement not found.')
+
+  const blockers = first<Row>(await db.execute({
+    sql: `SELECT
+      (SELECT COUNT(*) FROM deployments WHERE entitlement_id=?) AS deployments_count,
+      (SELECT COUNT(*) FROM entitlement_addons WHERE entitlement_id=?) AS addons_count,
+      (SELECT COUNT(*) FROM license_issuances WHERE entitlement_id=?) AS deployment_licenses_count,
+      (SELECT COUNT(*) FROM organization_license_issuances WHERE entitlement_id=?) AS organization_licenses_count`,
+    args: [recordId, recordId, recordId, recordId],
+  }))
+  const blockerCount = ['deployments_count','addons_count','deployment_licenses_count','organization_licenses_count']
+    .reduce((sum, key) => sum + Number(blockers?.[key] ?? 0), 0)
+  if (blockerCount > 0) {
+    throw new ApiError(409, 'entitlement_has_provisioned_dependencies', 'This entitlement already has deployments, add-ons, or issued licenses. Remove or revoke those dependent records before deleting it.')
+  }
+
+  await db.batch([
+    { sql: 'DELETE FROM entitlement_license_scopes WHERE entitlement_id=?', args: [recordId] },
+    { sql: 'DELETE FROM entitlements WHERE id=?', args: [recordId] },
+    auditStatement(c, 'entitlement.delete', 'entitlement', recordId, String(before.customer_organization_id), null, before, null),
+  ], 'write')
+  return c.json({ deleted: true })
+})
+
 app.get('/api/v1/deployments', async (c) => {
   const entitlementId = c.req.query('entitlementId')
   const args: unknown[] = []
