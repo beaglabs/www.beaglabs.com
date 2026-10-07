@@ -32,6 +32,7 @@ const entitySchema = z.object({
   parentEntityId: z.string().nullable().optional(),
   websiteUrl: nullableUrl,
   linkedinUrl: nullableUrl,
+  logoUrl: nullableUrl,
   trackingStatus: z.string().trim().max(64).default('active'),
   summary: nullableText,
   tags: z.array(z.string()).default([]),
@@ -176,6 +177,7 @@ function logoForEntity(env: Bindings, row: Row): string | null {
 function withEntityArrays(row: Row, env?: Bindings) {
   return {
     ...row,
+    custom_logo_url: typeof row.logo_url === 'string' && row.logo_url.trim() ? row.logo_url.trim() : null,
     logo_url: env ? logoForEntity(env, row) : row.logo_url,
     tags: parseArray(row.tags_json),
     naics: parseArray(row.naics_json),
@@ -280,8 +282,8 @@ app.post('/api/v2/capture/entities', async (c) => {
       args: [recordId, legacyType(body.entityKind), body.legalName, body.displayName ?? null, body.uei ?? null, body.cageCode ?? null, body.domain ?? null, body.trackingStatus === 'inactive' ? 'inactive' : 'active', timestamp, timestamp],
     },
     {
-      sql: 'INSERT INTO crm_entity_profiles_v2 (organization_id,entity_kind,parent_organization_id,website_url,linkedin_url,tracking_status,summary,tags_json,naics_json,psc_json,small_business_programs_json,owner_oid,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-      args: [recordId, body.entityKind, body.parentEntityId ?? null, body.websiteUrl ?? null, body.linkedinUrl ?? null, body.trackingStatus, body.summary ?? null, JSON.stringify(body.tags), JSON.stringify(body.naics), JSON.stringify(body.psc), JSON.stringify(body.smallBusinessPrograms), c.get('admin').oid, timestamp, timestamp],
+      sql: 'INSERT INTO crm_entity_profiles_v2 (organization_id,entity_kind,parent_organization_id,website_url,linkedin_url,logo_url,tracking_status,summary,tags_json,naics_json,psc_json,small_business_programs_json,owner_oid,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      args: [recordId, body.entityKind, body.parentEntityId ?? null, body.websiteUrl ?? null, body.linkedinUrl ?? null, body.logoUrl ?? null, body.trackingStatus, body.summary ?? null, JSON.stringify(body.tags), JSON.stringify(body.naics), JSON.stringify(body.psc), JSON.stringify(body.smallBusinessPrograms), c.get('admin').oid, timestamp, timestamp],
     },
   ], 'write')
   return c.json({ id: recordId }, 201)
@@ -304,6 +306,59 @@ app.get('/api/v2/capture/entities/:id', async (c) => {
     db.execute({ sql: "SELECT * FROM crm_capture_references WHERE resource_type='entity' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
   ])
   return c.json({ ...withEntityArrays(entity, c.env), people: rows<Row>(people), pursuits: rows<Row>(pursuits).map(withTags), vehicles: rows<Row>(vehicles), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
+})
+
+app.put('/api/v2/capture/entities/:id', async (c) => {
+  const body = await parseBody(c, entitySchema)
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const existing = first<Row>(await db.execute({ sql: 'SELECT id FROM organizations WHERE id=?', args: [recordId] }))
+  if (!existing) return c.json({ error: 'entity_not_found', message: 'Entity not found.' }, 404)
+  if (body.parentEntityId === recordId) return c.json({ error: 'invalid_parent', message: 'An entity cannot be its own parent.' }, 422)
+  if (!(await recordExists(c, 'organizations', body.parentEntityId))) return c.json({ error: 'parent_not_found', message: 'Parent entity not found.' }, 404)
+
+  if (body.parentEntityId) {
+    let cursor: string | null = body.parentEntityId
+    const seen = new Set<string>()
+    for (let depth = 0; cursor && depth < 128; depth += 1) {
+      if (cursor === recordId) return c.json({ error: 'invalid_parent', message: 'Parent selection would create a circular entity hierarchy.' }, 422)
+      if (seen.has(cursor)) break
+      seen.add(cursor)
+      const parent = first<Row>(await db.execute({
+        sql: 'SELECT parent_organization_id FROM crm_entity_profiles_v2 WHERE organization_id=?',
+        args: [cursor],
+      }))
+      cursor = typeof parent?.parent_organization_id === 'string' ? parent.parent_organization_id : null
+    }
+  }
+
+  const timestamp = now()
+  await db.batch([
+    {
+      sql: 'UPDATE organizations SET organization_type=?,legal_name=?,display_name=?,uei=?,cage_code=?,domain=?,status=?,updated_at=? WHERE id=?',
+      args: [legacyType(body.entityKind), body.legalName, body.displayName ?? null, body.uei ?? null, body.cageCode ?? null, body.domain ?? null, body.trackingStatus === 'inactive' ? 'inactive' : 'active', timestamp, recordId],
+    },
+    {
+      sql: `INSERT INTO crm_entity_profiles_v2
+        (organization_id,entity_kind,parent_organization_id,website_url,linkedin_url,logo_url,tracking_status,summary,tags_json,naics_json,psc_json,small_business_programs_json,owner_oid,created_at,updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ON CONFLICT(organization_id) DO UPDATE SET
+          entity_kind=excluded.entity_kind,
+          parent_organization_id=excluded.parent_organization_id,
+          website_url=excluded.website_url,
+          linkedin_url=excluded.linkedin_url,
+          logo_url=excluded.logo_url,
+          tracking_status=excluded.tracking_status,
+          summary=excluded.summary,
+          tags_json=excluded.tags_json,
+          naics_json=excluded.naics_json,
+          psc_json=excluded.psc_json,
+          small_business_programs_json=excluded.small_business_programs_json,
+          updated_at=excluded.updated_at`,
+      args: [recordId, body.entityKind, body.parentEntityId ?? null, body.websiteUrl ?? null, body.linkedinUrl ?? null, body.logoUrl ?? null, body.trackingStatus, body.summary ?? null, JSON.stringify(body.tags), JSON.stringify(body.naics), JSON.stringify(body.psc), JSON.stringify(body.smallBusinessPrograms), c.get('admin').oid, timestamp, timestamp],
+    },
+  ], 'write')
+  return c.json({ id: recordId, updated: true })
 })
 
 app.delete('/api/v2/capture/entities/:id', async (c) => {
