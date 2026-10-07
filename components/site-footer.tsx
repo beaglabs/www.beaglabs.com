@@ -13,7 +13,7 @@ const footerColumns = [
   {
     title: 'Resources',
     links: [
-      { label: 'Papyrus', href: '/contact' },
+      { label: 'Papyrus', href: '/products/papyrus' },
       { label: 'Papyrus Trust Center', href: '/trust/papyrus' },
       { label: 'Blog', href: '/blog' },
       { label: 'Cookbook', href: '/cookbook' },
