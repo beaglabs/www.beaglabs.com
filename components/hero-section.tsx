@@ -28,7 +28,7 @@ export function HeroSection() {
 
           <div className="flex flex-wrap gap-4">
             <Link
-              href="/contact"
+              href="/products/papyrus"
               className="group inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-6 py-4 text-[13px] font-extrabold uppercase tracking-[0.07em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111]"
             >
               View Papyrus
