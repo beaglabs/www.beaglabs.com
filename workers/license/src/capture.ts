@@ -279,7 +279,7 @@ app.post('/api/v2/capture/entities', async (c) => {
   await db.batch([
     {
       sql: 'INSERT INTO organizations (id,organization_type,legal_name,display_name,uei,cage_code,domain,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
-      args: [recordId, legacyType(body.entityKind), body.legalName, body.displayName ?? null, body.uei ?? null, body.cageCode ?? null, body.domain ?? null, body.trackingStatus === 'inactive' ? 'inactive' : 'active', timestamp, timestamp],
+      args: [recordId, legacyType(body.entityKind), body.legalName, body.displayName ?? null, body.uei ?? null, body.cageCode ?? null, body.domain ?? null, ['inactive','archived'].includes(body.trackingStatus) ? 'inactive' : 'active', timestamp, timestamp],
     },
     {
       sql: 'INSERT INTO crm_entity_profiles_v2 (organization_id,entity_kind,parent_organization_id,website_url,linkedin_url,logo_url,tracking_status,summary,tags_json,naics_json,psc_json,small_business_programs_json,owner_oid,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
@@ -336,7 +336,7 @@ app.put('/api/v2/capture/entities/:id', async (c) => {
   await db.batch([
     {
       sql: 'UPDATE organizations SET organization_type=?,legal_name=?,display_name=?,uei=?,cage_code=?,domain=?,status=?,updated_at=? WHERE id=?',
-      args: [legacyType(body.entityKind), body.legalName, body.displayName ?? null, body.uei ?? null, body.cageCode ?? null, body.domain ?? null, body.trackingStatus === 'inactive' ? 'inactive' : 'active', timestamp, recordId],
+      args: [legacyType(body.entityKind), body.legalName, body.displayName ?? null, body.uei ?? null, body.cageCode ?? null, body.domain ?? null, ['inactive','archived'].includes(body.trackingStatus) ? 'inactive' : 'active', timestamp, recordId],
     },
     {
       sql: `INSERT INTO crm_entity_profiles_v2
