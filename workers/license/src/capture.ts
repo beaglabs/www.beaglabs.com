@@ -306,6 +306,56 @@ app.get('/api/v2/capture/entities/:id', async (c) => {
   return c.json({ ...withEntityArrays(entity, c.env), people: rows<Row>(people), pursuits: rows<Row>(pursuits).map(withTags), vehicles: rows<Row>(vehicles), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
 })
 
+app.delete('/api/v2/capture/entities/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const existing = first<Row>(await db.execute({ sql: 'SELECT id,legal_name,display_name FROM organizations WHERE id=?', args: [recordId] }))
+  if (!existing) return c.json({ error: 'entity_not_found', message: 'Entity not found.' }, 404)
+
+  const [captureFiles, crmFiles] = await Promise.all([
+    db.execute({ sql: "SELECT storage_key FROM crm_documents WHERE resource_type='entity' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] }),
+    db.execute({ sql: "SELECT storage_key FROM crm_attachments WHERE resource_type='organization' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] }),
+  ])
+
+  try {
+    await db.batch([
+      { sql: "DELETE FROM crm_documents WHERE resource_type='entity' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_capture_references WHERE resource_type='entity' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_references WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_attachments WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_record_people WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_activities WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: 'UPDATE marketplace_leads SET organization_id=NULL WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE marketplace_vm_customers SET organization_id=NULL WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE marketplace_leads SET contact_id=NULL WHERE contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE opportunities SET primary_contact_id=NULL WHERE primary_contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET primary_contact_id=NULL WHERE primary_contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET billing_contact_id=NULL WHERE billing_contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'DELETE FROM contacts WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE opportunities SET originating_partner_id=NULL WHERE originating_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE opportunities SET transacting_partner_id=NULL WHERE transacting_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET originating_partner_id=NULL WHERE originating_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET transacting_partner_id=NULL WHERE transacting_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'DELETE FROM partners WHERE organization_id=?', args: [recordId] },
+      { sql: 'DELETE FROM organization_vehicles WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE vehicles SET holder_organization_id=NULL WHERE holder_organization_id=?', args: [recordId] },
+      { sql: 'DELETE FROM organizations WHERE id=?', args: [recordId] },
+    ], 'write')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (/foreign key/i.test(message)) {
+      return c.json({ error: 'entity_has_protected_records', message: 'This entity is still tied to commercial or licensing records. Remove those dependent records first.' }, 409)
+    }
+    throw error
+  }
+
+  if (c.env.CRM_ATTACHMENTS) {
+    const keys = [...rows<Row>(captureFiles), ...rows<Row>(crmFiles)].map((row) => String(row.storage_key || '')).filter(Boolean)
+    await Promise.all(keys.map((key) => c.env.CRM_ATTACHMENTS!.delete(key)))
+  }
+  return c.json({ deleted: true })
+})
+
 app.get('/api/v2/capture/vehicles', async (c) => {
   const result = await getDb(c.env).execute(
     "SELECT v.*,COALESCE(vp.vehicle_kind,v.vehicle_type) AS vehicle_kind,vp.owner_entity_id,vp.managing_entity_id,vp.source_url,vp.source_system,vp.ceiling_cents,vp.ordering_end_date,vp.summary,vp.tags_json," +
@@ -368,6 +418,37 @@ app.post('/api/v2/capture/vehicles/:id/entities', async (c) => {
   return c.json({ linked: true }, 201)
 })
 
+app.delete('/api/v2/capture/vehicles/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const existing = first<Row>(await db.execute({ sql: 'SELECT id,vehicle_name FROM vehicles WHERE id=?', args: [recordId] }))
+  if (!existing) return c.json({ error: 'vehicle_not_found', message: 'Vehicle not found.' }, 404)
+
+  const [captureFiles, crmFiles] = await Promise.all([
+    db.execute({ sql: "SELECT storage_key FROM crm_documents WHERE resource_type='vehicle' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] }),
+    db.execute({ sql: "SELECT storage_key FROM crm_attachments WHERE resource_type='vehicle' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] }),
+  ])
+
+  await db.batch([
+    { sql: "DELETE FROM crm_documents WHERE resource_type='vehicle' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_capture_references WHERE resource_type='vehicle' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_references WHERE resource_type='vehicle' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_attachments WHERE resource_type='vehicle' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_record_people WHERE resource_type='vehicle' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_activities WHERE resource_type='vehicle' AND resource_id=?", args: [recordId] },
+    { sql: 'UPDATE opportunities SET vehicle_id=NULL WHERE vehicle_id=?', args: [recordId] },
+    { sql: 'UPDATE orders SET vehicle_id=NULL WHERE vehicle_id=?', args: [recordId] },
+    { sql: 'DELETE FROM organization_vehicles WHERE vehicle_id=?', args: [recordId] },
+    { sql: 'DELETE FROM vehicles WHERE id=?', args: [recordId] },
+  ], 'write')
+
+  if (c.env.CRM_ATTACHMENTS) {
+    const keys = [...rows<Row>(captureFiles), ...rows<Row>(crmFiles)].map((row) => String(row.storage_key || '')).filter(Boolean)
+    await Promise.all(keys.map((key) => c.env.CRM_ATTACHMENTS!.delete(key)))
+  }
+  return c.json({ deleted: true })
+})
+
 app.get('/api/v2/capture/pursuits', async (c) => {
   const result = await getDb(c.env).execute(
     "SELECT p.*,COALESCE(e.display_name,e.legal_name) AS target_entity_name,v.vehicle_name AS vehicle_name," +
@@ -411,6 +492,30 @@ app.get('/api/v2/capture/pursuits/:id', async (c) => {
     db.execute({ sql: "SELECT * FROM crm_capture_references WHERE resource_type='pursuit' AND resource_id=? ORDER BY created_at DESC", args: [recordId] }),
   ])
   return c.json({ ...withTags(pursuit), entities: rows<Row>(entities), people: rows<Row>(people), submissions: rows<Row>(submissions), engagements: rows<Row>(engagements), documents: rows<Row>(documents), references: rows<Row>(references) })
+})
+
+app.delete('/api/v2/capture/pursuits/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const existing = first<Row>(await db.execute({ sql: 'SELECT id,title FROM crm_pursuits WHERE id=?', args: [recordId] }))
+  if (!existing) return c.json({ error: 'pursuit_not_found', message: 'Pursuit not found.' }, 404)
+
+  const files = await db.execute({
+    sql: "SELECT storage_key FROM crm_documents WHERE storage_key IS NOT NULL AND ((resource_type='pursuit' AND resource_id=?) OR (resource_type='submission' AND resource_id IN (SELECT id FROM crm_submissions WHERE pursuit_id=?)))",
+    args: [recordId, recordId],
+  })
+
+  await db.batch([
+    { sql: "DELETE FROM crm_documents WHERE (resource_type='pursuit' AND resource_id=?) OR (resource_type='submission' AND resource_id IN (SELECT id FROM crm_submissions WHERE pursuit_id=?))", args: [recordId, recordId] },
+    { sql: "DELETE FROM crm_capture_references WHERE resource_type='pursuit' AND resource_id=?", args: [recordId] },
+    { sql: 'DELETE FROM crm_pursuits WHERE id=?', args: [recordId] },
+  ], 'write')
+
+  if (c.env.CRM_ATTACHMENTS) {
+    const keys = rows<Row>(files).map((row) => String(row.storage_key || '')).filter(Boolean)
+    await Promise.all(keys.map((key) => c.env.CRM_ATTACHMENTS!.delete(key)))
+  }
+  return c.json({ deleted: true })
 })
 
 app.post('/api/v2/capture/pursuits/:id/entities', async (c) => {
