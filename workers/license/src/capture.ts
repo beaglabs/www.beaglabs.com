@@ -324,11 +324,11 @@ app.put('/api/v2/capture/entities/:id', async (c) => {
       if (cursor === recordId) return c.json({ error: 'invalid_parent', message: 'Parent selection would create a circular entity hierarchy.' }, 422)
       if (seen.has(cursor)) break
       seen.add(cursor)
-      const parent = first<Row>(await db.execute({
+      const parentRow: Row | null = first<Row>(await db.execute({
         sql: 'SELECT parent_organization_id FROM crm_entity_profiles_v2 WHERE organization_id=?',
         args: [cursor],
-      }))
-      cursor = typeof parent?.parent_organization_id === 'string' ? parent.parent_organization_id : null
+      })) ?? null
+      cursor = typeof parentRow?.parent_organization_id === 'string' ? parentRow.parent_organization_id : null
     }
   }
 
