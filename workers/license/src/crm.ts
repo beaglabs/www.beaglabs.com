@@ -391,6 +391,28 @@ app.patch('/api/v2/crm/people/:id', async (c) => {
   return c.json(decorate(after))
 })
 
+app.delete('/api/v2/crm/people/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const before = first<Row>(await db.execute({ sql: 'SELECT * FROM crm_people WHERE id=?', args: [recordId] }))
+  if (!before) return c.json({ error: 'person_not_found', message: 'Person not found.' }, 404)
+  const files = await db.execute({ sql: "SELECT storage_key FROM crm_attachments WHERE resource_type='person' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] })
+
+  await db.batch([
+    { sql: "DELETE FROM crm_attachments WHERE resource_type='person' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_references WHERE resource_type='person' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_record_people WHERE person_id=? OR (resource_type='person' AND resource_id=?)", args: [recordId, recordId] },
+    { sql: "DELETE FROM crm_activities WHERE person_id=? OR (resource_type='person' AND resource_id=?)", args: [recordId, recordId] },
+    { sql: 'DELETE FROM crm_people WHERE id=?', args: [recordId] },
+  ], 'write')
+
+  if (c.env.CRM_ATTACHMENTS) {
+    await Promise.all(rows<Row>(files).map((row) => String(row.storage_key || '')).filter(Boolean).map((key) => c.env.CRM_ATTACHMENTS!.delete(key)))
+  }
+  await audit(c, 'crm.person.delete', 'person', recordId, String(before.organization_id ?? '') || null, before, null)
+  return c.json({ deleted: true })
+})
+
 app.post('/api/v2/crm/people/:id/refresh-avatar', async (c) => {
   const db = getDb(c.env)
   const recordId = c.req.param('id')
@@ -506,6 +528,74 @@ app.patch('/api/v2/crm/customers/:id', async (c) => {
   return c.json({ ...after, tags: jsonArray(after?.tags_json) })
 })
 
+app.delete('/api/v2/crm/customers/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const before = first<Row>(await db.execute({ sql: 'SELECT * FROM organizations WHERE id=?', args: [recordId] }))
+  if (!before) return c.json({ error: 'customer_not_found', message: 'Customer not found.' }, 404)
+
+  const protectedRecords = first<Row>(await db.execute({
+    sql: `SELECT
+      (SELECT COUNT(*) FROM orders WHERE customer_organization_id=? OR purchaser_organization_id=?) AS orders_count,
+      (SELECT COUNT(*) FROM entitlements WHERE customer_organization_id=?) AS entitlements_count,
+      (SELECT COUNT(*) FROM deployments WHERE customer_organization_id=?) AS deployments_count,
+      (SELECT COUNT(*) FROM organization_license_issuances WHERE organization_id=?) AS organization_licenses_count,
+      (SELECT COUNT(*) FROM entitlement_license_scopes WHERE organization_id=?) AS license_scopes_count`,
+    args: [recordId, recordId, recordId, recordId, recordId, recordId],
+  }))
+  const blockerCount = ['orders_count','entitlements_count','deployments_count','organization_licenses_count','license_scopes_count']
+    .reduce((sum, key) => sum + Number(protectedRecords?.[key] ?? 0), 0)
+  if (blockerCount > 0) {
+    return c.json({ error: 'customer_has_protected_records', message: 'This organization has commercial or licensing records. Remove those dependent records before deleting it.' }, 409)
+  }
+
+  const [crmFiles, captureFiles] = await Promise.all([
+    db.execute({ sql: "SELECT storage_key FROM crm_attachments WHERE resource_type='organization' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] }),
+    db.execute({ sql: "SELECT storage_key FROM crm_documents WHERE resource_type='entity' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] }),
+  ])
+
+  try {
+    await db.batch([
+      { sql: "DELETE FROM crm_attachments WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_references WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_record_people WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_activities WHERE resource_type='organization' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_documents WHERE resource_type='entity' AND resource_id=?", args: [recordId] },
+      { sql: "DELETE FROM crm_capture_references WHERE resource_type='entity' AND resource_id=?", args: [recordId] },
+      { sql: 'UPDATE orders SET opportunity_id=NULL WHERE opportunity_id IN (SELECT id FROM opportunities WHERE customer_organization_id=?)', args: [recordId] },
+      { sql: 'DELETE FROM opportunities WHERE customer_organization_id=?', args: [recordId] },
+      { sql: 'UPDATE marketplace_leads SET organization_id=NULL WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE marketplace_vm_customers SET organization_id=NULL WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE marketplace_leads SET contact_id=NULL WHERE contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE opportunities SET primary_contact_id=NULL WHERE primary_contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET primary_contact_id=NULL WHERE primary_contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET billing_contact_id=NULL WHERE billing_contact_id IN (SELECT id FROM contacts WHERE organization_id=?)', args: [recordId] },
+      { sql: 'DELETE FROM contacts WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE opportunities SET originating_partner_id=NULL WHERE originating_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE opportunities SET transacting_partner_id=NULL WHERE transacting_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET originating_partner_id=NULL WHERE originating_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'UPDATE orders SET transacting_partner_id=NULL WHERE transacting_partner_id IN (SELECT id FROM partners WHERE organization_id=?)', args: [recordId] },
+      { sql: 'DELETE FROM partners WHERE organization_id=?', args: [recordId] },
+      { sql: 'DELETE FROM organization_vehicles WHERE organization_id=?', args: [recordId] },
+      { sql: 'UPDATE vehicles SET holder_organization_id=NULL WHERE holder_organization_id=?', args: [recordId] },
+      { sql: 'DELETE FROM organizations WHERE id=?', args: [recordId] },
+    ], 'write')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (/foreign key/i.test(message)) {
+      return c.json({ error: 'customer_has_protected_records', message: 'This organization is still referenced by another protected record.' }, 409)
+    }
+    throw error
+  }
+
+  if (c.env.CRM_ATTACHMENTS) {
+    const keys = [...rows<Row>(crmFiles), ...rows<Row>(captureFiles)].map((row) => String(row.storage_key || '')).filter(Boolean)
+    await Promise.all(keys.map((key) => c.env.CRM_ATTACHMENTS!.delete(key)))
+  }
+  await audit(c, 'crm.customer.delete', 'organization', recordId, recordId, before, null)
+  return c.json({ deleted: true })
+})
+
 app.get('/api/v2/crm/opportunities', async (c) => {
   const result = await getDb(c.env).execute({
     sql: `SELECT op.*,COALESCE(o.display_name,o.legal_name) AS customer_name,
@@ -574,6 +664,29 @@ app.patch('/api/v2/crm/opportunities/:id', async (c) => {
   return c.json(after)
 })
 
+app.delete('/api/v2/crm/opportunities/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const before = first<Row>(await db.execute({ sql: 'SELECT * FROM opportunities WHERE id=?', args: [recordId] }))
+  if (!before) return c.json({ error: 'opportunity_not_found', message: 'Opportunity not found.' }, 404)
+  const files = await db.execute({ sql: "SELECT storage_key FROM crm_attachments WHERE resource_type='opportunity' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] })
+
+  await db.batch([
+    { sql: "DELETE FROM crm_attachments WHERE resource_type='opportunity' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_references WHERE resource_type='opportunity' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_record_people WHERE resource_type='opportunity' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_activities WHERE resource_type='opportunity' AND resource_id=?", args: [recordId] },
+    { sql: 'UPDATE orders SET opportunity_id=NULL WHERE opportunity_id=?', args: [recordId] },
+    { sql: 'DELETE FROM opportunities WHERE id=?', args: [recordId] },
+  ], 'write')
+
+  if (c.env.CRM_ATTACHMENTS) {
+    await Promise.all(rows<Row>(files).map((row) => String(row.storage_key || '')).filter(Boolean).map((key) => c.env.CRM_ATTACHMENTS!.delete(key)))
+  }
+  await audit(c, 'crm.opportunity.delete', 'opportunity', recordId, String(before.customer_organization_id), before, null)
+  return c.json({ deleted: true })
+})
+
 app.get('/api/v2/crm/orders', async (c) => {
   const result = await getDb(c.env).execute({
     sql: `SELECT ord.*,COALESCE(o.display_name,o.legal_name) AS customer_name,
@@ -630,6 +743,36 @@ app.patch('/api/v2/crm/orders/:id', async (c) => {
   const after = first<Row>(await db.execute({ sql: 'SELECT * FROM orders WHERE id=?', args: [recordId] }))
   await audit(c, 'crm.order.update', 'order', recordId, String(before.customer_organization_id), before, after)
   return c.json(after)
+})
+
+app.delete('/api/v2/crm/orders/:id', async (c) => {
+  const db = getDb(c.env)
+  const recordId = c.req.param('id')
+  const before = first<Row>(await db.execute({ sql: 'SELECT * FROM orders WHERE id=?', args: [recordId] }))
+  if (!before) return c.json({ error: 'order_not_found', message: 'Order not found.' }, 404)
+  const entitlementCount = first<Row>(await db.execute({
+    sql: 'SELECT COUNT(*) AS count FROM entitlements WHERE order_item_id IN (SELECT id FROM order_items WHERE order_id=?)',
+    args: [recordId],
+  }))
+  if (Number(entitlementCount?.count ?? 0) > 0) {
+    return c.json({ error: 'order_has_entitlements', message: 'This order has issued entitlements. Revoke or remove the licensing records before deleting the order.' }, 409)
+  }
+  const files = await db.execute({ sql: "SELECT storage_key FROM crm_attachments WHERE resource_type='order' AND resource_id=? AND storage_key IS NOT NULL", args: [recordId] })
+
+  await db.batch([
+    { sql: "DELETE FROM crm_attachments WHERE resource_type='order' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_references WHERE resource_type='order' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_record_people WHERE resource_type='order' AND resource_id=?", args: [recordId] },
+    { sql: "DELETE FROM crm_activities WHERE resource_type='order' AND resource_id=?", args: [recordId] },
+    { sql: 'DELETE FROM order_items WHERE order_id=?', args: [recordId] },
+    { sql: 'DELETE FROM orders WHERE id=?', args: [recordId] },
+  ], 'write')
+
+  if (c.env.CRM_ATTACHMENTS) {
+    await Promise.all(rows<Row>(files).map((row) => String(row.storage_key || '')).filter(Boolean).map((key) => c.env.CRM_ATTACHMENTS!.delete(key)))
+  }
+  await audit(c, 'crm.order.delete', 'order', recordId, String(before.customer_organization_id), before, null)
+  return c.json({ deleted: true })
 })
 
 app.get('/api/v2/crm/references', async (c) => {
