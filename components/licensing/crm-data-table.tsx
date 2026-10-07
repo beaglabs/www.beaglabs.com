@@ -1,8 +1,19 @@
 "use client"
 
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Search, SlidersHorizontal } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Search, SlidersHorizontal, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import {
   Table,
   TableBody,
@@ -28,6 +39,8 @@ export function CrmDataTable<T>({
   searchPlaceholder = 'Search records…',
   empty = 'No records yet.',
   onRowClick,
+  onDeleteRow,
+  deleteLabel,
   pageSize = 12,
 }: {
   rows: T[]
@@ -37,6 +50,8 @@ export function CrmDataTable<T>({
   searchPlaceholder?: string
   empty?: string
   onRowClick?: (row: T) => void
+  onDeleteRow?: (row: T) => Promise<void> | void
+  deleteLabel?: (row: T) => string
   pageSize?: number
 }) {
   const [query, setQuery] = useState('')
@@ -114,6 +129,7 @@ export function CrmDataTable<T>({
                 </TableHead>
               )
             })}
+            {onDeleteRow ? <TableHead className="h-11 w-[86px] px-4 text-right font-mono text-[9px] font-black uppercase tracking-[0.12em] text-white">Actions</TableHead> : null}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -131,10 +147,40 @@ export function CrmDataTable<T>({
                   {column.render(row)}
                 </TableCell>
               ))}
+              {onDeleteRow ? <TableCell className={`${compact ? 'px-4 py-2' : 'px-4 py-4'} text-right`}>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label={`Delete ${deleteLabel?.(row) ?? 'record'}`}
+                      onClick={(event) => event.stopPropagation()}
+                      onKeyDown={(event) => event.stopPropagation()}
+                      className="inline-flex h-9 w-9 items-center justify-center border-2 border-[#111] bg-[#fee2e2] shadow-[2px_2px_0_#111] hover:bg-[#fecaca]"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[7px_7px_0_#111]">
+                    <AlertDialogHeader className="border-b-[3px] border-[#111] bg-[#fee2e2] p-6">
+                      <AlertDialogTitle>Delete {deleteLabel?.(row) ?? 'record'}?</AlertDialogTitle>
+                      <AlertDialogDescription>This permanently removes this record and its owned CRM links. Protected licensing or commercial dependencies will block deletion.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="p-5">
+                      <AlertDialogCancel className="nb-btn-white rounded-none">Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={(event) => { event.stopPropagation(); void onDeleteRow(row) }}
+                        className="rounded-none border-[3px] border-[#111] bg-[#ef4444] px-5 py-2.5 font-mono text-[9px] font-black uppercase text-white shadow-[3px_3px_0_#111] hover:bg-[#dc2626]"
+                      >
+                        Delete permanently
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </TableCell> : null}
             </TableRow>
           )) : (
             <TableRow className="border-b-0">
-              <TableCell colSpan={columns.length} className="h-32 text-center text-[13px] font-semibold text-[#777]">{empty}</TableCell>
+              <TableCell colSpan={columns.length + (onDeleteRow ? 1 : 0)} className="h-32 text-center text-[13px] font-semibold text-[#777]">{empty}</TableCell>
             </TableRow>
           )}
         </TableBody>
