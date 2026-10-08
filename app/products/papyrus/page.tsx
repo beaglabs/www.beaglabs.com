@@ -25,9 +25,9 @@ export const metadata: Metadata = {
   ...baseMetadata,
   openGraph: {
     ...baseMetadata.openGraph,
-    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-06-brand-fonts`, width: 1200, height: 630, alt: 'Papyrus: The Agentic Modernization Factory. Document automation, internal apps, and legacy system enablement.', type: 'image/png' }],
+    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-08-workers-safe`, width: 1200, height: 630, alt: 'Papyrus: The Agentic Modernization Factory. Document automation, internal apps, and legacy system enablement.', type: 'image/png' }],
   },
-  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-06-brand-fonts`] },
+  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-08-workers-safe`] },
 }
 
 const outcomes = [
