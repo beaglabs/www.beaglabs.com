@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { Navbar } from '@/components/navbar'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
@@ -54,6 +55,7 @@ export default function SupportPage() {
       <section className="overflow-hidden border-b-[3px] border-[#111] pt-16">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
           <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
+            <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Support', url: '/support' }]} />
             <p className="nb-label mb-5 inline-block">Papyrus support</p>
             <h1 className="max-w-[760px] text-[52px] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
               Support starts with the right channel.
