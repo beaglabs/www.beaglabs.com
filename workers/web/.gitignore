@@ -1,7 +1,5 @@
 node_modules/
-.next/
+.cloudflare/
 .vite/
 dist/
-.cloudflare/
-*.tsbuildinfo
 .env*
