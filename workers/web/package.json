@@ -10,7 +10,8 @@
     "deploy": "vinext-cloudflare deploy",
     "check": "vinext check",
     "setup:cloudflare": "vinext init --platform=cloudflare",
-    "inspect:output": "node -e \"const fs=require('node:fs');for(const p of ['dist/server/wrangler.json','dist/client/wrangler.json','dist/server/index.js']) console.log(p,fs.existsSync(p)?'FOUND':'MISSING')\""
+    "inspect:output": "node -e \"const fs=require('node:fs');for(const p of ['dist/server/wrangler.json','dist/client/wrangler.json','dist/server/index.js']) console.log(p,fs.existsSync(p)?'FOUND':'MISSING')\"",
+    "verify:deploy": "node scripts/verify-deployment.mjs"
   },
   "dependencies": {
     "next": "^16.3.6",
