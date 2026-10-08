@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "next": "^16.3.6",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "vinext": "latest",
     "@vinext/cloudflare": "latest",
-    "react-server-dom-webpack": "latest"
+    "react-server-dom-webpack": "^19.2.6"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^2.0.0",
+    "@cloudflare/vite-plugin": "latest",
     "@vitejs/plugin-rsc": "latest",
     "@vitejs/plugin-react": "latest",
     "cf": "latest",
