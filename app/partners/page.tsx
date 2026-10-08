@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { ContactForm } from '@/components/contact-form'
 import { Navbar } from '@/components/navbar'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 import { PartnerProgram } from '@/components/partner-program'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
@@ -25,6 +26,7 @@ export default function PartnersPage() {
         <section className="nb-section-divider bg-[#FAFAF9] px-6 pt-28 pb-16 lg:px-9 lg:pt-32 lg:pb-20">
           <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
+              <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Partners', url: '/partners' }]} />
               <span className="nb-label mb-5 inline-block">Partners</span>
               <h1 className="max-w-[760px] text-[32px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[42px]">
                 Partner with Beag Labs.
