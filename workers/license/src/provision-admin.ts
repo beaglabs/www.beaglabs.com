@@ -147,7 +147,48 @@ app.get('/api/v1/provisioned-accounts', async (c) => {
         : null,
     }
   })
-  return c.json({ items })
+  // Partner Center can report a VM before its owner completes /provision onboarding.
+  // Include those organizations without fabricating a portal session or starting a trial on sign-in.
+  const marketplaceOnly = rows<Row>(await getDb(c.env).execute(`
+    SELECT
+      m.organization_id,
+      NULL AS oid,
+      NULL AS email,
+      NULL AS display_name,
+      'commercial' AS environment,
+      NULL AS tenant_id,
+      MIN(m.first_seen_at) AS first_session_at,
+      MAX(m.last_seen_at) AS last_seen_at,
+      o.legal_name,
+      o.display_name AS organization_display_name,
+      o.domain,
+      o.organization_type,
+      o.status AS organization_status,
+      NULL AS logo_source,
+      o.domain AS primary_domain,
+      NULL AS account_manager_name,
+      NULL AS account_manager_email,
+      (SELECT COUNT(*) FROM managed_deployments md WHERE md.organization_id=o.id AND md.status!='retired') AS deployment_count,
+      MIN(m.first_seen_at) AS marketplace_trial_started_at,
+      COALESCE(MAX(NULLIF(m.trial_end_date,'')),strftime('%Y-%m-%dT%H:%M:%fZ',MIN(m.first_seen_at),'+1 month')) AS marketplace_trial_ends_at,
+      MAX(m.sku) AS marketplace_plan
+    FROM marketplace_vm_customers m
+    JOIN organizations o ON o.id=m.organization_id
+    WHERE m.organization_id IS NOT NULL
+      AND NOT EXISTS (SELECT 1 FROM provision_portal_sessions ps WHERE ps.organization_id=m.organization_id)
+    GROUP BY m.organization_id
+  `)).map((row) => {
+    const end = row.marketplace_trial_ends_at ? Date.parse(String(row.marketplace_trial_ends_at)) : NaN
+    return {
+      ...row,
+      marketplace_trial_status: Number.isFinite(end) ? (end > Date.now() ? 'active' : 'ended') : null,
+      marketplace_trial_days_remaining: Number.isFinite(end) ? Math.max(0, Math.ceil((end - Date.now()) / 86_400_000)) : null,
+      logo_url: null,
+      source: 'marketplace',
+    }
+  })
+  return c.json({ items: [...items, ...marketplaceOnly].sort((a, b) =>
+    Date.parse(String(b.last_seen_at ?? '')) - Date.parse(String(a.last_seen_at ?? ''))) })
 })
 
 app.get('/api/v1/provisioned-accounts/:organizationId/logo', async (c) => {
