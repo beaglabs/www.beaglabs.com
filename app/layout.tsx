@@ -24,22 +24,22 @@ const robotoCondensed = Roboto_Condensed({
 })
 
 const homeDescription =
-  'We develop tools and infrastructure aligned with frameworks like NIST AI RMF to help high-trust organizations get commercial-level agent capabilities on their own infrastructure.'
+  'Beag Labs helps teams automate documents, create internal apps and modernize legacy workflows with customer-hosted agentic software.'
 
 const homeOgImage = ogImageUrl({
-  title: 'Mission-Ready Agentic Dominance',
+  title: 'Solving the boring problems.',
   description: homeDescription,
-  label: 'Custom AI. On Your Infra.',
+  label: 'Document Automation · Internal Apps · Modernization',
 })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs — Small models for government and high-trust industries. Deployable anywhere.',
+    default: 'Beag Labs — Document Automation, Internal Apps & Modernization',
   },
   description:
-    'Small models for government and high-trust industries. Deployable anywhere.',
+    homeDescription,
   alternates: {
     canonical: '/',
   },
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Mission-Ready Agentic Dominance — Beag Labs',
+    title: 'Solving the boring problems. — Beag Labs',
     description: homeDescription,
     url: 'https://www.beaglabs.com',
     siteName: 'Beag Labs',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
         url: homeOgImage,
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Mission-Ready Agentic Dominance',
+        alt: 'Beag Labs — Solving the boring problems.',
         type: 'image/png',
       },
     ],
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mission-Ready Agentic Dominance — Beag Labs',
+    title: 'Solving the boring problems. — Beag Labs',
     description: homeDescription,
     images: [homeOgImage],
     creator: '@beaglabs',
@@ -79,16 +79,15 @@ const organizationJsonLd = {
   name: 'Beag Labs',
   url: 'https://www.beaglabs.com',
   logo: 'https://www.beaglabs.com/favicon.png',
-  description:
-    'Small models for government and high-trust industries. Deployable anywhere.',
+  description: homeDescription,
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [
-    'Small language models',
-    'Domain-specific AI',
-    'On-premises AI deployment',
-    'Fine-tuning',
-    'Data labeling',
-    'Model distillation',
+    'AI document automation',
+    'Agentic internal app factory',
+    'Agentic legacy modernization',
+    'COBOL and mainframe modernization',
+    'SOAP/XML to OpenAPI integration',
+    'Customer-hosted agentic software',
   ],
 }
 
