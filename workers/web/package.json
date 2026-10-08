@@ -1,35 +1,12 @@
 {
-  "name": "@beaglabs/web-worker",
+  "name": "@beaglabs/web-worker-launcher",
   "private": true,
-  "version": "0.1.0",
-  "type": "module",
+  "version": "0.2.0",
+  "description": "Commands for deploying the real repository-root Beag Labs app to Cloudflare Workers",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "deploy": "vinext-cloudflare deploy",
-    "check": "vinext check",
-    "setup:cloudflare": "vinext init --platform=cloudflare",
-    "inspect:output": "node -e \"const fs=require('node:fs');for(const p of ['dist/server/wrangler.json','dist/client/wrangler.json','dist/server/index.js']) console.log(p,fs.existsSync(p)?'FOUND':'MISSING')\"",
+    "check": "cd ../.. && npm run check:vinext",
+    "build": "cd ../.. && npm run build:vinext",
+    "deploy": "cd ../.. && npm run deploy:cloudflare",
     "verify:deploy": "node scripts/verify-deployment.mjs"
-  },
-  "dependencies": {
-    "next": "^16.3.6",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "vinext": "latest",
-    "@vinext/cloudflare": "latest",
-    "react-server-dom-webpack": "^19.2.6"
-  },
-  "devDependencies": {
-    "@cloudflare/vite-plugin": "beta",
-    "@vitejs/plugin-rsc": "latest",
-    "@vitejs/plugin-react": "latest",
-    "cf": "latest",
-    "vite": "^8.0.0",
-    "typescript": "^5.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@types/node": "^22.0.0"
   }
 }
