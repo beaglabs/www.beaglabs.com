@@ -108,5 +108,6 @@
     "@vitejs/plugin-react": "latest",
     "@cloudflare/vite-plugin": "beta",
     "cf": "latest"
-  }
+  },
+  "type": "module"
 }
