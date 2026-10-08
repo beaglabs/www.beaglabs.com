@@ -1,4 +1,4 @@
-const origin = process.argv[2] || process.env.WORKER_URL || 'https://beaglabs-web-real-preview.beag-labs.workers.dev/'
+const origin = process.argv[2] || process.env.WORKER_URL || 'https://beaglabs-web-preview-v2.beag-labs.workers.dev/'
 const base = new URL(origin)
 let failures = 0
 const pass = (ok, message) => {
