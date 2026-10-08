@@ -39,17 +39,17 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   return (
     <nav aria-label="Primary" className="fixed inset-x-0 z-50 border-b-[3px] border-[#111] bg-[#ff5f1f] text-[#111]" style={{ top: bannerHeight }}>
-      <div className="flex h-16 w-full items-center justify-between gap-3 px-3 lg:px-4">
+      <div className="flex h-16 w-full items-center gap-3 px-3 lg:px-4">
         <Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center text-[#111]">
           <span className="border-2 border-[#111] bg-[#111] px-2.5 py-1 text-[18px] font-extrabold tracking-[-.04em] text-white">B_</span>
         </Link>
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="ml-3 hidden items-center gap-3 md:flex">
           <NavigationMenu viewport={false}>
             <NavigationMenuList>
               {GROUPS.map(group => (
                 <NavigationMenuItem key={group.name}>
                   <NavigationMenuTrigger className={triggerClass}>{group.name}</NavigationMenuTrigger>
-                  <NavigationMenuContent className="!left-auto !right-0 !top-full !mt-2 !w-[min(88vw,440px)] !rounded-none !border-[3px] !border-[#111] !bg-white !p-2 !text-[#111] !shadow-[6px_6px_0_#111]">
+                  <NavigationMenuContent className="!left-0 !right-auto !top-full !mt-2 !w-[min(88vw,440px)] !rounded-none !border-[3px] !border-[#111] !bg-white !p-2 !text-[#111] !shadow-[6px_6px_0_#111]">
                     <ul className="grid gap-1 sm:grid-cols-2">
                       {group.links.map(link => (
                         <li key={link.href}>
@@ -68,7 +68,7 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <Link href="/products/papyrus" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-3 py-2 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] shadow-[3px_3px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#111] sm:px-4">
             <img src="/papyrus-logo.svg" alt="" className="h-4 w-4" /> See Papyrus
           </Link>
