@@ -6,7 +6,7 @@ import { BrutalistPhoto } from "@/components/brutalist-photo"
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#ff5f1f] pt-[calc(4rem+2.375rem)] text-[#111]">
-      <div aria-hidden="true" className="marketing-grid pointer-events-none absolute inset-0 opacity-60" />
+      <div aria-hidden="true" className="marketing-grid pointer-events-none absolute inset-0" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-[9%] hidden w-px bg-[#111]/20 lg:block" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-[34%] hidden w-px bg-[#111]/20 lg:block" />
 
