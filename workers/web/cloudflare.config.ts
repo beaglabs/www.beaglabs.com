@@ -1,13 +1,14 @@
 import { defineConfig, defineWorker } from 'cf/config'
 
-// The previous configuration had static assets but no executable entrypoint.
-// vinext supplies its own Fetch handler; let the Cloudflare build bundle it.
+// Serve matching static assets from Cloudflare Assets before invoking vinext.
+// The Worker entrypoint handles page routes; Worker-first routing for all URLs
+// would intercept _next CSS/JS requests without a working ASSETS fallback.
 export default defineConfig({
   worker: defineWorker({
     name: 'beaglabs-web-preview',
     entrypoint: 'vinext/server/fetch-handler',
     compatibilityDate: '2026-10-08',
     compatibilityFlags: ['nodejs_compat'],
-    assets: { runWorkerFirst: true },
+    assets: { runWorkerFirst: false },
   }),
 })
