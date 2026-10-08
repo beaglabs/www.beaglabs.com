@@ -17,6 +17,7 @@ npm run build
 ```sh
 cd workers/web
 npm install
+npx vinext check
 npx cf auth login
 # Or set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
 npm run deploy
@@ -32,3 +33,9 @@ The Worker is named `beaglabs-web-preview`. No production route or custom domain
 - The separate package and no-import design avoid the parent Next.js app's native `pg` / OG-image dependencies.
 - This repository change does not provision Cloudflare credentials or perform a deployment.
 - Once this passes, a full-site migration can be planned without impacting Vercel.
+
+## Troubleshooting dependency installation
+
+Run **`npm install`**, not `npm run install`: `install` is an npm command, not a script declared in this package. If the first install failed, `vinext` was never downloaded, so `vite build` reports `ERR_MODULE_NOT_FOUND`. The previously specified `@cloudflare/vite-plugin@^2.0.0` was unavailable from npm; the package now uses the published latest version. Re-run installation before building. If npm still resolves a stale package-lock from the monorepo root, remove only the failed local installation/lockfile after checking what is tracked, then retry.
+
+Cloudflare's current vinext installation guide recommends `npx vinext init --platform=cloudflare` for generating/updating the most compatible Worker configuration. If a Cloudflare-specific build error occurs after installing, run that initializer inside this isolated directory and review its changes before committing.
