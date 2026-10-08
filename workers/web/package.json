@@ -1,0 +1,32 @@
+{
+  "name": "@beaglabs/web-worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vinext-cloudflare deploy",
+    "check": "vinext check"
+  },
+  "dependencies": {
+    "next": "^16.3.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "vinext": "latest",
+    "@vinext/cloudflare": "latest",
+    "react-server-dom-webpack": "latest"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^2.0.0",
+    "@vitejs/plugin-rsc": "latest",
+    "@vitejs/plugin-react": "latest",
+    "cf": "latest",
+    "vite": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/node": "^22.0.0"
+  }
+}
