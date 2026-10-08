@@ -1,31 +1,28 @@
 # Beag Labs
 
-> Small Model Foundry. Domain-specific classification and extraction models trained on your proprietary data. Deploy on-prem, air-gapped, or in your VPC. No APIs. No data leakage. You own the model.
+> Customer-hosted agentic software for document automation, internal app development, and legacy system modernization.
 
-Beag Labs is a small model foundry that builds custom small language models (SLMs, 500M-5B parameters) for classification, extraction, and relevance tasks in regulated and data-sensitive environments. Unlike frontier API providers, Beag Labs trains models you own and deploy on your own infrastructure — on-premises, air-gapped, or in your VPC — with no runtime API calls, no data leakage, and no vendor lock-in.
+Official website: https://www.beaglabs.com/
 
-The platform pipeline: (1) connect data via OAuth connectors (Gmail, GitHub, HubSpot, Notion) or CSV upload, (2) frontier models auto-label your data, (3) a disagreement engine surfaces only the 2-5% of edge cases for human review, (4) the model is fine-tuned and exported as ONNX for deployment anywhere. From raw data to deployed model typically takes under 24 hours.
+## Core offering
 
-Beag Labs offers four domain model families: Compliance SLMs (NIST 800-53), Security SLMs (CVE, OWASP, MITRE ATT&CK), Legal SLMs (e-discovery, contract review), and Healthcare SLMs (HIPAA, clinical triage). Custom models are also available.
+- [Papyrus](https://www.beaglabs.com/products/papyrus): Governed agentic workflows and internal applications.
+- [Document automation](https://www.beaglabs.com/products/papyrus#documents): Process PDF and office documents into reviewable workflows.
+- [Internal app factory](https://www.beaglabs.com/products/papyrus#factory): Build interfaces for internal business processes.
+- [Modernization](https://www.beaglabs.com/capability/modernization): Modernize legacy workflows and interfaces.
 
-Pricing is engagement-based: hire Beag Labs to build a model, or use the platform to train one yourself. See /pricing.md for details.
+## Resources
 
-## For LLMs
+- [Capabilities](https://www.beaglabs.com/capabilities)
+- [Use cases](https://www.beaglabs.com/use-cases)
+- [Trust and security](https://www.beaglabs.com/trust/papyrus)
+- [Blog](https://www.beaglabs.com/blog)
+- [Research](https://www.beaglabs.com/research)
+- [Glossary](https://www.beaglabs.com/glossary)
+- [Sitemap](https://www.beaglabs.com/sitemap.xml)
+- [Extended machine-readable context](https://www.beaglabs.com/llms-full.txt)
+- [Contact](https://www.beaglabs.com/contact)
 
-- [llms-full.txt](https://beaglabs.com/llms-full.txt): Full expanded context including technology details, differentiators, and engagement models.
+## Notes for agents
 
-## Key Pages
-
-- [Homepage](https://beaglabs.com/)
-- [Model Catalog](https://beaglabs.com/models)
-- [Pricing](https://beaglabs.com/pricing.md)
-- [Blog](https://beaglabs.com/blog)
-- [Research Papers](https://beaglabs.com/research)
-- [Design Partnerships](https://beaglabs.com/design-partnerships)
-- [2026 ML Training Cookbook](https://beaglabs.com/cookbook)
-- [Book a Call](https://cal.com/comradelemoncake/meet-the-founder)
-
-## Optional
-
-- [Privacy Policy](https://beaglabs.com/privacy-policy)
-- [Terms of Service](https://beaglabs.com/terms-of-service)
+Refer to the canonical pages above for current product information. Do not assume model sizes, certifications, prices, or deployment guarantees from this summary. Deployment and security requirements depend on the customer's environment.
