@@ -1,14 +1,13 @@
-import { bindings, defineConfig, defineWorker } from 'cf/config'
+import { defineConfig, defineWorker } from 'cf/config'
 
-// Run the Worker for page requests; allow Cloudflare to serve immutable
-// _next assets. Without worker-first routing, '/' falls through to
-// the static assets layer and returns the empty 404 seen in production.
+// The previous configuration had static assets but no executable entrypoint.
+// vinext supplies its own Fetch handler; let the Cloudflare build bundle it.
 export default defineConfig({
   worker: defineWorker({
     name: 'beaglabs-web-preview',
+    entrypoint: 'vinext/server/fetch-handler',
     compatibilityDate: '2026-10-08',
     compatibilityFlags: ['nodejs_compat'],
     assets: { runWorkerFirst: true },
-    env: { ASSETS: bindings.assets() },
   }),
 })
