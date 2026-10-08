@@ -42,7 +42,7 @@ function text(row: Row, ...keys: string[]): string {
 }
 
 function initials(value: string): string {
-  const parts = value.trim().split(/s+/).filter(Boolean)
+  const parts = value.trim().split(/\s+/).filter(Boolean)
   return parts.slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'BL'
 }
 
@@ -176,6 +176,7 @@ export function ProvisionedAccountsTable() {
 
   const accountCount = rows.length
   const governmentCount = useMemo(() => rows.filter((row) => row.environment === 'government').length, [rows])
+  const activeTrialCount = useMemo(() => rows.filter((row) => row.marketplace_trial_status === 'active').length, [rows])
 
   if (checking) {
     return <div className="flex min-h-[420px] items-center justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>
@@ -200,6 +201,7 @@ export function ProvisionedAccountsTable() {
         <div className="flex flex-wrap gap-2">
           <span className="border-2 border-[#111] bg-white px-3 py-2 font-mono text-[9px] font-black uppercase">{accountCount} onboarded</span>
           <span className="border-2 border-[#111] bg-[#fff0a6] px-3 py-2 font-mono text-[9px] font-black uppercase">{governmentCount} government</span>
+          <span className="border-2 border-[#111] bg-[#d9f99d] px-3 py-2 font-mono text-[9px] font-black uppercase">{activeTrialCount} free trial</span>
         </div>
         <div className="flex gap-2">
           <button type="button" onClick={() => void load()} disabled={loading} className="nb-btn-white inline-flex items-center gap-2 px-3 py-2 font-mono text-[9px] font-black uppercase disabled:opacity-50"><RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh</button>
@@ -211,7 +213,7 @@ export function ProvisionedAccountsTable() {
         <table className="w-full min-w-[1080px] border-collapse text-left">
           <thead className="bg-[#111] text-white">
             <tr>
-              {['Organization', 'Person', 'Environment', 'Tenant', 'Deployments', 'Account Manager', 'Last seen', ''].map((label) => (
+              {['Organization', 'Person', 'Environment', 'Commercial status', 'Tenant', 'Deployments', 'Account Manager', 'Last seen', ''].map((label) => (
                 <th key={label} className="px-4 py-3 font-mono text-[9px] font-black uppercase tracking-[.11em]">{label}</th>
               ))}
             </tr>
@@ -220,6 +222,8 @@ export function ProvisionedAccountsTable() {
             {rows.map((row) => {
               const organizationName = text(row, 'organization_display_name', 'legal_name')
               const government = row.environment === 'government'
+              const activeTrial = row.marketplace_trial_status === 'active'
+              const endedTrial = row.marketplace_trial_status === 'ended'
               const activeLicense = Boolean(row.active_license_id) && (!row.active_license_expires_at || Date.parse(String(row.active_license_expires_at)) > Date.now())
               const busy = mintingOrg === String(row.organization_id)
               return (
@@ -235,6 +239,23 @@ export function ProvisionedAccountsTable() {
                   </td>
                   <td className="px-4 py-3"><div className="text-[12px] font-bold">{text(row, 'display_name')}</div><div className="mt-1 text-[10px] text-[#777]">{text(row, 'email')}</div></td>
                   <td className="px-4 py-3"><span className={`inline-flex border-2 border-[#111] px-2 py-1 font-mono text-[9px] font-black uppercase ${government ? 'bg-[#fff0a6]' : 'bg-[#d9f99d]'}`}>{text(row, 'environment')}</span>{activeLicense ? <div className="mt-2 font-mono text-[8px] font-black uppercase text-[#777]">Offline until {date(row.active_license_expires_at)}</div> : null}</td>
+                  <td className="px-4 py-3">
+                    {government ? (
+                      <span className="font-mono text-[9px] font-bold uppercase text-[#777]">Offline / contract</span>
+                    ) : activeTrial ? (
+                      <div>
+                        <span className="inline-flex border-2 border-[#111] bg-[#d9f99d] px-2 py-1 font-mono text-[9px] font-black uppercase">Free trial</span>
+                        <div className="mt-2 font-mono text-[8px] font-black uppercase text-[#777]">{Number(row.marketplace_trial_days_remaining ?? 0)} days left · ends {date(row.marketplace_trial_ends_at)}</div>
+                      </div>
+                    ) : endedTrial ? (
+                      <div>
+                        <span className="inline-flex border-2 border-[#111] bg-[#eee] px-2 py-1 font-mono text-[9px] font-black uppercase">Trial ended</span>
+                        <div className="mt-2 font-mono text-[8px] font-black uppercase text-[#777]">{date(row.marketplace_trial_ends_at)}</div>
+                      </div>
+                    ) : (
+                      <span className="font-mono text-[9px] font-bold uppercase text-[#777]">Marketplace</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 font-mono text-[10px]" title={text(row, 'tenant_id')}>{short(row.tenant_id)}</td>
                   <td className="px-4 py-3 text-[12px] font-extrabold">{Number(row.deployment_count ?? 0)}</td>
                   <td className="px-4 py-3"><div className="text-[11px] font-bold">{text(row, 'account_manager_name')}</div><div className="mt-1 text-[9px] text-[#777]">{text(row, 'account_manager_email')}</div></td>
@@ -270,7 +291,7 @@ export function ProvisionedAccountsTable() {
 
       <div className="mt-5 flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[.08em] text-[#777]">
         <CalendarClock className="h-3.5 w-3.5" />
-        The $250,000 SKU is now the 90-day offline/disconnected license. Connected Marketplace deployments remain usage-billed.
+        Commercial Marketplace accounts show the one-month free trial from first observed Marketplace activation. Microsoft remains the billing system of record. The $250,000 SKU is the 90-day offline/disconnected license.
       </div>
     </section>
   )
