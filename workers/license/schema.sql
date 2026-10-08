@@ -241,7 +241,7 @@ INSERT OR IGNORE INTO products (
   id, sku, name, description, product_family, term_type, provisioning_type,
   list_price_cents, default_features_json, allowed_profiles_json, active, created_at, updated_at
 ) VALUES
-  ('prod_pap_fed_pilot_90', 'PAP-FED-PILOT-90', 'Papyrus Federal 90-Day Mission Pilot', 'Fixed-price 90-day federal mission pilot.', 'papyrus', 'fixed_days', 'license', 25000000, '["core","teams","email","security-connectors","action-executors","agent-peers"]', '["commercial","government","disconnected"]', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  ('prod_pap_fed_pilot_90', 'PAP-FED-PILOT-90', 'Papyrus Offline — 90 Days', 'Fixed-price 90-day offline Papyrus license for restricted or disconnected government deployments.', 'papyrus', 'fixed_days', 'license', 25000000, '["core","teams","email","security-connectors","action-executors","agent-peers"]', '["disconnected"]', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('prod_pap_fed_ent_1y', 'PAP-FED-ENT-1Y', 'Papyrus Federal Enterprise — Annual', 'Annual Papyrus Federal enterprise entitlement.', 'papyrus', 'annual', 'license', NULL, '["core","teams","email","security-connectors","action-executors","agent-peers"]', '["commercial","government"]', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('prod_pap_fed_disc_1y', 'PAP-FED-DISC-1Y', 'Papyrus Federal Disconnected — Annual', 'Annual entitlement for disconnected or air-gapped Papyrus deployments.', 'papyrus', 'annual', 'license', NULL, '["core","email","security-connectors","action-executors","agent-peers"]', '["disconnected"]', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('prod_pap_fed_classification_1y', 'PAP-FED-CLASSIFICATION-1Y', 'Papyrus Classification Banner Capability — Annual', 'Order-backed classification marking capability for a Papyrus entitlement. Marking is selected by Beag when the add-on is attached.', 'papyrus', 'annual', 'service', NULL, '["classification-banners"]', '["government","disconnected"]', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -249,6 +249,6 @@ INSERT OR IGNORE INTO products (
 
 -- INSERT OR IGNORE preserves stable product IDs but does not update earlier seed rows.
 -- Keep the current commercial profile model authoritative on every migration.
-UPDATE products SET allowed_profiles_json='["commercial","government","disconnected"]', updated_at=CURRENT_TIMESTAMP WHERE sku='PAP-FED-PILOT-90';
+UPDATE products SET name='Papyrus Offline — 90 Days', description='Fixed-price 90-day offline Papyrus license for restricted or disconnected government deployments.', list_price_cents=25000000, allowed_profiles_json='["disconnected"]', updated_at=CURRENT_TIMESTAMP WHERE sku='PAP-FED-PILOT-90';
 UPDATE products SET allowed_profiles_json='["commercial","government"]', updated_at=CURRENT_TIMESTAMP WHERE sku='PAP-FED-ENT-1Y';
 UPDATE products SET allowed_profiles_json='["disconnected"]', updated_at=CURRENT_TIMESTAMP WHERE sku='PAP-FED-DISC-1Y';
