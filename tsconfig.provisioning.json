@@ -8,8 +8,10 @@
     "next-env.d.ts",
     "components/provision/**/*.tsx",
     "components/licensing/account-manager-admin.tsx",
+    "components/licensing/provisioned-accounts-table.tsx",
     "components/ui/avatar.tsx",
     "components/ui/dialog.tsx",
+    "components/ui/dropdown-menu.tsx",
     "lib/license-control-plane.ts",
     "lib/utils.ts"
   ],
