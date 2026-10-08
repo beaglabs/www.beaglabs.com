@@ -2,41 +2,30 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const footerColumns = [
-  {
-    title: 'Models',
-    links: [
-      { label: 'Overview', href: '/models' },
-      { label: 'Capabilities', href: '/#capabilities' },
-      { label: 'Training', href: '/training' },
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      { label: 'Papyrus', href: '/products/papyrus' },
-      { label: 'Papyrus Trust Center', href: '/trust/papyrus' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'Cookbook', href: '/cookbook' },
-      { label: 'Glossary', href: '/glossary' },
-      { label: 'Use Cases', href: '/use-cases' },
-      { label: 'Comparisons', href: '/compare' },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      { label: 'GitHub', href: 'https://github.com/beaglabs' },
-      { label: 'Contact', href: '/contact' },
-    ],
-  },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Terms of Service', href: '/terms-of-service' },
-      { label: 'Imprint', href: '/imprint' },
-    ],
-  },
+  { title: 'Solutions', links: [
+    { label: 'Document Automation', href: '/products/papyrus#documents' },
+    { label: 'Internal App Factory', href: '/products/papyrus#factory' },
+    { label: 'Agentic Modernization', href: '/capability/modernization' },
+    { label: 'All Capabilities', href: '/capabilities' },
+  ] },
+  { title: 'Explore', links: [
+    { label: 'Papyrus', href: '/products/papyrus' },
+    { label: 'Use Cases', href: '/use-cases' },
+    { label: 'Comparisons', href: '/compare' },
+    { label: 'Trust Center', href: '/trust/papyrus' },
+  ] },
+  { title: 'Resources', links: [
+    { label: 'Glossary', href: '/glossary' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Partners', href: '/partners' },
+    { label: 'Support', href: '/support' },
+  ] },
+  { title: 'Company & Legal', links: [
+    { label: 'Contact', href: '/contact' },
+    { label: 'Privacy', href: '/privacy-policy' },
+    { label: 'Terms', href: '/terms-of-service' },
+    { label: 'Imprint', href: '/imprint' },
+  ] },
 ]
 
 export function SiteFooter() {
@@ -45,7 +34,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-[1440px]">
         <div className="mb-12 border-b-[3px] border-[#111] pb-8">
           <div className="display-black max-w-[900px] text-[44px] leading-[0.95] sm:text-[58px] lg:text-[72px]">
-            Tools for a more secure tomorrow.
+            Documents to decisions. Legacy systems to modern apps.
           </div>
         </div>
 
@@ -60,7 +49,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="max-w-[280px] text-[14px] font-semibold leading-[1.7] text-[#222]">
-              Small models for government and high-trust industries. Deployable anywhere.
+              Customer-hosted agentic software for document automation, internal application creation and legacy modernization. Built for organizations that need control of their data and workflows.
             </p>
             <div className="mt-5 flex items-center gap-4">
               <a

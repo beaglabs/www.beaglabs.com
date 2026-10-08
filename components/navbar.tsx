@@ -17,12 +17,11 @@ const GROUPS = [
   ] },
   { name: 'Explore', links: [
     { title: 'Papyrus', href: '/products/papyrus', description: 'See the agentic modernization factory.' },
-    { title: 'Capabilities', href: '/capability/modernization', description: 'Explore technical capabilities.' },
+    { title: 'Capabilities', href: '/capabilities', description: 'Explore technical capabilities.' },
     { title: 'Trust & Security', href: '/trust/papyrus', description: 'Review the Papyrus trust model.' },
   ] },
   { name: 'Resources', links: [
     { title: 'Blog', href: '/blog', description: 'Ideas, announcements, and engineering notes.' },
-    { title: 'Training', href: '/training', description: 'Browse technical training resources.' },
     { title: 'Glossary', href: '/glossary', description: 'Understand the terminology.' },
     { title: 'Comparisons', href: '/compare', description: 'Compare approaches and technologies.' },
   ] },
