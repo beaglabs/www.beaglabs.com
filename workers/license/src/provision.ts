@@ -46,32 +46,32 @@ const AGREEMENTS: Record<PortalEnvironment, Array<{
   commercial: [
     {
       type: 'terms-of-service',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Commercial Terms of Service',
-      href: 'https://www.beaglabs.com/terms-of-service',
+      href: 'https://www.beaglabs.com/provision/commercial/terms',
       summary: 'Commercial product terms governing use of the Beag Labs provisioning service and Papyrus.',
     },
     {
       type: 'privacy-policy',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Privacy Policy',
-      href: 'https://www.beaglabs.com/privacy-policy',
+      href: 'https://www.beaglabs.com/provision/commercial/privacy',
       summary: 'How Beag Labs handles account, provisioning, support, and operational metadata.',
     },
   ],
   government: [
     {
       type: 'government-deployment-acknowledgment',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Government Deployment Acknowledgment',
-      href: 'https://www.beaglabs.com/terms-of-service',
+      href: 'https://www.beaglabs.com/provision/government/acknowledgment',
       summary: 'Deployment responsibilities and use acknowledgment. The applicable contract, order, OTA, or license controls if terms conflict.',
     },
     {
       type: 'privacy-policy',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Privacy & Data Handling Notice',
-      href: 'https://www.beaglabs.com/privacy-policy',
+      href: 'https://www.beaglabs.com/provision/government/privacy',
       summary: 'How Beag Labs handles provisioning and account metadata for connected government deployments.',
     },
   ],
@@ -627,14 +627,26 @@ app.get('/api/provision/bootstrap/status', async (c) => {
   const token = c.req.query('token')
   if (!token) throw new PortalError(422, 'token_required', 'Provisioning claim token is required.')
   const claim = first<Row>(await getDb(c.env).execute({
-    sql: 'SELECT claimed_at,expires_at FROM provisioning_claims WHERE token_hash=? LIMIT 1',
+    sql: `SELECT pc.claimed_at,pc.expires_at,ps.tenant_id,ps.organization_id,
+      COALESCE(o.display_name,o.legal_name) AS organization_name
+      FROM provisioning_claims pc
+      LEFT JOIN provision_portal_sessions ps ON ps.id=pc.claimed_by_session_id
+      LEFT JOIN organizations o ON o.id=ps.organization_id
+      WHERE pc.token_hash=? LIMIT 1`,
     args: [await sha256(token)],
   }))
   if (!claim) throw new PortalError(404, 'claim_not_found', 'Provisioning claim was not found.')
   if (!claim.claimed_at && Date.parse(String(claim.expires_at)) <= Date.now()) {
     return c.json({ claimed: false, expired: true })
   }
-  return c.json({ claimed: Boolean(claim.claimed_at), expired: false, claimedAt: claim.claimed_at ?? null })
+  return c.json({
+    claimed: Boolean(claim.claimed_at),
+    expired: false,
+    claimedAt: claim.claimed_at ?? null,
+    tenantId: claim.tenant_id ?? null,
+    organizationId: claim.organization_id ?? null,
+    organizationName: claim.organization_name ?? null,
+  })
 })
 
 app.get('/api/provision/private/me', async (c) => {
