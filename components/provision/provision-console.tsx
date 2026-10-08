@@ -167,6 +167,9 @@ export function ProvisionConsole({
   const [deployments, setDeployments] = useState<Row[]>([])
   const [billing, setBilling] = useState<Row[]>([])
   const [billingTotals, setBillingTotals] = useState({ estimatedCharge: 0, normalizedUsage: 0 })
+  const [billingAvailable, setBillingAvailable] = useState(true)
+  const [billingNote, setBillingNote] = useState('')
+  const [billingTrial, setBillingTrial] = useState<{ active: boolean; endsAt: string | null }>({ active: false, endsAt: null })
   const [licenses, setLicenses] = useState<Row[]>([])
   const [organizationInfo, setOrganizationInfo] = useState<{ organization: Row | null; tenants: Row[]; accountManager: Row | null; branding?: { source?: string; domain?: string | null; displayName?: string | null; logoUrl?: string | null } | null }>({ organization: null, tenants: [], accountManager: null, branding: null })
   const [claiming, setClaiming] = useState(false)
@@ -234,9 +237,18 @@ export function ProvisionConsole({
         const result = await licenseFetch<{ items: Row[] }>('/api/provision/private/deployments')
         setDeployments(result.items)
       } else if (section === 'billing') {
-        const result = await licenseFetch<{ items: Row[]; totals: { estimatedCharge: number; normalizedUsage: number } }>('/api/provision/private/billing')
+        const result = await licenseFetch<{
+          available: boolean
+          items: Row[]
+          totals: { estimatedCharge: number; normalizedUsage: number }
+          trial: { active: boolean; endsAt: string | null }
+          note?: string
+        }>('/api/provision/private/billing')
+        setBillingAvailable(result.available)
         setBilling(result.items)
         setBillingTotals(result.totals)
+        setBillingTrial(result.trial)
+        setBillingNote(result.note ?? '')
       } else if (section === 'licenses') {
         const result = await licenseFetch<{ items: Row[] }>('/api/provision/private/offline-licenses')
         setLicenses(result.items)
@@ -788,18 +800,31 @@ export function ProvisionConsole({
           {section === 'billing' ? (
             <>
               <PageTitle eyebrow="Microsoft Marketplace" title="Billing" copy="A Papyrus-specific view of Marketplace usage and estimated software charges. Microsoft remains the billing and invoice system of record." />
+              {billingTrial.active ? (
+                <div className="mb-7 border-[3px] border-[#111] bg-[#d9f99d] p-5 shadow-[4px_4px_0_#111]">
+                  <div className="font-mono text-[9px] font-black uppercase tracking-[.12em]">Free trial active</div>
+                  <div className="mt-2 text-[22px] font-black">Papyrus software is free through {dateValue(billingTrial.endsAt)}.</div>
+                  <p className="mt-2 text-[12px] font-semibold leading-5">The Marketplace VM&apos;s Azure infrastructure is still billed separately by Microsoft. When the trial expires, the Marketplace plan converts to its normal paid rate unless the customer cancels.</p>
+                </div>
+              ) : null}
+              {!billingAvailable ? (
+                <div className="mb-7 border-[3px] border-[#111] bg-[#fff0a6] p-5 text-[12px] font-semibold leading-5">
+                  Marketplace billing data is temporarily unavailable. The rest of the provisioning control plane remains usable.
+                </div>
+              ) : null}
               <div className="mb-7 grid gap-4 sm:grid-cols-2">
-                <div className="border-[3px] border-[#111] bg-[#ff5f1f] p-5 shadow-[4px_4px_0_#111]"><div className="font-mono text-[9px] font-black uppercase tracking-[.12em]">Mirrored estimated charges</div><div className="mt-2 text-[30px] font-black">{money(billingTotals.estimatedCharge)}</div></div>
+                <div className="border-[3px] border-[#111] bg-[#ff5f1f] p-5 shadow-[4px_4px_0_#111]"><div className="font-mono text-[9px] font-black uppercase tracking-[.12em]">{billingTrial.active ? 'Papyrus software charges during trial' : 'Mirrored estimated charges'}</div><div className="mt-2 text-[30px] font-black">{money(billingTotals.estimatedCharge)}</div></div>
                 <div className="border-[3px] border-[#111] bg-white p-5 shadow-[4px_4px_0_#111]"><div className="font-mono text-[9px] font-black uppercase tracking-[.12em]">Observed usage</div><div className="mt-2 text-[30px] font-black">{billingTotals.normalizedUsage.toLocaleString()}</div></div>
               </div>
               {billing.length ? (
                 <div className="overflow-x-auto border-[3px] border-[#111] bg-white">
-                  <table className="w-full min-w-[760px] text-left">
-                    <thead className="border-b-[3px] border-[#111] bg-[#111] text-white"><tr>{['Period','Plan','VM','Usage','Estimated charge'].map((label) => <th key={label} className="px-4 py-3 font-mono text-[9px] font-black uppercase tracking-[.1em]">{label}</th>)}</tr></thead>
-                    <tbody>{billing.map((row, index) => <tr key={index} className="border-b-2 border-[#111] last:border-b-0"><td className="px-4 py-3 text-[12px] font-bold">{dateValue(row.usage_date)}</td><td className="px-4 py-3 text-[12px]">{asText(row,'sku')}</td><td className="px-4 py-3 text-[12px]">{asText(row,'vm_size')}</td><td className="px-4 py-3 text-[12px]">{asText(row,'normalized_usage')}</td><td className="px-4 py-3 text-[12px] font-extrabold">{money(row.estimated_charge)}</td></tr>)}</tbody>
+                  <table className="w-full min-w-[860px] text-left">
+                    <thead className="border-b-[3px] border-[#111] bg-[#111] text-white"><tr>{['Period','Plan','VM','Billing','Usage','Estimated charge'].map((label) => <th key={label} className="px-4 py-3 font-mono text-[9px] font-black uppercase tracking-[.1em]">{label}</th>)}</tr></thead>
+                    <tbody>{billing.map((row, index) => <tr key={index} className="border-b-2 border-[#111] last:border-b-0"><td className="px-4 py-3 text-[12px] font-bold">{dateValue(row.usage_date)}</td><td className="px-4 py-3 text-[12px]">{asText(row,'sku')}</td><td className="px-4 py-3 text-[12px]">{asText(row,'vm_size')}</td><td className="px-4 py-3 text-[11px] font-bold">{row.trial_end_date && Date.parse(String(row.trial_end_date)) > Date.now() ? `Free trial → ${dateValue(row.trial_end_date)}` : asText(row,'sku_billing_type','marketplace_license_type')}</td><td className="px-4 py-3 text-[12px]">{asText(row,'normalized_usage')}</td><td className="px-4 py-3 text-[12px] font-extrabold">{money(row.estimated_charge)}</td></tr>)}</tbody>
                   </table>
                 </div>
-              ) : <Empty>No Marketplace billing observations are available yet.</Empty>}
+              ) : billingAvailable ? <Empty>No Marketplace billing observations are available yet. Partner Center usage reporting can lag behind the VM deployment.</Empty> : null}
+              {billingNote ? <p className="mt-5 text-[11px] font-medium leading-5 text-[#777]">{billingNote}</p> : null}
             </>
           ) : null}
 

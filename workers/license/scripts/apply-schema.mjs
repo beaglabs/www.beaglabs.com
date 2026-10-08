@@ -17,6 +17,9 @@ for (const file of ['../schema.sql', '../partner-schema.sql', '../marketplace-sc
 }
 client.close()
 
+const marketplaceMigration = spawnSync(process.execPath, [new URL('./migrate-marketplace-usage.mjs', import.meta.url).pathname], { stdio: 'inherit', env: process.env })
+if (marketplaceMigration.status !== 0) process.exit(marketplaceMigration.status ?? 1)
+
 // Normalize/rebuild legacy deployment rows before creating tables that reference
 // deployments, so old databases cannot leave a foreign key targeting the v2
 // migration's temporary table.

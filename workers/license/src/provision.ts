@@ -1233,21 +1233,78 @@ app.get('/api/provision/private/deployments/:id/operations', async (c) => {
 
 app.get('/api/provision/private/billing', async (c) => {
   const session = c.get('portalSession')
-  if (!session.organization_id) return c.json({ items: [], totals: { estimatedCharge: 0, normalizedUsage: 0 } })
-  const items = rows<Row>(await getDb(c.env).execute({
-    sql: `SELECT last_seen_at AS usage_date,offer_name,sku,vm_size,cloud_instance_name,normalized_usage,raw_usage,estimated_charge,marketplace_subscription_id,last_seen_at
-          FROM marketplace_vm_customers WHERE organization_id=? ORDER BY last_seen_at DESC LIMIT 250`,
-    args: [session.organization_id],
-  }))
+  if (!session.organization_id) {
+    return c.json({
+      available: true,
+      items: [],
+      totals: { estimatedCharge: 0, normalizedUsage: 0 },
+      trial: { active: false, endsAt: null },
+      note: 'No organization is connected to this provisioning session yet.',
+    })
+  }
+
+  let items: Row[]
+  try {
+    items = rows<Row>(await getDb(c.env).execute({
+      sql: `SELECT
+        last_seen_at AS usage_date,
+        offer_name,
+        sku,
+        vm_size,
+        cloud_instance_name,
+        normalized_usage,
+        raw_usage,
+        estimated_charge,
+        marketplace_subscription_id,
+        marketplace_license_type,
+        sku_billing_type,
+        trial_end_date,
+        customer_currency_cc,
+        price_cc,
+        estimated_price_pc,
+        last_seen_at
+      FROM marketplace_vm_customers
+      WHERE organization_id=?
+         OR LOWER(COALESCE(marketplace_subscription_id,'')) IN (
+           SELECT LOWER(azure_subscription_id)
+           FROM managed_deployments
+           WHERE organization_id=? AND azure_subscription_id IS NOT NULL
+         )
+      ORDER BY last_seen_at DESC
+      LIMIT 250`,
+      args: [session.organization_id, session.organization_id],
+    }))
+  } catch (cause) {
+    console.error('provisioning billing query failed', cause)
+    return c.json({
+      available: false,
+      items: [],
+      totals: { estimatedCharge: 0, normalizedUsage: 0 },
+      trial: { active: false, endsAt: null },
+      note: 'Marketplace billing data is temporarily unavailable. Microsoft remains the billing and invoice system of record.',
+    })
+  }
+
   const totals = items.reduce<{ estimatedCharge: number; normalizedUsage: number }>((acc, row) => {
     acc.estimatedCharge += Number(row.estimated_charge ?? 0) || 0
     acc.normalizedUsage += Number(row.normalized_usage ?? 0) || 0
     return acc
   }, { estimatedCharge: 0, normalizedUsage: 0 })
+
+  const trialEndsAt = items
+    .map((row) => typeof row.trial_end_date === 'string' ? row.trial_end_date : null)
+    .filter((value): value is string => Boolean(value))
+    .sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null
+  const trialActive = Boolean(trialEndsAt && Number.isFinite(Date.parse(trialEndsAt)) && Date.parse(trialEndsAt) > Date.now())
+
   return c.json({
+    available: true,
     items,
     totals,
-    note: 'Marketplace usage is mirrored from Microsoft Partner Center. Microsoft remains the billing and invoice system of record.',
+    trial: { active: trialActive, endsAt: trialEndsAt },
+    note: trialActive
+      ? 'Papyrus software is in the Azure Marketplace free-trial period. Azure infrastructure charges still apply separately. Microsoft remains the billing and invoice system of record.'
+      : 'Marketplace usage is mirrored from Microsoft Partner Center. Microsoft remains the billing and invoice system of record.',
   })
 })
 

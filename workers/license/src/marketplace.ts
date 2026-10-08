@@ -423,7 +423,7 @@ async function partnerCenterToken(env: Bindings): Promise<string> {
 
 async function fetchVmUsage(env: Bindings): Promise<Row[]> {
   const token = await partnerCenterToken(env)
-  const query = `SELECT MarketplaceSubscriptionId,OfferType,AzureLicenseType,MarketplaceLicenseType,SKU,CustomerCountry,VMSize,CloudInstanceName,OfferName,DeploymentMethod,CustomerName,CustomerCompanyName,UsageDate,IsNewCustomer,CustomerId,BillingAccountId,NormalizedUsage,RawUsage,EstimatedExtendedChargePC FROM ISVUsage WHERE OfferType IN ('vm core image', 'Virtual Machine Licenses', 'multisolution') TIMESPAN LAST_MONTH`
+  const query = `SELECT MarketplaceSubscriptionId,OfferType,AzureLicenseType,MarketplaceLicenseType,SKU,CustomerCountry,VMSize,CloudInstanceName,OfferName,DeploymentMethod,CustomerName,CustomerCompanyName,UsageDate,IsNewCustomer,CustomerId,BillingAccountId,NormalizedUsage,RawUsage,EstimatedExtendedChargePC,TrialEndDate,SKUBillingType,CustomerCurrencyCC,PriceCC,EstimatedPricePC FROM ISVUsage WHERE OfferType IN ('vm core image', 'Virtual Machine Licenses', 'multisolution') TIMESPAN LAST_MONTH`
   const url = new URL('https://api.partnercenter.microsoft.com/insights/v1.1/cmp/ScheduledQueries/testQueryResult')
   url.searchParams.set('exportQuery', query)
   const response = await fetch(url.toString(), { headers: { Authorization: `Bearer ${token}` } })
@@ -460,8 +460,8 @@ export async function syncMarketplaceVmUsage(env: Bindings): Promise<{ status: s
 
       await db.execute({
         sql: `INSERT INTO marketplace_vm_customers
-          (id,observation_key,marketplace_subscription_id,customer_id,billing_account_id,customer_name,customer_company_name,customer_country,offer_name,sku,azure_license_type,marketplace_license_type,vm_size,cloud_instance_name,deployment_method,first_seen_at,last_seen_at,normalized_usage,raw_usage,estimated_charge,organization_id,raw_json,created_at,updated_at)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+          (id,observation_key,marketplace_subscription_id,customer_id,billing_account_id,customer_name,customer_company_name,customer_country,offer_name,sku,azure_license_type,marketplace_license_type,vm_size,cloud_instance_name,deployment_method,first_seen_at,last_seen_at,normalized_usage,raw_usage,estimated_charge,trial_end_date,sku_billing_type,customer_currency_cc,price_cc,estimated_price_pc,organization_id,raw_json,created_at,updated_at)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
           ON CONFLICT(observation_key) DO UPDATE SET
             marketplace_subscription_id=excluded.marketplace_subscription_id,
             customer_id=excluded.customer_id,
@@ -481,6 +481,11 @@ export async function syncMarketplaceVmUsage(env: Bindings): Promise<{ status: s
             normalized_usage=MAX(COALESCE(marketplace_vm_customers.normalized_usage,0),COALESCE(excluded.normalized_usage,0)),
             raw_usage=MAX(COALESCE(marketplace_vm_customers.raw_usage,0),COALESCE(excluded.raw_usage,0)),
             estimated_charge=MAX(COALESCE(marketplace_vm_customers.estimated_charge,0),COALESCE(excluded.estimated_charge,0)),
+            trial_end_date=COALESCE(excluded.trial_end_date,marketplace_vm_customers.trial_end_date),
+            sku_billing_type=COALESCE(excluded.sku_billing_type,marketplace_vm_customers.sku_billing_type),
+            customer_currency_cc=COALESCE(excluded.customer_currency_cc,marketplace_vm_customers.customer_currency_cc),
+            price_cc=COALESCE(excluded.price_cc,marketplace_vm_customers.price_cc),
+            estimated_price_pc=COALESCE(excluded.estimated_price_pc,marketplace_vm_customers.estimated_price_pc),
             organization_id=excluded.organization_id,
             raw_json=excluded.raw_json,
             updated_at=excluded.updated_at`,
@@ -491,6 +496,8 @@ export async function syncMarketplaceVmUsage(env: Bindings): Promise<{ status: s
           stringValue(record.AzureLicenseType) || null, stringValue(record.MarketplaceLicenseType) || null, stringValue(record.VMSize) || null,
           stringValue(record.CloudInstanceName) || null, stringValue(record.DeploymentMethod) || null, usageDate, usageDate,
           numberValue(record.NormalizedUsage), numberValue(record.RawUsage), numberValue(record.EstimatedExtendedChargePC),
+          stringValue(record.TrialEndDate) || null, stringValue(record.SKUBillingType) || null,
+          stringValue(record.CustomerCurrencyCC) || null, numberValue(record.PriceCC), numberValue(record.EstimatedPricePC),
           organizationId, JSON.stringify(record), timestamp, timestamp,
         ],
       })
