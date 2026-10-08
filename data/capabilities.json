@@ -2,10 +2,10 @@
   {
     "slug": "modernization",
     "number": "01",
-    "eyebrow": "Capability · Legacy",
-    "title": "Legacy Data Extraction",
-    "subtitle": "Read your mainframe without rewriting it.",
-    "description": "We modernize things like mainframe data without affecting the core data using SLMs. We sit alongside your system of record — COBOL, AS/400, DB2, EDI, fixed-width tapes, scanned PDFs — and pull the fields your modern apps actually need.",
+    "eyebrow": "Capability · Agentic modernization",
+    "title": "Agentic Legacy Modernization",
+    "subtitle": "Modern APIs and internal apps for the systems of record you already trust.",
+    "description": "Modernize legacy workflows incrementally. Discover existing terminal, COBOL and SOAP/XML interfaces; describe their contracts; expose validated OpenAPI-compatible adapters and build usable React front ends while retaining the underlying system's business behavior.",
     "hero": {
       "src": "https://images.pexels.com/photos/3735218/pexels-photo-3735218.jpeg",
       "alt": "Vintage computer terminal in a dim room",
@@ -13,73 +13,73 @@
     },
     "includes": [
       {
-        "title": "What we read",
-        "blurb": "Every format still running in production, including the ones nobody wants to touch.",
+        "title": "Discover and understand",
+        "blurb": "Inventory existing interfaces before changing how people access them.",
         "bullets": [
-          "COBOL, RPG, AS/400, DB2, VSAM record layouts",
-          "Fixed-width, EBCDIC, EDI X12 / EDIFACT",
-          "Scanned PDFs and TIFFs via OCR + SLM",
-          "Green-screen terminal session parsing"
+          "COBOL copybooks, VSAM and mainframe dataset interfaces",
+          "TN3270 terminal workflows and screen fields",
+          "SOAP/XML services, schemas and transaction boundaries",
+          "Source mapping with documented assumptions and constraints"
         ]
       },
       {
-        "title": "How it ships",
-        "blurb": "Field-level outputs that drop into the systems you already run.",
+        "title": "Wrap with modern contracts",
+        "blurb": "Preserve business behavior through controlled adapters.",
         "bullets": [
-          "JSON / Parquet to your warehouse or lake",
-          "Streaming records to Kafka, Kinesis, or pub/sub",
-          "Validated against your golden record when one exists",
-          "Replayable runs against historical archives"
+          "REST/OpenAPI facades over existing services",
+          "Typed canonical JSON for request and response models",
+          "Input validation, authentication and audit trails",
+          "Explicit error handling and regression tests"
         ]
       },
       {
-        "title": "What we never do",
-        "blurb": "The system of record stays untouched. Always.",
+        "title": "Give teams a usable front end",
+        "blurb": "Create interfaces around the existing systems of record.",
         "bullets": [
-          "No writes back to the mainframe",
-          "No schema changes to source systems",
-          "No vendor lock-in — you own the pipeline",
-          "No data leaves your perimeter without approval"
+          "React-based forms and process views",
+          "Identity-aware internal request workflows",
+          "Human approval for consequential steps",
+          "Incremental deployment without forced replacement"
         ]
       }
     ],
     "process": [
       {
         "step": "01",
-        "title": "Inventory",
-        "blurb": "Two weeks. We read your source, document every format, and produce a written map of the data."
+        "title": "Inventory the contracts",
+        "blurb": "Map existing transactions, message formats, dependencies and business rules. Define test fixtures and a safe integration boundary."
       },
       {
         "step": "02",
-        "title": "Build",
-        "blurb": "Four to six weeks. We train the SLM on your real records, ship the pipeline, and validate against ground truth."
+        "title": "Wrap and validate",
+        "blurb": "Generate adapters and OpenAPI descriptions, then compare output and error behavior with the legacy service using representative test cases."
       },
       {
         "step": "03",
-        "title": "Run",
-        "blurb": "Hand-off to your team with runbooks, monitoring, and an upgrade path. We stay on retainer."
+        "title": "Build and govern",
+        "blurb": "Create a browser-based workflow with role-aware access, action logs, deployment documentation and an explicit review process."
       }
     ],
     "proof": [
       {
-        "metric": "120x",
-        "label": "Cheaper than proprietary LLM APIs"
+        "metric": "COBOL",
+        "label": "Copybooks and transaction interfaces"
       },
       {
-        "metric": "6 wks",
-        "label": "Median time to first field in production"
+        "metric": "SOAP",
+        "label": "XML service adapters"
       },
       {
-        "metric": "0",
-        "label": "Writes back to source systems. Ever."
+        "metric": "OpenAPI",
+        "label": "Modern integration contracts"
       }
     ],
     "cta": {
-      "headline": "Got a system nobody wants to touch?",
-      "blurb": "Send us a sample record. We'll tell you in 48 hours whether we can read it.",
-      "chatPrompt": "I have a legacy system I need to read data from without modifying. Can you help me figure out what an engagement would look like?"
+      "headline": "Modernize access without rewriting the core",
+      "blurb": "Discuss a bounded legacy workflow and the right level of API wrapping, UI replacement and regression testing.",
+      "chatPrompt": "I want to modernize an existing terminal or SOAP/XML workflow using OpenAPI and an internal application."
     },
-    "metaDescription": "Read COBOL, AS/400, DB2, and scanned legacy records with SLMs. We modernize data extraction without touching the system of record."
+    "metaDescription": "Agentic legacy modernization for COBOL, mainframes, TN3270 and SOAP/XML interfaces. Preserve existing systems behind OpenAPI adapters and internal applications."
   },
   {
     "slug": "spec-drive-development",
