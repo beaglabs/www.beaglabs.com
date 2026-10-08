@@ -878,7 +878,8 @@ async function waitForAzureOperation(response: Response, token: string, maxAttem
     const poll = await fetch(pollUrl, { headers: { authorization: `Bearer ${token}`, accept: 'application/json' } })
     if (!poll.ok) throw new Error(`Azure operation status failed (${poll.status}).`)
     const body = await poll.json().catch(() => ({})) as Record<string, unknown>
-    const status = String(body.status ?? body.properties && typeof body.properties === 'object' ? (body.properties as Record<string, unknown>).provisioningState ?? '' : '').toLowerCase()
+    const properties = body.properties && typeof body.properties === 'object' ? body.properties as Record<string, unknown> : undefined
+    const status = String(body.status ?? properties?.provisioningState ?? '').toLowerCase()
     if (['succeeded','success'].includes(status)) return
     if (['failed','canceled','cancelled'].includes(status)) throw new Error(`Azure operation ended with status ${status}.`)
   }
