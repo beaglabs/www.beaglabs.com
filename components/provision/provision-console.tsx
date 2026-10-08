@@ -154,6 +154,7 @@ export function ProvisionConsole({
   const [organizationInfo, setOrganizationInfo] = useState<{ organization: Row | null; tenants: Row[]; accountManager: Row | null }>({ organization: null, tenants: [], accountManager: null })
   const [claiming, setClaiming] = useState(false)
   const [claimToken, setClaimToken] = useState<string | null>(null)
+  const [returnToPapyrus, setReturnToPapyrus] = useState<string | null>(null)
   const [organizationForm, setOrganizationForm] = useState({ legalName: '', displayName: '' })
   const [vmTab, setVmTab] = useState<'vms' | 'containers'>('vms')
   const [resizeDeployment, setResizeDeployment] = useState<Row | null>(null)
@@ -291,6 +292,7 @@ export function ProvisionConsole({
         body: JSON.stringify({ token: claimToken }),
       })
       toast.success(`${asText(result.deployment, 'azure_vm_size')} Papyrus deployment linked.`)
+      if (result.deployment.public_origin) setReturnToPapyrus(String(result.deployment.public_origin))
       setClaimToken(null)
       const url = new URL(window.location.href)
       url.searchParams.delete('claim')
@@ -539,6 +541,18 @@ export function ProvisionConsole({
               </button>
             </div>
           </div>
+
+          {returnToPapyrus ? (
+            <div className="mb-8 flex flex-col justify-between gap-4 border-[3px] border-[#111] bg-[#d9f99d] p-5 shadow-[5px_5px_0_#111] sm:flex-row sm:items-center">
+              <div>
+                <div className="font-mono text-[9px] font-black uppercase tracking-[.12em]">Deployment connected</div>
+                <div className="mt-1 text-[15px] font-extrabold">Return to the Papyrus appliance to finish customer Entra ID setup.</div>
+              </div>
+              <a href={returnToPapyrus} className="nb-btn-white inline-flex shrink-0 items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase">
+                Return to Papyrus <ChevronRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          ) : null}
 
           {!me.agreementsComplete ? (
             <div className="mb-8 flex flex-col justify-between gap-4 border-[3px] border-[#111] bg-[#fff0a6] p-5 shadow-[5px_5px_0_#111] sm:flex-row sm:items-center">
