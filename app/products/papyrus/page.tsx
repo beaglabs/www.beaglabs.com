@@ -46,7 +46,7 @@ export default function PapyrusProductPage() {
             <h1 className="mx-auto max-w-[1100px] font-[family-name:var(--font-display)] text-[56px] font-black uppercase leading-[.93] tracking-[-.035em] sm:text-[78px] xl:text-[94px]">The Agentic Modernization Factory</h1>
             <p className="mx-auto mt-7 max-w-[850px] text-[17px] font-medium leading-[1.75] text-[#444]">{description}</p>
             <div className="mt-9 flex flex-wrap justify-center gap-4">
-              <Link href="/contact" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider"><Image src="/products/papyrus/azure.webp" alt="" width={24} height={24} className="h-6 w-6 object-contain" />Request Azure private offer<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+              <Link href="/contact" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider"><Image src="/products/papyrus/azure.webp" alt="" width={24} height={24} className="h-6 w-6 object-contain" />Request a Papyrus license<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
               <a href="#showcase" className="nb-btn-white inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider"><Play className="h-4 w-4" aria-hidden="true" />See it in action</a>
             </div>
             <div className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-2 font-mono text-[10px] font-bold uppercase tracking-wider text-[#555]"><span>Documents → requirements</span><span>Prompts → apps</span><span>Legacy → usable</span></div>
