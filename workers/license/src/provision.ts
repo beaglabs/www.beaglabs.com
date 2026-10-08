@@ -178,6 +178,150 @@ async function unseal(env: Bindings, value: string): Promise<string> {
   return new TextDecoder().decode(plaintext)
 }
 
+
+function emailDomain(value: string | null | undefined): string | null {
+  const email = value?.trim().toLowerCase()
+  if (!email) return null
+  const at = email.lastIndexOf('@')
+  if (at <= 0 || at === email.length - 1) return null
+  const domain = email.slice(at + 1)
+  return /^(?=.{1,253}$)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/.test(domain) ? domain : null
+}
+
+function isGovernmentDomain(domain: string | null): boolean {
+  return Boolean(domain && (domain.endsWith('.gov') || domain.endsWith('.mil')))
+}
+
+function authErrorReturnTo(value: string, target: PortalEnvironment, code: string): string {
+  const url = new URL(safeReturnTo(value, target))
+  url.searchParams.set('provisionError', code)
+  return url.toString()
+}
+
+function preferredVerifiedDomain(value: unknown): string | null {
+  if (!Array.isArray(value)) return null
+  const entries = value.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object' && !Array.isArray(item))
+  const selected = entries.find((item) => item.isDefault === true)
+    ?? entries.find((item) => item.isInitial !== true)
+    ?? entries[0]
+  return selected ? nonEmpty(selected.name, 253)?.toLowerCase() ?? null : null
+}
+
+async function tenantProfileFromGraph(input: {
+  token: string
+  tenantId: string
+  target: PortalEnvironment
+  graphOrigin: string
+  fallbackEmail?: string
+}): Promise<{
+  displayName: string | null
+  primaryDomain: string | null
+  verifiedDomains: string[]
+  entraLogoUrl: string | null
+  logoSource: 'entra' | 'logo_dev' | 'none'
+}> {
+  let displayName: string | null = null
+  let primaryDomain: string | null = input.target === 'government' ? emailDomain(input.fallbackEmail) : null
+  let verifiedDomains: string[] = []
+  let entraLogoUrl: string | null = null
+
+  try {
+    const orgResponse = await fetch(
+      `${input.graphOrigin}/v1.0/organization?$select=id,displayName,verifiedDomains`,
+      { headers: { authorization: `Bearer ${input.token}`, accept: 'application/json' } },
+    )
+    if (orgResponse.ok) {
+      const body = await orgResponse.json() as { value?: Array<Record<string, unknown>> }
+      const org = Array.isArray(body.value)
+        ? body.value.find((item) => String(item.id ?? '').toLowerCase() === input.tenantId.toLowerCase()) ?? body.value[0]
+        : undefined
+      if (org) {
+        displayName = nonEmpty(org.displayName, 256)
+        if (Array.isArray(org.verifiedDomains)) {
+          verifiedDomains = org.verifiedDomains
+            .map((item) => item && typeof item === 'object' && !Array.isArray(item) ? nonEmpty((item as Record<string, unknown>).name, 253)?.toLowerCase() : null)
+            .filter((value): value is string => Boolean(value))
+        }
+        if (input.target === 'commercial') primaryDomain = preferredVerifiedDomain(org.verifiedDomains)
+      }
+    }
+  } catch {
+    // Tenant metadata is enrichment. Authentication and Azure ownership remain authoritative.
+  }
+
+  if (input.target === 'commercial') {
+    try {
+      const brandingResponse = await fetch(
+        `${input.graphOrigin}/v1.0/organization/${encodeURIComponent(input.tenantId)}/branding?$select=cdnList,squareLogoRelativeUrl`,
+        { headers: { authorization: `Bearer ${input.token}`, accept: 'application/json' } },
+      )
+      if (brandingResponse.ok) {
+        const branding = await brandingResponse.json() as { cdnList?: string[]; squareLogoRelativeUrl?: string }
+        const base = Array.isArray(branding.cdnList) ? branding.cdnList.find((value) => typeof value === 'string' && value.startsWith('https://')) : undefined
+        const relative = nonEmpty(branding.squareLogoRelativeUrl, 2048)
+        if (base && relative) {
+          try { entraLogoUrl = new URL(relative, base.endsWith('/') ? base : `${base}/`).toString() } catch { /* ignore malformed branding URL */ }
+        }
+      }
+    } catch {
+      // A tenant might not expose organizational branding to this user. Domain fallback remains available.
+    }
+  }
+
+  if (input.target === 'government' && !primaryDomain) primaryDomain = emailDomain(input.fallbackEmail)
+  const logoSource = input.target === 'government'
+    ? (primaryDomain ? 'logo_dev' : 'none')
+    : (entraLogoUrl ? 'entra' : primaryDomain ? 'logo_dev' : 'none')
+
+  return { displayName, primaryDomain, verifiedDomains, entraLogoUrl, logoSource }
+}
+
+async function upsertTenantProfile(c: AppContext, input: {
+  tenantId: string
+  environment: PortalEnvironment
+  displayName: string | null
+  primaryDomain: string | null
+  verifiedDomains: string[]
+  entraLogoUrl: string | null
+  logoSource: 'entra' | 'logo_dev' | 'none'
+}): Promise<void> {
+  await getDb(c.env).execute({
+    sql: `INSERT INTO provision_tenant_profiles
+      (tenant_id,environment,display_name,primary_domain,verified_domains_json,entra_logo_url,logo_source,updated_at)
+      VALUES (?,?,?,?,?,?,?,?)
+      ON CONFLICT(tenant_id,environment) DO UPDATE SET
+        display_name=excluded.display_name,
+        primary_domain=excluded.primary_domain,
+        verified_domains_json=excluded.verified_domains_json,
+        entra_logo_url=excluded.entra_logo_url,
+        logo_source=excluded.logo_source,
+        updated_at=excluded.updated_at`,
+    args: [
+      input.tenantId, input.environment, input.displayName, input.primaryDomain,
+      JSON.stringify(input.verifiedDomains), input.entraLogoUrl, input.logoSource, now(),
+    ],
+  })
+}
+
+async function refreshResourceToken(config: ReturnType<typeof oauthConfig>, refreshToken: string, scope: string): Promise<Record<string, unknown>> {
+  const response = await fetch(`${config.authority}/organizations/oauth2/v2.0/token`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded', accept: 'application/json' },
+    body: new URLSearchParams({
+      client_id: config.clientId,
+      client_secret: config.clientSecret,
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      scope,
+    }),
+  })
+  const body = await response.json().catch(() => null) as Record<string, unknown> | null
+  if (!response.ok || !body) {
+    throw new PortalError(502, 'microsoft_resource_token_failed', nonEmpty(body?.error_description, 1000) ?? 'Microsoft resource token exchange failed.')
+  }
+  return body
+}
+
 function oauthConfig(env: Bindings, target: PortalEnvironment) {
   if (target === 'commercial') {
     const clientId = env.PROVISION_COMMERCIAL_CLIENT_ID || env.MICROSOFT_CLIENT_ID
@@ -189,6 +333,8 @@ function oauthConfig(env: Bindings, target: PortalEnvironment) {
       authority: 'https://login.microsoftonline.com',
       armOrigin: 'https://management.azure.com',
       armScope: 'https://management.azure.com/user_impersonation',
+      graphOrigin: 'https://graph.microsoft.com',
+      graphScope: 'https://graph.microsoft.com/User.Read',
     }
   }
 
@@ -201,6 +347,8 @@ function oauthConfig(env: Bindings, target: PortalEnvironment) {
     authority: 'https://login.microsoftonline.us',
     armOrigin: 'https://management.usgovcloudapi.net',
     armScope: 'https://management.core.usgovcloudapi.net//user_impersonation',
+    graphOrigin: 'https://graph.microsoft.us',
+    graphScope: 'https://graph.microsoft.us/User.Read',
   }
 }
 
@@ -324,6 +472,10 @@ async function portalSession(c: AppContext): Promise<Session | null> {
     args: [tokenHash, now()],
   }))
   if (!session) {
+    deleteCookie(c, SESSION_COOKIE, { path: '/' })
+    return null
+  }
+  if (session.environment === 'government' && !isGovernmentDomain(emailDomain(session.email))) {
     deleteCookie(c, SESSION_COOKIE, { path: '/' })
     return null
   }
@@ -495,7 +647,7 @@ app.get('/api/provision/auth/start', async (c) => {
   url.searchParams.set('response_type', 'code')
   url.searchParams.set('redirect_uri', redirectUri(c.env))
   url.searchParams.set('response_mode', 'query')
-  url.searchParams.set('scope', `openid profile email ${config.armScope}`)
+  url.searchParams.set('scope', `openid profile email offline_access ${config.graphScope} ${config.armScope}`)
   url.searchParams.set('state', raw.state)
   url.searchParams.set('nonce', raw.nonce)
   url.searchParams.set('code_challenge', challenge)
@@ -534,15 +686,16 @@ app.get('/api/provision/auth/callback', async (c) => {
       code,
       redirect_uri: redirectUri(c.env),
       code_verifier: String(record.code_verifier),
-      scope: `openid profile email ${config.armScope}`,
+      scope: `openid profile email offline_access ${config.graphScope}`,
     }),
   })
   const tokenBody = await tokenResponse.json().catch(() => null) as Record<string, unknown> | null
   if (!tokenResponse.ok || !tokenBody) {
     throw new PortalError(502, 'microsoft_token_exchange_failed', nonEmpty(tokenBody?.error_description, 1000) ?? 'Microsoft token exchange failed.')
   }
-  const accessToken = requiredString(tokenBody.access_token, 'access_token', 16_384)
-  const idToken = requiredString(tokenBody.id_token, 'id_token', 16_384)
+  const graphToken = requiredString(tokenBody.access_token, 'access_token', 32_768)
+  const refreshToken = requiredString(tokenBody.refresh_token, 'refresh_token', 65_536)
+  const idToken = requiredString(tokenBody.id_token, 'id_token', 32_768)
   const identity = await verifyMicrosoftIdToken({
     token: idToken,
     target,
@@ -550,6 +703,35 @@ app.get('/api/provision/auth/callback', async (c) => {
     authority: config.authority,
     nonce: String(record.nonce),
   })
+
+  const governmentDomain = emailDomain(identity.email)
+  if (target === 'government' && !isGovernmentDomain(governmentDomain)) {
+    return c.redirect(authErrorReturnTo(String(record.return_to), target, 'government_email_required'), 302)
+  }
+
+  const tenantProfile = await tenantProfileFromGraph({
+    token: graphToken,
+    tenantId: identity.tenantId,
+    target,
+    graphOrigin: config.graphOrigin,
+    fallbackEmail: identity.email,
+  })
+  if (target === 'government' && governmentDomain) {
+    tenantProfile.primaryDomain = governmentDomain
+    tenantProfile.logoSource = 'logo_dev'
+  }
+  await upsertTenantProfile(c, {
+    tenantId: identity.tenantId,
+    environment: target,
+    displayName: tenantProfile.displayName,
+    primaryDomain: tenantProfile.primaryDomain,
+    verifiedDomains: tenantProfile.verifiedDomains,
+    entraLogoUrl: tenantProfile.entraLogoUrl,
+    logoSource: tenantProfile.logoSource,
+  })
+
+  const armTokenBody = await refreshResourceToken(config, refreshToken, config.armScope)
+  const accessToken = requiredString(armTokenBody.access_token, 'access_token', 32_768)
 
   const tenantBinding = first<Row>(await getDb(c.env).execute({
     sql: 'SELECT organization_id FROM organization_tenants WHERE tenant_id=? AND environment=? LIMIT 1',
@@ -560,7 +742,7 @@ app.get('/api/provision/auth/callback', async (c) => {
   const sessionHash = await sha256(sessionToken)
   const timestamp = now()
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString()
-  const expiresIn = Number(tokenBody.expires_in ?? 3600)
+  const expiresIn = Number(armTokenBody.expires_in ?? 3600)
   const armExpiresAt = new Date(Date.now() + (Number.isFinite(expiresIn) ? expiresIn : 3600) * 1000).toISOString()
   await getDb(c.env).execute({
     sql: `INSERT INTO provision_portal_sessions
@@ -656,6 +838,10 @@ app.get('/api/provision/private/me', async (c) => {
     ? first<Row>(await getDb(c.env).execute({ sql: primaryManagerSql(), args: [organization.id] }))
     : null
   const agreements = await requiredAgreementViews(c, session)
+  const tenantProfile = first<Row>(await getDb(c.env).execute({
+    sql: 'SELECT * FROM provision_tenant_profiles WHERE tenant_id=? AND environment=? LIMIT 1',
+    args: [session.tenant_id, session.environment],
+  }))
   const offlineCount = organization
     ? Number(first<Row>(await getDb(c.env).execute({
         sql: `SELECT
@@ -673,6 +859,15 @@ app.get('/api/provision/private/me', async (c) => {
     },
     environment: session.environment,
     organization,
+    tenantProfile: tenantProfile ? {
+      displayName: tenantProfile.display_name ?? null,
+      primaryDomain: tenantProfile.primary_domain ?? null,
+      verifiedDomains: (() => { try { return JSON.parse(String(tenantProfile.verified_domains_json ?? '[]')) } catch { return [] } })(),
+      logoSource: tenantProfile.logo_source ?? 'none',
+      logoUrl: (tenantProfile.entra_logo_url || tenantProfile.primary_domain)
+        ? `${c.env.BASE_URL}/api/provision/private/organization/logo`
+        : null,
+    } : null,
     accountManager: manager,
     agreements,
     agreementsComplete: agreements.every((item) => item.accepted),
@@ -690,9 +885,19 @@ app.post('/api/provision/private/organization', async (c) => {
   const session = c.get('portalSession')
   if (session.organization_id) return c.json({ organization: await organizationForSession(c, session) })
   const input = await requestJson(c)
-  const legalName = requiredString(input.legalName, 'legalName', 256)
-  const displayName = nonEmpty(input.displayName, 256)
   const db = getDb(c.env)
+  const tenantProfile = first<Row>(await db.execute({
+    sql: 'SELECT * FROM provision_tenant_profiles WHERE tenant_id=? AND environment=? LIMIT 1',
+    args: [session.tenant_id, session.environment],
+  }))
+  const legalName = requiredString(input.legalName ?? tenantProfile?.display_name, 'legalName', 256)
+  const displayName = nonEmpty(input.displayName ?? tenantProfile?.display_name, 256)
+  const domain = session.environment === 'government'
+    ? emailDomain(session.email)
+    : nonEmpty(tenantProfile?.primary_domain, 253)?.toLowerCase() ?? null
+  if (session.environment === 'government' && !isGovernmentDomain(domain)) {
+    throw new PortalError(403, 'government_email_required', 'Government provisioning requires a verified .gov or .mil Microsoft account.')
+  }
 
   const existingTenant = first<Row>(await db.execute({
     sql: 'SELECT organization_id FROM organization_tenants WHERE tenant_id=? AND environment=? LIMIT 1',
@@ -709,9 +914,9 @@ app.post('/api/provision/private/organization', async (c) => {
   const manager = first<Row>(await db.execute('SELECT id FROM account_managers WHERE active=1 ORDER BY created_at ASC LIMIT 1'))
   const statements: Array<string | { sql: string; args?: readonly unknown[] }> = [
     {
-      sql: `INSERT INTO organizations (id,organization_type,legal_name,display_name,status,created_at,updated_at)
-            VALUES (?,?,?,?,?,?,?)`,
-      args: [organizationId, organizationType, legalName, displayName, 'active', timestamp, timestamp],
+      sql: `INSERT INTO organizations (id,organization_type,legal_name,display_name,domain,status,created_at,updated_at)
+            VALUES (?,?,?,?,?,?,?,?)`,
+      args: [organizationId, organizationType, legalName, displayName, domain, 'active', timestamp, timestamp],
     },
     {
       sql: `INSERT INTO organization_tenants (organization_id,tenant_id,environment,verified_at,verified_by_oid)
@@ -732,7 +937,7 @@ app.post('/api/provision/private/organization', async (c) => {
   }
   await db.batch(statements, 'write')
   const updatedSession = { ...session, organization_id: organizationId }
-  await auditCustomer(c, updatedSession, 'provision.organization.create', 'organization', organizationId, { legalName, displayName, tenantId: session.tenant_id })
+  await auditCustomer(c, updatedSession, 'provision.organization.create', 'organization', organizationId, { legalName, displayName, domain, tenantId: session.tenant_id })
   return c.json({ organization: first<Row>(await db.execute({ sql: 'SELECT * FROM organizations WHERE id=?', args: [organizationId] })) }, 201)
 })
 
@@ -1093,13 +1298,51 @@ app.get('/api/provision/private/offline-licenses/:id/download', async (c) => {
 app.get('/api/provision/private/organization', async (c) => {
   const session = c.get('portalSession')
   const organization = await organizationForSession(c, session)
-  if (!organization) return c.json({ organization: null, tenants: [], accountManager: null })
+  if (!organization) return c.json({ organization: null, tenants: [], accountManager: null, branding: null })
   const tenants = rows<Row>(await getDb(c.env).execute({
     sql: 'SELECT tenant_id,environment,verified_at FROM organization_tenants WHERE organization_id=? ORDER BY environment,verified_at',
     args: [organization.id],
   }))
   const manager = first<Row>(await getDb(c.env).execute({ sql: primaryManagerSql(), args: [organization.id] }))
-  return c.json({ organization, tenants, accountManager: manager })
+  const profile = first<Row>(await getDb(c.env).execute({
+    sql: 'SELECT * FROM provision_tenant_profiles WHERE tenant_id=? AND environment=? LIMIT 1',
+    args: [session.tenant_id, session.environment],
+  }))
+  return c.json({
+    organization,
+    tenants,
+    accountManager: manager,
+    branding: profile ? {
+      source: profile.logo_source ?? 'none',
+      domain: profile.primary_domain ?? organization.domain ?? null,
+      displayName: profile.display_name ?? null,
+      logoUrl: (profile.entra_logo_url || profile.primary_domain)
+        ? `${c.env.BASE_URL}/api/provision/private/organization/logo`
+        : null,
+    } : null,
+  })
+})
+
+app.get('/api/provision/private/organization/logo', async (c) => {
+  const session = c.get('portalSession')
+  const profile = first<Row>(await getDb(c.env).execute({
+    sql: 'SELECT * FROM provision_tenant_profiles WHERE tenant_id=? AND environment=? LIMIT 1',
+    args: [session.tenant_id, session.environment],
+  }))
+  if (!profile) throw new PortalError(404, 'organization_logo_not_found', 'Organization logo is not available.')
+
+  let source: string | null = nonEmpty(profile.entra_logo_url, 4096)
+  if (!source && profile.primary_domain && c.env.LOGO_DEV_TOKEN) {
+    source = `https://img.logo.dev/${encodeURIComponent(String(profile.primary_domain))}?token=${encodeURIComponent(c.env.LOGO_DEV_TOKEN)}&size=256&format=png&theme=light&retina=true`
+  }
+  if (!source) throw new PortalError(404, 'organization_logo_not_found', 'Organization logo is not available.')
+
+  const response = await fetch(source, { headers: { accept: 'image/png,image/jpeg,image/*;q=0.8' } })
+  if (!response.ok || !response.body) throw new PortalError(404, 'organization_logo_not_found', 'Organization logo could not be loaded.')
+  const headers = new Headers()
+  headers.set('Content-Type', response.headers.get('content-type') || 'image/png')
+  headers.set('Cache-Control', 'private, max-age=3600')
+  return new Response(response.body, { status: 200, headers })
 })
 
 app.onError((cause, c) => {

@@ -38,6 +38,19 @@ CREATE TABLE IF NOT EXISTS organization_tenants (
 );
 CREATE INDEX IF NOT EXISTS idx_org_tenants_org ON organization_tenants(organization_id);
 
+CREATE TABLE IF NOT EXISTS provision_tenant_profiles (
+  tenant_id TEXT NOT NULL,
+  environment TEXT NOT NULL CHECK (environment IN ('commercial','government')),
+  display_name TEXT,
+  primary_domain TEXT,
+  verified_domains_json TEXT NOT NULL DEFAULT '[]',
+  entra_logo_url TEXT,
+  logo_source TEXT CHECK (logo_source IN ('entra','logo_dev','none')),
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, environment)
+);
+CREATE INDEX IF NOT EXISTS idx_provision_tenant_profiles_domain ON provision_tenant_profiles(primary_domain);
+
 CREATE TABLE IF NOT EXISTS provision_oauth_states (
   state_hash TEXT PRIMARY KEY,
   code_verifier TEXT NOT NULL,

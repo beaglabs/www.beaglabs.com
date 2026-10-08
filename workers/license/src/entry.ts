@@ -10,6 +10,7 @@ import marketplaceApp from './marketplace'
 import marketplaceLeadApp from './marketplace-leads'
 import marketplaceReportApp, { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
 import provisionApp from './provision'
+import provisionAdminApp from './provision-admin'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -122,6 +123,10 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
 
   if (path.startsWith('/api/provision/')) {
     return provisionApp.fetch(request, env, ctx)
+  }
+
+  if (path.startsWith('/api/v1/provisioned-accounts')) {
+    return provisionAdminApp.fetch(request, env, ctx)
   }
 
   if (path === '/partners/apply' || path === '/partners/apply/') {
