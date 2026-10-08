@@ -52,6 +52,13 @@ type Me = {
   user: { oid: string; tenantId: string; email?: string | null; name?: string | null }
   environment: Environment
   organization: Row | null
+  tenantProfile: {
+    displayName?: string | null
+    primaryDomain?: string | null
+    verifiedDomains?: string[]
+    logoSource?: 'entra' | 'logo_dev' | 'none'
+    logoUrl?: string | null
+  } | null
   accountManager: Row | null
   agreements: Agreement[]
   agreementsComplete: boolean
@@ -161,11 +168,15 @@ export function ProvisionConsole({
   const [billing, setBilling] = useState<Row[]>([])
   const [billingTotals, setBillingTotals] = useState({ estimatedCharge: 0, normalizedUsage: 0 })
   const [licenses, setLicenses] = useState<Row[]>([])
-  const [organizationInfo, setOrganizationInfo] = useState<{ organization: Row | null; tenants: Row[]; accountManager: Row | null }>({ organization: null, tenants: [], accountManager: null })
+  const [organizationInfo, setOrganizationInfo] = useState<{ organization: Row | null; tenants: Row[]; accountManager: Row | null; branding?: { source?: string; domain?: string | null; displayName?: string | null; logoUrl?: string | null } | null }>({ organization: null, tenants: [], accountManager: null, branding: null })
   const [claiming, setClaiming] = useState(false)
   const [claimToken, setClaimToken] = useState<string | null>(null)
   const [returnToPapyrus, setReturnToPapyrus] = useState<string | null>(null)
   const [organizationForm, setOrganizationForm] = useState({ legalName: '', displayName: '' })
+  const [onboardingStep, setOnboardingStep] = useState<'identity' | 'organization' | 'agreements' | 'ready'>('identity')
+  const [showReady, setShowReady] = useState(false)
+  const [acceptingAll, setAcceptingAll] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
   const [vmTab, setVmTab] = useState<'vms' | 'containers'>('vms')
   const [resizeDeployment, setResizeDeployment] = useState<Row | null>(null)
   const [sizes, setSizes] = useState<Array<{ name: string; vcpus: number; memoryMb: number; papyrusHourlyUsd: number }>>([])
@@ -197,6 +208,13 @@ export function ProvisionConsole({
         return
       }
       setMe(result)
+      if (!result.organization && result.tenantProfile) {
+        const suggestedName = result.tenantProfile.displayName ?? ''
+        setOrganizationForm((current) => ({
+          legalName: current.legalName || suggestedName,
+          displayName: current.displayName || suggestedName,
+        }))
+      }
     } catch (error) {
       if (error instanceof LicenseControlPlaneError && error.status === 401) {
         setMe(null)
@@ -236,6 +254,13 @@ export function ProvisionConsole({
     const params = new URLSearchParams(window.location.search)
     const claim = params.get('claim')
     if (claim) setClaimToken(claim)
+    const provisionError = params.get('provisionError')
+    if (provisionError) {
+      setAuthError(provisionError)
+      const url = new URL(window.location.href)
+      url.searchParams.delete('provisionError')
+      window.history.replaceState({}, '', url.toString())
+    }
     void loadMe()
   }, [loadMe])
 
@@ -289,6 +314,7 @@ export function ProvisionConsole({
         }),
       })
       toast.success('Organization connected to this Microsoft Entra tenant.')
+      setOnboardingStep('agreements')
       await loadMe()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unable to connect organization.')
@@ -305,6 +331,33 @@ export function ProvisionConsole({
       await loadMe()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unable to record agreement acceptance.')
+    }
+  }
+
+  const acceptAllAgreements = async () => {
+    if (!me) return
+    const pending = me.agreements.filter((agreement) => !agreement.accepted)
+    if (!pending.length) {
+      setShowReady(true)
+      setOnboardingStep('ready')
+      return
+    }
+    setAcceptingAll(true)
+    try {
+      for (const agreement of pending) {
+        await licenseFetch('/api/provision/private/agreements/accept', {
+          method: 'POST',
+          body: JSON.stringify({ agreementType: agreement.type }),
+        })
+      }
+      toast.success(environment === 'government' ? 'Government deployment acknowledgments recorded.' : 'Commercial agreements accepted.')
+      setShowReady(true)
+      setOnboardingStep('ready')
+      await loadMe()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to record agreement acceptance.')
+    } finally {
+      setAcceptingAll(false)
     }
   }
 
@@ -428,6 +481,11 @@ export function ProvisionConsole({
             </div>
           </section>
           <section className="nb-panel p-8 lg:p-10">
+            {authError === 'government_email_required' ? (
+              <div className="mb-6 border-[3px] border-[#111] bg-[#fecaca] p-4 text-[12px] font-bold leading-5">
+                Government provisioning requires a Microsoft Entra account whose email ends in <code>.gov</code> or <code>.mil</code>.
+              </div>
+            ) : null}
             <div className="flex h-12 w-12 items-center justify-center border-[3px] border-[#111] bg-[#ff5f1f] shadow-[4px_4px_0_#111]">
               <ShieldCheck className="h-6 w-6" strokeWidth={2.5} />
             </div>
@@ -449,7 +507,7 @@ export function ProvisionConsole({
             </button>
             <div className="mt-6 border-t-2 border-[#111] pt-5 text-[11px] font-medium leading-5 text-[#777]">
               {environment === 'government'
-                ? 'Azure Government uses its own national-cloud identity and Resource Manager endpoints.'
+                ? 'Azure Government uses its own national-cloud identity and Resource Manager endpoints. A .gov or .mil Microsoft account is required.'
                 : 'Microsoft Marketplace remains the billing system of record for usage-based deployments.'}
             </div>
           </section>
@@ -458,32 +516,115 @@ export function ProvisionConsole({
     )
   }
 
-  if (!me.organization) {
+  const tenantLogo = me.tenantProfile?.logoUrl ?? null
+  const tenantName = me.tenantProfile?.displayName || organizationForm.displayName || organizationForm.legalName || 'Your organization'
+  const tenantDomain = me.tenantProfile?.primaryDomain ?? null
+  const onboardingNeeded = !me.organization || !me.agreementsComplete || showReady
+
+  if (onboardingNeeded) {
+    const effectiveStep: 'identity' | 'organization' | 'agreements' | 'ready' =
+      showReady ? 'ready'
+        : me.organization && !me.agreementsComplete ? 'agreements'
+          : onboardingStep
+
+    const stepIndex = effectiveStep === 'identity' ? 0 : effectiveStep === 'organization' ? 1 : effectiveStep === 'agreements' ? 2 : 3
+    const labels = ['Identity', 'Organization', 'Agreements', 'Ready']
+
     return (
-      <main className="min-h-screen bg-[#fafaf9] px-6 py-14 lg:px-9">
-        <div className="mx-auto max-w-[820px]">
-          <PageTitle
-            eyebrow="Papyrus provisioning / organization"
-            title="Connect your organization."
-            copy="This Microsoft Entra tenant has not been linked to a Beag Labs organization yet. Create the customer record that will own deployments, agreements, billing metadata, and offline licenses."
-          />
-          <form onSubmit={createOrganization} className="nb-panel space-y-6 p-7">
-            <label className="block">
-              <span className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.12em]">Legal organization name</span>
-              <input className="nb-input w-full" value={organizationForm.legalName} onChange={(event) => setOrganizationForm({ ...organizationForm, legalName: event.target.value })} required />
-            </label>
-            <label className="block">
-              <span className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.12em]">Display name <em className="font-normal normal-case text-[#777]">optional</em></span>
-              <input className="nb-input w-full" value={organizationForm.displayName} onChange={(event) => setOrganizationForm({ ...organizationForm, displayName: event.target.value })} />
-            </label>
-            <div className="border-t-2 border-[#111] pt-5">
-              <div className="font-mono text-[9px] font-black uppercase tracking-[.1em] text-[#777]">Verified Entra tenant</div>
-              <code className="mt-2 block break-all text-[12px]">{me.user.tenantId}</code>
-            </div>
-            <button type="submit" className="nb-btn-orange inline-flex items-center gap-2 px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[.1em]">
-              Connect organization <ChevronRight className="h-4 w-4" />
-            </button>
-          </form>
+      <main className="min-h-screen bg-[#fafaf9] px-6 py-12 lg:px-9">
+        <div className="mx-auto max-w-[980px]">
+          <div className="mb-8">
+            <div className="font-mono text-[10px] font-black uppercase tracking-[.16em] text-[#b63700]">Papyrus / First connection</div>
+            <h1 className="mt-3 text-[38px] font-black uppercase leading-[.95] tracking-[-.045em] sm:text-[52px]">Set up your control plane.</h1>
+            <p className="mt-4 max-w-3xl text-[14px] font-medium leading-6 text-[#666]">Verify the Microsoft identity boundary, confirm the organization profile, accept the required terms, and then manage Papyrus from a persistent deployment portal.</p>
+          </div>
+
+          <div className="mb-8 grid grid-cols-4 border-[3px] border-[#111] bg-white">
+            {labels.map((label, index) => (
+              <div key={label} className={`border-r-[3px] border-[#111] p-3 last:border-r-0 ${index === stepIndex ? 'bg-[#ff5f1f]' : index < stepIndex ? 'bg-[#d9f99d]' : 'bg-white'}`}>
+                <div className="font-mono text-[9px] font-black uppercase tracking-[.1em]">{String(index + 1).padStart(2, '0')}</div>
+                <div className="mt-1 hidden text-[11px] font-extrabold sm:block">{label}</div>
+              </div>
+            ))}
+          </div>
+
+          {effectiveStep === 'identity' ? (
+            <section className="nb-panel p-7 lg:p-9">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                <div className="flex h-16 w-16 items-center justify-center border-[3px] border-[#111] bg-[#ff5f1f] shadow-[4px_4px_0_#111]"><ShieldCheck className="h-8 w-8" /></div>
+                <div>
+                  <div className="font-mono text-[9px] font-black uppercase tracking-[.13em] text-[#777]">Microsoft identity verified</div>
+                  <h2 className="mt-2 text-[28px] font-extrabold tracking-[-.04em]">{me.user.name || me.user.email || 'Microsoft Entra user'}</h2>
+                  <div className="mt-2 text-[12px] font-semibold text-[#666]">{me.user.email}</div>
+                </div>
+              </div>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="border-2 border-[#111] bg-[#fafaf9] p-4"><div className="font-mono text-[9px] font-black uppercase text-[#777]">Tenant</div><code className="mt-2 block break-all text-[11px]">{me.user.tenantId}</code></div>
+                <div className="border-2 border-[#111] bg-[#fafaf9] p-4"><div className="font-mono text-[9px] font-black uppercase text-[#777]">Boundary</div><div className="mt-2 text-[13px] font-extrabold">{environment === 'government' ? 'Government · .gov/.mil verified' : 'Commercial Azure'}</div></div>
+              </div>
+              <button type="button" onClick={() => setOnboardingStep('organization')} className="nb-btn-orange mt-7 inline-flex items-center gap-2 px-5 py-3 font-mono text-[10px] font-black uppercase">Continue <ChevronRight className="h-4 w-4" /></button>
+            </section>
+          ) : null}
+
+          {effectiveStep === 'organization' ? (
+            <form onSubmit={createOrganization} className="nb-panel p-7 lg:p-9">
+              <div className="flex flex-col gap-5 border-b-[3px] border-[#111] pb-6 sm:flex-row sm:items-center">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden border-[3px] border-[#111] bg-white shadow-[4px_4px_0_#111]">
+                  {tenantLogo ? <img src={tenantLogo} alt="" className="h-full w-full object-contain p-2" /> : <Building2 className="h-8 w-8" />}
+                </div>
+                <div>
+                  <div className="font-mono text-[9px] font-black uppercase tracking-[.13em] text-[#777]">{me.tenantProfile?.logoSource === 'entra' ? 'Entra organization branding' : environment === 'government' ? 'Government domain branding' : 'Entra tenant'}</div>
+                  <h2 className="mt-2 text-[28px] font-extrabold tracking-[-.04em]">{tenantName}</h2>
+                  {tenantDomain ? <div className="mt-2 font-mono text-[10px] font-bold text-[#666]">{tenantDomain}</div> : null}
+                </div>
+              </div>
+              <div className="mt-7 grid gap-5">
+                <label className="block">
+                  <span className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.12em]">Legal organization name</span>
+                  <input className="nb-input w-full" value={organizationForm.legalName} onChange={(event) => setOrganizationForm({ ...organizationForm, legalName: event.target.value })} required />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.12em]">Display name</span>
+                  <input className="nb-input w-full" value={organizationForm.displayName} onChange={(event) => setOrganizationForm({ ...organizationForm, displayName: event.target.value })} />
+                </label>
+                {tenantDomain ? (
+                  <div className="border-2 border-[#111] bg-[#fafaf9] p-4">
+                    <div className="font-mono text-[9px] font-black uppercase tracking-[.1em] text-[#777]">{environment === 'government' ? 'Verified government email domain' : 'Primary verified Entra domain'}</div>
+                    <div className="mt-2 font-mono text-[12px] font-bold">{tenantDomain}</div>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mt-7 flex gap-3">
+                <button type="button" onClick={() => setOnboardingStep('identity')} className="nb-btn-white px-5 py-3 font-mono text-[10px] font-black uppercase">Back</button>
+                <button type="submit" className="nb-btn-orange inline-flex items-center gap-2 px-5 py-3 font-mono text-[10px] font-black uppercase">Connect organization <ChevronRight className="h-4 w-4" /></button>
+              </div>
+            </form>
+          ) : null}
+
+          {effectiveStep === 'agreements' ? (
+            <section className="nb-panel p-7 lg:p-9">
+              <div className="font-mono text-[9px] font-black uppercase tracking-[.13em] text-[#777]">Required agreements</div>
+              <h2 className="mt-2 text-[28px] font-extrabold tracking-[-.04em]">{environment === 'government' ? 'Confirm the deployment boundary.' : 'Confirm the commercial terms.'}</h2>
+              <div className="mt-6 space-y-4">
+                {me.agreements.map((agreement) => (
+                  <a key={agreement.type} href={agreement.href} target="_blank" rel="noreferrer" className={`flex items-start justify-between gap-5 border-[3px] border-[#111] p-5 ${agreement.accepted ? 'bg-[#d9f99d]' : 'bg-white'}`}>
+                    <div><div className="text-[15px] font-extrabold">{agreement.title}</div><p className="mt-2 text-[12px] font-medium leading-5 text-[#666]">{agreement.summary}</p><div className="mt-3 font-mono text-[9px] font-black uppercase text-[#777]">Version {agreement.version}</div></div>
+                    <ExternalLink className="h-4 w-4 shrink-0" />
+                  </a>
+                ))}
+              </div>
+              <button type="button" disabled={acceptingAll} onClick={() => void acceptAllAgreements()} className="nb-btn-orange mt-7 inline-flex items-center gap-2 px-5 py-3 font-mono text-[10px] font-black uppercase disabled:opacity-50">{acceptingAll ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} {environment === 'government' ? 'Acknowledge and continue' : 'Accept and continue'}</button>
+            </section>
+          ) : null}
+
+          {effectiveStep === 'ready' ? (
+            <section className="border-[3px] border-[#111] bg-[#d9f99d] p-7 shadow-[6px_6px_0_#111] lg:p-9">
+              <div className="font-mono text-[9px] font-black uppercase tracking-[.13em]">Setup complete</div>
+              <h2 className="mt-3 text-[32px] font-black tracking-[-.04em]">{asText(me.organization, 'display_name', 'legal_name')} is connected.</h2>
+              <p className="mt-4 max-w-2xl text-[13px] font-semibold leading-6">Your tenant, agreements, Account Manager, deployment records, and {environment === 'government' ? 'offline licensing' : 'Marketplace billing'} now live in this control plane.</p>
+              <button type="button" onClick={() => { setShowReady(false); setOnboardingStep('ready'); navigateSection('deployments') }} className="nb-btn-white mt-7 inline-flex items-center gap-2 px-5 py-3 font-mono text-[10px] font-black uppercase">Open control plane <ChevronRight className="h-4 w-4" /></button>
+            </section>
+          ) : null}
         </div>
       </main>
     )
@@ -695,8 +836,13 @@ export function ProvisionConsole({
               <div className="grid gap-5 lg:grid-cols-2">
                 <div className="border-[3px] border-[#111] bg-white p-6 shadow-[4px_4px_0_#111]">
                   <div className="font-mono text-[9px] font-black uppercase tracking-[.12em] text-[#777]">Organization</div>
-                  <div className="mt-3 text-[24px] font-extrabold">{asText(me.organization,'display_name','legal_name')}</div>
-                  <div className="mt-5 border-t-2 border-[#111] pt-4 text-[12px] font-medium text-[#666]">Type: {asText(me.organization,'organization_type')}</div>
+                  <div className="mt-4 flex items-center gap-4">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border-[3px] border-[#111] bg-white">
+                      {(organizationInfo.branding?.logoUrl || me.tenantProfile?.logoUrl) ? <img src={String(organizationInfo.branding?.logoUrl || me.tenantProfile?.logoUrl)} alt="" className="h-full w-full object-contain p-2" /> : <Building2 className="h-7 w-7" />}
+                    </div>
+                    <div><div className="text-[24px] font-extrabold">{asText(me.organization,'display_name','legal_name')}</div>{asText(me.organization,'domain') !== '—' ? <div className="mt-1 font-mono text-[10px] font-bold text-[#666]">{asText(me.organization,'domain')}</div> : null}</div>
+                  </div>
+                  <div className="mt-5 border-t-2 border-[#111] pt-4 text-[12px] font-medium text-[#666]">Type: {asText(me.organization,'organization_type')} · Logo source: {organizationInfo.branding?.source || me.tenantProfile?.logoSource || 'none'}</div>
                 </div>
                 <div className="border-[3px] border-[#111] bg-white p-6 shadow-[4px_4px_0_#111]">
                   <div className="font-mono text-[9px] font-black uppercase tracking-[.12em] text-[#777]">Verified tenant</div>
