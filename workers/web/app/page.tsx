@@ -1,3 +1,5 @@
+import { InteractiveNav } from './interactive-nav'
+
 const solutions = [
   { number: '01', title: 'Document automation', description: 'Turn PDFs and office files into structured, reviewable work.', href: 'https://www.beaglabs.com/solutions/document-automation' },
   { number: '02', title: 'Internal app factory', description: 'Build useful interfaces around the processes you already run.', href: 'https://www.beaglabs.com/solutions/internal-app-factory' },
@@ -6,12 +8,7 @@ const solutions = [
 
 export default function Home() {
  return <main>
-  <header className="nav">
-   <nav aria-label="Primary" className="nav-inner">
-    <div className="nav-links"><a href="#solutions">Solutions</a><a href="#how-it-works">How it works</a><a href="#trial">Trial</a></div>
-    <a className="brand" href="/" aria-label="Beag Labs home"><span>B_</span> Beag Labs</a>
-   </nav>
-  </header>
+  <InteractiveNav />
   <section className="grid-bg hero">
    <div className="container hero-grid">
     <div>
