@@ -10,8 +10,7 @@
     "deploy": "vinext-cloudflare deploy",
     "check": "vinext check",
     "setup:cloudflare": "vinext init --platform=cloudflare",
-    "inspect:output": "node -e \"const fs=require('node:fs');for(const p of ['dist/server/wrangler.json','dist/client/wrangler.json','dist/server/index.js']) console.log(p,fs.existsSync(p)?'FOUND':'MISSING')\"",
-    "deploy:response-store": "cf deploy --prebuilt --mode production --worker beaglabs-web-preview-response-store"
+    "inspect:output": "node -e \"const fs=require('node:fs');for(const p of ['dist/server/wrangler.json','dist/client/wrangler.json','dist/server/index.js']) console.log(p,fs.existsSync(p)?'FOUND':'MISSING')\""
   },
   "dependencies": {
     "next": "^16.3.6",
@@ -19,11 +18,10 @@
     "react-dom": "^19.2.6",
     "vinext": "latest",
     "@vinext/cloudflare": "latest",
-    "react-server-dom-webpack": "^19.2.6",
-    "@cloudflare/workers-response-store": "latest"
+    "react-server-dom-webpack": "^19.2.6"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "latest",
+    "@cloudflare/vite-plugin": "beta",
     "@vitejs/plugin-rsc": "latest",
     "@vitejs/plugin-react": "latest",
     "cf": "latest",
