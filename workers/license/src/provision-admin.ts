@@ -183,7 +183,9 @@ app.get('/api/v1/provisioned-accounts', async (c) => {
       ...row,
       marketplace_trial_status: Number.isFinite(end) ? (end > Date.now() ? 'active' : 'ended') : null,
       marketplace_trial_days_remaining: Number.isFinite(end) ? Math.max(0, Math.ceil((end - Date.now()) / 86_400_000)) : null,
-      logo_url: null,
+      logo_url: row.domain && c.env.LOGO_DEV_TOKEN
+        ? `${c.env.BASE_URL}/api/v1/provisioned-accounts/${encodeURIComponent(String(row.organization_id))}/logo?environment=commercial`
+        : null,
       source: 'marketplace',
     }
   })
@@ -200,10 +202,18 @@ app.get('/api/v1/provisioned-accounts/:organizationId/logo', async (c) => {
       WHERE ot.organization_id=? AND tp.environment=? LIMIT 1`,
     args: [organizationId, environment],
   }))
-  if (!profile) return c.json({ error: 'logo_not_found' }, 404)
+  // Marketplace subscribers may not have an Entra tenant profile until they onboard.
+  const marketplaceOrg = !profile ? first<Row>(await getDb(c.env).execute({
+    sql: 'SELECT o.domain FROM organizations o JOIN marketplace_vm_customers m ON m.organization_id=o.id WHERE o.id=? LIMIT 1',
+    args: [organizationId],
+  })) : null
+  if (!profile && !marketplaceOrg) return c.json({ error: 'logo_not_found' }, 404)
 
-  let source = typeof profile.entra_logo_url === 'string' && profile.entra_logo_url ? profile.entra_logo_url : null
-  if (!source && profile.primary_domain && c.env.LOGO_DEV_TOKEN) {
+  let source = profile && typeof profile.entra_logo_url === 'string' && profile.entra_logo_url ? profile.entra_logo_url : null
+  if (!source && marketplaceOrg?.domain && c.env.LOGO_DEV_TOKEN) {
+    source = `https://img.logo.dev/${encodeURIComponent(String(marketplaceOrg.domain))}?token=${encodeURIComponent(c.env.LOGO_DEV_TOKEN)}&size=192&format=png&theme=light&retina=true`
+  }
+  if (!source && profile?.primary_domain && c.env.LOGO_DEV_TOKEN) {
     source = `https://img.logo.dev/${encodeURIComponent(String(profile.primary_domain))}?token=${encodeURIComponent(c.env.LOGO_DEV_TOKEN)}&size=192&format=png&theme=light&retina=true`
   }
   if (!source) return c.json({ error: 'logo_not_found' }, 404)
