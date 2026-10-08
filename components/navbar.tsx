@@ -10,9 +10,9 @@ import {
 
 const GROUPS = [
   { name: 'Solutions', links: [
-    { title: 'Document Automation', href: '/products/papyrus#documents', description: 'Turn documents into structured, actionable workflows.' },
-    { title: 'Internal App Factory', href: '/products/papyrus#factory', description: 'Create governed internal applications.' },
-    { title: 'Agentic Modernization', href: '/products/papyrus', description: 'Modernize existing processes and legacy interfaces.' },
+    { title: 'Document Automation', href: '/solutions/document-automation', description: 'Turn documents into structured, actionable workflows.' },
+    { title: 'Internal App Factory', href: '/solutions/internal-app-factory', description: 'Create governed internal applications.' },
+    { title: 'Agentic Modernization', href: '/solutions/agentic-modernization', description: 'Modernize existing processes and legacy interfaces.' },
     { title: 'Use Cases', href: '/use-cases', description: 'Explore industry workflows.' },
   ] },
   { name: 'Explore', links: [
