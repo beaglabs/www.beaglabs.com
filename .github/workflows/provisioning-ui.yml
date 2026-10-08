@@ -9,6 +9,7 @@ on:
       - 'components/provision/**'
       - 'components/ui/**'
       - 'lib/license-control-plane.ts'
+      - 'tsconfig.provisioning.json'
       - '.github/workflows/provisioning-ui.yml'
 
 jobs:
@@ -25,4 +26,4 @@ jobs:
           node-version: '24'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec tsc --noEmit
+      - run: pnpm exec tsc --noEmit -p tsconfig.provisioning.json
