@@ -44,9 +44,12 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
+    icon: [{ url: '/favicon-demo.svg', type: 'image/svg+xml' }, { url: '/favicon.png', type: 'image/png' }],
+    shortcut: '/favicon-demo.svg',
+    apple: '/apple-icon.png',
   },
+  applicationName: 'Beag Labs',
+  manifest: '/manifest.webmanifest',
   openGraph: {
     title: 'Solving the boring problems. — Beag Labs',
     description: homeDescription,
@@ -73,12 +76,21 @@ export const metadata: Metadata = {
   },
 }
 
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Beag Labs',
+  url: 'https://www.beaglabs.com',
+  description: homeDescription,
+  publisher: { '@type': 'Organization', name: 'Beag Labs' },
+}
+
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Beag Labs',
   url: 'https://www.beaglabs.com',
-  logo: 'https://www.beaglabs.com/favicon.png',
+  logo: 'https://www.beaglabs.com/favicon-demo.svg',
   description: homeDescription,
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [
@@ -103,7 +115,7 @@ export default function RootLayout({
       >
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationJsonLd, websiteJsonLd]) }}
         />
         <PosthogConsentGate />
         {children}
