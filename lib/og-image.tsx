@@ -64,11 +64,12 @@ async function renderHomeOgImage() {
     <div style={{
       width: 1200, height: 630, display: 'flex', position: 'relative',
       backgroundColor: '#fafaf9', color: INK, overflow: 'hidden',
-      backgroundImage: 'linear-gradient(90deg,rgba(17,17,17,0.12) 1px,transparent 1px),linear-gradient(rgba(17,17,17,0.12) 1px,transparent 1px)',
-      backgroundSize: '32px 32px',
+
       padding: '46px',
     }}>
-      <div style={{display:'flex',width:'100%',height:'100%',flexDirection:'column',justifyContent:'space-between'}}>
+      {Array.from({length: 38}, (_,i) => <div key={'v'+i} style={{position:'absolute',top:0,left:i*32,width:1,height:630,backgroundColor:'rgba(17,17,17,0.12)'}} />)}
+      {Array.from({length: 20}, (_,i) => <div key={'h'+i} style={{position:'absolute',left:0,top:i*32,width:1200,height:1,backgroundColor:'rgba(17,17,17,0.12)'}} />)}
+      <div style={{display:'flex',position:'relative',width:'100%',height:'100%',flexDirection:'column',justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
           <div style={{display:'flex',alignItems:'center',gap:13}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:60,height:60,backgroundColor:INK,color:WHITE,border:'5px solid '+ORANGE,boxShadow:'5px 5px 0px #111',fontFamily:family,fontSize:31,fontWeight:900}}>B_</div>
