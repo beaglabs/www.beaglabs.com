@@ -46,14 +46,14 @@ const AGREEMENTS: Record<PortalEnvironment, Array<{
   commercial: [
     {
       type: 'terms-of-service',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Commercial Terms of Service',
       href: 'https://www.beaglabs.com/provision/commercial/terms',
       summary: 'Commercial product terms governing use of the Beag Labs provisioning service and Papyrus.',
     },
     {
       type: 'privacy-policy',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Privacy Policy',
       href: 'https://www.beaglabs.com/provision/commercial/privacy',
       summary: 'How Beag Labs handles account, provisioning, support, and operational metadata.',
@@ -62,14 +62,14 @@ const AGREEMENTS: Record<PortalEnvironment, Array<{
   government: [
     {
       type: 'government-deployment-acknowledgment',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Government Deployment Acknowledgment',
       href: 'https://www.beaglabs.com/provision/government/acknowledgment',
       summary: 'Deployment responsibilities and use acknowledgment. The applicable contract, order, OTA, or license controls if terms conflict.',
     },
     {
       type: 'privacy-policy',
-      version: '2026-10-07',
+      version: '2026-10-08',
       title: 'Privacy & Data Handling Notice',
       href: 'https://www.beaglabs.com/provision/government/privacy',
       summary: 'How Beag Labs handles provisioning and account metadata for connected government deployments.',
