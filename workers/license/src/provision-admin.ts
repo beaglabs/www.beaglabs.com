@@ -103,6 +103,23 @@ app.get('/api/v1/provisioned-accounts', async (c) => {
       am.display_name AS account_manager_name,
       am.email AS account_manager_email,
       (SELECT COUNT(*) FROM managed_deployments md WHERE md.organization_id=o.id AND md.status!='retired') AS deployment_count,
+      CASE WHEN ps.environment='commercial' THEN COALESCE(
+        (SELECT MIN(m.first_seen_at) FROM marketplace_vm_customers m WHERE m.organization_id=o.id),
+        (SELECT MIN(md.created_at) FROM managed_deployments md
+          WHERE md.organization_id=o.id AND md.environment='commercial' AND md.marketplace_plan IS NOT NULL)
+      ) ELSE NULL END AS marketplace_trial_started_at,
+      CASE WHEN ps.environment='commercial' THEN strftime(
+        '%Y-%m-%dT%H:%M:%fZ',
+        COALESCE(
+          (SELECT MIN(m.first_seen_at) FROM marketplace_vm_customers m WHERE m.organization_id=o.id),
+          (SELECT MIN(md.created_at) FROM managed_deployments md
+            WHERE md.organization_id=o.id AND md.environment='commercial' AND md.marketplace_plan IS NOT NULL)
+        ),
+        '+1 month'
+      ) ELSE NULL END AS marketplace_trial_ends_at,
+      (SELECT md.marketplace_plan FROM managed_deployments md
+        WHERE md.organization_id=o.id AND md.environment='commercial' AND md.marketplace_plan IS NOT NULL
+        ORDER BY md.created_at ASC LIMIT 1) AS marketplace_plan,
       (SELECT COUNT(*) FROM agreement_acceptances aa WHERE aa.organization_id=o.id AND aa.environment=ps.environment) AS agreement_count,
       (SELECT oli.id FROM organization_license_issuances oli WHERE oli.organization_id=o.id AND oli.status='issued' ORDER BY oli.issued_at DESC LIMIT 1) AS active_license_issuance_id,
       (SELECT oli.license_id FROM organization_license_issuances oli WHERE oli.organization_id=o.id AND oli.status='issued' ORDER BY oli.issued_at DESC LIMIT 1) AS active_license_id,
@@ -115,12 +132,21 @@ app.get('/api/v1/provisioned-accounts', async (c) => {
     WHERE ps.rn=1
     ORDER BY ps.last_seen_at DESC
   `)
-  const items = rows<Row>(result).map((row) => ({
-    ...row,
-    logo_url: row.logo_source !== 'none'
-      ? `${c.env.BASE_URL}/api/v1/provisioned-accounts/${encodeURIComponent(String(row.organization_id))}/logo?environment=${encodeURIComponent(String(row.environment))}`
-      : null,
-  }))
+  const items = rows<Row>(result).map((row) => {
+    const trialEndsAt = row.marketplace_trial_ends_at ? Date.parse(String(row.marketplace_trial_ends_at)) : NaN
+    return {
+      ...row,
+      marketplace_trial_status: row.environment !== 'commercial' || !Number.isFinite(trialEndsAt)
+        ? null
+        : trialEndsAt > Date.now() ? 'active' : 'ended',
+      marketplace_trial_days_remaining: row.environment !== 'commercial' || !Number.isFinite(trialEndsAt)
+        ? null
+        : Math.max(0, Math.ceil((trialEndsAt - Date.now()) / 86_400_000)),
+      logo_url: row.logo_source !== 'none'
+        ? `${c.env.BASE_URL}/api/v1/provisioned-accounts/${encodeURIComponent(String(row.organization_id))}/logo?environment=${encodeURIComponent(String(row.environment))}`
+        : null,
+    }
+  })
   return c.json({ items })
 })
 
