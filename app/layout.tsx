@@ -25,7 +25,7 @@ const robotoCondensed = Roboto_Condensed({
 const homeDescription =
   'Beag Labs helps teams automate documents, create internal apps and modernize legacy workflows with customer-hosted agentic software.'
 
-const homeOgImage = 'https://www.beaglabs.com/og?variant=home&v=2026-10-08-papyrus-hero'
+const homeOgImage = 'https://www.beaglabs.com/og?variant=home&v=2026-10-08-clean-hero-v2'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
