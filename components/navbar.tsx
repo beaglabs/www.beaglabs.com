@@ -10,9 +10,9 @@ import {
 
 const GROUPS = [
   { name: 'Solutions', links: [
-    { title: 'Document Automation', href: '/products/papyrus#documents', description: 'Turn documents into structured, actionable workflows.' },
-    { title: 'Internal App Factory', href: '/products/papyrus#factory', description: 'Create governed internal applications.' },
-    { title: 'Agentic Modernization', href: '/products/papyrus', description: 'Modernize existing processes and legacy interfaces.' },
+    { title: 'Document Automation', href: '/solutions/document-automation', description: 'Turn documents into structured, actionable workflows.' },
+    { title: 'Internal App Factory', href: '/solutions/internal-app-factory', description: 'Create governed internal applications.' },
+    { title: 'Agentic Modernization', href: '/solutions/agentic-modernization', description: 'Modernize existing processes and legacy interfaces.' },
     { title: 'Use Cases', href: '/use-cases', description: 'Explore industry workflows.' },
   ] },
   { name: 'Explore', links: [
@@ -40,10 +40,6 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
   return (
     <nav aria-label="Primary" className="fixed inset-x-0 z-50 border-b-[3px] border-[#111] bg-[#ff5f1f] text-[#111]" style={{ top: bannerHeight }}>
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-3 px-6 lg:px-9">
-        <Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center gap-3 text-[#111]">
-          <span className="border-2 border-[#111] bg-[#111] px-2.5 py-1 text-[18px] font-extrabold tracking-[-.04em] text-white">B_</span>
-          <span className="hidden font-mono text-[10px] font-bold uppercase tracking-[.22em] lg:inline">Beag Labs</span>
-        </Link>
         <div className="hidden items-center gap-3 md:flex">
           <NavigationMenu viewport={false}>
             <NavigationMenuList>
@@ -69,10 +65,11 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/products/papyrus" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-3 py-2 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] shadow-[3px_3px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#111] sm:px-4">
-            <img src="/papyrus-logo.svg" alt="" className="h-4 w-4" /> See Papyrus
-          </Link>
+        <div className="flex items-center gap-3">
+<Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center gap-3 text-[#111]">
+                    <span className="border-2 border-[#111] bg-[#111] px-2.5 py-1 text-[18px] font-extrabold tracking-[-.04em] text-white">B_</span>
+                    <span className="hidden font-mono text-[10px] font-bold uppercase tracking-[.22em] lg:inline">Beag Labs</span>
+                  </Link>
           <button type="button" className="inline-flex h-10 w-10 items-center justify-center border-2 border-[#111] bg-white md:hidden" aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileOpen} aria-controls="mobile-site-navigation" onClick={() => setMobileOpen(v => !v)}>
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
