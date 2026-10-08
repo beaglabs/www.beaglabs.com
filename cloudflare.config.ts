@@ -3,7 +3,7 @@ import { defineConfig, defineWorker } from 'cf/config'
 // Staging only: never bind the production domain until the full app is tested.
 export default defineConfig({
   worker: defineWorker({
-    name: 'beaglabs-web-real-preview',
+    name: 'beaglabs-web-preview-v2',
     entrypoint: 'vinext/server/fetch-handler',
     compatibilityDate: '2026-10-08',
     compatibilityFlags: ['nodejs_compat'],
