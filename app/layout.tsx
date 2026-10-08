@@ -3,7 +3,6 @@ import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
 import { Toaster } from '@/components/ui/sonner'
-import { ogImageUrl } from '@/lib/seo'
 import './globals.css'
 
 const workSans = Work_Sans({
@@ -26,11 +25,7 @@ const robotoCondensed = Roboto_Condensed({
 const homeDescription =
   'Beag Labs helps teams automate documents, create internal apps and modernize legacy workflows with customer-hosted agentic software.'
 
-const homeOgImage = ogImageUrl({
-  title: 'Solving the boring problems.',
-  description: homeDescription,
-  label: 'Document Automation · Internal Apps · Modernization',
-})
+const homeOgImage = 'https://www.beaglabs.com/og?variant=home&v=2026-10-08-papyrus-hero'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
