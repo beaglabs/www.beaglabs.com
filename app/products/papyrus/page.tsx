@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowRight, Check, FileText, Layers3, Play, Terminal } from 'lucide-react'
 
 import { Navbar } from '@/components/navbar'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 import { SiteFooter } from '@/components/site-footer'
 import { DocumentDemo } from '@/components/papyrus/document-demo'
 import { LegacyAppDemo } from '@/components/papyrus/legacy-app-demo'
@@ -42,6 +43,7 @@ export default function PapyrusProductPage() {
       <section className="overflow-hidden border-b-[3px] border-[#111] pt-16">
         <div className="mx-auto max-w-[1440px]">
           <div className="px-6 py-16 text-center lg:px-9 lg:py-24">
+            <div className="text-left"><Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Papyrus', url: '/products/papyrus' }]} /></div>
             <span className="nb-label mb-7 inline-flex items-center gap-2"><span className="h-2 w-2 bg-[#ff5f1f]" />Papyrus / Put your knowledge to work</span>
             <h1 className="mx-auto max-w-[1100px] font-[family-name:var(--font-display)] text-[56px] font-black uppercase leading-[.93] tracking-[-.035em] sm:text-[78px] xl:text-[94px]">The Agentic Modernization Factory</h1>
             <p className="mx-auto mt-7 max-w-[850px] text-[17px] font-medium leading-[1.75] text-[#444]">{description}</p>
