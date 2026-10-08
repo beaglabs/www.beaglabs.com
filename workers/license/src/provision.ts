@@ -133,10 +133,11 @@ function base64url(bytes: Uint8Array): string {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
 }
 
-function decodeBase64url(value: string): Uint8Array {
+function decodeBase64url(value: string): ArrayBuffer {
   const padded = value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=')
   const binary = atob(padded)
-  return Uint8Array.from(binary, (char) => char.charCodeAt(0))
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
 }
 
 function randomToken(bytes = 32): string {
@@ -1021,7 +1022,7 @@ app.get('/api/provision/private/billing', async (c) => {
           FROM marketplace_vm_customers WHERE organization_id=? ORDER BY usage_date DESC,last_seen_at DESC LIMIT 250`,
     args: [session.organization_id],
   }))
-  const totals = items.reduce((acc, row) => {
+  const totals = items.reduce<{ estimatedCharge: number; normalizedUsage: number }>((acc, row) => {
     acc.estimatedCharge += Number(row.estimated_charge ?? 0) || 0
     acc.normalizedUsage += Number(row.normalized_usage ?? 0) || 0
     return acc
