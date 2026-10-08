@@ -1,47 +1,35 @@
-# Beag Labs homepage on Cloudflare Workers (vinext)
+# Actual Beag Labs website on Cloudflare Workers
 
-This **standalone, homepage-only proof of concept** lives under `workers/web/` and is isolated from the repository's existing Next.js site and Vercel deployment. It reproduces the new homepage's messaging and key sections rather than importing the production app's server APIs or native binaries.
+The former standalone homepage replica has been removed. **This is now a thin launcher** for the REAL Next.js website at the repository root: `../../app`, `../../components`, `../../public`, and all its existing routes.
 
-## Local development
+Cloudflare/Vite configuration is at the **repository root**:
+- `../../vite.config.ts`
+- `../../cloudflare.config.ts`
+- `../../package.json` (vinext scripts added without changing existing `next dev` / `next build`)
 
-```sh
-cd workers/web
+## Install and build the REAL application
+
+From the Git repository root (not inside this directory):
+
+```bash
 npm install
-npm run dev
-npm run check
-npm run build
+npm run check:vinext
+npm run build:vinext
 ```
 
-## Cloudflare preview deployment
+Review errors carefully: the production app uses native `takumi-js`, `pg`, authentication, Hygraph, and other API routes, unlike the earlier replica. Native dependencies and secret bindings may require compatibility fixes.
 
-```sh
-cd workers/web
-npm install
-npx vinext check
+## Deploy the REAL application to a *different* preview Worker
+
+```bash
+# from repository root
 npx cf auth login
-# Or set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
-npm run deploy
+npm run deploy:cloudflare
+node workers/web/scripts/verify-deployment.mjs
 ```
 
-The Worker is named `beaglabs-web-preview`. No production route or custom domain is configured. Check the resulting `*.workers.dev` hostname printed by the deploy command.
+Or run `npm run deploy` from here to invoke the root deploy script. The new Worker is `beaglabs-web-real-preview`, keeping the old replica URL untouched until you verify the full app. The deployment has **no production custom-domain route**.
 
-**Do not point `www.beaglabs.com` at this proof of concept.** Routes other than `/` are intentionally not implemented. Trial and solution links point to the current production site. The preview is `noindex` to prevent search duplication. No licensing, authentication, CRM, or database functions are part of this deployment.
+Before production rollout, check interactive navigation, fonts, CSS, favicons, Open Graph endpoint, auth callbacks, licensing, API routes, and sensitive data handling. The smoke-test does not validate all dynamic business functionality. **Do not move DNS until these pass.**
 
-### Notes
-
-- vinext is under active development and may have compatibility gaps. Run the build and preview tests before deployment.
-- The separate package and no-import design avoid the parent Next.js app's native `pg` / OG-image dependencies.
-- This repository change does not provision Cloudflare credentials or perform a deployment.
-- Once this passes, a full-site migration can be planned without impacting Vercel.
-
-## Troubleshooting dependency installation
-
-Run **`npm install`**, not `npm run install`: `install` is an npm command, not a script declared in this package. If the first install failed, `vinext` was never downloaded, so `vite build` reports `ERR_MODULE_NOT_FOUND`. The previously specified `@cloudflare/vite-plugin@^2.0.0` was unavailable from npm; the package now uses the published latest version. Re-run installation before building. If npm still resolves a stale package-lock from the monorepo root, remove only the failed local installation/lockfile after checking what is tracked, then retry.
-
-Cloudflare's current vinext installation guide recommends `npx vinext init --platform=cloudflare` for generating/updating the most compatible Worker configuration. If a Cloudflare-specific build error occurs after installing, run that initializer inside this isolated directory and review its changes before committing.
-
-## Single-Worker preview (current configuration)
-
-This prototype intentionally uses **no Response Store**. Do not run `deploy:response-store` or select Response Store in the interactive initializer. If running `npm run setup:cloudflare` again, select a cache-free mode supported by that initializer, or skip the initializer because the source config is already provided. There is no image optimizer because the page uses CSS instead of `next/image`.
-
-If `npm install` reports `Invalid Version:` without naming a dependency, check for a stale workspace/lockfile state rather than assuming a specific package is at fault. Try `npm install --package-lock=false` from `workers/web` to isolate lockfile resolution. Inspect the npm debug log for the `verbose stack` and `silly placeDep` lines to identify the source; do not delete the repository root lockfile blindly.
+The repo `main` baseline may have older marketing copy than other unmerged branches; the build deliberately uses exactly the branch's actual website sources, not a recreated homepage.
