@@ -1,12 +1,10 @@
 import { Hono, type Context } from 'hono'
 import { secureHeaders } from 'hono/secure-headers'
-import { ZodError, type ZodType } from 'zod'
+import { z, ZodError, type ZodType } from 'zod'
 import { buildAuth } from './auth'
 import { first, getDb, parseJsonArray, rows } from './db'
 import { adminOids, isDeploymentProfile, type Bindings } from './env'
 import { deploymentIdForPublicKey, payloadSha256, signLicense, type LicensePayload } from './license'
-import crmApp from './crm'
-import captureApp from './capture'
 import {
   contactCreateSchema,
   contactPatchSchema,
@@ -60,7 +58,7 @@ app.all('/api/auth/*', (c) => buildAuth(c.env).handler(c.req.raw))
 
 app.get('/health', async (c) => {
   await getDb(c.env).execute('SELECT 1 AS ok')
-  return c.json({ ok: true, service: 'beaglabs-license', apiRelease: 'crm-v2' })
+  return c.json({ ok: true, service: 'beaglabs-license', apiRelease: 'provisioning-v1' })
 })
 
 app.get('/login', (c) => c.html(`<!doctype html>
@@ -103,14 +101,6 @@ app.get('/admin', async (c) => {
     note: 'This service has no partner self-service surface.',
   })
 })
-
-// Flexible capture CRM routes also have a canonical fallback mount.
-app.all('/api/v2/capture/*', (c) => captureApp.fetch(c.req.raw, c.env, c.executionCtx))
-
-// Defense-in-depth: CRM v2 is normally dispatched by entry.ts. Keep the
-// canonical license app aware of the same routes so an alternate/fallback
-// dispatch path cannot turn a valid CRM request into the legacy 404.
-app.all('/api/v2/crm/*', (c) => crmApp.fetch(c.req.raw, c.env, c.executionCtx))
 
 app.use('/api/v1/*', async (c, next) => {
   const admin = await getAdmin(c)
@@ -199,6 +189,140 @@ async function patchRow(c: AppContext, table: string, recordId: string, patch: R
 }
 
 app.get('/api/v1/me', (c) => c.json({ admin: c.get('admin') }))
+
+
+const accountManagerPatchSchema = z.object({
+  title: z.string().trim().max(160).nullable().optional(),
+  bookingUrl: z.string().trim().url().max(2048).nullable().optional(),
+  avatarUrl: z.string().trim().url().max(2048).nullable().optional(),
+  active: z.boolean().optional(),
+}).strict()
+
+const accountManagerAssignmentSchema = z.object({
+  accountManagerId: z.string().trim().min(1).nullable(),
+}).strict()
+
+app.get('/api/v1/account-managers', async (c) => {
+  const result = await getDb(c.env).execute(`
+    SELECT am.*,
+      (SELECT COUNT(*) FROM organization_account_managers oam WHERE oam.account_manager_id=am.id) AS organization_count
+    FROM account_managers am
+    ORDER BY am.active DESC,am.display_name
+  `)
+  return c.json({ items: rows<Row>(result) })
+})
+
+app.get('/api/v1/account-manager-assignments', async (c) => {
+  const result = await getDb(c.env).execute(`
+    SELECT oam.organization_id,oam.account_manager_id,oam.role,oam.assigned_at,oam.assigned_by_oid,
+      COALESCE(o.display_name,o.legal_name) AS organization_name,
+      am.display_name AS account_manager_name,am.email AS account_manager_email
+    FROM organization_account_managers oam
+    JOIN organizations o ON o.id=oam.organization_id
+    JOIN account_managers am ON am.id=oam.account_manager_id
+    ORDER BY organization_name,oam.role
+  `)
+  return c.json({ items: rows<Row>(result) })
+})
+
+app.post('/api/v1/account-managers/sync-me', async (c) => {
+  const admin = c.get('admin')
+  const timestamp = now()
+  const displayName = admin.name?.trim() || admin.email?.split('@')[0] || admin.oid
+  const existing = first<Row>(await getDb(c.env).execute({
+    sql: 'SELECT * FROM account_managers WHERE entra_oid=? LIMIT 1',
+    args: [admin.oid],
+  }))
+  const recordId = existing?.id ? String(existing.id) : id('am')
+  await getDb(c.env).execute({
+    sql: `INSERT INTO account_managers
+      (id,entra_oid,entra_tenant_id,display_name,email,title,avatar_url,booking_url,active,created_at,updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?)
+      ON CONFLICT(entra_oid) DO UPDATE SET
+        entra_tenant_id=excluded.entra_tenant_id,
+        display_name=excluded.display_name,
+        email=excluded.email,
+        active=1,
+        updated_at=excluded.updated_at`,
+    args: [
+      recordId, admin.oid, admin.tenantId, displayName, admin.email ?? null,
+      existing?.title ?? null, existing?.avatar_url ?? null, existing?.booking_url ?? null,
+      1, existing?.created_at ?? timestamp, timestamp,
+    ],
+  })
+  const after = await requireRow(c, 'SELECT * FROM account_managers WHERE entra_oid=?', [admin.oid], 'not_found', 'Account manager not found.')
+  await audit(c, existing ? 'account_manager.sync' : 'account_manager.create', 'account_manager', String(after.id), null, null, existing, after)
+  return c.json(after, existing ? 200 : 201)
+})
+
+app.patch('/api/v1/account-managers/:id', async (c) => {
+  const managerId = c.req.param('id')
+  const body = await parseBody(c, accountManagerPatchSchema)
+  const db = getDb(c.env)
+  const before = await requireRow(c, 'SELECT * FROM account_managers WHERE id=?', [managerId], 'not_found', 'Account manager not found.')
+  const assignments: string[] = []
+  const args: unknown[] = []
+  if (body.title !== undefined) { assignments.push('title=?'); args.push(body.title || null) }
+  if (body.bookingUrl !== undefined) { assignments.push('booking_url=?'); args.push(body.bookingUrl || null) }
+  if (body.avatarUrl !== undefined) { assignments.push('avatar_url=?'); args.push(body.avatarUrl || null) }
+  if (body.active !== undefined) { assignments.push('active=?'); args.push(body.active ? 1 : 0) }
+  if (!assignments.length) throw new ApiError(422, 'empty_patch', 'No mutable account-manager fields were provided.')
+  assignments.push('updated_at=?')
+  args.push(now(), managerId)
+  await db.execute({ sql: `UPDATE account_managers SET ${assignments.join(',')} WHERE id=?`, args })
+  const after = await requireRow(c, 'SELECT * FROM account_managers WHERE id=?', [managerId], 'not_found', 'Account manager not found.')
+  await audit(c, 'account_manager.update', 'account_manager', managerId, null, null, before, after)
+  return c.json(after)
+})
+
+app.get('/api/v1/organizations/:id/account-manager', async (c) => {
+  const organizationId = c.req.param('id')
+  await requireRow(c, 'SELECT id FROM organizations WHERE id=?', [organizationId], 'organization_not_found', 'Organization not found.')
+  const manager = first<Row>(await getDb(c.env).execute({
+    sql: `SELECT am.*,oam.role,oam.assigned_at,oam.assigned_by_oid
+          FROM organization_account_managers oam
+          JOIN account_managers am ON am.id=oam.account_manager_id
+          WHERE oam.organization_id=? AND oam.role='primary' LIMIT 1`,
+    args: [organizationId],
+  }))
+  return c.json({ accountManager: manager })
+})
+
+app.put('/api/v1/organizations/:id/account-manager', async (c) => {
+  const organizationId = c.req.param('id')
+  const body = await parseBody(c, accountManagerAssignmentSchema)
+  await requireRow(c, 'SELECT id FROM organizations WHERE id=?', [organizationId], 'organization_not_found', 'Organization not found.')
+  const db = getDb(c.env)
+  const before = first<Row>(await db.execute({
+    sql: `SELECT am.* FROM organization_account_managers oam
+          JOIN account_managers am ON am.id=oam.account_manager_id
+          WHERE oam.organization_id=? AND oam.role='primary' LIMIT 1`,
+    args: [organizationId],
+  }))
+  if (body.accountManagerId === null) {
+    await db.execute({
+      sql: `DELETE FROM organization_account_managers WHERE organization_id=? AND role='primary'`,
+      args: [organizationId],
+    })
+    await audit(c, 'account_manager.unassign', 'organization', organizationId, organizationId, null, before, null)
+    return c.json({ accountManager: null })
+  }
+  const manager = await requireRow(c, 'SELECT * FROM account_managers WHERE id=? AND active=1', [body.accountManagerId], 'account_manager_not_found', 'Active account manager not found.')
+  const admin = c.get('admin')
+  const timestamp = now()
+  await db.execute({
+    sql: `INSERT INTO organization_account_managers
+      (organization_id,account_manager_id,role,assigned_by_oid,assigned_at)
+      VALUES (?,?,?,?,?)
+      ON CONFLICT(organization_id,role) DO UPDATE SET
+        account_manager_id=excluded.account_manager_id,
+        assigned_by_oid=excluded.assigned_by_oid,
+        assigned_at=excluded.assigned_at`,
+    args: [organizationId, manager.id, 'primary', admin.oid, timestamp],
+  })
+  await audit(c, 'account_manager.assign', 'organization', organizationId, organizationId, null, before, manager)
+  return c.json({ accountManager: manager })
+})
 
 app.get('/api/v1/products', async (c) => {
   const result = await getDb(c.env).execute('SELECT * FROM products WHERE active=1 ORDER BY sku')

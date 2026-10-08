@@ -9,8 +9,7 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && wrangler deploy --dry-run --outdir .wrangler-dry-run",
     "db:apply": "node --env-file-if-exists=.dev.vars scripts/apply-schema.mjs && node --env-file-if-exists=.dev.vars scripts/apply-auth-schema.mjs",
-    "deploy:worker": "wrangler deploy",
-    "db:reset-crm": "node --env-file-if-exists=.dev.vars scripts/reset-crm-data.mjs"
+    "deploy:worker": "wrangler deploy"
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.7.7",

@@ -14,12 +14,6 @@
   "triggers": {
     "crons": ["17 */6 * * *"]
   },
-  "r2_buckets": [
-    {
-      "binding": "CRM_ATTACHMENTS",
-      "bucket_name": "beaglabs-license-attachments"
-    }
-  ],
   "observability": {
     "enabled": true
   },
@@ -28,7 +22,8 @@
     "PARTNERS_EMAIL": "partnerships@beaglabs.com",
     "PARTNER_FROM_EMAIL": "Beag Labs Partners <partners@mail.beaglabs.com>",
     "MARKETPLACE_FROM_EMAIL": "Beag Labs Marketplace <sales@mail.beaglabs.com>",
-    "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ"
+    "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ",
+    "PAPYRUS_VCPU_HOURLY_USD": "0.50"
   },
   "secrets": {
     "required": [
