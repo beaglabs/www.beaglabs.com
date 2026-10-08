@@ -23,7 +23,7 @@ for (const path of assetPaths) {
   const type = response.headers.get('content-type') || ''
   pass(response.ok && body.length > 0 && (isCss ? type.includes('css') : /javascript|ecmascript/.test(type)), `Asset ${path}`)
 }
-for (const [path, expected] of [['/favicon.png','image/png'], ['/robots.txt','text/plain'], ['/sitemap.xml','xml']]) {
+for (const [path, expected] of [['/favicon-demo.svg','image/svg+xml'], ['/manifest.webmanifest','json'], ['/llms.txt','text/plain'], ['/llms-full.txt','text/plain'], ['/robots.txt','text/plain'], ['/sitemap.xml','xml']]) {
   const { response, body } = await get(path)
   const type = response.headers.get('content-type') || ''
   pass(response.ok && type.includes(expected) && body.length > 0, `${path} is available`)
@@ -31,5 +31,6 @@ for (const [path, expected] of [['/favicon.png','image/png'], ['/robots.txt','te
 pass(page.body.includes('og:image'), 'Open Graph image metadata exists')
 pass(page.body.includes('rel="canonical"'), 'Canonical URL exists')
 pass(page.body.includes('application/ld+json'), 'Structured data exists')
+pass(page.body.includes('favicon-demo.svg'), 'Demo favicon referenced in page metadata')
 console.log('Check production-only integrations separately: licensing, auth, APIs, native OG and database routes.')
 if (failures) { console.error(`${failures} checks failed`); process.exitCode = 1 }
