@@ -3,9 +3,9 @@ import Image from 'next/image'
 
 const footerColumns = [
   { title: 'Solutions', links: [
-    { label: 'Document Automation', href: '/products/papyrus#documents' },
-    { label: 'Internal App Factory', href: '/products/papyrus#factory' },
-    { label: 'Agentic Modernization', href: '/capability/modernization' },
+    { label: 'Document Automation', href: '/solutions/document-automation' },
+    { label: 'Internal App Factory', href: '/solutions/internal-app-factory' },
+    { label: 'Agentic Modernization', href: '/solutions/agentic-modernization' },
     { label: 'All Capabilities', href: '/capabilities' },
   ] },
   { title: 'Explore', links: [
@@ -49,7 +49,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="max-w-[280px] text-[14px] font-semibold leading-[1.7] text-[#222]">
-              Customer-hosted agentic software for document automation, internal application creation and legacy modernization. Built for organizations that need control of their data and workflows.
+              Your documents, apps and legacy systems—working together on your infrastructure.
             </p>
             <div className="mt-5 flex items-center gap-4">
               <a
