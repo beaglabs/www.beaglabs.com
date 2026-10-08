@@ -35,3 +35,17 @@ PARTNERS_EMAIL="partnerships@beaglabs.com"
 PARTNER_FROM_EMAIL="Beag Labs Partners <partners@mail.beaglabs.com>"
 MARKETPLACE_FROM_EMAIL="Beag Labs Marketplace <sales@mail.beaglabs.com>"
 LOGO_DEV_TOKEN="pk_PJhuwvcfSPKKCJJxJcElsQ"
+
+
+# Customer provisioning portal. Commercial can fall back to MICROSOFT_CLIENT_ID /
+# MICROSOFT_CLIENT_SECRET if that app registration is configured as multitenant.
+PROVISION_COMMERCIAL_CLIENT_ID=""
+PROVISION_COMMERCIAL_CLIENT_SECRET=""
+
+# Azure Government is a separate national cloud and requires a separate app registration.
+PROVISION_GOVERNMENT_CLIENT_ID=""
+PROVISION_GOVERNMENT_CLIENT_SECRET=""
+
+# Papyrus Marketplace software rate used for portal estimates only. Microsoft
+# Marketplace remains the billing system of record.
+PAPYRUS_VCPU_HOURLY_USD="0.50"
