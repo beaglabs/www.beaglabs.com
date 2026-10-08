@@ -66,10 +66,10 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
           </NavigationMenu>
         </div>
         <div className="flex items-center gap-3">
-<Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center gap-3 text-[#111]">
-                    <span className="border-2 border-[#111] bg-[#111] px-2.5 py-1 text-[18px] font-extrabold tracking-[-.04em] text-white">B_</span>
-                    <span className="hidden font-mono text-[10px] font-bold uppercase tracking-[.22em] lg:inline">Beag Labs</span>
-                  </Link>
+          <Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center gap-3 text-[#111]">
+            <span className="border-2 border-[#111] bg-[#111] px-2.5 py-1 text-[18px] font-extrabold tracking-[-.04em] text-white">B_</span>
+            <span className="hidden font-mono text-[10px] font-bold uppercase tracking-[.22em] lg:inline">Beag Labs</span>
+          </Link>
           <button type="button" className="inline-flex h-10 w-10 items-center justify-center border-2 border-[#111] bg-white md:hidden" aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileOpen} aria-controls="mobile-site-navigation" onClick={() => setMobileOpen(v => !v)}>
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
