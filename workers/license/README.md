@@ -251,34 +251,21 @@ The website console at https://www.beaglabs.com/licensing now supports organizat
 
 See [administration and rollout](../../docs/organization-licensing.md) for generation, download, setup, migration order, renewal, and offline enforcement limits. Apply `organization-license-schema.sql` before deploying this Worker; `scripts/apply-schema.mjs` includes it. No per-VM deployment registration is needed for organization issuance. Existing deployment-bound licenses and issuance tables remain supported.
 
+## Provisioning control plane
 
-## CRM data + attachments
+The customer-facing Papyrus control plane lives at `https://www.beaglabs.com/provision` and uses this Worker for authentication, deployment registration, Marketplace billing mirrors, agreement acceptance, Account Manager assignment, Azure VM resize operations, and offline-license downloads.
 
-The private CRM at `/licensing` uses the same Turso database as the license control plane. Its additive schema lives in `crm-schema.sql` and is applied by the normal migration command:
+Its additive schema is `provisioning-schema.sql` and is applied by the normal migration command:
 
 ```bash
 cd workers/license
 npm run db:apply
 ```
 
-CRM contract/supporting-file uploads use a private Cloudflare R2 bucket bound as `CRM_ATTACHMENTS`. Create the production bucket once before deploying the Worker version that contains the CRM:
+Account Managers are internal Beag Labs Microsoft Entra identities. An authorized licensing administrator signs into `/licensing/account-managers` and selects **Add/update me** to create or refresh their Account Manager record. Customer-to-manager assignment is stored in the control plane, while identity authorization remains anchored to the existing Entra tenant and immutable OID allowlist.
 
-```bash
-npx wrangler r2 bucket create beaglabs-license-attachments
-```
+Customer provisioning authentication is separate from internal licensing administration. Commercial provisioning uses a multitenant Microsoft Entra app registration; Azure Government requires a separate app registration in the government national cloud. Configure the optional `PROVISION_COMMERCIAL_CLIENT_ID` / `PROVISION_COMMERCIAL_CLIENT_SECRET` and `PROVISION_GOVERNMENT_CLIENT_ID` / `PROVISION_GOVERNMENT_CLIENT_SECRET` bindings described in `.dev.vars.example`.
 
-The bucket is intentionally not public. Files are downloaded through the authenticated Worker route.
+Marketplace deployments register through a short-lived opaque claim. The portal verifies the signed-in user's VM-management permission against the exact Azure VM before binding it to the organization. Azure access tokens are encrypted at rest and deliberately short-lived; users reauthenticate before later management actions when the token expires.
 
-### Clear CRM/business data
-
-The CRM reset intentionally preserves the product catalog and Better Auth/session/JWKS tables so a sales-data reset does not rotate signing/auth state or lock administrators out.
-
-From the CLI, with the production Turso credentials in the environment:
-
-```bash
-CRM_RESET_CONFIRM=RESET_CRM_DATA npm run db:reset-crm
-```
-
-The same reset is available in the private CRM under **Settings → CRM reset** after this Worker version is deployed. The in-app reset also removes objects from `CRM_ATTACHMENTS`.
-
-Do not run the reset command against production unless you intend to delete customer, lead, opportunity, order, entitlement, deployment, Marketplace, attachment-metadata, reference, and audit records.
+The portal does not replace Microsoft billing. `/provision/commercial/billing` mirrors Papyrus Marketplace usage already synchronized from Partner Center, while Microsoft remains the invoice and billing system of record.
