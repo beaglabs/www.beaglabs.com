@@ -160,7 +160,7 @@ async function seal(env: Bindings, value: string): Promise<string> {
   const iv = new Uint8Array(12)
   crypto.getRandomValues(iv)
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
+    { name: 'AES-GCM', iv: iv.buffer as ArrayBuffer },
     await encryptionKey(env),
     new TextEncoder().encode(value),
   )
