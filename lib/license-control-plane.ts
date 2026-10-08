@@ -39,7 +39,7 @@ export async function licenseFetch<T>(path: string, init: RequestInit = {}): Pro
   return payload as T
 }
 
-export function licensingCallbackUrl(path = '/licensing'): string {
+export function licensingCallbackUrl(path = '/crm'): string {
   if (typeof window === 'undefined') return `https://www.beaglabs.com${path}`
   return `${window.location.origin}${path}`
 }

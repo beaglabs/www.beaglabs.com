@@ -39,10 +39,9 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   return (
     <nav aria-label="Primary" className="fixed inset-x-0 z-50 border-b-[3px] border-[#111] bg-[#ff5f1f] text-[#111]" style={{ top: bannerHeight }}>
-      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-3 px-6 lg:px-9">
-        <Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center gap-3 text-[#111]">
+      <div className="flex h-16 w-full items-center justify-between gap-3 px-3 lg:px-4">
+        <Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center text-[#111]">
           <span className="border-2 border-[#111] bg-[#111] px-2.5 py-1 text-[18px] font-extrabold tracking-[-.04em] text-white">B_</span>
-          <span className="hidden font-mono text-[10px] font-bold uppercase tracking-[.22em] lg:inline">Beag Labs</span>
         </Link>
         <div className="hidden items-center gap-3 md:flex">
           <NavigationMenu viewport={false}>
