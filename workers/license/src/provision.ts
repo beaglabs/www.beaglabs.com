@@ -1235,8 +1235,8 @@ app.get('/api/provision/private/billing', async (c) => {
   const session = c.get('portalSession')
   if (!session.organization_id) return c.json({ items: [], totals: { estimatedCharge: 0, normalizedUsage: 0 } })
   const items = rows<Row>(await getDb(c.env).execute({
-    sql: `SELECT usage_date,offer_name,sku,vm_size,cloud_instance_name,normalized_usage,raw_usage,estimated_charge,marketplace_subscription_id,last_seen_at
-          FROM marketplace_vm_customers WHERE organization_id=? ORDER BY usage_date DESC,last_seen_at DESC LIMIT 250`,
+    sql: `SELECT last_seen_at AS usage_date,offer_name,sku,vm_size,cloud_instance_name,normalized_usage,raw_usage,estimated_charge,marketplace_subscription_id,last_seen_at
+          FROM marketplace_vm_customers WHERE organization_id=? ORDER BY last_seen_at DESC LIMIT 250`,
     args: [session.organization_id],
   }))
   const totals = items.reduce<{ estimatedCharge: number; normalizedUsage: number }>((acc, row) => {
