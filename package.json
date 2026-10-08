@@ -72,9 +72,9 @@
     "posthog-js": "^1.392.0",
     "posthog-node": "^5.38.2",
     "radix-ui": "^1.6.2",
-    "react": "19.2.4",
+    "react": "19.2.6",
     "react-day-picker": "9.13.2",
-    "react-dom": "19.2.4",
+    "react-dom": "19.2.6",
     "react-hook-form": "^7.54.1",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
@@ -90,7 +90,7 @@
     "zod": "^3.24.1",
     "vinext": "latest",
     "@vinext/cloudflare": "latest",
-    "react-server-dom-webpack": "19.2.4"
+    "react-server-dom-webpack": "19.2.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.0",
