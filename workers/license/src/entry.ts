@@ -9,8 +9,7 @@ import provisioningBrandingApp from './provisioning-branding'
 import marketplaceApp from './marketplace'
 import marketplaceLeadApp from './marketplace-leads'
 import marketplaceReportApp, { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
-import crmApp from './crm'
-import captureApp from './capture'
+import provisionApp from './provision'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
@@ -121,12 +120,8 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
     return publicApp.fetch(request, env, ctx)
   }
 
-  if (path.startsWith('/api/v2/capture/')) {
-    return captureApp.fetch(request, env, ctx)
-  }
-
-  if (path.startsWith('/api/v2/crm/')) {
-    return crmApp.fetch(request, env, ctx)
+  if (path.startsWith('/api/provision/')) {
+    return provisionApp.fetch(request, env, ctx)
   }
 
   if (path === '/partners/apply' || path === '/partners/apply/') {
