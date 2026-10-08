@@ -37,3 +37,24 @@ if (failures) {
   console.error(`Deployment verification failed: ${failures} check(s)`)
   process.exitCode = 1
 } else console.log('Deployment HTML, CSS, and JavaScript checks passed')
+
+const checks = [
+  ['/favicon.svg', /image\/svg\+xml|text\/xml|application\/xml/, '<svg'],
+  ['/llms.txt', /text\/plain/, 'Beag Labs'],
+  ['/robots.txt', /text\/plain/, 'Disallow: /'],
+  ['/manifest.webmanifest', /json/, 'Beag Labs'],
+]
+for (const [path, mime, needle] of checks) {
+  const response = await fetch(new URL(path, pageUrl))
+  const body = await response.text()
+  const type = response.headers.get('content-type') || ''
+  console.log(`GET ${path} => ${response.status} [${type}]`)
+  verify(response.ok && mime.test(type) && body.includes(needle), `${path} is served with valid content`)
+}
+verify(/rel=["']icon["']/.test(html) && html.includes('/favicon.svg'), 'Rendered document references its favicon')
+verify(html.includes('og:image') && html.includes('twitter:card'), 'Social preview metadata is rendered')
+verify(html.includes('rel="canonical"') && html.includes('www.beaglabs.com'), 'Production canonical is rendered')
+verify(html.includes('application/ld+json') && html.includes('schema.org'), 'Organization / WebSite JSON-LD is rendered')
+verify(html.includes('fonts.googleapis.com/css2'), 'Font stylesheet is referenced')
+verify(/noindex/.test(html), 'Worker preview is noindex')
+if (failures) process.exitCode = 1
