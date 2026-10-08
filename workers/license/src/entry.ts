@@ -23,9 +23,9 @@ const ALLOWED_BROWSER_ORIGINS = new Set([
 ])
 
 const UI_REDIRECTS = new Map<string, string>([
-  ['/', '/licensing'],
-  ['/login', '/licensing'],
-  ['/admin', '/licensing'],
+  ['/', '/crm'],
+  ['/login', '/crm'],
+  ['/admin', '/crm'],
   ['/partners/apply', '/partners/apply'],
   ['/partner/login', '/partners/login'],
   ['/partner/invite', '/partners/invite'],
