@@ -39,3 +39,9 @@ The Worker is named `beaglabs-web-preview`. No production route or custom domain
 Run **`npm install`**, not `npm run install`: `install` is an npm command, not a script declared in this package. If the first install failed, `vinext` was never downloaded, so `vite build` reports `ERR_MODULE_NOT_FOUND`. The previously specified `@cloudflare/vite-plugin@^2.0.0` was unavailable from npm; the package now uses the published latest version. Re-run installation before building. If npm still resolves a stale package-lock from the monorepo root, remove only the failed local installation/lockfile after checking what is tracked, then retry.
 
 Cloudflare's current vinext installation guide recommends `npx vinext init --platform=cloudflare` for generating/updating the most compatible Worker configuration. If a Cloudflare-specific build error occurs after installing, run that initializer inside this isolated directory and review its changes before committing.
+
+## Single-Worker preview (current configuration)
+
+This prototype intentionally uses **no Response Store**. Do not run `deploy:response-store` or select Response Store in the interactive initializer. If running `npm run setup:cloudflare` again, select a cache-free mode supported by that initializer, or skip the initializer because the source config is already provided. There is no image optimizer because the page uses CSS instead of `next/image`.
+
+If `npm install` reports `Invalid Version:` without naming a dependency, check for a stale workspace/lockfile state rather than assuming a specific package is at fault. Try `npm install --package-lock=false` from `workers/web` to isolate lockfile resolution. Inspect the npm debug log for the `verbose stack` and `silly placeDep` lines to identify the source; do not delete the repository root lockfile blindly.
