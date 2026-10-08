@@ -49,7 +49,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="max-w-[280px] text-[14px] font-semibold leading-[1.7] text-[#222]">
-              Customer-hosted agentic software for document automation, internal application creation and legacy modernization. Built for organizations that need control of their data and workflows.
+              Document automation, internal apps, and legacy modernization—on your infrastructure.
             </p>
             <div className="mt-5 flex items-center gap-4">
               <a
