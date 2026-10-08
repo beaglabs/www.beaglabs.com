@@ -11,7 +11,7 @@
     "generate-raise-pdf": "tsx scripts/generate-raise-pdf.ts",
     "generate-capability-pdf": "tsx scripts/generate-capability-pdf.ts",
     "check:vinext": "vinext check",
-    "build:vinext": "vite build",
+    "build:vinext": "vite build && node scripts/check-cloudflare-output.mjs",
     "deploy:cloudflare": "vinext-cloudflare deploy",
     "dev:vinext": "vite dev"
   },
@@ -106,7 +106,7 @@
     "vite": "^8.0.0",
     "@vitejs/plugin-rsc": "latest",
     "@vitejs/plugin-react": "latest",
-    "@cloudflare/vite-plugin": "latest",
+    "@cloudflare/vite-plugin": "beta",
     "cf": "latest"
   }
 }
