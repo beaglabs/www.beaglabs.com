@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "vinext-cloudflare deploy",
-    "check": "vinext check"
+    "check": "vinext check",
+    "setup:cloudflare": "vinext init --platform=cloudflare",
+    "inspect:output": "node -e \"const fs=require('node:fs');for(const p of ['dist/server/wrangler.json','dist/client/wrangler.json','dist/server/index.js']) console.log(p,fs.existsSync(p)?'FOUND':'MISSING')\""
   },
   "dependencies": {
     "next": "^16.3.6",
