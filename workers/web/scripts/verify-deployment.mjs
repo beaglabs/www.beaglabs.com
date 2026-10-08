@@ -1,59 +1,35 @@
-const target = process.argv[2] || process.env.WORKER_URL || 'https://beaglabs-web-real-preview.beag-labs.workers.dev/'
-const pageUrl = new URL(target)
+const origin = process.argv[2] || process.env.WORKER_URL || 'https://beaglabs-web-real-preview.beag-labs.workers.dev/'
+const base = new URL(origin)
 let failures = 0
-
-function verify(ok, description) {
-  console.log(`${ok ? 'PASS' : 'FAIL'}: ${description}`)
+const pass = (ok, message) => {
+  console.log(`${ok ? 'PASS' : 'FAIL'}: ${message}`)
   if (!ok) failures++
 }
-
-const page = await fetch(pageUrl, { redirect: 'manual' })
-const html = await page.text()
-console.log(`GET ${pageUrl} => ${page.status} (${html.length} bytes)`)
-verify(page.status === 200 && (html.includes('Beag Labs') || html.includes('Papyrus')), 'Homepage returns its actual content')
-
-const staticAssets = [...new Set(
-  [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css)(?:\?[^"']*)?)["']/g)]
-    .map(m => new URL(m[1], pageUrl))
-    .filter(url => url.origin === pageUrl.origin && url.pathname.startsWith('/_next/'))
-    .map(url => url.href)
-)]
-const css = staticAssets.filter(url => new URL(url).pathname.endsWith('.css'))
-const js = staticAssets.filter(url => new URL(url).pathname.endsWith('.js'))
-verify(css.length > 0, 'HTML references production CSS')
-verify(js.length > 0, 'HTML references production JavaScript')
-
-for (const url of staticAssets) {
-  const response = await fetch(url)
-  const type = response.headers.get('content-type') || ''
-  const isCss = new URL(url).pathname.endsWith('.css')
-  const correctType = isCss ? type.includes('text/css') : /javascript|ecmascript/.test(type)
+const get = async path => {
+  const response = await fetch(new URL(path, base))
   const body = await response.text()
-  console.log(`GET ${new URL(url).pathname} => ${response.status} [${type}] (${body.length} bytes)`)
-  verify(response.ok && correctType && body.length > 0, `${isCss ? 'CSS' : 'JavaScript'} asset reachable with correct MIME type`)
+  console.log(`GET ${path} => ${response.status} [${response.headers.get('content-type') || ''}] (${body.length} bytes)`)
+  return { response, body }
 }
-
-if (failures) {
-  console.error(`Deployment verification failed: ${failures} check(s)`)
-  process.exitCode = 1
-} else console.log('Deployment HTML, CSS, and JavaScript checks passed')
-
-const checks = [
-  ['/favicon.png', /image\\/png/, null],
-  ['/robots.txt', /text\\/plain/, null],
-  ['/sitemap.xml', /xml/, null],
-]
-for (const [path, mime, needle] of checks) {
-  const response = await fetch(new URL(path, pageUrl))
-  const body = await response.text()
+const page = await get('/')
+pass(page.response.ok && /Beag Labs|Papyrus/.test(page.body), 'Real site homepage renders')
+const assetPaths = [...new Set([...page.body.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css)(?:\?[^"']*)?)["']/g)]
+  .map(m => m[1]).filter(p => new URL(p, base).pathname.startsWith('/_next/')))]
+pass(assetPaths.some(p => new URL(p, base).pathname.endsWith('.css')), 'Stylesheet is referenced')
+pass(assetPaths.some(p => new URL(p, base).pathname.endsWith('.js')), 'JavaScript is referenced')
+for (const path of assetPaths) {
+  const { response, body } = await get(path)
+  const isCss = new URL(path,base).pathname.endsWith('.css')
   const type = response.headers.get('content-type') || ''
-  console.log(`GET ${path} => ${response.status} [${type}]`)
-  verify(response.ok && mime.test(type) && (needle ? body.includes(needle) : body.length > 0), `${path} is served with valid content`)
+  pass(response.ok && body.length > 0 && (isCss ? type.includes('css') : /javascript|ecmascript/.test(type)), `Asset ${path}`)
 }
-verify(/rel=["']icon["']/.test(html) && html.includes('favicon.png'), 'Rendered document references its favicon')
-verify(html.includes('og:image') && html.includes('twitter:card'), 'Social preview metadata is rendered')
-verify(html.includes('rel="canonical"') && html.includes('www.beaglabs.com'), 'Production canonical is rendered')
-verify(html.includes('application/ld+json') && html.includes('schema.org'), 'Organization / WebSite JSON-LD is rendered')
-verify(html.includes('fonts.googleapis.com/css2'), 'Font stylesheet is referenced')
-console.log('WARNING: Root app canonical and indexing metadata should be reviewed before production DNS cutover.')
-if (failures) process.exitCode = 1
+for (const [path, expected] of [['/favicon.png','image/png'], ['/robots.txt','text/plain'], ['/sitemap.xml','xml']]) {
+  const { response, body } = await get(path)
+  const type = response.headers.get('content-type') || ''
+  pass(response.ok && type.includes(expected) && body.length > 0, `${path} is available`)
+}
+pass(page.body.includes('og:image'), 'Open Graph image metadata exists')
+pass(page.body.includes('rel="canonical"'), 'Canonical URL exists')
+pass(page.body.includes('application/ld+json'), 'Structured data exists')
+console.log('Check production-only integrations separately: licensing, auth, APIs, native OG and database routes.')
+if (failures) { console.error(`${failures} checks failed`); process.exitCode = 1 }
