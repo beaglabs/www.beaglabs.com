@@ -45,14 +45,14 @@ export default async function CapabilityPage({ params }: { params: Params }) {
             <Breadcrumbs
               items={[
                 { name: 'Home', url: '/' },
-                { name: 'Capabilities', url: '/' },
+                { name: 'Capabilities', url: '/capabilities' },
                 { name: cap.title, url: `/capability/${cap.slug}` },
               ]}
             />
             <div className="mt-8 mb-6 flex items-center gap-3">
               <span className="nb-label">{cap.eyebrow}</span>
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">
-                {cap.number} / 05
+                {cap.number} / {String(capabilities.length).padStart(2, '0')}
               </span>
             </div>
 
