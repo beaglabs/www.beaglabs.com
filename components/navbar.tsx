@@ -17,7 +17,7 @@ const GROUPS = [
   ] },
   { name: 'Explore', links: [
     { title: 'Papyrus', href: '/products/papyrus', description: 'See the agentic modernization factory.' },
-    { title: 'Capabilities', href: '/capabilities', description: 'Explore technical capabilities.' },
+    { title: 'Capabilities', href: '/capability/modernization', description: 'Explore technical capabilities.' },
     { title: 'Trust & Security', href: '/trust/papyrus', description: 'Review the Papyrus trust model.' },
   ] },
   { name: 'Resources', links: [
