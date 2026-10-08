@@ -1,6 +1,5 @@
 "use client"
 
-import Link from 'next/link'
 import {
   Building2,
   CalendarDays,
@@ -75,6 +74,19 @@ const sectionNames: Record<Section, string> = {
   agreements: 'Agreements',
 }
 
+const sections = Object.keys(sectionNames) as Section[]
+
+function normalizeSection(value: string | undefined): Section {
+  return sections.includes(value as Section) ? value as Section : 'deployments'
+}
+
+function sectionFromPath(environment: Environment): Section {
+  if (typeof window === 'undefined') return 'deployments'
+  const prefix = `/provision/${environment}/`
+  if (!window.location.pathname.startsWith(prefix)) return 'deployments'
+  return normalizeSection(window.location.pathname.slice(prefix.length).split('/')[0])
+}
+
 function asText(row: Row | null | undefined, ...keys: string[]): string {
   if (!row) return '—'
   for (const key of keys) {
@@ -140,9 +152,7 @@ export function ProvisionConsole({
   environment: Environment
   initialSection: string
 }) {
-  const section = (['deployments', 'billing', 'licenses', 'organization', 'agreements'].includes(initialSection)
-    ? initialSection
-    : 'deployments') as Section
+  const [section, setSection] = useState<Section>(() => normalizeSection(initialSection))
   const [me, setMe] = useState<Me | null>(null)
   const [checking, setChecking] = useState(true)
   const [signingIn, setSigningIn] = useState(false)
@@ -162,6 +172,21 @@ export function ProvisionConsole({
   const [sizeLoading, setSizeLoading] = useState(false)
   const [selectedSize, setSelectedSize] = useState('')
   const [resizing, setResizing] = useState(false)
+
+  const navigateSection = useCallback((next: Section) => {
+    if (next === section) return
+    const url = new URL(window.location.href)
+    url.pathname = `/provision/${environment}/${next}`
+    window.history.pushState({ provisionSection: next }, '', url)
+    setSection(next)
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [environment, section])
+
+  useEffect(() => {
+    const onPopState = () => setSection(sectionFromPath(environment))
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [environment])
 
   const loadMe = useCallback(async () => {
     try {
@@ -476,20 +501,22 @@ export function ProvisionConsole({
       <aside className="flex border-b-[3px] border-[#111] bg-white lg:sticky lg:top-0 lg:h-screen lg:flex-col lg:border-b-0 lg:border-r-[3px]">
         <div className="flex w-full flex-col">
           <div className="border-b-[3px] border-[#111] px-5 py-5">
-            <Link href="/" className="font-[family-name:var(--font-display)] text-[25px] font-black uppercase tracking-[-.04em]">Beag Labs</Link>
+            <a href="/" className="font-[family-name:var(--font-display)] text-[25px] font-black uppercase tracking-[-.04em]">Beag Labs</a>
             <div className="mt-2 font-mono text-[9px] font-black uppercase tracking-[.15em] text-[#b63700]">Papyrus control plane</div>
           </div>
           <nav className="grid grid-cols-2 p-3 sm:grid-cols-3 lg:block lg:space-y-1">
             {nav.map(({ id, label, icon: Icon }) => {
               const active = id === section
               return (
-                <Link
+                <button
+                  type="button"
                   key={id}
-                  href={`/provision/${environment}/${id}`}
-                  className={`flex items-center gap-3 border-2 px-3 py-3 text-[12px] font-extrabold ${active ? 'border-[#111] bg-[#ff5f1f] shadow-[3px_3px_0_#111]' : 'border-transparent hover:border-[#111] hover:bg-[#fff3e6]'}`}
+                  onClick={() => navigateSection(id)}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex w-full items-center gap-3 border-2 px-3 py-3 text-left text-[12px] font-extrabold ${active ? 'border-[#111] bg-[#ff5f1f] shadow-[3px_3px_0_#111]' : 'border-transparent hover:border-[#111] hover:bg-[#fff3e6]'}`}
                 >
                   <Icon className="h-4 w-4" strokeWidth={2.5} /> {label}
-                </Link>
+                </button>
               )
             })}
           </nav>
@@ -560,7 +587,7 @@ export function ProvisionConsole({
                 <div className="font-mono text-[9px] font-black uppercase tracking-[.12em]">Action required</div>
                 <div className="mt-1 text-[15px] font-extrabold">Review the required {environment} agreements before linking a new deployment.</div>
               </div>
-              <Link href={`/provision/${environment}/agreements`} className="nb-btn-white inline-flex shrink-0 items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase">Review agreements <ChevronRight className="h-3.5 w-3.5" /></Link>
+              <button type="button" onClick={() => navigateSection('agreements')} className="nb-btn-white inline-flex shrink-0 items-center gap-2 px-4 py-2.5 font-mono text-[9px] font-black uppercase">Review agreements <ChevronRight className="h-3.5 w-3.5" /></button>
             </div>
           ) : null}
 
