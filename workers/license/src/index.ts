@@ -212,6 +212,19 @@ app.get('/api/v1/account-managers', async (c) => {
   return c.json({ items: rows<Row>(result) })
 })
 
+app.get('/api/v1/account-manager-assignments', async (c) => {
+  const result = await getDb(c.env).execute(`
+    SELECT oam.organization_id,oam.account_manager_id,oam.role,oam.assigned_at,oam.assigned_by_oid,
+      COALESCE(o.display_name,o.legal_name) AS organization_name,
+      am.display_name AS account_manager_name,am.email AS account_manager_email
+    FROM organization_account_managers oam
+    JOIN organizations o ON o.id=oam.organization_id
+    JOIN account_managers am ON am.id=oam.account_manager_id
+    ORDER BY organization_name,oam.role
+  `)
+  return c.json({ items: rows<Row>(result) })
+})
+
 app.post('/api/v1/account-managers/sync-me', async (c) => {
   const admin = c.get('admin')
   const timestamp = now()
