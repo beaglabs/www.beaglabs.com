@@ -8,9 +8,9 @@ import { Breadcrumbs } from '@/components/breadcrumbs'
 export type SEOCard = {title:string; description:string; href:string; tag?:string}
 type Props = { eyebrow:string; title:string; intro:string; path:string; cards:SEOCard[]; heading:string; context:string; steps?:{title:string;description:string}[]; faqs?:{question:string;answer:string}[] }
 const lanes = [
- {title:'Document automation',href:'/products/papyrus#documents',Icon:FileText,description:'Transform PDFs, office files and institutional records into workflows.'},
- {title:'Internal app factory',href:'/products/papyrus#factory',Icon:Workflow,description:'Create practical business applications from requirements and existing systems.'},
- {title:'Agentic modernization',href:'/capability/modernization',Icon:FileCode2,description:'Adapt legacy processes and interfaces without unnecessary replacement.'},
+ {title:'Document automation',href:'/solutions/document-automation',Icon:FileText,description:'Transform PDFs, office files and institutional records into workflows.'},
+ {title:'Internal app factory',href:'/solutions/internal-app-factory',Icon:Workflow,description:'Create practical business applications from requirements and existing systems.'},
+ {title:'Agentic modernization',href:'/solutions/agentic-modernization',Icon:FileCode2,description:'Adapt legacy processes and interfaces without unnecessary replacement.'},
 ]
 export function SEOResourcePage({eyebrow,title,intro,path,cards,heading,context,steps,faqs}:Props){
  return <main className="bg-[#fafaf9] text-[#111]">
