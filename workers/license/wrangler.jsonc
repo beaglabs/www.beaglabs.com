@@ -22,6 +22,7 @@
     "PARTNERS_EMAIL": "partnerships@beaglabs.com",
     "PARTNER_FROM_EMAIL": "Beag Labs Partners <partners@mail.beaglabs.com>",
     "MARKETPLACE_FROM_EMAIL": "Beag Labs Marketplace <sales@mail.beaglabs.com>",
+    "TRIAL_NOTIFICATIONS_EMAIL": "4661da0e.beaglabs.onmicrosoft.com@amer.teams.ms",
     "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ",
     "PAPYRUS_VCPU_HOURLY_USD": "0.50"
   },
