@@ -342,8 +342,10 @@ async function findOrCreateOrganization(env: Bindings, companyNameInput: string)
 }
 
 function isTrialUsage(record: Row): boolean {
-  const flag = text(pick(record, 'IsTrial', 'isTrial', 'Trial', 'TrialFlag')).toLowerCase()
-  return flag === 'true' || flag === '1' || flag === 'yes'
+  // The standard Partner Center VM normalized usage query exposes TrialEndDate,
+  // not IsTrial. Don't infer trials from free/BYOL plans or usage alone.
+  const trialEnd = text(pick(record, 'TrialEndDate'))
+  return Boolean(trialEnd && Number.isFinite(Date.parse(trialEnd)))
 }
 
 async function notifyFirstTrialUsage(env: Bindings, record: Row): Promise<void> {
