@@ -16,13 +16,13 @@ Internal team's **Notifications** Teams channel:
 
 ## Before activating
 
-**Website hosting (Vercel) → Environment Variables → Production**
-- `RESEND_API_KEY`: the Resend API key (secret); set in Vercel, not source code.
-- `TRIAL_NOTIFICATIONS_EMAIL`:
+**Cloudflare website and License Worker**
+- `RESEND_API_KEY`: existing secret of the Cloudflare license Worker.
+- `TRIAL_NOTIFICATIONS_EMAIL` is configured in `workers/license/wrangler.jsonc`:
   `4661da0e.beaglabs.onmicrosoft.com@amer.teams.ms`.
 - Optional `TRIAL_NOTIFICATIONS_FROM`: a verified sender such as
   `Beag Labs Marketplace <sales@mail.beaglabs.com>`.
-- Redeploy the website after changing environment variables.
+- Deploy the Cloudflare website and `workers/license` Worker changes. Trial CTA events now post directly to `https://license.beaglabs.com/api/events/trial-click`; no Next.js API route or Vercel env configuration is needed.
 
 **Cloudflare License Worker**
 - `TRIAL_NOTIFICATIONS_EMAIL` is already defined in `wrangler.jsonc`.
@@ -44,7 +44,7 @@ Internal team's **Notifications** Teams channel:
 - The website route checks Origin and Sec-Fetch-Site and suppresses repeated
   notifications per IP/CTA within a warm instance. This is **not** distributed
   rate limiting. Before enabling high-traffic production alerts, configure
-  a Vercel WAF rate-limit rule for POST `/api/events/trial-click` (and consider
+  a Cloudflare WAF rate-limit rule for POST `/api/events/trial-click` (and consider
   switching to hourly rollups). Origin is not an authentication boundary.
 - Neither flow transmits browser IP addresses, session IDs, or customer
   email addresses in notifications.
@@ -52,8 +52,7 @@ Internal team's **Notifications** Teams channel:
 ## Verification
 
 1. Click the hero or final homepage CTA and confirm normal navigation.
-   Verify an internal Teams notification arrives. If not, check Vercel
-   Function logs and Resend email delivery logs.
+   Verify an internal Teams notification arrives. If not, check Cloudflare Worker logs and Resend email delivery logs.
 2. Use a **new valid trial usage** fixture containing `TrialEndDate` and
    recent `UsageDate` in a staging Partner Center report. Verify one alert;
    re-import the same observation and verify no repeat alert.
