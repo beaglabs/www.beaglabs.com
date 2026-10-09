@@ -9,9 +9,9 @@ export function TrialCtaLink({ children, className, placement }: { children: Rea
     try {
       const body = JSON.stringify({ event: "trial.cta.clicked", placement })
       if (navigator.sendBeacon) {
-        navigator.sendBeacon("/api/events/trial-click", new Blob([body], { type: "application/json" }))
+        navigator.sendBeacon("https://license.beaglabs.com/api/events/trial-click", new Blob([body], { type: "text/plain" }))
       } else {
-        void fetch("/api/events/trial-click", { method: "POST", body, headers: { "Content-Type": "application/json" }, keepalive: true }).catch(() => {})
+        void fetch("/api/events/trial-click", { method: "POST", body, headers: { "Content-Type": "text/plain" }, keepalive: true }).catch(() => {})
       }
     } catch { /* trial navigation must always proceed */ }
   }}>{children}</Link>
