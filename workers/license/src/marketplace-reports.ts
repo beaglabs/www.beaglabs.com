@@ -366,7 +366,7 @@ async function notifyFirstTrialUsage(env: Bindings, record: Row): Promise<void> 
       'Usage date: ' + (date || 'not supplied'),
       'CRM: https://www.beaglabs.com/crm',
       'This confirms Marketplace trial usage reporting, not first successful VM boot time.',
-    ].join('\\n'),
+    ].join('\n'),
   })
   if (result.error) throw new Error('Trial alert email failed: ' + result.error.message)
 }
@@ -427,7 +427,9 @@ async function ingestUsageRows(env: Bindings, records: Row[]): Promise<number> {
     written += 1
     // Only newly observed subscriptions with an explicit trial flag produce alerts.
     // Email failures are reported to worker logs; they must not corrupt usage ingestion.
-    if (!existing && isTrialUsage(record)) {
+    const reportedAt = Date.parse(usageDate)
+    const isRecentUsage = Number.isFinite(reportedAt) && reportedAt >= Date.now() - 72 * 60 * 60 * 1000 && reportedAt <= Date.now() + 24 * 60 * 60 * 1000
+    if (!existing && isRecentUsage && isTrialUsage(record)) {
       try { await notifyFirstTrialUsage(env, record) }
       catch (error) { console.error('Marketplace trial notification failed', error) }
     }
