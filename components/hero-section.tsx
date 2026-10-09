@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { TrialCtaLink } from "@/components/trial-cta-link"
 import { ArrowRight } from "lucide-react"
 import { PapyrusDemo } from "@/components/papyrus-demo"
 
@@ -16,7 +17,7 @@ export function HeroSection() {
           Give Papyrus a document, a legacy workflow, or an internal process. It helps turn repetitive work into governed, reviewable actions on your own infrastructure.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link href="/provision/commercial" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-[#ff5f1f] px-5 py-3.5 text-xs font-black uppercase tracking-wide shadow-[4px_4px_0_#111] hover:bg-[#ffdfcf]">Start a one-month trial <ArrowRight className="h-4 w-4" /></Link>
+          <TrialCtaLink placement="hero" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-[#ff5f1f] px-5 py-3.5 text-xs font-black uppercase tracking-wide shadow-[4px_4px_0_#111] hover:bg-[#ffdfcf]">Start a one-month trial <ArrowRight className="h-4 w-4" /></TrialCtaLink>
           <Link href="/products/papyrus" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-5 py-3.5 text-xs font-black uppercase tracking-wide hover:bg-[#faf0eb]">Explore Papyrus</Link>
         </div>
         <p className="mt-7 font-mono text-[10px] font-bold uppercase tracking-wide text-[#555]">Your infrastructure · Your data · Human approvals</p>
