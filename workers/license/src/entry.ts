@@ -94,7 +94,7 @@ const recentTrialClicks = new Map<string, number>()
 async function notifyTrialClick(request: Request, env: Bindings): Promise<Response> {
   const origin = request.headers.get('origin')
   if (!origin || !ALLOWED_BROWSER_ORIGINS.has(origin)) return new Response(null, {status:403})
-  if (request.headers.get('sec-fetch-site') && request.headers.get('sec-fetch-site') !== 'cross-site') return new Response(null, {status:403})
+  if (request.headers.get('sec-fetch-site') && !['same-site','cross-site'].includes(request.headers.get('sec-fetch-site')!)) return new Response(null, {status:403})
   if (Number(request.headers.get('content-length') || 0) > 1024) return new Response(null, {status:413})
   const raw = await request.text()
   if (raw.length > 1024) return new Response(null, {status:413})
@@ -111,7 +111,7 @@ async function notifyTrialClick(request: Request, env: Bindings): Promise<Respon
     from: env.TRIAL_NOTIFICATIONS_FROM || 'Beag Labs Marketplace <sales@mail.beaglabs.com>',
     to: [env.TRIAL_NOTIFICATIONS_EMAIL],
     subject: 'Papyrus — homepage trial CTA clicked',
-    text: ['Anonymous visitor clicked Start a one-month trial.', 'Placement: ' + input.placement, 'Time: ' + new Date(now).toISOString(), 'Destination: /provision/commercial', 'This is not a confirmed Azure trial.'].join('\\n'),
+    text: ['Anonymous visitor clicked Start a one-month trial.', 'Placement: ' + input.placement, 'Time: ' + new Date(now).toISOString(), 'Destination: /provision/commercial', 'This is not a confirmed Azure trial.'].join('\n'),
   })
   if (error) {recentTrialClicks.delete(key);console.error('trial click email failed',error.message);return new Response(null,{status:503})}
   return new Response(null,{status:204})
