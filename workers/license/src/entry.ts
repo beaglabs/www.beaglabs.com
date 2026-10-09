@@ -1,3 +1,4 @@
+import { Resend } from 'resend'
 import licenseApp from './index'
 import portalApp from './portal'
 import applicationApp from './application'
@@ -89,6 +90,33 @@ function uiRedirect(url: URL): Response | null {
   return Response.redirect(target.toString(), 302)
 }
 
+const recentTrialClicks = new Map<string, number>()
+async function notifyTrialClick(request: Request, env: Bindings): Promise<Response> {
+  const origin = request.headers.get('origin')
+  if (!origin || !ALLOWED_BROWSER_ORIGINS.has(origin)) return new Response(null, {status:403})
+  if (request.headers.get('sec-fetch-site') && request.headers.get('sec-fetch-site') !== 'cross-site') return new Response(null, {status:403})
+  if (Number(request.headers.get('content-length') || 0) > 1024) return new Response(null, {status:413})
+  const raw = await request.text()
+  if (raw.length > 1024) return new Response(null, {status:413})
+  let input: Record<string,unknown>
+  try { input = JSON.parse(raw) } catch { return new Response(null, {status:400}) }
+  if (input.event !== 'trial.cta.clicked' || (input.placement !== 'hero' && input.placement !== 'final')) return new Response(null, {status:400})
+  if (!env.RESEND_API_KEY || !env.TRIAL_NOTIFICATIONS_EMAIL) return new Response(null, {status:204})
+  const now = Date.now()
+  const key = (request.headers.get('cf-connecting-ip') || 'anonymous') + '|' + input.placement
+  if (recentTrialClicks.size > 1500) for (const [id, last] of recentTrialClicks) if (now-last > 3600000) recentTrialClicks.delete(id)
+  if (now-(recentTrialClicks.get(key) || 0) < 3600000) return new Response(null, {status:204})
+  recentTrialClicks.set(key, now)
+  const {error} = await new Resend(env.RESEND_API_KEY).emails.send({
+    from: env.TRIAL_NOTIFICATIONS_FROM || 'Beag Labs Marketplace <sales@mail.beaglabs.com>',
+    to: [env.TRIAL_NOTIFICATIONS_EMAIL],
+    subject: 'Papyrus — homepage trial CTA clicked',
+    text: ['Anonymous visitor clicked Start a one-month trial.', 'Placement: ' + input.placement, 'Time: ' + new Date(now).toISOString(), 'Destination: /provision/commercial', 'This is not a confirmed Azure trial.'].join('\\n'),
+  })
+  if (error) {recentTrialClicks.delete(key);console.error('trial click email failed',error.message);return new Response(null,{status:503})}
+  return new Response(null,{status:204})
+}
+
 async function route(request: Request, env: Bindings, ctx: any): Promise<Response> {
   const url = new URL(request.url)
   const path = url.pathname
@@ -96,6 +124,10 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
   if (request.method === 'GET') {
     const redirect = uiRedirect(url)
     if (redirect) return redirect
+  }
+
+  if (path === '/api/events/trial-click' && request.method === 'POST') {
+    return notifyTrialClick(request, env)
   }
 
   if (path.startsWith('/.well-known/')) {
