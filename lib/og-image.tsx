@@ -55,6 +55,53 @@ function formatDate(raw?: string) {
   })
 }
 
+async function renderHomeOgImage() {
+  const font = await displayFontPromise
+  const family = font ? 'Roboto Condensed' : 'sans-serif'
+  // Pure hero composition: no imitation browser, navbar, app screenshots or CTAs.
+  // Satori supports CSS gradients; explicit flex children keep the grid and text reliable.
+  return new ImageResponse(
+    <div style={{
+      width: 1200, height: 630, display: 'flex', position: 'relative',
+      backgroundColor: '#fafaf9', color: INK, overflow: 'hidden',
+
+      padding: '46px',
+    }}>
+      {Array.from({length: 38}, (_,i) => <div key={'v'+i} style={{position:'absolute',top:0,left:i*32,width:1,height:630,backgroundColor:'rgba(17,17,17,0.12)'}} />)}
+      {Array.from({length: 20}, (_,i) => <div key={'h'+i} style={{position:'absolute',left:0,top:i*32,width:1200,height:1,backgroundColor:'rgba(17,17,17,0.12)'}} />)}
+      <div style={{display:'flex',position:'relative',width:'100%',height:'100%',flexDirection:'column',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{display:'flex',alignItems:'center',gap:13}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:60,height:60,backgroundColor:INK,color:WHITE,border:'5px solid '+ORANGE,boxShadow:'5px 5px 0px #111',fontFamily:family,fontSize:31,fontWeight:900}}>B_</div>
+            <div style={{display:'flex',fontFamily:family,fontSize:28,fontWeight:900,letterSpacing:1}}>BEAG LABS</div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',backgroundColor:ORANGE,border:'3px solid '+INK,padding:'12px 17px',fontSize:15,fontWeight:800,letterSpacing:2}}>CUSTOMER-HOSTED AI</div>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',paddingTop:12}}>
+          <div style={{display:'flex',flexDirection:'column',fontFamily:family,fontWeight:900,fontSize:110,lineHeight:0.87,letterSpacing:-3}}>
+            <div style={{display:'flex'}}>SOLVING THE</div>
+            <div style={{display:'flex'}}>BORING</div>
+            <div style={{display:'flex'}}>PROBLEMS<span style={{color:ORANGE}}>.</span></div>
+          </div>
+          <div style={{display:'flex',width:750,height:5,backgroundColor:INK,marginTop:25,marginBottom:22}}/>
+          <div style={{display:'flex',fontSize:23,lineHeight:1.32,fontWeight:600,maxWidth:930}}>
+            Document automation. Internal apps. Legacy modernization.
+          </div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',fontSize:15,fontWeight:800,letterSpacing:2}}>
+          <div style={{display:'flex',backgroundColor:ORANGE,border:'3px solid '+INK,padding:'11px 18px',boxShadow:'5px 5px 0 #111'}}>YOUR INFRASTRUCTURE · YOUR CONTROL</div>
+          <div style={{display:'flex'}}>BEAGLABS.COM ↗</div>
+        </div>
+      </div>
+    </div>,
+    {
+      ...OG_SIZE,
+      ...(font ? {fonts:[{name:'Roboto Condensed',data:font,weight:900 as const,style:'normal' as const}]} : {}),
+      headers:{'Cache-Control':'public, max-age=3600'},
+    }
+  )
+}
+
 export async function renderOgImage(input: OgImageInput) {
   const title = truncate(input.title || 'Beag Labs', 118)
   const description = truncate(input.description || '', 170)
@@ -193,6 +240,7 @@ export async function renderOgImage(input: OgImageInput) {
 }
 
 export function renderOgRequest(request: Request) {
+  if (new URL(request.url).searchParams.get('variant') === 'home') return renderHomeOgImage()
   const { searchParams } = new URL(request.url)
   return renderOgImage({
     title: searchParams.get('title') || 'Beag Labs',

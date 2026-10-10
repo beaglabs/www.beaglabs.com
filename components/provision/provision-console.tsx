@@ -241,13 +241,21 @@ export function ProvisionConsole({
           available: boolean
           items: Row[]
           totals: { estimatedCharge: number; normalizedUsage: number }
-          trial: { active: boolean; endsAt: string | null }
+          trial?: { active: boolean; endsAt: string | null }
           note?: string
         }>('/api/provision/private/billing')
-        setBillingAvailable(result.available)
-        setBilling(result.items)
-        setBillingTotals(result.totals)
-        setBillingTrial(result.trial)
+        // Older or partially initialized licensing backends may omit trial/totals.
+        // Keep billing usable rather than crashing the React tree on undefined.active.
+        setBillingAvailable(result.available !== false)
+        setBilling(Array.isArray(result.items) ? result.items : [])
+        setBillingTotals({
+          estimatedCharge: Number(result.totals?.estimatedCharge ?? 0),
+          normalizedUsage: Number(result.totals?.normalizedUsage ?? 0),
+        })
+        setBillingTrial({
+          active: result.trial?.active === true,
+          endsAt: result.trial?.endsAt ?? null,
+        })
         setBillingNote(result.note ?? '')
       } else if (section === 'licenses') {
         const result = await licenseFetch<{ items: Row[] }>('/api/provision/private/offline-licenses')

@@ -3,7 +3,6 @@ import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
 import { Toaster } from '@/components/ui/sonner'
-import { ogImageUrl } from '@/lib/seo'
 import './globals.css'
 
 const workSans = Work_Sans({
@@ -26,11 +25,7 @@ const robotoCondensed = Roboto_Condensed({
 const homeDescription =
   'Beag Labs helps teams automate documents, create internal apps and modernize legacy workflows with customer-hosted agentic software.'
 
-const homeOgImage = ogImageUrl({
-  title: 'Solving the boring problems.',
-  description: homeDescription,
-  label: 'Document Automation · Internal Apps · Modernization',
-})
+const homeOgImage = 'https://www.beaglabs.com/og?variant=home&v=2026-10-08-clean-hero-v2'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
@@ -44,9 +39,12 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
+    icon: [{ url: '/favicon-demo.svg', type: 'image/svg+xml' }, { url: '/favicon.png', type: 'image/png' }],
+    shortcut: '/favicon-demo.svg',
+    apple: '/apple-icon.png',
   },
+  applicationName: 'Beag Labs',
+  manifest: '/manifest.webmanifest',
   openGraph: {
     title: 'Solving the boring problems. — Beag Labs',
     description: homeDescription,
@@ -73,12 +71,21 @@ export const metadata: Metadata = {
   },
 }
 
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Beag Labs',
+  url: 'https://www.beaglabs.com',
+  description: homeDescription,
+  publisher: { '@type': 'Organization', name: 'Beag Labs' },
+}
+
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Beag Labs',
   url: 'https://www.beaglabs.com',
-  logo: 'https://www.beaglabs.com/favicon.png',
+  logo: 'https://www.beaglabs.com/favicon-demo.svg',
   description: homeDescription,
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [
@@ -103,7 +110,7 @@ export default function RootLayout({
       >
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationJsonLd, websiteJsonLd]) }}
         />
         <PosthogConsentGate />
         {children}

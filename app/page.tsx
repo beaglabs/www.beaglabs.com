@@ -1,10 +1,7 @@
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
-import { CapabilitiesSection } from "@/components/capabilities-section"
-import { CapabilityTracksStrip } from "@/components/capability-tracks-strip"
-import { FeaturedWorkSection } from "@/components/featured-work-section"
-import { EngagementModelSection } from "@/components/engagement-model-section"
+import { ModernizationFeatureCarousel } from "@/components/modernization-feature-carousel"
 import { FinalCTASection } from "@/components/final-cta-section"
 import { SiteFooter } from "@/components/site-footer"
 
@@ -14,10 +11,7 @@ export default function Home() {
       <AnnouncementBanner />
       <Navbar bannerHeight={38} />
       <HeroSection />
-      <CapabilityTracksStrip />
-      <CapabilitiesSection />
-      <FeaturedWorkSection />
-      <EngagementModelSection />
+      <ModernizationFeatureCarousel />
       <FinalCTASection />
       <SiteFooter />
     </main>

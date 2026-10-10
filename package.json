@@ -10,7 +10,10 @@
     "generate-cookbook-pdf": "tsx scripts/generate-cookbook-pdf.ts",
     "generate-raise-pdf": "tsx scripts/generate-raise-pdf.ts",
     "generate-capability-pdf": "tsx scripts/generate-capability-pdf.ts",
-    "deploy:cloudflare": "node scripts/enable-cloudflare-observability.mjs && npx wrangler deploy"
+    "check:vinext": "vinext check",
+    "build:vinext": "vite build && node scripts/check-cloudflare-output.mjs",
+    "deploy:cloudflare": "vinext-cloudflare deploy",
+    "dev:vinext": "vite dev"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.20",
@@ -69,9 +72,9 @@
     "posthog-js": "^1.392.0",
     "posthog-node": "^5.38.2",
     "radix-ui": "^1.6.2",
-    "react": "19.2.4",
+    "react": "19.2.6",
     "react-day-picker": "9.13.2",
-    "react-dom": "19.2.4",
+    "react-dom": "19.2.6",
     "react-hook-form": "^7.54.1",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
@@ -84,7 +87,10 @@
     "tailwind-merge": "^3.3.1",
     "takumi-js": "^2.0.2",
     "vaul": "^1.1.2",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "vinext": "latest",
+    "@vinext/cloudflare": "latest",
+    "react-server-dom-webpack": "19.2.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.0",
@@ -96,6 +102,12 @@
     "tailwindcss": "^4.2.0",
     "tsx": "^4.23.0",
     "tw-animate-css": "1.3.3",
-    "typescript": "5.7.3"
-  }
+    "typescript": "5.7.3",
+    "vite": "^8.0.0",
+    "@vitejs/plugin-rsc": "latest",
+    "@vitejs/plugin-react": "latest",
+    "@cloudflare/vite-plugin": "beta",
+    "cf": "latest"
+  },
+  "type": "module"
 }

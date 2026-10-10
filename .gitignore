@@ -38,3 +38,7 @@ public/cookbook-preview.html
 .env*
 # ...but keep the checked-in example of required env vars
 !.env.example
+
+# Cloudflare vinext output and generated bindings
+.cloudflare/
+.vite/
