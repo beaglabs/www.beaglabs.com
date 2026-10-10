@@ -34,6 +34,17 @@ if (!existsSync(target)) {
 let config
 try { config = JSON.parse(readFileSync(target, 'utf8')) }
 catch { console.error('Generated Cloudflare deployment config is not valid JSON:', target); process.exit(1) }
+// Keep production routing and public Hygraph endpoint in the deployment artifact.
+// Secrets such as HYGRAPH_TOKEN remain remotely managed in Cloudflare.
+config.routes = [{
+  pattern: 'www.beaglabs.com',
+  zone_name: 'beaglabs.com',
+  custom_domain: true,
+}]
+config.vars = {
+  ...(config.vars || {}),
+  HYGRAPH_ENDPOINT: 'https://us-west-2.cdn.hygraph.com/content/cmq44llwh02u708w6rc1atyy7/master',
+}
 config.observability = {
   ...config.observability,
   enabled: true,
