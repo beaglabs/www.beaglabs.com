@@ -29,6 +29,8 @@ export type Bindings = {
   /** Deprecated. Production issuance uses Azure Key Vault and keeps the private key non-exportable. */
   PAPYRUS_LICENSE_PRIVATE_KEY_PEM?: string
   RESEND_API_KEY: string
+  TRIAL_NOTIFICATIONS_EMAIL?: string
+  TRIAL_NOTIFICATIONS_FROM?: string
   PARTNERS_EMAIL: string
   PARTNER_FROM_EMAIL: string
   LOGO_DEV_TOKEN: string

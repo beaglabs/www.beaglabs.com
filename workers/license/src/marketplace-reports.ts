@@ -1,4 +1,5 @@
 import { Hono, type Context } from 'hono'
+import { Resend } from 'resend'
 
 import { buildAuth } from './auth'
 import { first, getDb } from './db'
@@ -340,6 +341,36 @@ async function findOrCreateOrganization(env: Bindings, companyNameInput: string)
   return recordId
 }
 
+function isTrialUsage(record: Row): boolean {
+  // The standard Partner Center VM normalized usage query exposes TrialEndDate,
+  // not IsTrial. Don't infer trials from free/BYOL plans or usage alone.
+  const trialEnd = text(pick(record, 'TrialEndDate'))
+  return Boolean(trialEnd && Number.isFinite(Date.parse(trialEnd)))
+}
+
+async function notifyFirstTrialUsage(env: Bindings, record: Row): Promise<void> {
+  if (!env.TRIAL_NOTIFICATIONS_EMAIL || !env.RESEND_API_KEY || !isTrialUsage(record)) return
+  const subscription = text(pick(record, 'MarketplaceSubscriptionId'))
+  const company = text(pick(record, 'CustomerCompanyName', 'CustomerName')) || 'Marketplace customer'
+  const offer = text(pick(record, 'OfferName'))
+  const date = text(pick(record, 'UsageDate'))
+  const result = await new Resend(env.RESEND_API_KEY).emails.send({
+    from: env.TRIAL_NOTIFICATIONS_FROM || 'Beag Labs Marketplace <sales@mail.beaglabs.com>',
+    to: [env.TRIAL_NOTIFICATIONS_EMAIL],
+    subject: 'Papyrus — new Azure Marketplace trial usage detected',
+    text: [
+      'First reported usage for an Azure Marketplace trial (delayed Partner Center data).',
+      'Customer: ' + company,
+      'Offer: ' + offer,
+      'Marketplace subscription: ' + (subscription || 'not supplied'),
+      'Usage date: ' + (date || 'not supplied'),
+      'CRM: https://www.beaglabs.com/crm',
+      'This confirms Marketplace trial usage reporting, not first successful VM boot time.',
+    ].join('\n'),
+  })
+  if (result.error) throw new Error('Trial alert email failed: ' + result.error.message)
+}
+
 async function ingestUsageRows(env: Bindings, records: Row[]): Promise<number> {
   const db = getDb(env)
   let written = 0
@@ -394,6 +425,14 @@ async function ingestUsageRows(env: Bindings, records: Row[]): Promise<number> {
       ],
     })
     written += 1
+    // Only newly observed subscriptions with an explicit trial flag produce alerts.
+    // Email failures are reported to worker logs; they must not corrupt usage ingestion.
+    const reportedAt = Date.parse(usageDate)
+    const isRecentUsage = Number.isFinite(reportedAt) && reportedAt >= Date.now() - 72 * 60 * 60 * 1000 && reportedAt <= Date.now() + 24 * 60 * 60 * 1000
+    if (!existing && isRecentUsage && isTrialUsage(record)) {
+      try { await notifyFirstTrialUsage(env, record) }
+      catch (error) { console.error('Marketplace trial notification failed', error) }
+    }
 
     await db.execute({
       sql: "UPDATE marketplace_leads SET status='customer',updated_at=? WHERE organization_id=? AND status NOT IN ('customer','closed')",
