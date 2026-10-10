@@ -1,12 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
-import {
-  NavigationMenu, NavigationMenuContent, NavigationMenuItem,
-  NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu'
+import { useEffect, useRef, useState } from 'react'
+import { Menu, X, ArrowUpRight, ChevronDown } from 'lucide-react'
 
 const GROUPS = [
   { name: 'Solutions', links: [
@@ -32,63 +28,57 @@ const GROUPS = [
   ] },
 ] as const
 
-const triggerClass = 'rounded-none border-2 border-transparent bg-transparent px-3 py-2 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] shadow-none hover:border-[#111] hover:bg-white focus:bg-white data-[state=open]:border-[#111] data-[state=open]:bg-white data-[state=open]:text-[#111]'
-const itemClass = 'block rounded-none border-2 border-transparent p-3 text-[#111] outline-none hover:border-[#111] hover:bg-[#ffdfcf] focus:border-[#111] focus:bg-[#ffdfcf]'
-
+/** Floating prompt-sized navigation, shared across all marketing pages. */
 export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [open, setOpen] = useState(false)
+  const root = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const dismiss = (event: PointerEvent) => {
+      if (event.target instanceof Node && !root.current?.contains(event.target)) setOpen(false)
+    }
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', dismiss)
+    document.addEventListener('keydown', escape)
+    return () => {
+      document.removeEventListener('pointerdown', dismiss)
+      document.removeEventListener('keydown', escape)
+    }
+  }, [open])
+
   return (
-    <nav aria-label="Primary" className="fixed inset-x-0 z-50 border-b-[3px] border-[#111] bg-[#ff5f1f] text-[#111]" style={{ top: bannerHeight }}>
-      <div className="flex h-16 w-full items-center gap-3 px-3 lg:px-4">
-        <Link href="/" aria-label="Beag Labs home" className="flex shrink-0 items-center text-[#111]">
-          <span className="border-2 border-[#111] bg-[#111] px-2.5 py-1 text-[18px] font-extrabold tracking-[-.04em] text-white">B_</span>
+    <nav ref={root} aria-label="Primary" className="fixed right-3 z-50 w-fit max-w-[calc(100vw-1.5rem)] sm:right-6" style={{ top: bannerHeight + 14 }}>
+      <div className="flex h-12 items-center gap-1 rounded-xl border-2 border-[#111] bg-white p-1 shadow-[4px_4px_0_#111]">
+        <Link href="/" aria-label="Beag Labs home" onClick={() => setOpen(false)} className="flex h-9 items-center justify-center rounded-lg border-2 border-[#111] bg-[#ff5f1f] px-2.5 text-sm font-black tracking-tight text-[#111] hover:bg-[#ffdeca]">B_</Link>
+        <button type="button" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="floating-site-navigation" onClick={() => setOpen(value => !value)} className="flex h-9 items-center gap-2 rounded-lg px-3 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:bg-[#f3f3f3] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111]">
+          {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />} Menu <ChevronDown aria-hidden="true" className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+        </button>
+        <Link href="/products/papyrus" onClick={() => setOpen(false)} className="flex h-9 items-center gap-1.5 rounded-lg border-2 border-[#111] bg-[#ff5f1f] px-3 text-[10px] font-extrabold uppercase tracking-[.06em] text-[#111] hover:bg-[#ffdeca]">
+          <span className="hidden min-[360px]:inline">Papyrus</span><ArrowUpRight aria-hidden="true" className="h-4 w-4" />
         </Link>
-        <div className="ml-3 hidden items-center gap-3 md:flex">
-          <NavigationMenu viewport={false}>
-            <NavigationMenuList>
-              {GROUPS.map(group => (
-                <NavigationMenuItem key={group.name}>
-                  <NavigationMenuTrigger className={triggerClass}>{group.name}</NavigationMenuTrigger>
-                  <NavigationMenuContent className="!left-0 !right-auto !top-full !mt-2 !w-[min(88vw,440px)] !rounded-none !border-[3px] !border-[#111] !bg-white !p-2 !text-[#111] !shadow-[6px_6px_0_#111]">
-                    <ul className="grid gap-1 sm:grid-cols-2">
-                      {group.links.map(link => (
-                        <li key={link.href}>
-                          <NavigationMenuLink asChild>
-                            <Link href={link.href} className={itemClass}>
-                              <span className="block text-xs font-extrabold uppercase tracking-wide">{link.title}</span>
-                              <span className="mt-1 block text-xs font-medium leading-5 text-[#555]">{link.description}</span>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Link href="/products/papyrus" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-3 py-2 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] shadow-[3px_3px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#111] sm:px-4">
-            <img src="/papyrus-logo.svg" alt="" className="h-4 w-4" /> See Papyrus
-          </Link>
-          <button type="button" className="inline-flex h-10 w-10 items-center justify-center border-2 border-[#111] bg-white md:hidden" aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileOpen} aria-controls="mobile-site-navigation" onClick={() => setMobileOpen(v => !v)}>
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
       </div>
-      {mobileOpen && (
-        <div id="mobile-site-navigation" className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t-[3px] border-[#111] bg-white px-6 py-4 md:hidden">
-          {GROUPS.map(group => (
-            <details key={group.name} className="border-b-2 border-[#111] py-2" open={group.name === 'Solutions'}>
-              <summary className="cursor-pointer py-2 text-xs font-black uppercase tracking-wider">{group.name}</summary>
-              <div className="grid gap-1 pb-2">
-                {group.links.map(link => <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="block p-2 hover:bg-[#ffdfcf] focus:bg-[#ffdfcf]">
-                  <span className="block text-sm font-bold">{link.title}</span><span className="text-xs text-[#555]">{link.description}</span>
-                </Link>)}
-              </div>
-            </details>
-          ))}
+      {open && (
+        <div id="floating-site-navigation" className="absolute right-0 top-[calc(100%+10px)] max-h-[min(72dvh,610px)] w-[min(92vw,540px)] overflow-y-auto rounded-xl border-[3px] border-[#111] bg-white p-3 shadow-[6px_6px_0_#111]">
+          <div className="mb-3 flex items-center justify-between border-b-2 border-[#111] px-2 pb-3">
+            <strong className="text-xs font-black uppercase tracking-[.12em]">Navigate Beag Labs</strong>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="rounded-md p-1.5 hover:bg-[#f3f3f3]"><X className="h-4 w-4" /></button>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {GROUPS.map(group => (
+              <section key={group.name}>
+                <h2 className="mb-1 px-2 text-[10px] font-black uppercase tracking-[.12em] text-[#666]">{group.name}</h2>
+                {group.links.map(link => (
+                  <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="block rounded-lg border-2 border-transparent p-2 text-[#111] hover:border-[#111] hover:bg-[#fff0e5] focus-visible:border-[#111] focus-visible:bg-[#fff0e5]">
+                    <span className="block text-xs font-extrabold">{link.title}</span>
+                    <span className="mt-0.5 block text-[11px] leading-snug text-[#555]">{link.description}</span>
+                  </Link>
+                ))}
+              </section>
+            ))}
+          </div>
         </div>
       )}
     </nav>
