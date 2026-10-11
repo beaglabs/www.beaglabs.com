@@ -19,6 +19,14 @@ async function subscription(env:Bindings,id:string):Promise<Row|null>{
   const sub=await res.json() as Row
   return sub.id===id&&sub.status==='active'&&(!sub.latest_invoice||typeof sub.latest_invoice!=='object'||sub.latest_invoice.status==='paid')?sub:null
 }
+async function subscriptionsForOrganization(env:Bindings,organizationId:string):Promise<Row[]>{
+  if(!env.STRIPE_SECRET_KEY)return []
+  const query="metadata['organization_id']:'"+organizationId.replace(/'/g,'')+"'"
+  const res=await fetch('https://api.stripe.com/v1/subscriptions/search?'+new URLSearchParams({query,limit:'100'}),{headers:{authorization:'Bearer '+env.STRIPE_SECRET_KEY},signal:AbortSignal.timeout(12000)})
+  if(!res.ok)throw Error('Stripe subscriptions unavailable')
+  const result=await res.json() as {data?:Row[]}
+  return (result.data??[]).filter(s=>s.status==='active')
+}
 async function owner(request:Request,env:Bindings,ctx:any):Promise<Row|null>{
   const url=new URL('/api/provision/private/me',request.url)
   const response=await provisionApp.fetch(new Request(url,{headers:request.headers}),env,ctx)
@@ -72,20 +80,33 @@ app.post('/api/direct/device/poll',async c=>{
   await db.execute({sql:"UPDATE direct_device_authorizations SET poll_after=? WHERE device_code_hash=? AND status='pending'",args:[new Date(Date.now()+Number(state.poll_interval_seconds)*1000).toISOString(),key]})
   return c.json({error:'authorization_pending',interval:Number(state.poll_interval_seconds)},400)
 })
+app.get('/api/direct/device/options',async c=>{
+  const identity=await owner(c.req.raw,c.env,c.executionCtx)
+  if(!identity)return fail('entra_organization_auth_required',401)
+  const entitlements=(await getDb(c.env).execute({sql:"SELECT id,allowed_profiles_json FROM entitlements WHERE customer_organization_id=? AND status='active'",args:[identity.organization.id]})).rows
+  let subs:Row[]
+  try{subs=await subscriptionsForOrganization(c.env,identity.organization.id)}catch{return fail('stripe_unavailable',503)}
+  const items=entitlements.flatMap(e=>subs.filter(s=>s.metadata?.entitlement_id===e.id).map(s=>({entitlement_id:e.id,subscription_id:s.id,profiles:parseJsonArray(e.allowed_profiles_json)})))
+  return c.json({organization:{id:identity.organization.id,name:identity.organization.display_name??identity.organization.legal_name},items},{headers:{'cache-control':'no-store'}})
+})
 app.post('/api/direct/device/approve',async c=>{
   if(!originAllowed(c.req.raw))return fail('origin_required',403)
   const identity=await owner(c.req.raw,c.env,c.executionCtx)
   if(!identity)return fail('entra_organization_auth_required',401)
   const input=await c.req.json().catch(()=>({})) as Row
   const userCode=typeof input.user_code==='string'?input.user_code.replace(/[-\s]/g,'').toUpperCase():''
-  if(!/^[A-F0-9]{10}$/.test(userCode)||typeof input.entitlement_id!=='string'||typeof input.stripe_subscription_id!=='string')return fail('invalid_request')
+  if(!/^[A-F0-9]{10}$/.test(userCode)||typeof input.entitlement_id!=='string')return fail('invalid_request')
   const db=getDb(c.env),key=hash(userCode)
   const pending=first<Row>(await db.execute({sql:"SELECT * FROM direct_device_authorizations WHERE user_code_hash=? AND status='pending' AND expires_at>?",args:[key,now()]}))
   if(!pending)return fail('device_code_expired_or_used',409)
   if(identity.environment!==pending.deployment_profile)return fail('environment_mismatch',403)
   const entitlement=first<Row>(await db.execute({sql:"SELECT * FROM entitlements WHERE id=? AND customer_organization_id=? AND status='active'",args:[input.entitlement_id,identity.organization.id]}))
   if(!entitlement||!parseJsonArray(entitlement.allowed_profiles_json).includes(pending.deployment_profile))return fail('not_entitled',403)
-  const sub=await subscription(c.env,input.stripe_subscription_id)
+  let candidate:Row[]
+  try{candidate=await subscriptionsForOrganization(c.env,identity.organization.id)}catch{return fail('stripe_unavailable',503)}
+  const chosen=candidate.find(s=>s.metadata?.entitlement_id===entitlement.id)
+  if(!chosen)return fail('subscription_not_found',402)
+  const sub=await subscription(c.env,chosen.id)
   if(!sub)return fail('subscription_not_paid',402)
   if(sub.metadata?.organization_id!==identity.organization.id||sub.metadata?.entitlement_id!==entitlement.id)return fail('subscription_ownership_mismatch',403)
   const existing=first<Row>(await db.execute({sql:'SELECT * FROM deployments WHERE papyrus_deployment_id=?',args:[pending.deployment_id]}))
@@ -100,10 +121,10 @@ app.post('/api/direct/device/approve',async c=>{
   try{
     await db.batch([
       {sql:"UPDATE direct_device_authorizations SET status='approved',organization_id=?,entitlement_id=?,stripe_subscription_id=?,approved_by_oid=?,approved_at=? WHERE user_code_hash=? AND status='pending' AND expires_at>?",args:[identity.organization.id,entitlement.id,sub.id,identity.user.oid,ts,key,ts]},
-      {sql:"INSERT INTO deployments(id,entitlement_id,customer_organization_id,deployment_name,papyrus_deployment_id,deployment_profile,activation_public_key_pem,status,registered_by_oid,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(papyrus_deployment_id) DO NOTHING",args:[installationId,entitlement.id,identity.organization.id,'Direct '+pending.deployment_id.slice(0,12),pending.deployment_id,pending.deployment_profile,pending.public_key_pem,'registered',identity.user.oid,ts,ts]},
+      {sql:"INSERT INTO deployments(id,entitlement_id,customer_organization_id,deployment_name,papyrus_deployment_id,deployment_profile,activation_public_key_pem,status,registered_by_oid,created_at,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,? WHERE (SELECT status FROM direct_device_authorizations WHERE user_code_hash=?)='approved' ON CONFLICT(papyrus_deployment_id) DO NOTHING",args:[installationId,entitlement.id,identity.organization.id,'Direct '+pending.deployment_id.slice(0,12),pending.deployment_id,pending.deployment_profile,pending.public_key_pem,'registered',identity.user.oid,ts,ts,key]},
     ],'write')
   }catch{return fail('approval_conflict',409)}
   return c.json({approved:true,installation_id:installationId})
 })
-app.get('/activate',c=>c.html(`<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Activate Papyrus</title></head><body style="font:16px system-ui;max-width:560px;margin:4rem auto;padding:1rem"><h1>Activate Papyrus</h1><p>Sign in through the Beag Labs provisioning portal, then approve the device code displayed by Papyrus.</p><a href="/provision/commercial">Sign in with Microsoft Entra</a><p>Return here after signing in.</p><form id="activate"><label>Device code <input name="user_code" required maxlength="12" autocomplete="off"></label><p><label>Entitlement ID <input name="entitlement_id" required></label></p><p><label>Stripe subscription ID <input name="stripe_subscription_id" required></label></p><button>Approve installation</button></form><pre id="result" role="status"></pre><script>document.getElementById('activate').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const response=await fetch('/api/direct/device/approve',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)});document.getElementById('result').textContent=JSON.stringify(await response.json(),null,2)}</script></body></html>`))
+app.get('/activate',c=>c.html(`<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Activate Papyrus</title></head><body style="font:16px system-ui;max-width:560px;margin:4rem auto;padding:1rem"><h1>Activate Papyrus</h1><p>Sign in through the Beag Labs provisioning portal, then approve the device code displayed by Papyrus.</p><a href="/provision/commercial">Sign in with Microsoft Entra</a><p>Return here after signing in.</p><form id="activate"><label>Device code <input name="user_code" required maxlength="12" autocomplete="off"></label><p><label>Subscription <select id="entitlements" name="entitlement_id" required><option value="">Loading...</option></select></label></p><button>Approve installation</button></form><pre id="result" role="status"></pre><script>fetch('/api/direct/device/options',{credentials:'same-origin'}).then(r=>r.json()).then(data=>{const el=document.getElementById('entitlements');el.textContent='';for(const item of data.items||[]){const option=document.createElement('option');option.value=item.entitlement_id;option.textContent='Papyrus subscription '+item.subscription_id;el.append(option)}if(!el.options.length){const option=document.createElement('option');option.textContent='Sign in with Entra and verify a subscription';el.append(option)}}).catch(()=>{});document.getElementById('activate').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const response=await fetch('/api/direct/device/approve',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)});document.getElementById('result').textContent=JSON.stringify(await response.json(),null,2)}</script></body></html>`))
 export default app
