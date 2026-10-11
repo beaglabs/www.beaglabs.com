@@ -41,7 +41,7 @@ app.post('/api/direct/usage',async c=>{
   if(typeof nonce!=='string'||!/^[A-Za-z0-9_-]{32}$/.test(nonce)||typeof signedAt!=='string'||Math.abs(Date.now()-Date.parse(signedAt))>300000)return c.json({error:'invalid_usage_proof'},403)
   const signedData=JSON.stringify([deploymentId,nonce,signedAt,intervals])
   if(!await verifyProof(deployment.activation_public_key_pem,signedData,input.signature))return c.json({error:'invalid_signature'},403)
-  if(!c.env.STRIPE_METER_EVENT_NAME||!c.env.STRIPE_SECRET_KEY)return c.json({error:'billing_not_configured'},503)
+  if(!c.env.STRIPE_METER_EVENT_NAME||!c.env.STRIPE_METER_ID||!c.env.STRIPE_SECRET_KEY)return c.json({error:'billing_not_configured'},503)
   const accepted:number[]=[]
   for(const item of intervals as Row[]){
     const seq=item.sequence,started=Date.parse(item.startedAt),ended=Date.parse(item.endedAt),mc=item.licensedMilliCpus
@@ -54,7 +54,7 @@ app.post('/api/direct/usage',async c=>{
     if(!subscriptionRes.ok)return c.json({error:'stripe_unavailable'},503)
     const sub=await subscriptionRes.json() as Row
     if(!['active','trialing'].includes(sub.status)||sub.metadata?.organization_id!==deployment.customer_organization_id||sub.metadata?.entitlement_id!==deployment.entitlement_id)return c.json({error:'subscription_not_active'},402)
-    const itemId=sub.items?.data?.find((entry:Row)=>entry.price?.recurring?.usage_type==='metered')?.id
+    const itemId=sub.items?.data?.find((entry:Row)=>entry.price?.recurring?.usage_type==='metered'&&entry.price?.recurring?.meter===c.env.STRIPE_METER_ID)?.id
     if(!itemId)return c.json({error:'metered_subscription_item_missing'},409)
     const identifier='papyrus_'+sha(deploymentId+':'+seq)
     const found=first<Row>(await db.execute({sql:"SELECT * FROM direct_deployment_usage WHERE deployment_id=? AND sequence=?",args:[deployment.id,seq]}))
