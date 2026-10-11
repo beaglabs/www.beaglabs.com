@@ -12,6 +12,7 @@ import marketplaceLeadApp from './marketplace-leads'
 import marketplaceReportApp, { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
 import provisionApp from './provision'
 import directDistroApp from './direct-distro'
+import directDeviceApp from './direct-device'
 import directMeterApp from './direct-meter'
 import provisionAdminApp from './provision-admin'
 import { buildAuth } from './auth'
@@ -151,6 +152,7 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
     return marketplaceApp.fetch(request, env, ctx)
   }
 
+  if (path === '/activate' || path.startsWith('/api/direct/device/')) return directDeviceApp.fetch(request,env,ctx)
   if (path === '/api/direct/usage' || path === '/api/direct/stripe/webhook') return directMeterApp.fetch(request, env, ctx)
   if (path.startsWith('/api/direct/')) return directDistroApp.fetch(request, env, ctx)
 
