@@ -11,6 +11,8 @@ import marketplaceApp from './marketplace'
 import marketplaceLeadApp from './marketplace-leads'
 import marketplaceReportApp, { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
 import provisionApp from './provision'
+import directDistroApp from './direct-distro'
+import directMeterApp from './direct-meter'
 import provisionAdminApp from './provision-admin'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
@@ -148,6 +150,9 @@ async function route(request: Request, env: Bindings, ctx: any): Promise<Respons
   if (path.startsWith('/api/marketplace/') || path.startsWith('/api/v1/marketplace/')) {
     return marketplaceApp.fetch(request, env, ctx)
   }
+
+  if (path === '/api/direct/usage' || path === '/api/direct/stripe/webhook') return directMeterApp.fetch(request, env, ctx)
+  if (path.startsWith('/api/direct/')) return directDistroApp.fetch(request, env, ctx)
 
   if (path.startsWith('/api/public/')) {
     return publicApp.fetch(request, env, ctx)
