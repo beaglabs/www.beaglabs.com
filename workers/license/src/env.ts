@@ -15,6 +15,7 @@ export type Bindings = {
   STRIPE_SECRET_KEY?: string
   STRIPE_WEBHOOK_SECRET?: string
   STRIPE_METER_EVENT_NAME?: string
+  STRIPE_METER_ID?: string
   BASE_URL: string
   TURSO_DATABASE_URL: string
   TURSO_AUTH_TOKEN: string
