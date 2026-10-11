@@ -97,7 +97,7 @@ app.post('/api/direct/device/approve',async c=>{
   const userCode=typeof input.user_code==='string'?input.user_code.replace(/[-\s]/g,'').toUpperCase():''
   if(!/^[A-F0-9]{10}$/.test(userCode)||typeof input.entitlement_id!=='string')return fail('invalid_request')
   const db=getDb(c.env),key=hash(userCode)
-  const pending=first<Row>(await db.execute({sql:"SELECT * FROM direct_device_authorizations WHERE user_code_hash=? AND status='pending' AND expires_at>?",args:[key,now()]}))
+  const pending=first<Row>(await db.execute({sql:"SELECT * FROM direct_device_authorizations WHERE user_code_hash=? AND status='pending' AND expires_at>? RETURNING device_code_hash",args:[key,now()]}))
   if(!pending)return fail('device_code_expired_or_used',409)
   if(identity.environment!==pending.deployment_profile)return fail('environment_mismatch',403)
   const entitlement=first<Row>(await db.execute({sql:"SELECT * FROM entitlements WHERE id=? AND customer_organization_id=? AND status='active'",args:[input.entitlement_id,identity.organization.id]}))
@@ -119,10 +119,11 @@ app.post('/api/direct/device/approve',async c=>{
   // Transactional compare-and-set protects the one-time user code. A new
   // installation is persisted in the same transaction as its approval.
   try{
-    await db.batch([
+    const results=await db.batch([
       {sql:"UPDATE direct_device_authorizations SET status='approved',organization_id=?,entitlement_id=?,stripe_subscription_id=?,approved_by_oid=?,approved_at=? WHERE user_code_hash=? AND status='pending' AND expires_at>?",args:[identity.organization.id,entitlement.id,sub.id,identity.user.oid,ts,key,ts]},
       {sql:"INSERT INTO deployments(id,entitlement_id,customer_organization_id,deployment_name,papyrus_deployment_id,deployment_profile,activation_public_key_pem,status,registered_by_oid,created_at,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,? WHERE (SELECT status FROM direct_device_authorizations WHERE user_code_hash=?)='approved' ON CONFLICT(papyrus_deployment_id) DO NOTHING",args:[installationId,entitlement.id,identity.organization.id,'Direct '+pending.deployment_id.slice(0,12),pending.deployment_id,pending.deployment_profile,pending.public_key_pem,'registered',identity.user.oid,ts,ts,key]},
     ],'write')
+    if(!results[0]?.rows?.length)return fail('device_code_already_claimed',409)
   }catch{return fail('approval_conflict',409)}
   return c.json({approved:true,installation_id:installationId})
 })
