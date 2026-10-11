@@ -66,7 +66,7 @@ app.post('/api/direct/usage',async c=>{
     // as one vCPU-hour. Never round each interval upward.
     const units=Math.floor(item.cpuMilliseconds/1000)
     if(units<1)return c.json({error:'interval_too_small'},400)
-    const params=new URLSearchParams({event_name:c.env.STRIPE_METER_EVENT_NAME,identifier,payload:JSON.stringify({stripe_customer_id:sub.customer,value:String(units)}),timestamp:String(Math.floor(ended/1000))})
+    const params=new URLSearchParams({event_name:c.env.STRIPE_METER_EVENT_NAME,identifier,'payload[stripe_customer_id]':String(sub.customer),'payload[value]':String(units),timestamp:String(Math.floor(ended/1000))})
     const result=await stripeFetch(c.env,'billing/meter_events',params,identifier)
     if(!result.ok)return c.json({error:'stripe_meter_submission_failed',retryable:true},503)
     await db.execute({sql:"UPDATE direct_deployment_usage SET state='submitted',submitted_at=? WHERE deployment_id=? AND sequence=? AND state='pending'",args:[new Date().toISOString(),deployment.id,seq]})
