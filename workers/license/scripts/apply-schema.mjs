@@ -15,9 +15,6 @@ for (const file of ['../schema.sql', '../partner-schema.sql', '../marketplace-sc
   await client.executeMultiple(schema)
   console.log(`Applied workers/license/${file.split('/').at(-1)}`)
 }
-const directSchema = await readFile(new URL('../direct-distro-schema.sql', import.meta.url), 'utf8')
-await client.executeMultiple(directSchema)
-console.log('Applied workers/license/direct-distro-schema.sql')
 client.close()
 
 const marketplaceMigration = spawnSync(process.execPath, [new URL('./migrate-marketplace-usage.mjs', import.meta.url).pathname], { stdio: 'inherit', env: process.env })
@@ -39,4 +36,7 @@ console.log('Applied workers/license/organization-license-schema.sql')
 const provisioningSchema = await readFile(new URL('../provisioning-schema.sql', import.meta.url), 'utf8')
 await client.executeMultiple(provisioningSchema)
 console.log('Applied workers/license/provisioning-schema.sql')
+const directSchema = await readFile(new URL('../direct-distro-schema.sql', import.meta.url), 'utf8')
+await client.executeMultiple(directSchema)
+console.log('Applied workers/license/direct-distro-schema.sql')
 client.close()
