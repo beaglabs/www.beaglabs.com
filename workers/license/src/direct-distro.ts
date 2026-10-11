@@ -28,8 +28,8 @@ async function stripeGet(env: Bindings, path: string): Promise<Row> {
 }
 async function paidSubscription(env: Bindings, subscriptionId: string): Promise<Row> {
   if (!/^sub_[a-zA-Z0-9]+$/.test(subscriptionId)) throw new Error('Invalid Stripe subscription')
-  const sub=await stripeGet(env,'subscriptions/'+encodeURIComponent(subscriptionId))
-  if (sub.id!==subscriptionId || !['active','trialing'].includes(sub.status)) throw new Error('Stripe subscription not active')
+  const sub=await stripeGet(env,'subscriptions/'+encodeURIComponent(subscriptionId)+'?expand[]=latest_invoice')
+  if (sub.id!==subscriptionId || sub.status!=='active' || (typeof sub.latest_invoice === 'object' && sub.latest_invoice?.status !== 'paid')) throw new Error('Stripe subscription not paid')
   return sub
 }
 async function proofValid(proof: Row): Promise<boolean> {
