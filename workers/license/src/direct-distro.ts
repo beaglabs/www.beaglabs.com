@@ -92,6 +92,8 @@ app.post('/api/direct/enroll',async c=>{
     if(Number(used?.n)>=Number(entitlement?.deployment_limit))return c.json({error:'deployment_limit_reached'},409)
   }
   const timestamp=now()
+  const claimed=first<Row>(await db.execute({sql:"UPDATE direct_enrollment_tokens SET deployment_id=?,claimed_at=COALESCE(claimed_at,?) WHERE token_hash=? AND expires_at>? AND (deployment_id IS NULL OR deployment_id=?) RETURNING deployment_id",args:[proof.deploymentId,timestamp,sha(token),timestamp,proof.deploymentId]}))
+  if(!claimed)return c.json({error:'enrollment_already_claimed'},409)
   const payload:LicensePayload={licenseId:'lic_'+crypto.randomUUID(),licensee:grant.legal_name,deploymentId:proof.deploymentId,profiles:[proof.profile],features:parseJsonArray(grant.feature_set_json),issuedAt:timestamp,expiresAt:new Date(Math.min(Date.now()+86400000,grant.valid_until?Date.parse(grant.valid_until):Infinity)).toISOString()}
   let signed
   try{signed=await signLicenseWithAzureKeyVault(c.env,payload)}catch{return c.json({error:'signer_unavailable'},503)}
@@ -99,7 +101,6 @@ app.post('/api/direct/enroll',async c=>{
   try{
     await db.batch([
       {sql:"INSERT INTO deployments(id,entitlement_id,customer_organization_id,deployment_name,papyrus_deployment_id,deployment_profile,activation_public_key_pem,status,registered_by_oid,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(papyrus_deployment_id) DO NOTHING",args:[installationId,grant.entitlement_id,grant.customer_organization_id,'Direct '+proof.deploymentId.slice(0,12),proof.deploymentId,proof.profile,proof.publicKeyPem,'registered',grant.created_by_oid,timestamp,timestamp]},
-      {sql:"UPDATE direct_enrollment_tokens SET deployment_id=?,claimed_at=COALESCE(claimed_at,?) WHERE token_hash=? AND (deployment_id IS NULL OR deployment_id=?)",args:[proof.deploymentId,timestamp,sha(token),proof.deploymentId]},
       {sql:"INSERT INTO license_issuances(id,license_id,deployment_id,entitlement_id,key_id,payload_json,signed_document_json,payload_sha256,status,issued_by_oid,issued_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",args:[issuanceId,payload.licenseId,installationId,grant.entitlement_id,signed.keyId,JSON.stringify(payload),JSON.stringify(signed),payloadSha256(payload),'issued',grant.created_by_oid,timestamp,payload.expiresAt]},
     ],'write')
   }catch{return c.json({error:'enrollment_conflict'},409)}
