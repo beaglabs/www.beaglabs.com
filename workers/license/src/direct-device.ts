@@ -54,7 +54,7 @@ app.post('/api/direct/device/start',async c=>{
   const input=await c.req.json().catch(()=>({})) as Row
   const proof=input.proof
   if(!await keyProof(proof))return fail('invalid_deployment_proof',403)
-  const secret=code(),userCode=randomBytes(5).toString('hex').toUpperCase(),ts=now(),expires=new Date(Date.now()+600000).toISOString()
+  const secret=code(),userCode=randomBytes(8).toString('hex').toUpperCase(),ts=now(),expires=new Date(Date.now()+600000).toISOString()
   const db=getDb(c.env)
   await db.execute({sql:'INSERT INTO direct_device_authorizations(device_code_hash,user_code_hash,deployment_id,public_key_pem,deployment_profile,created_at,expires_at,poll_after) VALUES(?,?,?,?,?,?,?,?)',args:[hash(secret),hash(userCode),proof.deploymentId,proof.publicKeyPem,proof.profile,ts,expires,ts]})
   return c.json({device_code:secret,user_code:userCode,verification_uri:new URL('/activate',c.env.BASE_URL).toString(),expires_in:600,interval:5},{status:201,headers:{'cache-control':'no-store'}})
@@ -95,7 +95,7 @@ app.post('/api/direct/device/approve',async c=>{
   if(!identity)return fail('entra_organization_auth_required',401)
   const input=await c.req.json().catch(()=>({})) as Row
   const userCode=typeof input.user_code==='string'?input.user_code.replace(/[-\s]/g,'').toUpperCase():''
-  if(!/^[A-F0-9]{10}$/.test(userCode)||typeof input.entitlement_id!=='string')return fail('invalid_request')
+  if(!/^[A-F0-9]{16}$/.test(userCode)||typeof input.entitlement_id!=='string')return fail('invalid_request')
   const db=getDb(c.env),key=hash(userCode)
   const pending=first<Row>(await db.execute({sql:"SELECT * FROM direct_device_authorizations WHERE user_code_hash=? AND status='pending' AND expires_at>? RETURNING device_code_hash",args:[key,now()]}))
   if(!pending)return fail('device_code_expired_or_used',409)
