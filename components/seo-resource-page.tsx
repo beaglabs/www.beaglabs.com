@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowUpRight, FileCode2, FileText, Workflow } from 'lucide-react'
-import { Navbar } from '@/components/navbar'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { SiteFooter } from '@/components/site-footer'
 import { Breadcrumbs } from '@/components/breadcrumbs'
@@ -14,9 +13,9 @@ const lanes = [
 ]
 export function SEOResourcePage({eyebrow,title,intro,path,cards,heading,context,steps,faqs}:Props){
  return <main className="bg-[#fafaf9] text-[#111]">
-  <AnnouncementBanner/><Navbar bannerHeight={38}/>
-  <section className="relative overflow-hidden border-b-[3px] border-[#111] px-6 pb-16 pt-36 lg:px-9 lg:pb-24">
-    <div className="pointer-events-none absolute inset-0 opacity-[.12]" style={{backgroundImage:'linear-gradient(#111 1px,transparent 1px),linear-gradient(90deg,#111 1px,transparent 1px)',backgroundSize:'32px 32px'}}/>
+  <AnnouncementBanner/>
+  <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] px-6 pb-16 pt-36 lg:px-9 lg:pb-24">
+
     <div className="relative mx-auto max-w-[1440px]">
       <Breadcrumbs items={[{name:'Home',url:'/'},{name:eyebrow,url:path}]}/>
       <div className="mb-5 inline-flex border-2 border-[#111] bg-[#ff5f1f] px-3 py-1 font-mono text-xs font-black uppercase tracking-widest">{eyebrow}</div>

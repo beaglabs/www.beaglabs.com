@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Navbar } from '@/components/navbar'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
@@ -25,7 +26,7 @@ const robotoCondensed = Roboto_Condensed({
 const homeDescription =
   'Beag Labs helps teams automate documents, create internal apps and modernize legacy workflows with customer-hosted agentic software.'
 
-const homeOgImage = 'https://www.beaglabs.com/og?variant=home&v=2026-10-08-clean-hero-v2'
+const homeOgImage = 'https://www.beaglabs.com/og?variant=home&v=2026-10-10-white-grid-hero'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.beaglabs.com'),
@@ -113,6 +114,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationJsonLd, websiteJsonLd]) }}
         />
         <PosthogConsentGate />
+        <Navbar />
         {children}
         <CookieConsentBanner />
         <Toaster />

@@ -6,7 +6,7 @@ import { BLOG_CATEGORIES } from '@/lib/blog/categories'
 
 // `value` carries the Hygraph enum apiId so the /blog/category/[category] route
 // receives a value the Content API can filter on. `label` is display-only.
-const CATEGORIES = [{ value: '', label: 'All' }, ...BLOG_CATEGORIES] as const
+const CATEGORIES = [{ value: '', label: 'All' }, ...BLOG_CATEGORIES.filter(category => ['opinion', 'projectUpdate'].includes(category.value))] as const
 
 interface BlogCategoryFilterProps {
   currentCategory?: string

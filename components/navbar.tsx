@@ -1,11 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { Menu, X, ArrowUpRight, ChevronDown } from 'lucide-react'
 
 const GROUPS = [
   { name: 'Solutions', links: [
+    { title: 'Agentic Back Office', href: '/solutions/agentic-back-office', description: 'Document work, decisions, and governed tools.' },
+    { title: 'Modernization Factory', href: '/solutions/agentic-modernization-factory', description: 'Follow the terminal-to-browser workflow.' },
     { title: 'Document Automation', href: '/solutions/document-automation', description: 'Turn documents into structured, actionable workflows.' },
     { title: 'Internal App Factory', href: '/solutions/internal-app-factory', description: 'Create governed internal applications.' },
     { title: 'Agentic Modernization', href: '/solutions/agentic-modernization', description: 'Modernize existing processes and legacy interfaces.' },
@@ -18,7 +21,6 @@ const GROUPS = [
   ] },
   { name: 'Resources', links: [
     { title: 'Blog', href: '/blog', description: 'Ideas, announcements, and engineering notes.' },
-    { title: 'Glossary', href: '/glossary', description: 'Understand the terminology.' },
     { title: 'Comparisons', href: '/compare', description: 'Compare approaches and technologies.' },
   ] },
   { name: 'Company', links: [
@@ -31,7 +33,23 @@ const GROUPS = [
 /** Floating prompt-sized navigation, shared across all marketing pages. */
 export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
   const [open, setOpen] = useState(false)
+  const [announcementHeight, setAnnouncementHeight] = useState(bannerHeight)
+  const pathname = usePathname()
   const root = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    setOpen(false)
+    const banner = document.querySelector('[data-site-announcement]')
+    if (!banner) {
+      setAnnouncementHeight(bannerHeight)
+      return
+    }
+    const measure = () => setAnnouncementHeight(banner.getBoundingClientRect().height)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(banner)
+    return () => observer.disconnect()
+  }, [pathname, bannerHeight])
 
   useEffect(() => {
     if (!open) return
@@ -50,7 +68,7 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
   }, [open])
 
   return (
-    <nav ref={root} aria-label="Primary" className="fixed right-3 z-50 w-fit max-w-[calc(100vw-1.5rem)] sm:right-6" style={{ top: bannerHeight + 14 }}>
+    <nav ref={root} aria-label="Primary" className="fixed right-3 z-50 w-fit max-w-[calc(100vw-1.5rem)] sm:right-6" style={{ top: announcementHeight + 14 }}>
       <div className="flex h-12 items-center gap-1 rounded-xl border-2 border-[#111] bg-white p-1 shadow-[4px_4px_0_#111]">
         <Link href="/" aria-label="Beag Labs home" onClick={() => setOpen(false)} className="flex h-9 items-center justify-center rounded-lg border-2 border-[#111] bg-[#ff5f1f] px-2.5 text-sm font-black tracking-tight text-[#111] hover:bg-[#ffdeca]">B_</Link>
         <button type="button" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="floating-site-navigation" onClick={() => setOpen(value => !value)} className="flex h-9 items-center gap-2 rounded-lg px-3 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:bg-[#f3f3f3] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111]">

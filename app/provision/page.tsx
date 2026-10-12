@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function ProvisionPage() {
   return (
-    <main className="min-h-screen bg-[#fafaf9] px-6 py-16 lg:px-9">
+    <main className="site-page-grid min-h-screen bg-[#fafaf9] px-6 pb-16 pt-24 lg:px-9">
       <div className="mx-auto max-w-[1080px]">
         <div className="mb-10 border-b-[3px] border-[#111] pb-9">
           <span className="nb-label mb-5 inline-block">Papyrus / Control plane</span>

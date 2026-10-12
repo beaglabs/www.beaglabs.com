@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { Navbar } from "@/components/navbar"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
@@ -82,14 +81,14 @@ export default async function UseCaseDetailPage({
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
-      <Navbar bannerHeight={38} />
+
 
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+      <section className="site-hero nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
           <Breadcrumbs
             items={[
@@ -199,9 +198,9 @@ export default async function UseCaseDetailPage({
               {industry.ctaText}
             </h2>
             <p className="max-w-[560px] text-[18px] leading-[1.65] text-[#C9C9C9] font-medium">
-              Talk to us about your classification, extraction, or relevance
-              workload. We&apos;ll show you how a custom SLM deployed in your
-              environment beats a frontier API on cost, speed, and privacy.
+              Talk to us about your document intake, requests, or evidence
+              workflows. Explore how Papyrus can connect your existing systems
+              with reviewable automation in your environment.
             </p>
           </div>
 

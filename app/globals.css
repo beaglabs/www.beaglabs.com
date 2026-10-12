@@ -106,6 +106,32 @@
   background-size: 42px 42px;
 }
 
+/* The homepage grid, shared only by route introductions. */
+@utility site-hero {
+  background-color: #fff;
+  background-image:
+    linear-gradient(to right, rgb(17 17 17 / 0.11) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(17 17 17 / 0.11) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+
+@utility site-page-grid {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: min(620px, 100%);
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgb(17 17 17 / 0.11) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(17 17 17 / 0.11) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+}
+
 @utility display-black {
   font-family: var(--font-display);
   font-weight: 900;

@@ -16,15 +16,11 @@ export async function POST(request: NextRequest) {
 
   // Revalidate all listings
   revalidatePath('/blog', 'layout')
-  revalidatePath('/research', 'layout')
 
   // Revalidate specific post if slug available
   if (slug) {
     if (model === 'BlogPost') {
       revalidatePath(`/blog/${slug}`)
-    }
-    if (model === 'ResearchPaper') {
-      revalidatePath(`/research/${slug}`)
     }
   }
 

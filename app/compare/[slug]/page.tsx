@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
 import { SiteFooter } from "@/components/site-footer"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
@@ -96,9 +95,9 @@ export default async function ComparisonDetailPage({
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
-      <Navbar bannerHeight={38} />
 
-      <section className="px-6 pt-32 pb-20 lg:px-9 lg:pt-36 lg:pb-24">
+
+      <section className="site-hero px-6 pt-32 pb-20 lg:px-9 lg:pt-36 lg:pb-24">
         <div className="mx-auto max-w-[1440px]">
           <script
             type="application/ld+json"
@@ -246,7 +245,7 @@ export default async function ComparisonDetailPage({
                   Get started
                 </div>
                 <h2 className="max-w-[560px] text-[28px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111] lg:text-[34px]">
-                  See if a custom SLM fits your workload.
+                  Choose an approach for your back office workflow.
                 </h2>
               </div>
               <a

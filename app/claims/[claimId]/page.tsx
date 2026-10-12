@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ClaimDiagram } from '@/components/claims/claim-diagram'
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { claims, getClaim } from '@/lib/claims'
 import { pageMetadata } from '@/lib/seo'
@@ -41,8 +40,8 @@ export default async function ClaimPage({ params }: ClaimPageProps) {
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
-      <Navbar bannerHeight={38} />
-      <section className="px-6 pb-20 pt-32 lg:px-9 lg:pb-28 lg:pt-36">
+
+      <section className="site-hero px-6 pb-20 pt-32 lg:px-9 lg:pb-28 lg:pt-36">
         <div className="mx-auto max-w-[1120px]">
           <Breadcrumbs items={[
             { name: 'Home', url: '/' },
@@ -58,6 +57,11 @@ export default async function ClaimPage({ params }: ClaimPageProps) {
           </h1>
           <p className="mt-4 max-w-[800px] text-[18px] font-semibold leading-[1.65] text-[#333]">{claim.claim}</p>
           <ClaimDiagram claim={claim} />
+          {claim.sourceLocator && <div className="mt-8 border-2 border-[#111] bg-white p-6">
+            <p className="font-mono text-xs uppercase tracking-widest">{claim.evidenceType}</p>
+            <p className="mt-3 text-sm leading-7"><strong>Source locator:</strong> {claim.sourceLocator}</p>
+            {claim.usedOn && <div className="mt-4 flex flex-wrap gap-4">{claim.usedOn.map(path => <Link key={path} href={path} className="text-sm font-bold underline underline-offset-4">{path.endsWith('factory') ? 'Modernization Factory' : 'Agentic Back Office'} ↗</Link>)}</div>}
+          </div>}
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t-[2px] border-[#111] pt-5">
             <Link href="/claims" className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] underline decoration-2 underline-offset-4 hover:text-[#b33d0d]">
               ← All claims

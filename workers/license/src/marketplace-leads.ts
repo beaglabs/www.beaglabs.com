@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 
 import { first, getDb } from './db'
 import type { Bindings } from './env'
+import { executionContext, notifyMarketplaceEvent } from './marketplace-notify'
 
 type Row = Record<string, unknown>
 type AppEnv = { Bindings: Bindings }
@@ -329,6 +330,20 @@ app.post('/api/marketplace/leads', async (c) => {
       lead.phone || null, lead.country || null, lead.companyName, domain, organizationId, contactId, status, rawBody, timestampNow, timestampNow,
     ],
   })
+
+  void notifyMarketplaceEvent(c.env, {
+    type: 'marketplace.lead.received',
+    test: isTest,
+    facts: {
+      Name: [lead.firstName, lead.lastName].filter(Boolean).join(' '),
+      Company: lead.companyName,
+      Email: lead.email,
+      Country: lead.country,
+      Offer: lead.offerTitle,
+      'Action code': actionCode,
+      Status: status,
+    },
+  }, executionContext(c))
 
   if (!suppressContact) {
     try {

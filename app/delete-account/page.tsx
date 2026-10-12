@@ -24,7 +24,7 @@ const deletedData = [
 
 export default function DeleteAccountPage() {
   return (
-    <main className="bg-black min-h-screen">
+    <main className="site-page-grid bg-black min-h-screen">
       <div className="border-b border-[#b3ddbb]/10">
         <div className="max-w-4xl mx-auto px-8 py-6 flex items-center justify-between">
           <Link

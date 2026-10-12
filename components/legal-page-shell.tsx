@@ -1,4 +1,3 @@
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 
 interface LegalPageShellProps {
@@ -18,10 +17,10 @@ export function LegalPageShell({
 }: LegalPageShellProps) {
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
-      <Navbar />
+
       <section className="px-6 py-14 lg:px-9 lg:py-16">
         <div className="mx-auto max-w-[1440px]">
-          <div className="mb-14 border-b-[3px] border-[#111] pb-10">
+          <div className="site-hero px-6 pt-16 mb-14 border-b-[3px] border-[#111] pb-10">
             <span className="nb-label mb-5 inline-block">
               {eyebrow}
             </span>

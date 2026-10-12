@@ -1,4 +1,3 @@
-import { Navbar } from "@/components/navbar"
 import { SiteFooter } from "@/components/site-footer"
 import Link from "next/link"
 import type { Metadata } from "next"
@@ -15,8 +14,8 @@ export const metadata: Metadata = pageMetadata({
 export default function ImprintPage() {
   return (
     <main className="bg-white text-[#0a0a0a]">
-      <Navbar />
-      <section className="pt-28 pb-20 px-6 lg:px-8">
+
+      <section className="site-hero pt-28 pb-20 px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold tracking-[-0.03em] text-[#111] mb-8">
             Imprint

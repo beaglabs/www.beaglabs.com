@@ -3,6 +3,7 @@ import { getCookie, setCookie, deleteCookie } from 'hono/cookie'
 import { secureHeaders } from 'hono/secure-headers'
 import { first, getDb, rows, type Database } from './db'
 import type { Bindings } from './env'
+import { executionContext, notifyMarketplaceEvent } from './marketplace-notify'
 
 type PortalEnvironment = 'commercial' | 'government'
 type Row = Record<string, unknown>
@@ -798,11 +799,60 @@ app.post('/api/provision/bootstrap', async (c) => {
       new Date(Date.now() + CLAIM_TTL_MS).toISOString(), timestamp,
     ],
   })
+  void notifyMarketplaceEvent(c.env, {
+    type: 'marketplace.vm.detected',
+    facts: {
+      Plan: [nonEmpty(input.marketplacePublisher, 256), nonEmpty(input.marketplaceProduct, 256), nonEmpty(input.marketplacePlan, 256)].filter(Boolean).join(' / '),
+      Subscription: parseSubscriptionId(resourceId),
+      Environment: target,
+      'Public origin': publicOrigin,
+      Time: timestamp,
+    },
+  }, executionContext(c))
   return c.json({
     claimToken: token,
     portalUrl: `https://www.beaglabs.com/provision/${target}?claim=${encodeURIComponent(token)}`,
     expiresIn: Math.floor(CLAIM_TTL_MS / 1000),
   }, 201)
+})
+
+// Called by the Papyrus VM once customer onboarding finishes. The claim token is the credential.
+app.post('/api/provision/bootstrap/events', async (c) => {
+  const input = await requestJson(c)
+  if (input.event !== 'onboarding_completed') throw new PortalError(422, 'invalid_event', 'Unsupported provisioning event.')
+  const token = requiredString(input.claimToken, 'claimToken', 512)
+  const deploymentId = requiredString(input.deploymentId, 'deploymentId', 256)
+  const db = getDb(c.env)
+  const claim = first<Row>(await db.execute({
+    sql: `SELECT pc.id,pc.environment,pc.papyrus_deployment_id,pc.azure_resource_id,pc.claimed_at,
+      COALESCE(o.display_name,o.legal_name) AS organization_name
+      FROM provisioning_claims pc
+      LEFT JOIN provision_portal_sessions ps ON ps.id=pc.claimed_by_session_id
+      LEFT JOIN organizations o ON o.id=ps.organization_id
+      WHERE pc.token_hash=? LIMIT 1`,
+    args: [await sha256(token)],
+  }))
+  if (!claim) throw new PortalError(404, 'claim_not_found', 'Provisioning claim was not found.')
+  if (claim.papyrus_deployment_id !== deploymentId) throw new PortalError(409, 'deployment_mismatch', 'Deployment does not match the provisioning claim.')
+  if (!claim.claimed_at) throw new PortalError(409, 'claim_not_completed', 'Provisioning must be completed before onboarding can be reported.')
+  const reported = await db.execute({
+    sql: `INSERT OR IGNORE INTO provisioning_claim_events (claim_id,event,entra_tenant_id,reported_at) VALUES (?,?,?,?)`,
+    args: [String(claim.id), 'onboarding_completed', nonEmpty(input.entraTenantId, 128), now()],
+  })
+  if (reported.rowsAffected > 0) {
+    void notifyMarketplaceEvent(c.env, {
+      type: 'marketplace.onboarding.completed',
+      facts: {
+        Organization: claim.organization_name == null ? null : String(claim.organization_name),
+        'Entra tenant': nonEmpty(input.entraTenantId, 128),
+        Subscription: parseSubscriptionId(String(claim.azure_resource_id)),
+        Deployment: deploymentId,
+        Environment: String(claim.environment),
+        Time: nonEmpty(input.completedAt, 64) ?? now(),
+      },
+    }, executionContext(c))
+  }
+  return c.json({ recorded: true, duplicate: reported.rowsAffected === 0 })
 })
 
 app.get('/api/provision/bootstrap/status', async (c) => {
@@ -1050,6 +1100,19 @@ app.post('/api/provision/private/claim', async (c) => {
     args: [claim.papyrus_deployment_id],
   }))
   await auditCustomer(c, session, 'provision.deployment.claim', 'managed_deployment', deployment?.id ? String(deployment.id) : null, { resourceId, vmSize: currentSize })
+  void notifyMarketplaceEvent(c.env, {
+    type: 'marketplace.deployment.claimed',
+    facts: {
+      'Organization ID': session.organization_id,
+      Tenant: session.tenant_id,
+      Subscription: subscriptionId,
+      Region: location,
+      'VM size': currentSize,
+      vCPUs: current?.vcpus ?? null,
+      Environment: session.environment,
+      Time: timestamp,
+    },
+  }, executionContext(c))
   return c.json({ deployment }, 201)
 })
 

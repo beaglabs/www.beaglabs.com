@@ -7,43 +7,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 const SERVICES = [
-  {
-    key: 'legacy-data',
-    title: 'Legacy Data Extraction',
-    blurb: 'Mainframe, COBOL, AS400 — read it without touching the system of record.',
-    icon: '▤',
-  },
-  {
-    key: 'ai-swe',
-    title: 'AI-Enabled Software Development',
-    blurb: 'Embed with your team and ship a working AI feature in 6–10 weeks.',
-    icon: '⚙',
-  },
-  {
-    key: 'agent-ux',
-    title: 'Agent UX Consulting',
-    blurb: 'Design agentic experiences that users actually trust and complete.',
-    icon: '◆',
-  },
-  {
-    key: 'slm-feasibility',
-    title: 'SLM Feasibility & Savings',
-    blurb: '2–4 week paid assessment. Quality benchmark, $/year projection, go/no-go.',
-    icon: '◎',
-  },
-  {
-    key: 'slm-deploy',
-    title: 'SLM Deployments',
-    blurb: 'On-prem, air-gapped, VPC, edge. Quantization, serving, observability.',
-    icon: '▣',
-  },
+  { key: 'documents', title: 'Document Automation', blurb: 'Turn office documents into structured, reviewable work.', icon: '▤' },
+  { key: 'internal-apps', title: 'Internal Applications', blurb: 'Create front doors for requests, queues, and approvals.', icon: '⚙' },
+  { key: 'modernization', title: 'Legacy Modernization', blurb: 'Connect trusted systems to modern APIs and interfaces.', icon: '◆' },
+  { key: 'governance', title: 'Governed Workflows', blurb: 'Keep review, exceptions, and audit evidence in the process.', icon: '◎' },
 ] as const
 
 const QUICK_PROMPTS = [
-  'What does a typical engagement look like?',
-  'How much can we actually save vs. our current API?',
-  "We're stuck on a 30-year-old mainframe. Can you help?",
-  'Walk me through your feasibility assessment.',
+  'How could we automate document intake?',
+  'Can Papyrus help assemble audit evidence?',
+  'How do we connect a legacy back office system?',
+  'Where should human approvals stay in our workflow?',
 ]
 
 export function ChatView({ id, initialMessage }: { id: string; initialMessage?: string }) {

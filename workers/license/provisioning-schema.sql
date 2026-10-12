@@ -97,6 +97,14 @@ CREATE TABLE IF NOT EXISTS provisioning_claims (
 );
 CREATE INDEX IF NOT EXISTS idx_provisioning_claims_deployment ON provisioning_claims(papyrus_deployment_id);
 
+CREATE TABLE IF NOT EXISTS provisioning_claim_events (
+  claim_id TEXT NOT NULL REFERENCES provisioning_claims(id),
+  event TEXT NOT NULL,
+  entra_tenant_id TEXT,
+  reported_at TEXT NOT NULL,
+  PRIMARY KEY (claim_id, event)
+);
+
 CREATE TABLE IF NOT EXISTS managed_deployments (
   id TEXT PRIMARY KEY,
   organization_id TEXT NOT NULL REFERENCES organizations(id),

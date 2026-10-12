@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
-import { Navbar } from '@/components/navbar'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { SiteFooter } from '@/components/site-footer'
 import { Breadcrumbs } from '@/components/breadcrumbs'
@@ -36,10 +35,10 @@ export default async function CapabilityPage({ params }: { params: Params }) {
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
-      <Navbar bannerHeight={38} />
+
 
       {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9] pt-[calc(4rem+2.375rem)]">
+      <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9] pt-[calc(4rem+2.375rem)]">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 pb-20 pt-10 lg:grid-cols-[1.05fr_minmax(420px,560px)] lg:gap-16 lg:px-9 lg:pb-24 lg:pt-14">
           <div className="max-w-[760px]">
             <Breadcrumbs
@@ -85,7 +84,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
                 </svg>
               </a>
               <a
-                href="/Beag-Labs.pdf"
+                href="/capabilities/modernization.pdf"
                 download
                 className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-5 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[3px_3px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_#ff5f1f]"
               >
@@ -388,7 +387,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
               </div>
 
               <a
-                href="/Beag-Labs.pdf"
+                href="/capabilities/modernization.pdf"
                 download
                 className="group flex items-center justify-between gap-4 border-[3px] border-[#111] bg-[#ff5f1f] p-5 text-[#111] shadow-[6px_6px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[8px_8px_0px_0px_#111]"
               >

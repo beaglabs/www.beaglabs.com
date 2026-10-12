@@ -1,3 +1,4 @@
+import { isBackofficePost } from '@/lib/blog/backoffice-content'
 import { notFound } from 'next/navigation'
 import { draftMode } from 'next/headers'
 import { fetchHygraph } from '@/lib/hygraph/client'
@@ -52,6 +53,7 @@ function formatPostDate(iso: string) {
 
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params
+  if (!isBackofficePost(slug)) notFound()
   const { isEnabled: isDraft } = await draftMode()
 
   const data = await fetchHygraph<BlogPostResponse>(
@@ -72,14 +74,6 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     date: data.blogPost.publishedAt,
     coverImage: data.blogPost.coverImage?.url,
   })
-  const coverFallback = data.blogPost.coverImage
-    ? [{
-        url: data.blogPost.coverImage.url,
-        width: data.blogPost.coverImage.width,
-        height: data.blogPost.coverImage.height,
-        alt: data.blogPost.title,
-      }]
-    : []
 
   return {
     title: data.blogPost.seoTitle || data.blogPost.title,
@@ -98,7 +92,6 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       url: canonicalUrl,
       images: [
         { url: ogUrl, width: 1200, height: 630, alt: data.blogPost.title, type: 'image/png' },
-        ...coverFallback,
       ],
     },
     twitter: {
@@ -112,6 +105,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
+  if (!isBackofficePost(slug)) notFound()
   const { isEnabled: isDraft } = await draftMode()
 
   const data = await fetchHygraph<BlogPostResponse>(
@@ -179,7 +173,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
 
       {/* ─── HERO BAND ─── */}
-      <section className="border-b-[3px] border-[#111] bg-[#ff5f1f]">
+      <section className="site-hero border-b-[3px] border-[#111] bg-[#ff5f1f]">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-6 py-10 lg:grid-cols-[minmax(320px,460px)_1fr] lg:items-center lg:gap-16 lg:px-9 lg:py-14">
           {post.coverImage ? (
             <div className="relative aspect-[16/10] overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[7px_7px_0px_0px_#111]">

@@ -42,8 +42,8 @@ export default async function ModelServiceLayout({ children }: { children: React
     }
 
     return (
-      <div className="min-h-screen bg-[#F5F4F0]">
-        <header className="border-b border-[#E2E0DB] bg-white">
+      <div className="site-page-grid min-h-screen bg-[#F5F4F0]">
+        <header className="mt-20 border-b border-[#E2E0DB] bg-white">
           <div className="max-w-[1440px] mx-auto px-6 h-14 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-base font-bold tracking-[-0.04em] text-[#111]">B_</span>
@@ -58,8 +58,8 @@ export default async function ModelServiceLayout({ children }: { children: React
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F4F0]">
-      <header className="border-b border-[#E2E0DB] bg-white">
+    <div className="site-page-grid min-h-screen bg-[#F5F4F0]">
+      <header className="mt-20 border-b border-[#E2E0DB] bg-white">
         <div className="max-w-[1440px] mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/model-service/runs" className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">

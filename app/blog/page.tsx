@@ -7,7 +7,7 @@ import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
 import { pageMetadata } from '@/lib/seo'
 
 const blogDescription =
-  'Project updates, case studies, and tutorials documenting how Beag Labs approaches applied AI systems in practice.'
+  'Practical notes on back office automation, document workflows, and governed modernization.'
 
 export const metadata: Metadata = pageMetadata({
   title: 'Blog',
@@ -39,18 +39,18 @@ export default async function BlogPage({
   return (
     <main>
       {/* ─── HERO BAND ─── */}
-      <section className="border-b-[3px] border-[#111] bg-[#ff5f1f]">
+      <section className="site-hero border-b-[3px] border-[#111] bg-white">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-20 lg:px-9 lg:py-20">
           <span className="font-mono text-[13px] font-bold uppercase tracking-[0.24em] text-[#111]">
             [ Blog ]
           </span>
           <div className="max-w-[720px] lg:justify-self-end">
             <h1 className="mb-5 text-[44px] font-extrabold leading-[1.0] tracking-[-0.05em] text-[#111] sm:text-[56px] lg:text-[68px]">
-              We ship models. We also write.
+              Making back office work better.
             </h1>
             <p className="mb-9 max-w-[600px] text-[17px] font-medium leading-[1.6] text-[#111]">
-              Project updates, case studies, and tutorials documenting how Beag
-              Labs approaches applied AI systems in practice.
+              Practical notes on back office automation, document workflows, and
+              governed modernization.
             </p>
             <a
               href="mailto:james@beaglabs.com?subject=Subscribe%20to%20the%20Beag%20Labs%20blog"

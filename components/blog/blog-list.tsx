@@ -1,10 +1,8 @@
 import { BlogCard } from './blog-card'
-import { ResearchCard } from './research-card'
-import type { BlogPost, ResearchPaper } from '@/lib/hygraph/types'
+import type { BlogPost } from '@/lib/hygraph/types'
 
 interface BlogListProps {
   posts?: BlogPost[]
-  papers?: ResearchPaper[]
   /** When true, the first post renders as a full-width featured card. */
   featured?: boolean
   emptyMessage?: string
@@ -47,14 +45,10 @@ function Pagination({
 
 export function BlogList({
   posts,
-  papers,
   featured = false,
   emptyMessage = 'No posts found.',
 }: BlogListProps) {
   if (posts && posts.length === 0) {
-    return <p className="py-16 text-center text-sm text-[#999]">{emptyMessage}</p>
-  }
-  if (papers && papers.length === 0) {
     return <p className="py-16 text-center text-sm text-[#999]">{emptyMessage}</p>
   }
 
@@ -68,9 +62,7 @@ export function BlogList({
       {gridPosts.map((post) => (
         <BlogCard key={post.id} post={post} />
       ))}
-      {papers?.map((paper) => (
-        <ResearchCard key={paper.id} paper={paper} />
-      ))}
+
     </div>
   )
 }

@@ -2,7 +2,6 @@ import { pageMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 import { PartnerPortal } from '@/components/licensing/partner-portal'
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 
 export const metadata: Metadata = {
@@ -18,8 +17,8 @@ export const metadata: Metadata = {
 export default function PartnerPortalPage() {
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-28 lg:px-9 lg:pb-28 lg:pt-32">
+
+      <main className="site-page-grid min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-28 lg:px-9 lg:pb-28 lg:pt-32">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-10 border-b-[3px] border-[#111] pb-10">
             <span className="nb-label mb-5 inline-block">Marketplace channel</span>

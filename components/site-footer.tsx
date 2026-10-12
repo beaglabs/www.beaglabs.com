@@ -3,6 +3,8 @@ import Image from 'next/image'
 
 const footerColumns = [
   { title: 'Solutions', links: [
+    { label: 'Agentic Back Office', href: '/solutions/agentic-back-office' },
+    { label: 'Modernization Factory', href: '/solutions/agentic-modernization-factory' },
     { label: 'Document Automation', href: '/products/papyrus#documents' },
     { label: 'Internal App Factory', href: '/products/papyrus#factory' },
     { label: 'Agentic Modernization', href: '/capability/modernization' },
@@ -15,7 +17,7 @@ const footerColumns = [
     { label: 'Trust Center', href: '/trust/papyrus' },
   ] },
   { title: 'Resources', links: [
-    { label: 'Glossary', href: '/glossary' },
+    { label: 'Claim Ledger', href: '/claims' },
     { label: 'Blog', href: '/blog' },
     { label: 'Partners', href: '/partners' },
     { label: 'Support', href: '/support' },

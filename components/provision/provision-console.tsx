@@ -475,7 +475,7 @@ export function ProvisionConsole({
 
   if (!me) {
     return (
-      <main className="min-h-screen bg-[#fafaf9] px-6 py-14 lg:px-9">
+      <main className="site-page-grid min-h-screen pt-24 bg-[#fafaf9] px-6 pb-14 lg:px-9">
         <div className="mx-auto grid min-h-[calc(100vh-7rem)] max-w-[1180px] gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
           <section className="border-[3px] border-[#111] bg-[#111] p-8 text-white shadow-[8px_8px_0_#ff5f1f] lg:p-11">
             <span className="inline-flex border-2 border-white bg-[#ff5f1f] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[#111]">
@@ -551,7 +551,7 @@ export function ProvisionConsole({
     const labels = ['Identity', 'Organization', 'Agreements', 'Ready']
 
     return (
-      <main className="min-h-screen bg-[#fafaf9] px-6 py-12 lg:px-9">
+      <main className="site-page-grid min-h-screen pt-24 bg-[#fafaf9] px-6 pb-12 lg:px-9">
         <div className="mx-auto max-w-[980px]">
           <div className="mb-8">
             <div className="font-mono text-[10px] font-black uppercase tracking-[.16em] text-[#b63700]">Papyrus / First connection</div>

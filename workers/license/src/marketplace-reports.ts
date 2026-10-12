@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { buildAuth } from './auth'
 import { first, getDb } from './db'
 import { adminOids, type Bindings } from './env'
+import { notifyMarketplaceEvent } from './marketplace-notify'
 
 type Row = Record<string, unknown>
 type AppEnv = { Bindings: Bindings }
@@ -429,6 +430,19 @@ async function ingestUsageRows(env: Bindings, records: Row[]): Promise<number> {
     // Email failures are reported to worker logs; they must not corrupt usage ingestion.
     const reportedAt = Date.parse(usageDate)
     const isRecentUsage = Number.isFinite(reportedAt) && reportedAt >= Date.now() - 72 * 60 * 60 * 1000 && reportedAt <= Date.now() + 24 * 60 * 60 * 1000
+    if (!existing && isRecentUsage) {
+      await notifyMarketplaceEvent(env, {
+        type: 'marketplace.customer.new',
+        facts: {
+          Company: companyName,
+          SKU: text(pick(record, 'SKU', 'Sku')),
+          Offer: text(pick(record, 'OfferName')),
+          Country: text(pick(record, 'CustomerCountry')),
+          'Trial ends': text(pick(record, 'TrialEndDate')),
+          'Usage date': usageDate,
+        },
+      })
+    }
     if (!existing && isRecentUsage && isTrialUsage(record)) {
       try { await notifyFirstTrialUsage(env, record) }
       catch (error) { console.error('Marketplace trial notification failed', error) }

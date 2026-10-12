@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { AnnouncementBanner } from '@/components/announcement-banner'
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { claims } from '@/lib/claims'
 import { pageMetadata } from '@/lib/seo'
@@ -20,8 +19,8 @@ export default function ClaimsPage() {
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
-      <Navbar bannerHeight={38} />
-      <section className="px-6 pb-20 pt-32 lg:px-9 lg:pb-28 lg:pt-36">
+
+      <section className="site-hero px-6 pb-20 pt-32 lg:px-9 lg:pb-28 lg:pt-36">
         <div className="mx-auto max-w-[1120px]">
           <div className="mb-6 flex items-center gap-3">
             <span className="nb-label">Reference</span>

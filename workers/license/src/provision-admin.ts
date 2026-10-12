@@ -132,7 +132,7 @@ app.get('/api/v1/provisioned-accounts', async (c) => {
     WHERE ps.rn=1
     ORDER BY ps.last_seen_at DESC
   `)
-  const items = rows<Row>(result).map((row) => {
+  const items = rows<Row>(result).map<Row>((row) => {
     const trialEndsAt = row.marketplace_trial_ends_at ? Date.parse(String(row.marketplace_trial_ends_at)) : NaN
     return {
       ...row,
@@ -177,7 +177,7 @@ app.get('/api/v1/provisioned-accounts', async (c) => {
     WHERE m.organization_id IS NOT NULL
       AND NOT EXISTS (SELECT 1 FROM provision_portal_sessions ps WHERE ps.organization_id=m.organization_id)
     GROUP BY m.organization_id
-  `)).map((row) => {
+  `)).map<Row>((row) => {
     const end = row.marketplace_trial_ends_at ? Date.parse(String(row.marketplace_trial_ends_at)) : NaN
     return {
       ...row,

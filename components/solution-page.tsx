@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 
 export type SolutionPageContent = {
@@ -13,9 +12,8 @@ export type SolutionPageContent = {
 
 export function SolutionPage({ content }: { content: SolutionPageContent }) {
   return <main className="min-h-screen bg-[#fafaf9] text-[#111]">
-    <Navbar />
-    <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-white pt-24">
-      <div aria-hidden="true" className="marketing-grid absolute inset-0 opacity-70" />
+
+    <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] bg-white pt-24">
       <div className="relative mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-28">
         <Link href="/products/papyrus" className="mb-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider underline underline-offset-4">Papyrus / Solutions</Link>
         <div className="max-w-4xl"><span className="nb-label mb-6 inline-block bg-[#ff5f1f]">{content.eyebrow}</span>

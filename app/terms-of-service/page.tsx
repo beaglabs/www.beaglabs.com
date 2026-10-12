@@ -29,8 +29,8 @@ export default function TermsPage() {
             <section>
               <h2 className="text-xl font-semibold text-[#111] mb-4">2. Services</h2>
               <p className="text-[#555] leading-relaxed">
-                Beag Labs provides applied AI research, consulting, dataset generation, fine-tuning, robotics integration,
-                and domain-model curation services. Specific deliverables, timelines, and fees are defined in individual statements
+                Beag Labs provides customer-hosted software and implementation services for document automation,
+                internal applications, and legacy back office modernization. Specific deliverables, timelines, and fees are defined in individual statements
                 of work or service agreements.
               </p>
             </section>

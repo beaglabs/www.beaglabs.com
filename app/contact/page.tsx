@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { ArrowUpRight, Mail } from 'lucide-react'
 
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
@@ -11,18 +10,18 @@ const BOOKING_URL =
 export const metadata: Metadata = pageMetadata({
   title: 'Book a meeting',
   description:
-    'Schedule a conversation with Beag Labs about Papyrus, secure AI deployment, partnerships, or another problem you are working on.',
+    'Schedule a conversation with Beag Labs about Papyrus, back office automation, legacy workflows, or delivery partnerships.',
   path: '/contact',
   label: 'Contact',
   ogDescription:
-    'Choose a time to talk with Beag Labs about Papyrus, secure AI deployment, partnerships, or another problem you are working on.',
+    'Choose a time to talk with Beag Labs about Papyrus, back office automation, legacy workflows, or delivery partnerships.',
 })
 
 export default function ContactPage() {
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-28 lg:px-9 lg:pb-28 lg:pt-32">
+
+      <main className="site-page-grid min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-28 lg:px-9 lg:pb-28 lg:pt-32">
         <div className="mx-auto w-full max-w-[1180px]">
           <div className="mx-auto mb-9 max-w-[760px] text-center">
             <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-[#ff5f1f]">
@@ -32,8 +31,8 @@ export default function ContactPage() {
               Talk with Beag Labs.
             </h1>
             <p className="mx-auto mt-5 max-w-[650px] text-[16px] font-medium leading-7 text-[#555]">
-              Pick a time to discuss Papyrus, secure deployment, partnerships, or another
-              problem you&apos;re working on.
+              Pick a time to discuss Papyrus, back office automation, legacy workflows,
+              or delivery partnerships.
             </p>
           </div>
 

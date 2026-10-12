@@ -19,6 +19,10 @@ AZURE_KEY_VAULT_KEY_ID=""
 # Resend API key used for Marketplace lead threads and legacy partner email flows.
 RESEND_API_KEY=""
 
+# Signed Teams workflow webhook for homepage trial-click notifications.
+# Set in production using Wrangler secret put; never expose in browser code.
+TRIAL_NOTIFICATIONS_WEBHOOK_URL=""
+
 # Logic Apps / Power Automate forwards Microsoft Marketplace leads here using:
 # X-Beag-Timestamp + X-Beag-Signature = HMAC-SHA256(secret, `${timestamp}.${rawBody}`)
 MARKETPLACE_LEAD_WEBHOOK_SECRET=""

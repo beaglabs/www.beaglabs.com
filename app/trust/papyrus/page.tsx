@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react'
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
@@ -254,9 +253,9 @@ const pluginLifecycle = [
 export default function PapyrusTrustCenter() {
   return (
     <main className="min-h-screen bg-[#FAFAF9] text-[#111]">
-      <Navbar />
 
-      <section className="border-b-[3px] border-[#111] pt-16">
+
+      <section className="site-hero border-b-[3px] border-[#111] pt-16">
         <div className="mx-auto max-w-[1440px] px-6 py-8 lg:px-9 lg:py-10">
           <div className="overflow-hidden border-[3px] border-[#111] bg-white">
             <div className="grid min-h-[440px] lg:grid-cols-[.92fr_1.08fr]">

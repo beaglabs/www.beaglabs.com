@@ -20,7 +20,7 @@ export default function LoginPage() {
   }, [isPending, session, router])
 
   if (isPending || session) {
-    return <div className="min-h-screen bg-[#f6f4ef] flex items-center justify-center">
+    return <div className="site-page-grid min-h-screen bg-[#f6f4ef] flex items-center justify-center">
       <p className="text-sm text-[#777]">Loading...</p>
     </div>
   }
@@ -46,7 +46,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f4ef] flex items-center justify-center px-4">
+    <div className="site-page-grid min-h-screen bg-[#f6f4ef] flex items-center justify-center px-4 pt-24 pb-12">
       <div className="w-full max-w-[400px]">
         <div className="mb-8 text-center">
           <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#ff5f1f] mb-4">

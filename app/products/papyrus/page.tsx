@@ -3,7 +3,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Check, FileText, Layers3, Play, Terminal } from 'lucide-react'
 
-import { Navbar } from '@/components/navbar'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { SiteFooter } from '@/components/site-footer'
 import { DocumentDemo } from '@/components/papyrus/document-demo'
@@ -25,9 +24,9 @@ export const metadata: Metadata = {
   ...baseMetadata,
   openGraph: {
     ...baseMetadata.openGraph,
-    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-08-workers-safe`, width: 1200, height: 630, alt: 'Papyrus: The Agentic Modernization Factory. Document automation, internal apps, and legacy system enablement.', type: 'image/png' }],
+    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-10-white-grid-hero`, width: 1200, height: 630, alt: 'Papyrus: The Agentic Modernization Factory. Document automation, internal apps, and legacy system enablement.', type: 'image/png' }],
   },
-  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-08-workers-safe`] },
+  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-10-white-grid-hero`] },
 }
 
 const outcomes = [
@@ -39,8 +38,8 @@ const outcomes = [
 export default function PapyrusProductPage() {
   return (
     <main className="bg-[#fafaf9] text-[#111]">
-      <Navbar />
-      <section className="overflow-hidden border-b-[3px] border-[#111] pt-16">
+
+      <section className="site-hero overflow-hidden border-b-[3px] border-[#111] pt-16">
         <div className="mx-auto max-w-[1440px]">
           <div className="px-6 py-16 text-center lg:px-9 lg:py-24">
             <div className="text-left"><Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Papyrus', url: '/products/papyrus' }]} /></div>

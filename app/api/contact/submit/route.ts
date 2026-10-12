@@ -9,7 +9,7 @@ const COMPANIES_OBJECT_TYPE_ID = 1
 const APPOINTMENTS_OBJECT_TYPE_ID = 2
 
 const bodySchema = z.object({
-  topic: z.enum(["fine-tuning", "qat", "agentic-support"]),
+  topic: z.enum(["document-automation", "internal-apps", "modernization", "agentic-support"]),
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().optional(),
@@ -104,8 +104,7 @@ export async function POST(request: Request) {
     )
 
     const isDisqualified =
-      budget === "under-50k" ||
-      (budget === "50k-200k" && (topic === "fine-tuning" || topic === "qat"))
+      budget === "under-50k"
 
     if (isDisqualified) {
       cioPromises.push(
@@ -115,9 +114,7 @@ export async function POST(request: Request) {
             data: {
               topic,
               budget,
-              reason: budget === "under-50k"
-                ? "Budget under $50K"
-                : "Budget under $200K for fine-tuning / QAT",
+              reason: "Budget under $50K",
               disqualified_at: new Date().toISOString(),
             },
             type: "person",

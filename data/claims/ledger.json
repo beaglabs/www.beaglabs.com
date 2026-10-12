@@ -132,15 +132,91 @@
     "status": "Verified"
   },
   {
-    "claim": "OpenRouter's 2025 State of AI study analyzed more than 100 trillion tokens of real-world LLM interactions and observed growing programming usage and agentic inference.",
-    "allowedLanguage": "OpenRouter's 2025 study analyzed more than 100T tokens on its platform and reported growing programming usage and agentic inference.",
-    "claimId": "BL-CLM-11",
-    "lastVerified": "September 30, 2026",
-    "prohibitedInference": "Do not generalize OpenRouter's traffic distribution to all AI usage without qualification.",
-    "scopeCaveat": "The study covers traffic observed on OpenRouter, not the entire AI market or all enterprise AI usage.",
-    "source": "https://openrouter.ai/state-of-ai",
-    "sourceDate": "December 1, 2025",
-    "sourceOrganization": "OpenRouter",
-    "status": "Verified"
+    "claim": "NIST AI 600-1 is a cross-sectoral generative AI profile supporting risk management throughout the AI lifecycle.",
+    "allowedLanguage": "NIST AI 600-1 is a cross-sectoral generative AI profile supporting risk management throughout the AI lifecycle.",
+    "claimId": "BL-CLM-13",
+    "lastVerified": "2026-10-09",
+    "prohibitedInference": "Do not imply NIST approval, certification, endorsement, or demonstrated Papyrus compliance.",
+    "scopeCaveat": "Voluntary risk-management guidance. It is not a certification or a finding about Papyrus.",
+    "source": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence",
+    "sourceDate": "2024-07-26",
+    "sourceOrganization": "NIST",
+    "status": "Verified",
+    "evidenceType": "Government guidance",
+    "sourceLocator": "Abstract and AI 600-1 introduction",
+    "usedOn": [
+      "/solutions/agentic-back-office",
+      "/solutions/agentic-modernization-factory"
+    ]
+  },
+  {
+    "claim": "τ-bench evaluates tool-using agents against goal database states and tests consistency across repeated trials under domain policies.",
+    "allowedLanguage": "τ-bench evaluates tool-using agents against goal database states and tests consistency across repeated trials under domain policies.",
+    "claimId": "BL-CLM-14",
+    "lastVerified": "2026-10-09",
+    "prohibitedInference": "Do not extrapolate benchmark scores into Papyrus performance or customer reliability.",
+    "scopeCaveat": "The 2024 benchmark uses simulated users and domain environments. Its results are not Papyrus results or a measure of current models.",
+    "source": "https://arxiv.org/abs/2406.12045v1",
+    "sourceDate": "2024-06-17",
+    "sourceOrganization": "arXiv",
+    "status": "Verified",
+    "evidenceType": "Research benchmark",
+    "sourceLocator": "v1 abstract; task evaluation and pass^k definition",
+    "usedOn": [
+      "/solutions/agentic-back-office",
+      "/solutions/agentic-modernization-factory"
+    ]
+  },
+  {
+    "claim": "Anthropic distinguishes workflows with predefined code paths from agents that dynamically direct their processes and tool use.",
+    "allowedLanguage": "Anthropic distinguishes workflows with predefined code paths from agents that dynamically direct their processes and tool use.",
+    "claimId": "BL-CLM-15",
+    "lastVerified": "2026-10-09",
+    "prohibitedInference": "Do not treat this article as independent evidence of Papyrus ROI, performance, or integration support.",
+    "scopeCaveat": "Engineering guidance published in 2024. The article notes that the tooling landscape has since changed.",
+    "source": "https://www.anthropic.com/engineering/building-effective-agents",
+    "sourceDate": "2024-12-19",
+    "sourceOrganization": "Anthropic",
+    "status": "Verified",
+    "evidenceType": "Vendor engineering guidance",
+    "sourceLocator": "What are agents?; When (and when not) to use agents",
+    "usedOn": [
+      "/solutions/agentic-back-office",
+      "/solutions/agentic-modernization-factory"
+    ]
+  },
+  {
+    "claim": "GAO identified 11 critical federal legacy systems in need of modernization; plans for eight did not fully document key elements.",
+    "allowedLanguage": "GAO identified 11 critical federal legacy systems in need of modernization; plans for eight did not fully document key elements.",
+    "claimId": "BL-CLM-16",
+    "lastVerified": "2026-10-09",
+    "prohibitedInference": "Do not claim all legacy systems are insecure or that agentic software resolves the identified problems.",
+    "scopeCaveat": "These are GAO-selected federal systems, not all mainframes or all legacy applications. The report does not evaluate Papyrus.",
+    "source": "https://www.gao.gov/products/gao-25-107795",
+    "sourceDate": "2025-07-17",
+    "sourceOrganization": "GAO",
+    "status": "Verified",
+    "evidenceType": "Government audit report",
+    "sourceLocator": "What GAO Found; Table 2",
+    "usedOn": [
+      "/solutions/agentic-modernization-factory"
+    ]
+  },
+  {
+    "claim": "Microsoft documents capture, navigation and method definitions for mapping 3270 screens and fields into HIDX metadata used by its connector.",
+    "allowedLanguage": "Microsoft documents capture, navigation and method definitions for mapping 3270 screens and fields into HIDX metadata used by its connector.",
+    "claimId": "BL-CLM-17",
+    "lastVerified": "2026-10-09",
+    "prohibitedInference": "Do not imply Papyrus ships or has tested this Microsoft connector, or that an agent can access a mainframe without authorization.",
+    "scopeCaveat": "This describes Microsoft Host Integration Server and Azure Logic Apps tooling, not a verified Papyrus connector. Requires host access and applicable software.",
+    "source": "https://learn.microsoft.com/en-us/host-integration-server/core/application-integration-la3270apps",
+    "sourceDate": "2023-11-08",
+    "sourceOrganization": "Microsoft",
+    "status": "Verified",
+    "evidenceType": "Vendor technical documentation",
+    "sourceLocator": "Introduction; Capture; Navigation; Methods; Generate and upload HIDX file",
+    "usedOn": [
+      "/solutions/agentic-modernization-factory"
+    ]
   }
 ]

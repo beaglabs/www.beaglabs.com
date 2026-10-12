@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { ContactForm } from '@/components/contact-form'
-import { Navbar } from '@/components/navbar'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { PartnerProgram } from '@/components/partner-program'
 import { SiteFooter } from '@/components/site-footer'
@@ -21,9 +20,9 @@ export const metadata: Metadata = pageMetadata({
 export default function PartnersPage() {
   return (
     <>
-      <Navbar />
+
       <main className="bg-[#FAFAF9]">
-        <section className="nb-section-divider bg-[#FAFAF9] px-6 pt-28 pb-16 lg:px-9 lg:pt-32 lg:pb-20">
+        <section className="site-hero nb-section-divider bg-[#FAFAF9] px-6 pt-28 pb-16 lg:px-9 lg:pt-32 lg:pb-20">
           <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Partners', url: '/partners' }]} />

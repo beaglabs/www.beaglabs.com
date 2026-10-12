@@ -1,7 +1,7 @@
 export const company = {
   name: 'Beag Labs',
   shortName: 'Beag',
-  tagline: 'Custom AI. On Your Infra.',
+  tagline: 'Back office automation. On your infrastructure.',
   uei: 'CDQ1WLGN41X6',
   cage: '22QH1',
   email: 'james@beaglabs.com',

@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Navbar } from '@/components/navbar'
 import { SiteFooter } from '@/components/site-footer'
 
 type Severity = {
@@ -58,9 +57,9 @@ export function SupportDetailPage({
 
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
-      <Navbar />
 
-      <section className="overflow-hidden border-b-[3px] border-[#111] pt-16">
+
+      <section className="site-hero overflow-hidden border-b-[3px] border-[#111] pt-16">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
           <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
             <p className="nb-label mb-5 inline-block">{eyebrow}</p>

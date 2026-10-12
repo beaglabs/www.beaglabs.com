@@ -1,3 +1,7 @@
+import { BACKOFFICE_POST_SLUGS } from '@/lib/blog/backoffice-content'
+
+const backofficeSlugs = JSON.stringify(BACKOFFICE_POST_SLUGS)
+
 const BLOG_POST_CARD_FIELDS = `
   id
   slug
@@ -79,13 +83,14 @@ const RESEARCH_PAPER_FULL_FIELDS = `
 export const GET_BLOG_POSTS = `
   query GetBlogPosts($first: Int!, $skip: Int!) {
     blogPosts(
+      where: { slug_in: ${backofficeSlugs} }
       first: $first
       skip: $skip
       orderBy: publishedAt_DESC
     ) {
       ${BLOG_POST_CARD_FIELDS}
     }
-    blogPostsConnection {
+    blogPostsConnection(where: { slug_in: ${backofficeSlugs} }) {
       aggregate {
         count
       }
@@ -104,14 +109,14 @@ export const GET_BLOG_POST = `
 export const GET_BLOG_POSTS_BY_CATEGORY = `
   query GetBlogPostsByCategory($category: Category!, $first: Int!, $skip: Int!) {
     blogPosts(
-      where: { category: $category }
+      where: { category: $category, slug_in: ${backofficeSlugs} }
       first: $first
       skip: $skip
       orderBy: publishedAt_DESC
     ) {
       ${BLOG_POST_CARD_FIELDS}
     }
-    blogPostsConnection(where: { category: $category }) {
+    blogPostsConnection(where: { category: $category, slug_in: ${backofficeSlugs} }) {
       aggregate {
         count
       }
@@ -122,14 +127,14 @@ export const GET_BLOG_POSTS_BY_CATEGORY = `
 export const GET_BLOG_POSTS_BY_TAG = `
   query GetBlogPostsByTag($tag: String!, $first: Int!, $skip: Int!) {
     blogPosts(
-      where: { tags_contains_some: [$tag] }
+      where: { tags_contains_some: [$tag], slug_in: ${backofficeSlugs} }
       first: $first
       skip: $skip
       orderBy: publishedAt_DESC
     ) {
       ${BLOG_POST_CARD_FIELDS}
     }
-    blogPostsConnection(where: { tags_contains_some: [$tag] }) {
+    blogPostsConnection(where: { tags_contains_some: [$tag], slug_in: ${backofficeSlugs} }) {
       aggregate {
         count
       }
@@ -139,7 +144,7 @@ export const GET_BLOG_POSTS_BY_TAG = `
 
 export const GET_ALL_BLOG_CATEGORIES = `
   query GetAllBlogCategories {
-    blogPosts {
+    blogPosts(where: { slug_in: ${backofficeSlugs} }) {
       category
     }
   }
@@ -147,7 +152,7 @@ export const GET_ALL_BLOG_CATEGORIES = `
 
 export const GET_ALL_BLOG_TAGS = `
   query GetAllBlogTags {
-    blogPosts {
+    blogPosts(where: { slug_in: ${backofficeSlugs} }) {
       tags
     }
   }
@@ -157,7 +162,7 @@ export const GET_ALL_BLOG_TAGS = `
 
 export const GET_ALL_BLOG_SLUGS = `
   query GetAllBlogSlugs {
-    blogPosts(orderBy: publishedAt_DESC) {
+    blogPosts(where: { slug_in: ${backofficeSlugs} }, orderBy: publishedAt_DESC) {
       slug
       publishedAt
     }

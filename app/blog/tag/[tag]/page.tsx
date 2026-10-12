@@ -8,12 +8,10 @@ import { ogImageUrl } from '@/lib/seo'
 
 export async function generateStaticParams() {
   try {
-    const data = await fetchHygraph<{ blogPostsGroup: { field: string }[] }>(
+    const data = await fetchHygraph<{ blogPosts: { tags: string[] }[] }>(
       GET_ALL_BLOG_TAGS
     )
-    return data.blogPostsGroup.map((g) => ({
-      tag: encodeURIComponent(g.field),
-    }))
+    return [...new Set(data.blogPosts.flatMap(post => post.tags))].map(tag => ({ tag }))
   } catch {
     return []
   }
@@ -84,12 +82,14 @@ export default async function BlogTagPage({
     notFound()
   }
 
+  if (data.blogPostsConnection.aggregate.count === 0) notFound()
+
   const totalPages = Math.ceil(
     data.blogPostsConnection.aggregate.count / POSTS_PER_PAGE
   )
 
   return (
-    <main className="px-6 py-14 lg:px-9 lg:py-16">
+    <main className="site-page-grid px-6 py-14 lg:px-9 lg:py-16">
       <div className="mx-auto max-w-[1440px]">
         <div className="mb-14 grid grid-cols-1 gap-8 border-b border-[rgba(0,0,0,0.08)] pb-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <div>

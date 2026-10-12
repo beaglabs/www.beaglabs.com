@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 export default function CrmPage() {
-  return <main className="min-h-screen bg-[#fafaf9] px-5 py-12 text-[#111] md:px-10">
+  return <main className="site-page-grid min-h-screen bg-[#fafaf9] px-5 pb-12 pt-24 text-[#111] md:px-10">
     <div className="mx-auto max-w-7xl">
       <header className="mb-8 border-b border-neutral-200 pb-5">
         <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Beag Labs / Private</p>

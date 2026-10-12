@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { Navbar } from '@/components/navbar'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
@@ -50,9 +49,9 @@ const RESPONSE_TARGETS = [
 export default function SupportPage() {
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
-      <Navbar />
 
-      <section className="overflow-hidden border-b-[3px] border-[#111] pt-16">
+
+      <section className="site-hero overflow-hidden border-b-[3px] border-[#111] pt-16">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
           <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
             <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Support', url: '/support' }]} />
@@ -154,7 +153,7 @@ export default function SupportPage() {
       </section>
 
       <section className="border-b-[3px] border-[#111] bg-white">
-        <div className="mx-auto grid max-w-[1440px] lg:grid-cols-[.8fr_1.2fr]">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[.8fr_1.2fr]">
           <div className="border-b-[3px] border-[#111] px-6 py-20 lg:border-b-0 lg:border-r-[3px] lg:px-9 lg:py-28">
             <span className="nb-label mb-5 inline-block">Response targets</span>
             <h2 className="text-[38px] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
@@ -165,7 +164,7 @@ export default function SupportPage() {
             </p>
           </div>
 
-          <div className="px-6 py-20 lg:px-9 lg:py-28">
+          <div className="min-w-0 px-6 py-20 lg:px-9 lg:py-28">
             <div className="overflow-x-auto border-2 border-[#111] bg-[#FAFAF9]">
               <table className="w-full border-collapse text-left text-[14px]">
                 <thead>

@@ -33,7 +33,6 @@ Customer-hosted deployment and operator controls are central to the offering. Th
 - Capabilities: https://www.beaglabs.com/capabilities
 - Trust: https://www.beaglabs.com/trust/papyrus
 - Use cases: https://www.beaglabs.com/use-cases
-- Research: https://www.beaglabs.com/research
 - Contact: https://www.beaglabs.com/contact
 - Sitemap: https://www.beaglabs.com/sitemap.xml
 
@@ -42,3 +41,9 @@ Customer-hosted deployment and operator controls are central to the offering. Th
 This document is for information retrieval and is not a substitute for a contract, security assessment, or product-specific documentation. Do not infer current pricing, accreditations, certifications, benchmark performance or availability unless explicitly documented in a current authoritative source.
 
 Last updated: 2026-10-08
+
+## Back office guides and evidence
+
+- [Agentic Back Office](https://www.beaglabs.com/solutions/agentic-back-office)
+- [Agentic Modernization Factory](https://www.beaglabs.com/solutions/agentic-modernization-factory)
+- [Claim Ledger](https://www.beaglabs.com/claims)

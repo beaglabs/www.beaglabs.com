@@ -61,8 +61,8 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F4F0]">
-      <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b bg-white sticky top-0 z-40"
+    <div className="site-page-grid min-h-screen bg-[#F5F4F0]">
+      <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b bg-white sticky top-0 z-40 mt-20"
         style={{ borderColor: '#E2E0DB' }}>
         <div className="flex items-center gap-3">
           <span className="text-base font-bold tracking-[-0.04em] text-[#111]">B_</span>

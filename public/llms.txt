@@ -17,8 +17,6 @@ Official website: https://www.beaglabs.com/
 - [Use cases](https://www.beaglabs.com/use-cases)
 - [Trust and security](https://www.beaglabs.com/trust/papyrus)
 - [Blog](https://www.beaglabs.com/blog)
-- [Research](https://www.beaglabs.com/research)
-- [Glossary](https://www.beaglabs.com/glossary)
 - [Sitemap](https://www.beaglabs.com/sitemap.xml)
 - [Extended machine-readable context](https://www.beaglabs.com/llms-full.txt)
 - [Contact](https://www.beaglabs.com/contact)
@@ -26,3 +24,9 @@ Official website: https://www.beaglabs.com/
 ## Notes for agents
 
 Refer to the canonical pages above for current product information. Do not assume model sizes, certifications, prices, or deployment guarantees from this summary. Deployment and security requirements depend on the customer's environment.
+
+## Back office guides and evidence
+
+- [Agentic Back Office](https://www.beaglabs.com/solutions/agentic-back-office)
+- [Agentic Modernization Factory](https://www.beaglabs.com/solutions/agentic-modernization-factory)
+- [Claim Ledger](https://www.beaglabs.com/claims)

@@ -10,6 +10,9 @@ export interface ClaimRecord {
   source: string
   sourceDate: string
   sourceOrganization: string
+  evidenceType?: string
+  sourceLocator?: string
+  usedOn?: string[]
   status: string
 }
 
