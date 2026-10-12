@@ -32,8 +32,16 @@ const footerColumns = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#ff5f1f] px-6 py-14 text-[#111] lg:px-9 lg:py-16">
-      <div className="mx-auto max-w-[1440px]">
+    <footer className="relative overflow-hidden bg-[#ffffff] px-6 py-14 text-[#111] lg:px-9 lg:py-16">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <video className="h-full w-full object-cover opacity-50 motion-reduce:hidden" src="/hero/clip-1.mp4" poster="/hero/poster-1.jpg" autoPlay muted loop playsInline preload="metadata" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="hidden h-full w-full object-cover opacity-50 motion-reduce:block" src="/hero/poster-1.jpg" alt="" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#ffffff]/95 via-[#ffffff]/90 to-[#ffffff]/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#ffffff]/70 via-transparent to-[#ffffff]/80" />
+        <div className="marketing-grid absolute inset-0" />
+      </div>
+      <div className="relative mx-auto max-w-[1440px]">
         <div className="mb-12 border-b-[3px] border-[#111] pb-8">
           <div className="display-black max-w-[900px] text-[44px] leading-[0.95] sm:text-[58px] lg:text-[72px]">
             Documents to decisions. Legacy systems to modern apps.
@@ -50,7 +58,7 @@ export function SiteFooter() {
                 Beag Labs
               </span>
             </div>
-            <p className="max-w-[280px] text-[14px] font-semibold leading-[1.7] text-[#222]">
+            <p className="max-w-[280px] text-[14px] font-semibold leading-[1.7] text-[#111]">
               Document automation, internal apps, and legacy modernization—on your infrastructure.
             </p>
             <div className="mt-5 flex items-center gap-4">
@@ -99,7 +107,7 @@ export function SiteFooter() {
               <h4 className="mb-4 font-mono text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#111]">
                 {col.title}
               </h4>
-              <ul className="space-y-2.5 text-[14px] text-[#222]">
+              <ul className="space-y-2.5 text-[14px] text-[#111]">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
@@ -116,7 +124,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t-[3px] border-[#111] pt-8 lg:flex-row">
-          <p className="font-mono text-[10px] font-bold tracking-[0.15em] text-[#222]">
+          <p className="font-mono text-[10px] font-bold tracking-[0.15em] text-[#111]">
             &copy; {new Date().getFullYear()} BEAG LABS. ALL RIGHTS RESERVED.
           </p>
         </div>

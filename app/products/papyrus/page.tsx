@@ -103,7 +103,6 @@ export default function PapyrusProductPage() {
         </div>
       </section>
 
-      <section className="bg-[#ff5f1f] px-6 py-16 lg:px-9 lg:py-24"><div className="mx-auto flex max-w-[1440px] flex-col justify-between gap-8 lg:flex-row lg:items-end"><div><p className="font-mono text-[10px] font-bold uppercase tracking-widest">Bring the workflow that needs to change</p><h2 className="mt-4 max-w-[820px] text-[40px] font-extrabold leading-[1.03] tracking-[-.045em] sm:text-[56px]">A document backlog.<br />An internal app.<br />A legacy process worth improving.</h2></div><div className="flex flex-col items-start gap-5"><Link href="/contact" className="nb-btn-white inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Let’s build the next step<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link><Link href="/trust/papyrus" className="text-xs font-bold underline underline-offset-4">Deployment and trust documentation</Link></div></div></section>
       <SiteFooter />
     </main>
   )

@@ -70,7 +70,7 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
   return (
     <nav ref={root} aria-label="Primary" className="fixed right-3 z-50 w-fit max-w-[calc(100vw-1.5rem)] sm:right-6" style={{ top: announcementHeight + 14 }}>
       <div className="flex h-12 items-center gap-1 rounded-xl border-2 border-[#111] bg-white p-1 shadow-[4px_4px_0_#111]">
-        <Link href="/" aria-label="Beag Labs home" onClick={() => setOpen(false)} className="flex h-9 items-center justify-center rounded-lg border-2 border-[#111] bg-[#ff5f1f] px-2.5 text-sm font-black tracking-tight text-[#111] hover:bg-[#ffdeca]">B_</Link>
+        <Link href="/" aria-label="Beag Labs home" onClick={() => setOpen(false)} className="flex h-9 items-center justify-center rounded-lg border-2 border-[#111] bg-[#111] px-2.5 text-sm font-black tracking-tight text-white hover:bg-[#ff5f1f] hover:text-[#111]">B_</Link>
         <button type="button" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="floating-site-navigation" onClick={() => setOpen(value => !value)} className="flex h-9 items-center gap-2 rounded-lg px-3 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:bg-[#f3f3f3] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111]">
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />} Menu <ChevronDown aria-hidden="true" className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
         </button>
