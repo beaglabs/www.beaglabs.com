@@ -1,7 +1,7 @@
 import { Resend } from 'resend'
 import type { Bindings } from './env'
 
-const WWW_ORIGIN = 'https://www.beaglabs.com'
+const WWW_ORIGIN = 'https://beaglabs.com'
 
 function esc(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)

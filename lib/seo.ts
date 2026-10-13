@@ -1,5 +1,5 @@
-export const BASE_URL = 'https://www.beaglabs.com'
-const OG_IMAGE_VERSION = '2026-10-10-white-grid-hero'
+export const BASE_URL = 'https://beaglabs.com'
+const OG_IMAGE_VERSION = '2026-10-12-sled-federal-v2'
 
 export function canonical(path: string) {
   return {
@@ -23,7 +23,6 @@ export function ogImageUrl(params: {
   searchParams.set('title', params.title)
   if (params.description) searchParams.set('description', params.description)
   if (params.label) searchParams.set('label', params.label)
-  if (params.date) searchParams.set('date', params.date)
   if (params.date) searchParams.set('date', params.date)
   return `${BASE_URL}/og?${searchParams.toString()}`
 }

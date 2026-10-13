@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.beaglabs.com/sitemap.xml
+Sitemap: https://beaglabs.com/sitemap.xml
 
 # Content Signals
 # As a condition of accessing this website, you agree to abide by the following

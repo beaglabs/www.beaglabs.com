@@ -365,7 +365,7 @@ async function notifyFirstTrialUsage(env: Bindings, record: Row): Promise<void> 
       'Offer: ' + offer,
       'Marketplace subscription: ' + (subscription || 'not supplied'),
       'Usage date: ' + (date || 'not supplied'),
-      'CRM: https://www.beaglabs.com/crm',
+      'CRM: https://beaglabs.com/crm',
       'This confirms Marketplace trial usage reporting, not first successful VM boot time.',
     ].join('\n'),
   })

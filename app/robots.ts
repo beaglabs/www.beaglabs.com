@@ -52,7 +52,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
     ],
-    sitemap: 'https://www.beaglabs.com/sitemap.xml',
-    host: 'https://www.beaglabs.com',
+    sitemap: 'https://beaglabs.com/sitemap.xml',
+    host: 'https://beaglabs.com',
   }
 }

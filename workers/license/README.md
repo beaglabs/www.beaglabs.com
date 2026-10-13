@@ -247,13 +247,13 @@ Papyrus disconnected deployments do not phone home. Marking a license issuance `
 
 ## Organization licenses
 
-The website console at https://www.beaglabs.com/licensing now supports organization licenses on the Entitlements tab. These allow unlimited VMs within approved Entra tenants, optional exact hostnames, and a mandatory expiry. Scope approval and issuance require Beag Microsoft administrator identity; all license rights derive from booked customer entitlements.
+The website console at https://beaglabs.com/licensing now supports organization licenses on the Entitlements tab. These allow unlimited VMs within approved Entra tenants, optional exact hostnames, and a mandatory expiry. Scope approval and issuance require Beag Microsoft administrator identity; all license rights derive from booked customer entitlements.
 
 See [administration and rollout](../../docs/organization-licensing.md) for generation, download, setup, migration order, renewal, and offline enforcement limits. Apply `organization-license-schema.sql` before deploying this Worker; `scripts/apply-schema.mjs` includes it. No per-VM deployment registration is needed for organization issuance. Existing deployment-bound licenses and issuance tables remain supported.
 
 ## Provisioning control plane
 
-The customer-facing Papyrus control plane lives at `https://www.beaglabs.com/provision` and uses this Worker for authentication, deployment registration, Marketplace billing mirrors, agreement acceptance, Account Manager assignment, Azure VM resize operations, and offline-license downloads.
+The customer-facing Papyrus control plane lives at `https://beaglabs.com/provision` and uses this Worker for authentication, deployment registration, Marketplace billing mirrors, agreement acceptance, Account Manager assignment, Azure VM resize operations, and offline-license downloads.
 
 Its additive schema is `provisioning-schema.sql` and is applied by the normal migration command:
 

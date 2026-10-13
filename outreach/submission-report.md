@@ -172,8 +172,8 @@ These VCs have email addresses but no web forms:
 ---
 
 ## Files Referenced
-- Pitch Deck: `/Users/jdbohrman/www.beaglabs.com/public/pitch/beaglabs-raise-deck.pdf`
-- Website: https://www.beaglabs.com
+- Pitch Deck: `/Users/jdbohrman/beaglabs.com/public/pitch/beaglabs-raise-deck.pdf`
+- Website: https://beaglabs.com
 - Contact: James Bohrman (james@beaglabs.com)
 - Role: CEO/Founder
 - Oneliner: "We are building small models and internal agents for enterprise"

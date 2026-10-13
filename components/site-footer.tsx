@@ -33,14 +33,6 @@ const footerColumns = [
 export function SiteFooter() {
   return (
     <footer className="relative overflow-hidden bg-[#ffffff] px-6 py-14 text-[#111] lg:px-9 lg:py-16">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <video className="h-full w-full object-cover opacity-50 motion-reduce:hidden" src="/hero/clip-1.mp4" poster="/hero/poster-1.jpg" autoPlay muted loop playsInline preload="metadata" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="hidden h-full w-full object-cover opacity-50 motion-reduce:block" src="/hero/poster-1.jpg" alt="" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#ffffff]/95 via-[#ffffff]/90 to-[#ffffff]/80" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#ffffff]/70 via-transparent to-[#ffffff]/80" />
-        <div className="marketing-grid absolute inset-0" />
-      </div>
       <div className="relative mx-auto max-w-[1440px]">
         <div className="mb-12 border-b-[3px] border-[#111] pb-8">
           <div className="display-black max-w-[900px] text-[44px] leading-[0.95] sm:text-[58px] lg:text-[72px]">

@@ -1,6 +1,6 @@
 # Organization license administration
 
-Licenses are generated in **https://www.beaglabs.com/licensing**, using the dedicated **https://license.beaglabs.com** backend and a version-pinned Azure Key Vault signing key. This feature requires both the updated issuer and the updated Papyrus runtime; it does not issue real customer licenses automatically.
+Licenses are generated in **https://beaglabs.com/licensing**, using the dedicated **https://license.beaglabs.com** backend and a version-pinned Azure Key Vault signing key. This feature requires both the updated issuer and the updated Papyrus runtime; it does not issue real customer licenses automatically.
 
 ## Generate and deliver
 

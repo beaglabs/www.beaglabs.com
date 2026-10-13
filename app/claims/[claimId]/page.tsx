@@ -14,6 +14,18 @@ interface ClaimPageProps {
 
 export const dynamicParams = false
 
+const usedOnLabels: Record<string, string> = {
+  '/solutions/agentic-modernization-factory': 'Modernization Factory',
+  '/solutions/agentic-back-office': 'Agentic Back Office',
+  '/compare/self-hosted-ai-agent-platforms': 'Self-hosted AI agent platforms comparison',
+}
+
+function usedOnLabel(path: string) {
+  const known = usedOnLabels[path]
+  if (known) return known
+  return path.startsWith('/compare/papyrus-vs-') ? `Papyrus vs ${path.replace('/compare/papyrus-vs-', '').replaceAll('-', ' ')}` : path
+}
+
 export function generateStaticParams() {
   return claims.map(({ claimId }) => ({ claimId }))
 }
@@ -57,10 +69,27 @@ export default async function ClaimPage({ params }: ClaimPageProps) {
           </h1>
           <p className="mt-4 max-w-[800px] text-[18px] font-semibold leading-[1.65] text-[#333]">{claim.claim}</p>
           <ClaimDiagram claim={claim} />
-          {claim.sourceLocator && <div className="mt-8 border-2 border-[#111] bg-white p-6">
-            <p className="font-mono text-xs uppercase tracking-widest">{claim.evidenceType}</p>
-            <p className="mt-3 text-sm leading-7"><strong>Source locator:</strong> {claim.sourceLocator}</p>
-            {claim.usedOn && <div className="mt-4 flex flex-wrap gap-4">{claim.usedOn.map(path => <Link key={path} href={path} className="text-sm font-bold underline underline-offset-4">{path.endsWith('factory') ? 'Modernization Factory' : 'Agentic Back Office'} ↗</Link>)}</div>}
+          <dl className="mt-8 grid gap-px border-2 border-[#111] bg-[#111] sm:grid-cols-2">
+            {[
+              ['Source', <a key="s" href={claim.source} rel="noopener noreferrer" target="_blank" className="break-all font-bold underline underline-offset-4">{claim.source.replace(/^https?:\/\//, '')} ↗</a>],
+              ['Where in the source', claim.sourceLocator || 'Not recorded'],
+              ['Source organization', claim.sourceOrganization],
+              ['Evidence type', claim.evidenceType || 'Not recorded'],
+              ['Source date', claim.sourceDate || 'Not shown on the source'],
+              ['Last verified', claim.lastVerified],
+              ['Approved wording', claim.allowedLanguage],
+              ['Scope and caveats', claim.scopeCaveat],
+              ['Do not infer', claim.prohibitedInference],
+            ].map(([label, value], index) => (
+              <div key={String(label)} className={`bg-white p-5 ${index >= 6 ? 'sm:col-span-2' : ''}`}>
+                <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#666]">{label}</dt>
+                <dd className="mt-2 text-sm font-medium leading-7">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          {claim.usedOn && <div className="mt-6 flex flex-wrap items-center gap-4">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#666]">Cited on</span>
+            {claim.usedOn.map(path => <Link key={path} href={path} className="text-sm font-bold underline underline-offset-4">{usedOnLabel(path)} ↗</Link>)}
           </div>}
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t-[2px] border-[#111] pt-5">
             <Link href="/claims" className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] underline decoration-2 underline-offset-4 hover:text-[#b33d0d]">

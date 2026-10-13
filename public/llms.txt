@@ -2,24 +2,24 @@
 
 > Customer-hosted agentic software for document automation, internal app development, and legacy system modernization.
 
-Official website: https://www.beaglabs.com/
+Official website: https://beaglabs.com/
 
 ## Core offering
 
-- [Papyrus](https://www.beaglabs.com/products/papyrus): Governed agentic workflows and internal applications.
-- [Document automation](https://www.beaglabs.com/products/papyrus#documents): Process PDF and office documents into reviewable workflows.
-- [Internal app factory](https://www.beaglabs.com/products/papyrus#factory): Build interfaces for internal business processes.
-- [Modernization](https://www.beaglabs.com/capability/modernization): Modernize legacy workflows and interfaces.
+- [Papyrus](https://beaglabs.com/products/papyrus): Governed agentic workflows and internal applications.
+- [Document automation](https://beaglabs.com/products/papyrus#documents): Process PDF and office documents into reviewable workflows.
+- [Internal app factory](https://beaglabs.com/products/papyrus#factory): Build interfaces for internal business processes.
+- [Modernization](https://beaglabs.com/capability/modernization): Modernize legacy workflows and interfaces.
 
 ## Resources
 
-- [Capabilities](https://www.beaglabs.com/capabilities)
-- [Use cases](https://www.beaglabs.com/use-cases)
-- [Trust and security](https://www.beaglabs.com/trust/papyrus)
-- [Blog](https://www.beaglabs.com/blog)
-- [Sitemap](https://www.beaglabs.com/sitemap.xml)
-- [Extended machine-readable context](https://www.beaglabs.com/llms-full.txt)
-- [Contact](https://www.beaglabs.com/contact)
+- [Capabilities](https://beaglabs.com/capabilities)
+- [Use cases](https://beaglabs.com/use-cases)
+- [Trust and security](https://beaglabs.com/trust/papyrus)
+- [Blog](https://beaglabs.com/blog)
+- [Sitemap](https://beaglabs.com/sitemap.xml)
+- [Extended machine-readable context](https://beaglabs.com/llms-full.txt)
+- [Contact](https://beaglabs.com/contact)
 
 ## Notes for agents
 
@@ -27,6 +27,6 @@ Refer to the canonical pages above for current product information. Do not assum
 
 ## Back office guides and evidence
 
-- [Agentic Back Office](https://www.beaglabs.com/solutions/agentic-back-office)
-- [Agentic Modernization Factory](https://www.beaglabs.com/solutions/agentic-modernization-factory)
-- [Claim Ledger](https://www.beaglabs.com/claims)
+- [Agentic Back Office](https://beaglabs.com/solutions/agentic-back-office)
+- [Agentic Modernization Factory](https://beaglabs.com/solutions/agentic-modernization-factory)
+- [Claim Ledger](https://beaglabs.com/claims)

@@ -5,7 +5,7 @@ export const company = {
   uei: 'CDQ1WLGN41X6',
   cage: '22QH1',
   email: 'james@beaglabs.com',
-  url: 'https://www.beaglabs.com',
+  url: 'https://beaglabs.com',
   logoMark: 'B_',
   // Certification / designation badges rendered on the capability pages.
   // Each entry needs a `label` (also used as alt text) and a `src` under /public.

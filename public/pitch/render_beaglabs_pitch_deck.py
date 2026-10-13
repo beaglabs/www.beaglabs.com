@@ -248,7 +248,7 @@ def slide_1(c: canvas.Canvas) -> None:
     c.setFillColor(MUTED)
     c.setFont(font(), 10)
     c.drawRightString(PAGE_W - MARGIN_X, 58, "Services first. Representation layer next. Foundation model over time.")
-    footer(c, "www.beaglabs.com", 1)
+    footer(c, "beaglabs.com", 1)
 
 
 def slide_2(c: canvas.Canvas) -> None:
@@ -455,7 +455,7 @@ def slide_6(c: canvas.Canvas) -> None:
     c.setStrokeColor(LINE)
     c.line(MARGIN_X, 98, PAGE_W - MARGIN_X, 98)
     text_block(c, "Beag Labs. State-space models. RWKV. Scientific analysis.", MARGIN_X, 78, 420, size=12, leading=16, color=INK, bold=True)
-    text_block(c, "https://www.beaglabs.com/\nhttps://github.com/beaglabs", 650, 78, 220, size=10.4, leading=14, color=MUTED)
+    text_block(c, "https://beaglabs.com/\nhttps://github.com/beaglabs", 650, 78, 220, size=10.4, leading=14, color=MUTED)
     footer(c, "Prepared for Nvidia Inception", 6)
 
 

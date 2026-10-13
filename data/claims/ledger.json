@@ -218,5 +218,781 @@
     "usedOn": [
       "/solutions/agentic-modernization-factory"
     ]
+  },
+  {
+    "claim": "Papyrus — What it does: Document automation, internal app creation and legacy system enablement with governed agent execution.",
+    "allowedLanguage": "According to Beag Labs (first party), document automation, internal app creation and legacy system enablement with governed agent execution.",
+    "claimId": "BL-CLM-18",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the product performs tasks beyond what the cited page describes, or that it was tested by Beag Labs.",
+    "scopeCaveat": "Describes intended scope in Beag Labs' own words; it is not an independent test of output quality.",
+    "source": "https://beaglabs.com/products/papyrus",
+    "sourceDate": "",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "Page description and hero section",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Papyrus — Deployment model: Customer-hosted: a Papyrus VM in the customer's Azure subscription, or on-premises, restricted or disconnected environments.",
+    "allowedLanguage": "According to Beag Labs (first party), customer-hosted: a Papyrus VM in the customer's Azure subscription, or on-premises, restricted or disconnected environments.",
+    "claimId": "BL-CLM-19",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply this deployment mode satisfies a specific compliance, residency or air-gap requirement.",
+    "scopeCaveat": "Supported environments and versions should be confirmed against the current agreement and documentation.",
+    "source": "https://beaglabs.com/products/papyrus#procurement",
+    "sourceDate": "",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "Procurement + licensing: 'Azure private offer' and 'Direct + disconnected'",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Papyrus — Azure Marketplace offer: Azure Marketplace private offer that deploys the Papyrus VM into the customer's subscription.",
+    "allowedLanguage": "According to Beag Labs (first party), azure Marketplace private offer that deploys the Papyrus VM into the customer's subscription.",
+    "claimId": "BL-CLM-20",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the listing is endorsed or certified by Microsoft, or that terms match any other channel.",
+    "scopeCaveat": "Private offer, not a public self-serve listing; the signed entitlement remains customer-specific.",
+    "source": "https://beaglabs.com/products/papyrus#procurement",
+    "sourceDate": "",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "Procurement + licensing: 'Azure private offer'",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Papyrus — Human approval: Governed execution: consequential actions are reviewed and work stays visible as it progresses.",
+    "allowedLanguage": "According to Beag Labs (first party), governed execution: consequential actions are reviewed and work stays visible as it progresses.",
+    "claimId": "BL-CLM-21",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply approval gates cover every agent action unless the source says so.",
+    "scopeCaveat": "The page does not enumerate which actions require approval or the approval workflow; confirm details before relying on it for a specific control.",
+    "source": "https://beaglabs.com/products/papyrus",
+    "sourceDate": "",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "Section 'Your environment. Your operating model.' > Governed execution",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Papyrus — Licensing: Commercial: a signed organization license (offline) or a customer-specific Azure private offer.",
+    "allowedLanguage": "According to Beag Labs (first party), commercial: a signed organization license (offline) or a customer-specific Azure private offer.",
+    "claimId": "BL-CLM-22",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply anything about components distributed under different licences.",
+    "scopeCaveat": "Papyrus is not offered under an open-source license on this page. Third-party component licenses are listed separately in the Trust Center SBOM.",
+    "source": "https://beaglabs.com/products/papyrus#procurement",
+    "sourceDate": "",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "Procurement + licensing",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Papyrus — Security controls: 35 OSCAL control implementations: project-scoped RBAC, hash-linked audit records, OIDC/SAML/WebAuthn and CAC/PIV sign-in by profile.",
+    "allowedLanguage": "According to Beag Labs (first party), 35 OSCAL control implementations: project-scoped RBAC, hash-linked audit records, OIDC/SAML/WebAuthn and CAC/PIV sign-in by profile.",
+    "claimId": "BL-CLM-23",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not present documented controls as a certification, authorization or independent audit.",
+    "scopeCaveat": "A self-published control mapping, not a third-party assessment, certification or authorization to operate. Customers retain responsibility for configuration.",
+    "source": "https://beaglabs.com/trust/papyrus",
+    "sourceDate": "August 7, 2026",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "OSCAL component definition v0.2.0 (ac-3, ac-6, au-6, au-9, ia-2, ia-8); machine-readable file at /compliance/papyrus-component-definition.json",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Papyrus — Intended buyer: Organizations that need back office automation on their own infrastructure, in business and government settings.",
+    "allowedLanguage": "According to Beag Labs (first party), organizations that need back office automation on their own infrastructure, in business and government settings.",
+    "claimId": "BL-CLM-24",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply other kinds of buyers are excluded or unsupported.",
+    "scopeCaveat": "Positioning statement by the vendor.",
+    "source": "https://beaglabs.com/capabilities",
+    "sourceDate": "",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "Capabilities overview and use-case examples",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Papyrus — Public pricing: No public price card; commercial terms are scoped to the deployment.",
+    "allowedLanguage": "According to Beag Labs (first party), no public price card; commercial terms are scoped to the deployment.",
+    "claimId": "BL-CLM-25",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not infer what a deployment will cost beyond what the source lists.",
+    "scopeCaveat": "Establishes that no public price is published, not what a deployment costs.",
+    "source": "https://beaglabs.com/products/papyrus#procurement",
+    "sourceDate": "",
+    "sourceOrganization": "Beag Labs (first party)",
+    "status": "Verified",
+    "evidenceType": "First-party vendor documentation",
+    "sourceLocator": "Procurement + licensing intro",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai",
+      "/compare/papyrus-vs-heartbeatagents",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "Corral AI (identified as 'Corral Sovereign AI') — What it does: Deploy into your cloud, connect data, build agents via Agent Builder; per-user Hub assistant, embeddable widgets.",
+    "allowedLanguage": "According to Corral (vendor site), deploy into your cloud, connect data, build agents via Agent Builder; per-user Hub assistant, embeddable widgets.",
+    "claimId": "BL-CLM-26",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the product performs tasks beyond what the cited page describes, or that it was tested by Beag Labs.",
+    "scopeCaveat": "Vendor marketing; no independent test of functionality.",
+    "source": "https://getcorral.ai/",
+    "sourceDate": "",
+    "sourceOrganization": "Corral (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Hero; 'The product - in three moves'",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai"
+    ]
+  },
+  {
+    "claim": "Corral AI (identified as 'Corral Sovereign AI') — Deployment model: Deploys into the customer's own Azure tenant and subscription; AWS and GCP listed as coming 2026.",
+    "allowedLanguage": "According to Corral (vendor site), deploys into the customer's own Azure tenant and subscription; AWS and GCP listed as coming 2026.",
+    "claimId": "BL-CLM-27",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply this deployment mode satisfies a specific compliance, residency or air-gap requirement.",
+    "scopeCaveat": "Vendor says Corral manages updates/monitoring (launch post); AWS/GCP not yet available per page.",
+    "source": "https://getcorral.ai/",
+    "sourceDate": "",
+    "sourceOrganization": "Corral (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "'The product' / Deploy phase",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai"
+    ]
+  },
+  {
+    "claim": "Corral AI (identified as 'Corral Sovereign AI') — Azure Marketplace offer: Vendor site links a 'Corral AI managed app' Azure Marketplace listing (azure-application URL path).",
+    "allowedLanguage": "According to Corral (vendor site), vendor site links a 'Corral AI managed app' Azure Marketplace listing (azure-application URL path).",
+    "claimId": "BL-CLM-28",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the listing is endorsed or certified by Microsoft, or that terms match any other channel.",
+    "scopeCaveat": "Marketplace page itself returned HTTP 403 to fetch, so the listing content was not independently read.",
+    "source": "https://getcorral.ai/",
+    "sourceDate": "",
+    "sourceOrganization": "Corral (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "'Deploy on Azure Marketplace' link",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai"
+    ]
+  },
+  {
+    "claim": "Corral AI (identified as 'Corral Sovereign AI') — Human approval: Admin approval gates the agent publish flow, and high-risk actions need a human after untrusted content; other actions are not described.",
+    "allowedLanguage": "According to Corral (vendor site), admin approval gates the agent publish flow, and high-risk actions need a human after untrusted content; other actions are not described.",
+    "claimId": "BL-CLM-29",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply approval gates cover every agent action unless the source says so.",
+    "scopeCaveat": "Vendor description; configurability of gates not verified.",
+    "source": "https://getcorral.ai/product/security",
+    "sourceDate": "",
+    "sourceOrganization": "Corral (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Cumulative Restrictions Framework; Human approval list",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai"
+    ]
+  },
+  {
+    "claim": "Corral AI (identified as 'Corral Sovereign AI') — Security controls: Documented: on-tenant residency, private endpoints/VNet, immutable audit trail, content filtering/PII detection, identity-provider governance.",
+    "allowedLanguage": "According to Corral (vendor site), documented: on-tenant residency, private endpoints/VNet, immutable audit trail, content filtering/PII detection, identity-provider governance.",
+    "claimId": "BL-CLM-30",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not present documented controls as a certification, authorization or independent audit.",
+    "scopeCaveat": "Security page names no SSO/RBAC/encryption; home page claims Entra ID SSO/RBAC. Says it inherits Azure certifications; Corral's own certifications not stated.",
+    "source": "https://getcorral.ai/product/security",
+    "sourceDate": "",
+    "sourceOrganization": "Corral (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "On-Tenant Deployment; Governance & Observability; Identity",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai"
+    ]
+  },
+  {
+    "claim": "Corral AI (identified as 'Corral Sovereign AI') — Intended buyer: Lists Ops & Product Teams, IT & Security Teams, Developers, Service Providers/SIs, Product Companies.",
+    "allowedLanguage": "According to Corral (vendor site), lists Ops & Product Teams, IT & Security Teams, Developers, Service Providers/SIs, Product Companies.",
+    "claimId": "BL-CLM-31",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply other kinds of buyers are excluded or unsupported.",
+    "scopeCaveat": "Vendor segmentation.",
+    "source": "https://getcorral.ai/",
+    "sourceDate": "",
+    "sourceOrganization": "Corral (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "05 - Who It's For",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai"
+    ]
+  },
+  {
+    "claim": "Corral AI (identified as 'Corral Sovereign AI') — Public pricing: No prices listed; platform subscription plus Azure infra costs via Marketplace, counting toward MACC; Enterprise plan via 'Talk to us'.",
+    "allowedLanguage": "According to Corral (vendor site), no prices listed; platform subscription plus Azure infra costs via Marketplace, counting toward MACC; Enterprise plan via 'Talk to us'.",
+    "claimId": "BL-CLM-32",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not infer what a deployment will cost beyond what the source lists.",
+    "scopeCaveat": "No amounts published; Marketplace plan prices not read.",
+    "source": "https://getcorral.ai/pricing",
+    "sourceDate": "",
+    "sourceOrganization": "Corral (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Azure Marketplace; Enterprise & Embedded",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-corral-ai"
+    ]
+  },
+  {
+    "claim": "HeartBeatAgents — What it does: Autonomous agents on standing orders with tools, integrations, three-layer local memory, and reusable skills.",
+    "allowedLanguage": "According to HeartBeatAgents (vendor site), autonomous agents on standing orders with tools, integrations, three-layer local memory, and reusable skills.",
+    "claimId": "BL-CLM-33",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the product performs tasks beyond what the cited page describes, or that it was tested by Beag Labs.",
+    "scopeCaveat": "Vendor marketing.",
+    "source": "https://heartbeatagents.com",
+    "sourceDate": "",
+    "sourceOrganization": "HeartBeatAgents (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "'Not an Assistant. A Team.'; 'Agents That Remember'",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-heartbeatagents"
+    ]
+  },
+  {
+    "claim": "HeartBeatAgents — Deployment model: Self-hosted: desktop download (macOS DMG) on vendor site; AWS listing ships an AMI run in buyer's AWS account.",
+    "allowedLanguage": "According to AWS Marketplace listing (vendor: Mosaic Singularity), self-hosted: desktop download (macOS DMG) on vendor site; AWS listing ships an AMI run in buyer's AWS account.",
+    "claimId": "BL-CLM-34",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply this deployment mode satisfies a specific compliance, residency or air-gap requirement.",
+    "scopeCaveat": "Two different delivery forms; AWS AMI is not Azure.",
+    "source": "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6",
+    "sourceDate": "",
+    "sourceOrganization": "AWS Marketplace listing (vendor: Mosaic Singularity)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Details; Usage instructions (also vendor home page hero)",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-heartbeatagents"
+    ]
+  },
+  {
+    "claim": "HeartBeatAgents — Human approval: Only simple 'Ask User' and 'Present Choices' skills let an agent request approval or a choice; no broader approval policy is described.",
+    "allowedLanguage": "According to HeartBeatAgents (vendor site), only simple 'Ask User' and 'Present Choices' skills let an agent request approval or a choice; no broader approval policy is described.",
+    "claimId": "BL-CLM-35",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply approval gates cover every agent action unless the source says so.",
+    "scopeCaveat": "No broader approval workflow/policy gates described; security page describes none.",
+    "source": "https://heartbeatagents.com",
+    "sourceDate": "",
+    "sourceOrganization": "HeartBeatAgents (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Skills list on home page",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-heartbeatagents"
+    ]
+  },
+  {
+    "claim": "HeartBeatAgents — Licensing: AWS listing: EULA applies; community edition with one worker, more workers via separately purchased license.",
+    "allowedLanguage": "According to AWS Marketplace listing (vendor: Mosaic Singularity), AWS listing: EULA applies; community edition with one worker, more workers via separately purchased license.",
+    "claimId": "BL-CLM-36",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply anything about components distributed under different licences.",
+    "scopeCaveat": "Source-code license (open or not) not stated.",
+    "source": "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6",
+    "sourceDate": "",
+    "sourceOrganization": "AWS Marketplace listing (vendor: Mosaic Singularity)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Overview; Pricing; Legal",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-heartbeatagents"
+    ]
+  },
+  {
+    "claim": "HeartBeatAgents — Security controls: Documented: AES-256 at rest, TLS 1.2+, per-organization container folder scoping, token-authenticated websockets, token scrubbing.",
+    "allowedLanguage": "According to HeartBeatAgents (vendor site), documented: AES-256 at rest, TLS 1.2+, per-organization container folder scoping, token-authenticated websockets, token scrubbing.",
+    "claimId": "BL-CLM-37",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not present documented controls as a certification, authorization or independent audit.",
+    "scopeCaveat": "SSO, RBAC, certifications and audit log content/retention not documented there.",
+    "source": "https://heartbeatagents.com/features/security",
+    "sourceDate": "",
+    "sourceOrganization": "HeartBeatAgents (vendor site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Encryption; WebSocket Auth; Audit Logs",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-heartbeatagents"
+    ]
+  },
+  {
+    "claim": "HeartBeatAgents — Intended buyer: AWS listing targets organizations wanting production-ready self-hosted agentic AI infrastructure.",
+    "allowedLanguage": "According to AWS Marketplace listing (vendor: Mosaic Singularity), AWS listing targets organizations wanting production-ready self-hosted agentic AI infrastructure.",
+    "claimId": "BL-CLM-38",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply other kinds of buyers are excluded or unsupported.",
+    "scopeCaveat": "Vendor site does not name a buyer persona.",
+    "source": "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6",
+    "sourceDate": "",
+    "sourceOrganization": "AWS Marketplace listing (vendor: Mosaic Singularity)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Overview",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-heartbeatagents"
+    ]
+  },
+  {
+    "claim": "HeartBeatAgents — Public pricing: No prices listed; AWS listing says community edition with one worker, billing external via vendor license.",
+    "allowedLanguage": "According to AWS Marketplace listing (vendor: Mosaic Singularity), no prices listed; AWS listing says community edition with one worker, billing external via vendor license.",
+    "claimId": "BL-CLM-39",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not infer what a deployment will cost beyond what the source lists.",
+    "scopeCaveat": "Vendor pricing page rendered empty on fetch.",
+    "source": "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6",
+    "sourceDate": "",
+    "sourceOrganization": "AWS Marketplace listing (vendor: Mosaic Singularity)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Pricing section",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-heartbeatagents"
+    ]
+  },
+  {
+    "claim": "OpenClaw — What it does: Single Gateway links chat channels to AI agents with tools, sessions, memory, skills, cron/webhooks, a web Control UI, and mobile nodes.",
+    "allowedLanguage": "According to OpenClaw (first-party docs), single Gateway links chat channels to AI agents with tools, sessions, memory, skills, cron/webhooks, a web Control UI, and mobile nodes.",
+    "claimId": "BL-CLM-40",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the product performs tasks beyond what the cited page describes, or that it was tested by Beag Labs.",
+    "scopeCaveat": "Describes features, not their quality, scale, or reliability.",
+    "source": "https://docs.openclaw.ai",
+    "sourceDate": "",
+    "sourceOrganization": "OpenClaw (first-party docs)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Home page, key features list",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "OpenClaw — Deployment model: Runs on your own laptop or server; install via script, npm, Docker, Nix or source; remote access via SSH/Tailscale. README says no hosted service.",
+    "allowedLanguage": "According to OpenClaw (first-party repo), runs on your own laptop or server; install via script, npm, Docker, Nix or source; remote access via SSH/Tailscale. README says no hosted service.",
+    "claimId": "BL-CLM-41",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply this deployment mode satisfies a specific compliance, residency or air-gap requirement.",
+    "scopeCaveat": "Does not cover third-party hosted or marketplace deployments of the software.",
+    "source": "https://github.com/openclaw/openclaw",
+    "sourceDate": "",
+    "sourceOrganization": "OpenClaw (first-party repo)",
+    "status": "Verified",
+    "evidenceType": "Open-source repository",
+    "sourceLocator": "README: install section and governance/sponsors statement on no paid tier or hosted service",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "OpenClaw — Human approval: Exec approvals (deny, allowlist, ask, auto, full) gate host command execution only and can be switched off; not a general approval layer.",
+    "allowedLanguage": "According to OpenClaw (first-party docs), exec approvals (deny, allowlist, ask, auto, full) gate host command execution only and can be switched off; not a general approval layer.",
+    "claimId": "BL-CLM-42",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply approval gates cover every agent action unless the source says so.",
+    "scopeCaveat": "SECURITY.md says approvals are operator guardrails, not a multi-tenant authorization control. Covers host command execution, not every agent action.",
+    "source": "https://docs.openclaw.ai/tools/exec-approvals",
+    "sourceDate": "",
+    "sourceOrganization": "OpenClaw (first-party docs)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Where approvals are enforced; Ask modes; Fully unattended section",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "OpenClaw — Licensing: MIT License, copyright OpenClaw Foundation (2026).",
+    "allowedLanguage": "According to OpenClaw (first-party repo), MIT License, copyright OpenClaw Foundation (2026).",
+    "claimId": "BL-CLM-43",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply anything about components distributed under different licences.",
+    "scopeCaveat": "Only the root LICENSE was read; subdirectories or plugins on ClawHub may carry other licenses. Not legal advice.",
+    "source": "https://raw.githubusercontent.com/openclaw/openclaw/main/LICENSE",
+    "sourceDate": "",
+    "sourceOrganization": "OpenClaw (first-party repo)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "LICENSE file",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "OpenClaw — Security controls: Gateway auth, DM pairing and allowlists, optional sandboxing (off by default) and an audit CLI; documented as a single-trusted-operator model, not a multi-tenant boundary.",
+    "allowedLanguage": "According to OpenClaw (first-party repo and docs), gateway auth, DM pairing and allowlists, optional sandboxing (off by default) and an audit CLI; documented as a single-trusted-operator model, not a multi-tenant boundary.",
+    "claimId": "BL-CLM-44",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not present documented controls as a certification, authorization or independent audit.",
+    "scopeCaveat": "SECURITY.md states it is not a multi-tenant boundary and exec runs on host by default. SSO, RBAC and audit-log features were not found on pages read (not a statement they are absent). No certifications checked.",
+    "source": "https://raw.githubusercontent.com/openclaw/openclaw/main/SECURITY.md",
+    "sourceDate": "",
+    "sourceOrganization": "OpenClaw (first-party repo and docs)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "SECURITY.md: Trust model, Sandboxing, Named controls; docs.openclaw.ai/gateway/security",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "OpenClaw — Intended buyer: Individuals wanting a personal assistant, teams sharing a gateway, and enterprise/security teams hardening via configuration, not a separate edition.",
+    "allowedLanguage": "According to OpenClaw (first-party docs), individuals wanting a personal assistant, teams sharing a gateway, and enterprise/security teams hardening via configuration, not a separate edition.",
+    "claimId": "BL-CLM-45",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply other kinds of buyers are excluded or unsupported.",
+    "scopeCaveat": "Project positioning only; no procurement or support terms stated.",
+    "source": "https://docs.openclaw.ai/start/why-openclaw",
+    "sourceDate": "",
+    "sourceOrganization": "OpenClaw (first-party docs)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Intended users section",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "OpenClaw — Public pricing: README says no paid tier, hosted service, or token. Model API and hosting costs are borne by the user.",
+    "allowedLanguage": "According to OpenClaw (first-party repo), README says no paid tier, hosted service, or token. Model API and hosting costs are borne by the user.",
+    "claimId": "BL-CLM-46",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not infer what a deployment will cost beyond what the source lists.",
+    "scopeCaveat": "Says nothing about third-party managed offers, support contracts, or underlying model/hosting cost amounts.",
+    "source": "https://github.com/openclaw/openclaw",
+    "sourceDate": "",
+    "sourceOrganization": "OpenClaw (first-party repo)",
+    "status": "Verified",
+    "evidenceType": "Open-source repository",
+    "sourceLocator": "README: governance/sponsors statement",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms",
+      "/compare/papyrus-vs-openclaw"
+    ]
+  },
+  {
+    "claim": "OpenHands — What it does: Coding agents via Agent Canvas (browser client), Software Agent SDK/Agent Server, CLI, plus scheduled/webhook automations.",
+    "allowedLanguage": "According to OpenHands (first-party docs and repo), coding agents via Agent Canvas (browser client), Software Agent SDK/Agent Server, CLI, plus scheduled/webhook automations.",
+    "claimId": "BL-CLM-47",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the product performs tasks beyond what the cited page describes, or that it was tested by Beag Labs.",
+    "scopeCaveat": "Feature description only; the Local GUI is described as deprecated in favor of Agent Canvas, which the repo labels beta.",
+    "source": "https://docs.openhands.dev",
+    "sourceDate": "",
+    "sourceOrganization": "OpenHands (first-party docs and repo)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Home page, product list; github.com/OpenHands/OpenHands README",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "OpenHands — Deployment model: Local/self-hosted (npm, Docker), plus OpenHands Cloud (managed) and OpenHands Enterprise (licensed self-host in your VPC or managed).",
+    "allowedLanguage": "According to OpenHands (first-party site and docs), local/self-hosted (npm, Docker), plus OpenHands Cloud (managed) and OpenHands Enterprise (licensed self-host in your VPC or managed).",
+    "claimId": "BL-CLM-48",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply this deployment mode satisfies a specific compliance, residency or air-gap requirement.",
+    "scopeCaveat": "Customer-tenant deployment is listed under the commercial Enterprise plan only.",
+    "source": "https://openhands.dev/pricing",
+    "sourceDate": "",
+    "sourceOrganization": "OpenHands (first-party site and docs)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Plans: Local (Open Source), SaaS Individual, Enterprise; docs.openhands.dev product list",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "OpenHands — Human approval: SDK confirmation policies (always, never, risky) can require approval of actions; documented for the SDK, and one call path bypasses them.",
+    "allowedLanguage": "According to OpenHands (first-party docs), SDK confirmation policies (always, never, risky) can require approval of actions; documented for the SDK, and one call path bypasses them.",
+    "claimId": "BL-CLM-49",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply approval gates cover every agent action unless the source says so.",
+    "scopeCaveat": "Documented for the SDK; the page says execute_tool() bypasses these controls. Not checked for Cloud/Canvas UI or defaults.",
+    "source": "https://docs.openhands.dev/sdk/guides/security",
+    "sourceDate": "",
+    "sourceOrganization": "OpenHands (first-party docs)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Confirmation policy and Security analyzers sections",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "OpenHands — Licensing: Root LICENSE of OpenHands/OpenHands is MIT (OpenHands contributors, 2025). Docs say each repository has its own license.",
+    "allowedLanguage": "According to OpenHands (first-party repo), root LICENSE of OpenHands/OpenHands is MIT (OpenHands contributors, 2025). Docs say each repository has its own license.",
+    "claimId": "BL-CLM-50",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply anything about components distributed under different licences.",
+    "scopeCaveat": "Not verified: the SDK repo license, and whether an enterprise directory carries a different license (enterprise/LICENSE URL returned 404). OpenHands Cloud/Enterprise are commercial offerings.",
+    "source": "https://raw.githubusercontent.com/OpenHands/OpenHands/main/LICENSE",
+    "sourceDate": "",
+    "sourceOrganization": "OpenHands (first-party repo)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "LICENSE file; docs.openhands.dev home page note on per-repo licenses",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "OpenHands — Security controls: Docs name: Docker sandbox isolation for the agent server, security analyzers with risk levels, Enterprise SAML/SSO, RBAC and access controls (Cloud).",
+    "allowedLanguage": "According to OpenHands (first-party docs and site), docs name: Docker sandbox isolation for the agent server, security analyzers with risk levels, Enterprise SAML/SSO, RBAC and access controls (Cloud).",
+    "claimId": "BL-CLM-51",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not present documented controls as a certification, authorization or independent audit.",
+    "scopeCaveat": "SECURITY.md returned 404, so no vulnerability-disclosure policy was found. Pricing page does not explicitly tie RBAC to a tier. Audit logging, certifications not found on pages read.",
+    "source": "https://docs.openhands.dev/sdk/guides/security",
+    "sourceDate": "",
+    "sourceOrganization": "OpenHands (first-party docs and site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Security analyzers; docs Docker sandbox guide; pricing page Enterprise plan and org features; docs home page Cloud description",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "OpenHands — Intended buyer: Developers and engineering teams, including enterprises wanting control over models, data, access and auditability.",
+    "allowedLanguage": "According to OpenHands (first-party site), developers and engineering teams, including enterprises wanting control over models, data, access and auditability.",
+    "claimId": "BL-CLM-52",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply other kinds of buyers are excluded or unsupported.",
+    "scopeCaveat": "Marketing positioning only.",
+    "source": "https://openhands.dev",
+    "sourceDate": "",
+    "sourceOrganization": "OpenHands (first-party site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Home page description",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "OpenHands — Public pricing: Local open source: free. SaaS Individual: free, 10 daily conversations. Enterprise: custom pricing, contact sales.",
+    "allowedLanguage": "According to OpenHands (first-party site), local open source: free. SaaS Individual: free, 10 daily conversations. Enterprise: custom pricing, contact sales.",
+    "claimId": "BL-CLM-53",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not infer what a deployment will cost beyond what the source lists.",
+    "scopeCaveat": "Enterprise price, SLA and contract terms not published. Model usage at cost or BYOK; amounts not stated in fetched summary. Page may have other tiers not captured.",
+    "source": "https://openhands.dev/pricing",
+    "sourceDate": "",
+    "sourceOrganization": "OpenHands (first-party site)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Plans section",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "Websoft9 — What it does: App store with one-click install of 300+ apps, plus app lifecycle, file manager, terminal, proxy/SSL, backups, monitoring.",
+    "allowedLanguage": "According to Websoft9 (vendor, GitHub), app store with one-click install of 300+ apps, plus app lifecycle, file manager, terminal, proxy/SSL, backups, monitoring.",
+    "claimId": "BL-CLM-54",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the product performs tasks beyond what the cited page describes, or that it was tested by Beag Labs.",
+    "scopeCaveat": "Platform for deploying other apps; no AI-agent features documented on pages checked; AI agents would depend on deployed third-party apps.",
+    "source": "https://github.com/Websoft9/websoft9",
+    "sourceDate": "",
+    "sourceOrganization": "Websoft9 (vendor, GitHub)",
+    "status": "Verified",
+    "evidenceType": "Open-source repository",
+    "sourceLocator": "Features",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "Websoft9 — Deployment model: Self-hosted on your own server, running as Docker containers.",
+    "allowedLanguage": "According to Websoft9 (vendor, GitHub), self-hosted on your own server, running as Docker containers.",
+    "claimId": "BL-CLM-55",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply this deployment mode satisfies a specific compliance, residency or air-gap requirement.",
+    "scopeCaveat": "Does not describe managed hosting options in detail (pricing page mentions private cloud and managed hosting via customer success).",
+    "source": "https://github.com/Websoft9/websoft9",
+    "sourceDate": "",
+    "sourceOrganization": "Websoft9 (vendor, GitHub)",
+    "status": "Verified",
+    "evidenceType": "Open-source repository",
+    "sourceLocator": "What is Websoft9? / Architecture",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "Websoft9 — Azure Marketplace offer: Docs say Websoft9 is an Azure Marketplace partner; products are VM images deployed to an Azure VM.",
+    "allowedLanguage": "According to Websoft9 (vendor docs), docs say Websoft9 is an Azure Marketplace partner; products are VM images deployed to an Azure VM.",
+    "claimId": "BL-CLM-56",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply the listing is endorsed or certified by Microsoft, or that terms match any other channel.",
+    "scopeCaveat": "Page is for version 1.0, flagged by the site as no longer actively maintained; Marketplace listing page itself returned HTTP 403 so was not read.",
+    "source": "https://support.websoft9.com/en/docs/1.0/install/azure",
+    "sourceDate": "",
+    "sourceOrganization": "Websoft9 (vendor docs)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Installation / By Azure Marketplace",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "Websoft9 — Licensing: Repository states LGPL-3.0 and homepage says 100% open source; republishing images to cloud marketplaces without authorization is prohibited.",
+    "allowedLanguage": "According to Websoft9 (vendor, GitHub), repository states LGPL-3.0 and homepage says 100% open source; republishing images to cloud marketplaces without authorization is prohibited.",
+    "claimId": "BL-CLM-57",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply anything about components distributed under different licences.",
+    "scopeCaveat": "License badge and text are inconsistent (LGPL vs GPL link); read the repository license file before relying on it.",
+    "source": "https://github.com/Websoft9/websoft9",
+    "sourceDate": "",
+    "sourceOrganization": "Websoft9 (vendor, GitHub)",
+    "status": "Verified",
+    "evidenceType": "Open-source repository",
+    "sourceLocator": "License",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "Websoft9 — Security controls: Multi-user accounts with role-based access; SSL certificates via Let's Encrypt; apps isolated through Docker.",
+    "allowedLanguage": "According to Websoft9 (vendor, GitHub), multi-user accounts with role-based access; SSL certificates via Let's Encrypt; apps isolated through Docker.",
+    "claimId": "BL-CLM-58",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not present documented controls as a certification, authorization or independent audit.",
+    "scopeCaveat": "No SSO, audit logging, data residency or certifications documented on pages checked; role definitions not described.",
+    "source": "https://github.com/Websoft9/websoft9",
+    "sourceDate": "",
+    "sourceOrganization": "Websoft9 (vendor, GitHub)",
+    "status": "Verified",
+    "evidenceType": "Open-source repository",
+    "sourceLocator": "Features; homepage app lifecycle section",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "Websoft9 — Intended buyer: Cloud architects, IT teams and SMBs without dedicated IT, plus software vendors, integrators and cloud providers.",
+    "allowedLanguage": "According to Websoft9 (vendor), cloud architects, IT teams and SMBs without dedicated IT, plus software vendors, integrators and cloud providers.",
+    "claimId": "BL-CLM-59",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not imply other kinds of buyers are excluded or unsupported.",
+    "scopeCaveat": "Vendor-stated personas; page in Chinese.",
+    "source": "https://www.websoft9.com",
+    "sourceDate": "",
+    "sourceOrganization": "Websoft9 (vendor)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Who benefits (谁能够从中受益)",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
+  },
+  {
+    "claim": "Websoft9 — Public pricing: Software plans: Free 0, Starter CNY 20/mo, Standard CNY 99/mo (per vendor pricing page); Azure image billing not described.",
+    "allowedLanguage": "According to Websoft9 (vendor), software plans: Free 0, Starter CNY 20/mo, Standard CNY 99/mo (per vendor pricing page); Azure image billing not described.",
+    "claimId": "BL-CLM-60",
+    "lastVerified": "October 13, 2026",
+    "prohibitedInference": "Do not infer what a deployment will cost beyond what the source lists.",
+    "scopeCaveat": "Pricing page is in CNY and is for support subscriptions; Azure Marketplace VM/image pricing not verified.",
+    "source": "https://www.websoft9.com/pricing",
+    "sourceDate": "",
+    "sourceOrganization": "Websoft9 (vendor)",
+    "status": "Verified",
+    "evidenceType": "Vendor documentation",
+    "sourceLocator": "Pricing table",
+    "usedOn": [
+      "/compare/self-hosted-ai-agent-platforms"
+    ]
   }
 ]

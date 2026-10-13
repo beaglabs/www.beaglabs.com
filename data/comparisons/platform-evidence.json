@@ -1,0 +1,745 @@
+{
+  "verifiedOn": "October 13, 2026",
+  "verifiedOnIso": "2026-10-13",
+  "platforms": [
+    {
+      "slug": "papyrus",
+      "name": "Papyrus",
+      "vendor": "Beag Labs",
+      "officialUrl": "https://beaglabs.com/products/papyrus",
+      "marketplaceUrl": null,
+      "summary": "Customer-hosted agentic workspace for document automation, internal app creation and legacy system enablement.",
+      "isBeag": true,
+      "cells": {
+        "capabilities": {
+          "status": "Verified",
+          "value": "Document automation, internal app creation and legacy system enablement with governed agent execution.",
+          "categories": [],
+          "caveat": "Describes intended scope in Beag Labs' own words; it is not an independent test of output quality.",
+          "checked": [
+            "https://beaglabs.com/products/papyrus"
+          ],
+          "claimId": "BL-CLM-18"
+        },
+        "deployment": {
+          "status": "Verified",
+          "value": "Customer-hosted: a Papyrus VM in the customer's Azure subscription, or on-premises, restricted or disconnected environments.",
+          "categories": [
+            "self-hosted",
+            "customer-cloud-tenant"
+          ],
+          "caveat": "Supported environments and versions should be confirmed against the current agreement and documentation.",
+          "checked": [
+            "https://beaglabs.com/products/papyrus#procurement"
+          ],
+          "claimId": "BL-CLM-19"
+        },
+        "marketplaceOffer": {
+          "status": "Verified",
+          "value": "Azure Marketplace private offer that deploys the Papyrus VM into the customer's subscription.",
+          "categories": [
+            "azure-vm"
+          ],
+          "caveat": "Private offer, not a public self-serve listing; the signed entitlement remains customer-specific.",
+          "checked": [
+            "https://beaglabs.com/products/papyrus#procurement"
+          ],
+          "claimId": "BL-CLM-20"
+        },
+        "humanApproval": {
+          "status": "Verified",
+          "value": "Governed execution: consequential actions are reviewed and work stays visible as it progresses.",
+          "categories": [],
+          "caveat": "The page does not enumerate which actions require approval or the approval workflow; confirm details before relying on it for a specific control.",
+          "checked": [
+            "https://beaglabs.com/products/papyrus"
+          ],
+          "claimId": "BL-CLM-21"
+        },
+        "licensing": {
+          "status": "Verified",
+          "value": "Commercial: a signed organization license (offline) or a customer-specific Azure private offer.",
+          "categories": [
+            "commercial"
+          ],
+          "caveat": "Papyrus is not offered under an open-source license on this page. Third-party component licenses are listed separately in the Trust Center SBOM.",
+          "checked": [
+            "https://beaglabs.com/products/papyrus#procurement"
+          ],
+          "claimId": "BL-CLM-22"
+        },
+        "security": {
+          "status": "Verified",
+          "value": "35 OSCAL control implementations: project-scoped RBAC, hash-linked audit records, OIDC/SAML/WebAuthn and CAC/PIV sign-in by profile.",
+          "categories": [],
+          "caveat": "A self-published control mapping, not a third-party assessment, certification or authorization to operate. Customers retain responsibility for configuration.",
+          "checked": [
+            "https://beaglabs.com/trust/papyrus"
+          ],
+          "claimId": "BL-CLM-23"
+        },
+        "buyer": {
+          "status": "Verified",
+          "value": "Organizations that need back office automation on their own infrastructure, in business and government settings.",
+          "categories": [],
+          "caveat": "Positioning statement by the vendor.",
+          "checked": [
+            "https://beaglabs.com/capabilities"
+          ],
+          "claimId": "BL-CLM-24"
+        },
+        "pricing": {
+          "status": "Verified",
+          "value": "No public price card; commercial terms are scoped to the deployment.",
+          "categories": [],
+          "caveat": "Establishes that no public price is published, not what a deployment costs.",
+          "checked": [
+            "https://beaglabs.com/products/papyrus#procurement"
+          ],
+          "claimId": "BL-CLM-25"
+        }
+      },
+      "bestFor": [
+        {
+          "text": "Teams that must keep agent execution inside their own Azure subscription or a disconnected environment.",
+          "basis": [
+            "deployment"
+          ]
+        },
+        {
+          "text": "Buyers who need a published, machine-readable control mapping to review during procurement.",
+          "basis": [
+            "security"
+          ]
+        }
+      ],
+      "lessSuitedFor": [
+        {
+          "text": "Teams that want a free, open-source licence or public per-seat pricing to evaluate without talking to sales.",
+          "basis": [
+            "licensing"
+          ]
+        }
+      ],
+      "notes": "Beag Labs makes Papyrus. Every Papyrus cell cites Beag Labs' own pages and is labelled first-party."
+    },
+    {
+      "slug": "corral-ai",
+      "name": "Corral AI (identified as 'Corral Sovereign AI')",
+      "vendor": "Corral",
+      "officialUrl": "https://getcorral.ai/",
+      "marketplaceUrl": "https://marketplace.microsoft.com/en-us/product/azure-application/corral-ai.corral-managed-app",
+      "summary": "Corral AI is described by its vendor as an AI foundation deployed from Azure Marketplace into the customer's own Azure tenant, where agents are built and governed.",
+      "isBeag": false,
+      "cells": {
+        "capabilities": {
+          "status": "Verified",
+          "value": "Deploy into your cloud, connect data, build agents via Agent Builder; per-user Hub assistant, embeddable widgets.",
+          "categories": [],
+          "caveat": "Vendor marketing; no independent test of functionality.",
+          "checked": [
+            "https://getcorral.ai/"
+          ],
+          "claimId": "BL-CLM-26"
+        },
+        "deployment": {
+          "status": "Verified",
+          "value": "Deploys into the customer's own Azure tenant and subscription; AWS and GCP listed as coming 2026.",
+          "categories": [
+            "customer-cloud-tenant"
+          ],
+          "caveat": "Vendor says Corral manages updates/monitoring (launch post); AWS/GCP not yet available per page.",
+          "checked": [
+            "https://getcorral.ai/"
+          ],
+          "claimId": "BL-CLM-27"
+        },
+        "marketplaceOffer": {
+          "status": "Verified",
+          "value": "Vendor site links a 'Corral AI managed app' Azure Marketplace listing (azure-application URL path).",
+          "categories": [
+            "azure-managed-app"
+          ],
+          "caveat": "Marketplace page itself returned HTTP 403 to fetch, so the listing content was not independently read.",
+          "checked": [
+            "https://getcorral.ai/"
+          ],
+          "claimId": "BL-CLM-28"
+        },
+        "humanApproval": {
+          "status": "Partially supported",
+          "value": "Admin approval gates the agent publish flow, and high-risk actions need a human after untrusted content; other actions are not described.",
+          "categories": [],
+          "caveat": "Vendor description; configurability of gates not verified.",
+          "checked": [
+            "https://getcorral.ai/product/security"
+          ],
+          "claimId": "BL-CLM-29"
+        },
+        "licensing": {
+          "status": "Not documented",
+          "value": "Not found in checked official pages.",
+          "categories": [],
+          "caveat": "Pages mention a platform subscription via marketplace but state no license model.",
+          "checked": [
+            "https://getcorral.ai/",
+            "https://getcorral.ai/pricing"
+          ]
+        },
+        "security": {
+          "status": "Verified",
+          "value": "Documented: on-tenant residency, private endpoints/VNet, immutable audit trail, content filtering/PII detection, identity-provider governance.",
+          "categories": [],
+          "caveat": "Security page names no SSO/RBAC/encryption; home page claims Entra ID SSO/RBAC. Says it inherits Azure certifications; Corral's own certifications not stated.",
+          "checked": [
+            "https://getcorral.ai/product/security"
+          ],
+          "claimId": "BL-CLM-30"
+        },
+        "buyer": {
+          "status": "Verified",
+          "value": "Lists Ops & Product Teams, IT & Security Teams, Developers, Service Providers/SIs, Product Companies.",
+          "categories": [],
+          "caveat": "Vendor segmentation.",
+          "checked": [
+            "https://getcorral.ai/"
+          ],
+          "claimId": "BL-CLM-31"
+        },
+        "pricing": {
+          "status": "Verified",
+          "value": "No prices listed; platform subscription plus Azure infra costs via Marketplace, counting toward MACC; Enterprise plan via 'Talk to us'.",
+          "categories": [],
+          "caveat": "No amounts published; Marketplace plan prices not read.",
+          "checked": [
+            "https://getcorral.ai/pricing"
+          ],
+          "claimId": "BL-CLM-32"
+        }
+      },
+      "bestFor": [
+        {
+          "text": "Buyers who need the AI runtime inside their own Azure tenant",
+          "basis": [
+            "deployment"
+          ]
+        },
+        {
+          "text": "Buyers wanting Azure Marketplace procurement against existing Azure commitments",
+          "basis": [
+            "pricing"
+          ]
+        }
+      ],
+      "lessSuitedFor": [
+        {
+          "text": "Buyers needing AWS or GCP deployment today",
+          "basis": [
+            "deployment"
+          ]
+        }
+      ],
+      "notes": "Product found as 'Corral AI' (getcorral.ai); vendor page does not use the term 'Sovereign AI' as a product name (section 'Control & Sovereignty'). Identification as the intended product is probable but unconfirmed. Marketplace listing returned 403. Launch post dated 2024-12-15."
+    },
+    {
+      "slug": "heartbeatagents",
+      "name": "HeartBeatAgents",
+      "vendor": "Mosaic Singularity",
+      "officialUrl": "https://heartbeatagents.com",
+      "marketplaceUrl": null,
+      "summary": "HeartBeatAgents is a self-hosted platform for building and running autonomous AI agents that work on standing orders with local memory.",
+      "isBeag": false,
+      "cells": {
+        "capabilities": {
+          "status": "Verified",
+          "value": "Autonomous agents on standing orders with tools, integrations, three-layer local memory, and reusable skills.",
+          "categories": [],
+          "caveat": "Vendor marketing.",
+          "checked": [
+            "https://heartbeatagents.com"
+          ],
+          "claimId": "BL-CLM-33"
+        },
+        "deployment": {
+          "status": "Verified",
+          "value": "Self-hosted: desktop download (macOS DMG) on vendor site; AWS listing ships an AMI run in buyer's AWS account.",
+          "categories": [
+            "self-hosted"
+          ],
+          "caveat": "Two different delivery forms; AWS AMI is not Azure.",
+          "checked": [
+            "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6"
+          ],
+          "claimId": "BL-CLM-34"
+        },
+        "marketplaceOffer": {
+          "status": "Not documented",
+          "value": "No Azure Marketplace listing found; only an AWS Marketplace AMI listing was found.",
+          "categories": [
+            "unknown"
+          ],
+          "caveat": "Absence of a found listing does not prove none exists; Microsoft Marketplace was searched only via web search.",
+          "checked": [
+            "https://heartbeatagents.com",
+            "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6",
+            "web search: HeartBeatAgents Azure Marketplace"
+          ]
+        },
+        "humanApproval": {
+          "status": "Partially supported",
+          "value": "Only simple 'Ask User' and 'Present Choices' skills let an agent request approval or a choice; no broader approval policy is described.",
+          "categories": [],
+          "caveat": "No broader approval workflow/policy gates described; security page describes none.",
+          "checked": [
+            "https://heartbeatagents.com"
+          ],
+          "claimId": "BL-CLM-35"
+        },
+        "licensing": {
+          "status": "Verified",
+          "value": "AWS listing: EULA applies; community edition with one worker, more workers via separately purchased license.",
+          "categories": [
+            "commercial"
+          ],
+          "caveat": "Source-code license (open or not) not stated.",
+          "checked": [
+            "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6"
+          ],
+          "claimId": "BL-CLM-36"
+        },
+        "security": {
+          "status": "Verified",
+          "value": "Documented: AES-256 at rest, TLS 1.2+, per-organization container folder scoping, token-authenticated websockets, token scrubbing.",
+          "categories": [],
+          "caveat": "SSO, RBAC, certifications and audit log content/retention not documented there.",
+          "checked": [
+            "https://heartbeatagents.com/features/security"
+          ],
+          "claimId": "BL-CLM-37"
+        },
+        "buyer": {
+          "status": "Verified",
+          "value": "AWS listing targets organizations wanting production-ready self-hosted agentic AI infrastructure.",
+          "categories": [],
+          "caveat": "Vendor site does not name a buyer persona.",
+          "checked": [
+            "https://aws.amazon.com/marketplace/pp/prodview-sizow44lh6ju6"
+          ],
+          "claimId": "BL-CLM-38"
+        },
+        "pricing": {
+          "status": "Verified",
+          "value": "No prices listed; AWS listing says community edition with one worker, billing external via vendor license.",
+          "categories": [],
+          "caveat": "Vendor pricing page rendered empty on fetch.",
+          "checked": [
+            "https://heartbeatagents.com/pricing"
+          ],
+          "claimId": "BL-CLM-39"
+        }
+      },
+      "bestFor": [
+        {
+          "text": "Teams wanting agents run on their own machine or AWS account",
+          "basis": [
+            "deployment"
+          ]
+        }
+      ],
+      "lessSuitedFor": [
+        {
+          "text": "Buyers who need to purchase through Azure Marketplace: we found no Azure listing in the sources checked (an AWS Marketplace listing exists).",
+          "basis": [
+            "marketplaceOffer"
+          ]
+        }
+      ],
+      "notes": "Product exists (heartbeatagents.com, Mosaic Singularity). No Azure Marketplace listing found; the only marketplace listing found is AWS. Some Microsoft Marketplace pages returned for searches were for an unrelated product (Fellowmind HiveAI). Task premise of Azure listing is unverified."
+    },
+    {
+      "slug": "openclaw",
+      "name": "OpenClaw",
+      "vendor": "OpenClaw Foundation (independent nonprofit, per repo README)",
+      "officialUrl": "https://github.com/openclaw/openclaw",
+      "marketplaceUrl": null,
+      "summary": "OpenClaw is an open-source assistant/gateway that runs on your own machine or server and connects chat apps to AI agents (repo README; docs.openclaw.ai).",
+      "isBeag": false,
+      "cells": {
+        "capabilities": {
+          "status": "Verified",
+          "value": "Single Gateway links chat channels to AI agents with tools, sessions, memory, skills, cron/webhooks, a web Control UI, and mobile nodes.",
+          "categories": [],
+          "caveat": "Describes features, not their quality, scale, or reliability.",
+          "checked": [
+            "https://docs.openclaw.ai"
+          ],
+          "claimId": "BL-CLM-40"
+        },
+        "deployment": {
+          "status": "Verified",
+          "value": "Runs on your own laptop or server; install via script, npm, Docker, Nix or source; remote access via SSH/Tailscale. README says no hosted service.",
+          "categories": [
+            "self-hosted"
+          ],
+          "caveat": "Does not cover third-party hosted or marketplace deployments of the software.",
+          "checked": [
+            "https://github.com/openclaw/openclaw"
+          ],
+          "claimId": "BL-CLM-41"
+        },
+        "marketplaceOffer": {
+          "status": "Not documented",
+          "value": "No official Azure/Microsoft Marketplace listing found in first-party pages. A web search surfaced third-party publisher listings (not fetched; unverified).",
+          "categories": [
+            "unknown"
+          ],
+          "caveat": "Third-party publishers appear to list OpenClaw offers on Microsoft Marketplace; direct fetch returned 403, so offer type, affiliation and pricing are unverified. Failed search is not proof of absence.",
+          "checked": [
+            "https://github.com/openclaw/openclaw",
+            "https://docs.openclaw.ai",
+            "https://marketplace.microsoft.com/en-us/product/forceworks.rc4oc (HTTP 403)"
+          ]
+        },
+        "humanApproval": {
+          "status": "Partially supported",
+          "value": "Exec approvals (deny, allowlist, ask, auto, full) gate host command execution only and can be switched off; not a general approval layer.",
+          "categories": [],
+          "caveat": "SECURITY.md says approvals are operator guardrails, not a multi-tenant authorization control. Covers host command execution, not every agent action.",
+          "checked": [
+            "https://docs.openclaw.ai/tools/exec-approvals"
+          ],
+          "claimId": "BL-CLM-42"
+        },
+        "licensing": {
+          "status": "Verified",
+          "value": "MIT License, copyright OpenClaw Foundation (2026).",
+          "categories": [
+            "open-source"
+          ],
+          "caveat": "Only the root LICENSE was read; subdirectories or plugins on ClawHub may carry other licenses. Not legal advice.",
+          "checked": [
+            "https://raw.githubusercontent.com/openclaw/openclaw/main/LICENSE"
+          ],
+          "claimId": "BL-CLM-43"
+        },
+        "security": {
+          "status": "Partially supported",
+          "value": "Gateway auth, DM pairing and allowlists, optional sandboxing (off by default) and an audit CLI; documented as a single-trusted-operator model, not a multi-tenant boundary.",
+          "categories": [],
+          "caveat": "SECURITY.md states it is not a multi-tenant boundary and exec runs on host by default. SSO, RBAC and audit-log features were not found on pages read (not a statement they are absent). No certifications checked.",
+          "checked": [
+            "https://docs.openclaw.ai/gateway/security"
+          ],
+          "claimId": "BL-CLM-44"
+        },
+        "buyer": {
+          "status": "Verified",
+          "value": "Individuals wanting a personal assistant, teams sharing a gateway, and enterprise/security teams hardening via configuration, not a separate edition.",
+          "categories": [],
+          "caveat": "Project positioning only; no procurement or support terms stated.",
+          "checked": [
+            "https://docs.openclaw.ai/start/why-openclaw"
+          ],
+          "claimId": "BL-CLM-45"
+        },
+        "pricing": {
+          "status": "Verified",
+          "value": "README says no paid tier, hosted service, or token. Model API and hosting costs are borne by the user.",
+          "categories": [],
+          "caveat": "Says nothing about third-party managed offers, support contracts, or underlying model/hosting cost amounts.",
+          "checked": [
+            "https://github.com/openclaw/openclaw"
+          ],
+          "claimId": "BL-CLM-46"
+        }
+      },
+      "bestFor": [
+        {
+          "text": "Individuals or small teams wanting a self-run assistant reachable through existing chat apps at no license cost.",
+          "basis": [
+            "deployment",
+            "licensing",
+            "pricing"
+          ]
+        },
+        {
+          "text": "Operators who want configurable command-approval gates (allowlist/ask modes) on host execution.",
+          "basis": [
+            "humanApproval"
+          ]
+        }
+      ],
+      "lessSuitedFor": [
+        {
+          "text": "Mutually untrusted multi-tenant use on one gateway; the project's trust model targets a single trusted operator.",
+          "basis": [
+            "security"
+          ]
+        },
+        {
+          "text": "Buyers needing a vendor-hosted or vendor-supported managed service from the project itself; none is offered per README.",
+          "basis": [
+            "pricing",
+            "deployment"
+          ]
+        }
+      ],
+      "notes": "Identified as github.com/openclaw/openclaw (README, MIT LICENSE, SECURITY.md fetched). Origin story (Clawdbot/Moltbot) came only from a third-party search summary; not used. Third-party Microsoft Marketplace listings (e.g. Forceworks 'RapidClaw', Questlab, Elania Resources) were seen in search results only; marketplace page returned 403 so unverified. Star counts vary by source; omitted."
+    },
+    {
+      "slug": "openhands",
+      "name": "OpenHands",
+      "vendor": "OpenHands (company name not stated on pages fetched)",
+      "officialUrl": "https://openhands.dev",
+      "marketplaceUrl": null,
+      "summary": "OpenHands is an open-source platform for software-engineering agents, with a GUI, CLI, SDK and enterprise control plane (openhands.dev).",
+      "isBeag": false,
+      "cells": {
+        "capabilities": {
+          "status": "Verified",
+          "value": "Coding agents via Agent Canvas (browser client), Software Agent SDK/Agent Server, CLI, plus scheduled/webhook automations.",
+          "categories": [],
+          "caveat": "Feature description only; the Local GUI is described as deprecated in favor of Agent Canvas, which the repo labels beta.",
+          "checked": [
+            "https://docs.openhands.dev"
+          ],
+          "claimId": "BL-CLM-47"
+        },
+        "deployment": {
+          "status": "Verified",
+          "value": "Local/self-hosted (npm, Docker), plus OpenHands Cloud (managed) and OpenHands Enterprise (licensed self-host in your VPC or managed).",
+          "categories": [
+            "hybrid"
+          ],
+          "caveat": "Customer-tenant deployment is listed under the commercial Enterprise plan only.",
+          "checked": [
+            "https://openhands.dev/pricing"
+          ],
+          "claimId": "BL-CLM-48"
+        },
+        "marketplaceOffer": {
+          "status": "Not documented",
+          "value": "No Azure/Microsoft Marketplace listing found for OpenHands in first-party pages or search.",
+          "categories": [
+            "unknown"
+          ],
+          "caveat": "A failed search is not proof no listing exists; the marketplace was not searched directly.",
+          "checked": [
+            "https://openhands.dev",
+            "https://docs.openhands.dev",
+            "https://openhands.dev/pricing",
+            "https://github.com/OpenHands/OpenHands"
+          ]
+        },
+        "humanApproval": {
+          "status": "Partially supported",
+          "value": "SDK confirmation policies (always, never, risky) can require approval of actions; documented for the SDK, and one call path bypasses them.",
+          "categories": [],
+          "caveat": "Documented for the SDK; the page says execute_tool() bypasses these controls. Not checked for Cloud/Canvas UI or defaults.",
+          "checked": [
+            "https://docs.openhands.dev/sdk/guides/security"
+          ],
+          "claimId": "BL-CLM-49"
+        },
+        "licensing": {
+          "status": "Verified",
+          "value": "Root LICENSE of OpenHands/OpenHands is MIT (OpenHands contributors, 2025). Docs say each repository has its own license.",
+          "categories": [
+            "open-source"
+          ],
+          "caveat": "Not verified: the SDK repo license, and whether an enterprise directory carries a different license (enterprise/LICENSE URL returned 404). OpenHands Cloud/Enterprise are commercial offerings.",
+          "checked": [
+            "https://raw.githubusercontent.com/OpenHands/OpenHands/main/enterprise/LICENSE",
+            "https://github.com/OpenHands/OpenHands"
+          ],
+          "claimId": "BL-CLM-50"
+        },
+        "security": {
+          "status": "Verified",
+          "value": "Docs name: Docker sandbox isolation for the agent server, security analyzers with risk levels, Enterprise SAML/SSO, RBAC and access controls (Cloud).",
+          "categories": [],
+          "caveat": "SECURITY.md returned 404, so no vulnerability-disclosure policy was found. Pricing page does not explicitly tie RBAC to a tier. Audit logging, certifications not found on pages read.",
+          "checked": [
+            "https://raw.githubusercontent.com/OpenHands/OpenHands/main/SECURITY.md"
+          ],
+          "claimId": "BL-CLM-51"
+        },
+        "buyer": {
+          "status": "Verified",
+          "value": "Developers and engineering teams, including enterprises wanting control over models, data, access and auditability.",
+          "categories": [],
+          "caveat": "Marketing positioning only.",
+          "checked": [
+            "https://openhands.dev"
+          ],
+          "claimId": "BL-CLM-52"
+        },
+        "pricing": {
+          "status": "Verified",
+          "value": "Local open source: free. SaaS Individual: free, 10 daily conversations. Enterprise: custom pricing, contact sales.",
+          "categories": [],
+          "caveat": "Enterprise price, SLA and contract terms not published. Model usage at cost or BYOK; amounts not stated in fetched summary. Page may have other tiers not captured.",
+          "checked": [
+            "https://openhands.dev/pricing"
+          ],
+          "claimId": "BL-CLM-53"
+        }
+      },
+      "bestFor": [
+        {
+          "text": "Engineering teams wanting a coding-focused agent they can run locally or self-host with free open-source options.",
+          "basis": [
+            "capabilities",
+            "licensing",
+            "pricing"
+          ]
+        },
+        {
+          "text": "Developers embedding agents with configurable approve/reject gates via the SDK.",
+          "basis": [
+            "humanApproval"
+          ]
+        }
+      ],
+      "lessSuitedFor": [
+        {
+          "text": "Buyers needing published Enterprise pricing or SLA terms up front; these are contact-sales.",
+          "basis": [
+            "pricing"
+          ]
+        },
+        {
+          "text": "Buyers needing a general personal-assistant across chat apps; the project is positioned for software engineering.",
+          "basis": [
+            "capabilities",
+            "buyer"
+          ]
+        }
+      ],
+      "notes": "Identified via openhands.dev, docs.openhands.dev, github.com/OpenHands/OpenHands. The fetched repo README/page now describes Agent Canvas (labeled beta) as the browser client; the repo README showed no license section but the LICENSE file is MIT. Former name OpenDevin / All-Hands-AI not verified on a fetched page. Enterprise directory license not verified."
+    },
+    {
+      "slug": "websoft9",
+      "name": "Websoft9",
+      "vendor": "Websoft9",
+      "officialUrl": "https://www.websoft9.com",
+      "marketplaceUrl": null,
+      "summary": "Websoft9 is a self-hosted PaaS and app store for deploying and managing 300+ open source apps on one server.",
+      "isBeag": false,
+      "cells": {
+        "capabilities": {
+          "status": "Verified",
+          "value": "App store with one-click install of 300+ apps, plus app lifecycle, file manager, terminal, proxy/SSL, backups, monitoring.",
+          "categories": [],
+          "caveat": "Platform for deploying other apps; no AI-agent features documented on pages checked; AI agents would depend on deployed third-party apps.",
+          "checked": [
+            "https://github.com/Websoft9/websoft9"
+          ],
+          "claimId": "BL-CLM-54"
+        },
+        "deployment": {
+          "status": "Verified",
+          "value": "Self-hosted on your own server, running as Docker containers.",
+          "categories": [
+            "self-hosted"
+          ],
+          "caveat": "Does not describe managed hosting options in detail (pricing page mentions private cloud and managed hosting via customer success).",
+          "checked": [
+            "https://github.com/Websoft9/websoft9"
+          ],
+          "claimId": "BL-CLM-55"
+        },
+        "marketplaceOffer": {
+          "status": "Verified",
+          "value": "Docs say Websoft9 is an Azure Marketplace partner; products are VM images deployed to an Azure VM.",
+          "categories": [
+            "azure-vm"
+          ],
+          "caveat": "Page is for version 1.0, flagged by the site as no longer actively maintained; Marketplace listing page itself returned HTTP 403 so was not read.",
+          "checked": [
+            "https://support.websoft9.com/en/docs/1.0/install/azure"
+          ],
+          "claimId": "BL-CLM-56"
+        },
+        "humanApproval": {
+          "status": "Not documented",
+          "value": "No approval or human-in-the-loop controls documented for agent actions.",
+          "categories": [],
+          "caveat": "Platform has no documented agent-action concept.",
+          "checked": [
+            "https://github.com/Websoft9/websoft9",
+            "https://www.websoft9.com"
+          ]
+        },
+        "licensing": {
+          "status": "Verified",
+          "value": "Repository states LGPL-3.0 and homepage says 100% open source; republishing images to cloud marketplaces without authorization is prohibited.",
+          "categories": [
+            "open-source"
+          ],
+          "caveat": "License badge and text are inconsistent (LGPL vs GPL link); read the repository license file before relying on it.",
+          "checked": [
+            "https://github.com/Websoft9/websoft9"
+          ],
+          "claimId": "BL-CLM-57"
+        },
+        "security": {
+          "status": "Verified",
+          "value": "Multi-user accounts with role-based access; SSL certificates via Let's Encrypt; apps isolated through Docker.",
+          "categories": [],
+          "caveat": "No SSO, audit logging, data residency or certifications documented on pages checked; role definitions not described.",
+          "checked": [
+            "https://github.com/Websoft9/websoft9",
+            "https://www.websoft9.com"
+          ],
+          "claimId": "BL-CLM-58"
+        },
+        "buyer": {
+          "status": "Verified",
+          "value": "Cloud architects, IT teams and SMBs without dedicated IT, plus software vendors, integrators and cloud providers.",
+          "categories": [],
+          "caveat": "Vendor-stated personas; page in Chinese.",
+          "checked": [
+            "https://www.websoft9.com"
+          ],
+          "claimId": "BL-CLM-59"
+        },
+        "pricing": {
+          "status": "Verified",
+          "value": "Software plans: Free 0, Starter CNY 20/mo, Standard CNY 99/mo (per vendor pricing page); Azure image billing not described.",
+          "categories": [],
+          "caveat": "Pricing page is in CNY and is for support subscriptions; Azure Marketplace VM/image pricing not verified.",
+          "checked": [
+            "https://www.websoft9.com/pricing"
+          ],
+          "claimId": "BL-CLM-60"
+        }
+      },
+      "bestFor": [
+        {
+          "text": "Teams wanting to self-host many open source apps on their own server.",
+          "basis": [
+            "deployment",
+            "capabilities"
+          ]
+        },
+        {
+          "text": "Teams wanting an open-source license.",
+          "basis": [
+            "licensing"
+          ]
+        }
+      ],
+      "lessSuitedFor": [
+        {
+          "text": "Buyers needing documented approval gates or audit logging for agent actions; these are not documented.",
+          "basis": [
+            "humanApproval",
+            "security"
+          ]
+        }
+      ],
+      "notes": "Websoft9 is an app store/hosting panel, not an AI agent product; no AI features documented beyond homepage category titles. Azure Marketplace pages (marketplace.microsoft.com and azuremarketplace.microsoft.com) returned HTTP 403 to fetches; search results indicate listing URL marketplace.microsoft.com/en-us/product/virtual-machines/websoft9inc.websoft9 but it is not verified and azureMarketplaceUrl is left null. Docs for version 2.0 Azure install page not found (404)."
+    }
+  ]
+}

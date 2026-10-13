@@ -8,7 +8,7 @@ export default defineConfig({
     compatibilityFlags: ['nodejs_compat'],
     workersDev: true,
     previewUrls: true,
-    domains: ['www.beaglabs.com'],
+    domains: ['beaglabs.com'],
     env: {
       HYGRAPH_ENDPOINT: bindings.text('https://us-west-2.cdn.hygraph.com/content/cmq44llwh02u708w6rc1atyy7/master'),
     },

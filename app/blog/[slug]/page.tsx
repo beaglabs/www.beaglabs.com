@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     return { title: 'Not Found' }
   }
 
-  const canonicalUrl = `https://www.beaglabs.com/blog/${slug}`
+  const canonicalUrl = `https://beaglabs.com/blog/${slug}`
   const ogUrl = ogImageUrl({
     title: data.blogPost.title,
     description: data.blogPost.seoDescription || data.blogPost.exerpt,
@@ -120,7 +120,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const post = data.blogPost
   const toc = extractHeadings(post.body)
-  const canonicalUrl = `https://www.beaglabs.com/blog/${slug}`
+  const canonicalUrl = `https://beaglabs.com/blog/${slug}`
   const formattedDate = formatPostDate(post.publishedAt)
 
   const jsonLd = {
@@ -133,14 +133,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     author: {
       '@type': 'Organization',
       name: 'Beag Labs',
-      url: 'https://www.beaglabs.com',
+      url: 'https://beaglabs.com',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Beag Labs',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.beaglabs.com/favicon.png',
+        url: 'https://beaglabs.com/favicon.png',
       },
     },
     mainEntityOfPage: {

@@ -26,7 +26,7 @@ export async function generateMetadata({
   const label = blogCategoryLabel(decoded)
   const title = `${label} — Blog — Beag Labs`
   const description = `Blog posts in the ${label} category.`
-  const canonical = `https://www.beaglabs.com/blog/category/${category}`
+  const canonical = `https://beaglabs.com/blog/category/${category}`
   const ogUrl = ogImageUrl({
     title: label,
     description,

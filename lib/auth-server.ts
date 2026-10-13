@@ -15,7 +15,7 @@ export const auth = betterAuth({
     process.env.BETTER_AUTH_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
     (process.env.NODE_ENV === "production"
-      ? "https://www.beaglabs.com"
+      ? "https://beaglabs.com"
       : "http://localhost:3000"),
   // Better Auth already reads BETTER_AUTH_SECRET from env; pass it explicitly for
   // clarity. During `next build` no auth operations actually run, so fall back to

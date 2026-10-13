@@ -5,29 +5,42 @@ import { SiteFooter } from "@/components/site-footer"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { comparisons } from "@/data/comparisons/comparisons"
-import { ogImageUrl } from "@/lib/seo"
+import { HeadToHead } from "@/components/compare/head-to-head"
+import { getGuide, getPlatform, guides } from "@/lib/compare"
+import { ogImageUrl, pageMetadata } from "@/lib/seo"
 
 interface ComparisonPageProps {
   params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
-  return comparisons.map((comparison) => ({
-    slug: comparison.slug,
-  }))
+  return [
+    ...guides.filter((guide) => guide.kind === "head-to-head").map(({ slug }) => ({ slug })),
+    ...comparisons.map(({ slug }) => ({ slug })),
+  ]
 }
 
 export async function generateMetadata({
   params,
 }: ComparisonPageProps): Promise<Metadata> {
   const { slug } = await params
+  const guide = getGuide(slug)
+  if (guide?.kind === "head-to-head") {
+    return pageMetadata({
+      title: guide.title,
+      description: guide.description,
+      path: `/compare/${guide.slug}`,
+      label: "Comparison",
+      type: "article",
+    })
+  }
   const comparison = comparisons.find((c) => c.slug === slug)
 
   if (!comparison) {
     return { title: "Not Found" }
   }
 
-  const canonical = `https://www.beaglabs.com/compare/${slug}`
+  const canonical = `https://beaglabs.com/compare/${slug}`
   const ogUrl = ogImageUrl({
     title: comparison.title,
     description: comparison.metaDescription,
@@ -68,6 +81,13 @@ export default async function ComparisonDetailPage({
   params,
 }: ComparisonPageProps) {
   const { slug } = await params
+  const guide = getGuide(slug)
+  if (guide?.kind === "head-to-head") {
+    const beag = getPlatform("papyrus")
+    const other = guide.versus ? getPlatform(guide.versus) : undefined
+    if (!beag || !other) notFound()
+    return <HeadToHead guide={guide} beag={beag} other={other} />
+  }
   const comparison = comparisons.find((c) => c.slug === slug)
 
   if (!comparison) {
@@ -88,7 +108,7 @@ export default async function ComparisonDetailPage({
     author: {
       '@type': 'Organization',
       name: 'Beag Labs',
-      url: 'https://www.beaglabs.com',
+      url: 'https://beaglabs.com',
     },
   }
 

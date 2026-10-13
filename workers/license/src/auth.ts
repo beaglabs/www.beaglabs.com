@@ -7,7 +7,7 @@ import { first, getDb, rows } from './db'
 import { sendMagicLinkEmail } from './email'
 
 const WWW_ORIGINS = [
-  'https://www.beaglabs.com',
+  'https://beaglabs.com',
   'https://beaglabs.com',
   'http://localhost:3000',
   'http://127.0.0.1:3000',

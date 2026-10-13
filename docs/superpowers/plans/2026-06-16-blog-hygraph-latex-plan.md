@@ -27,7 +27,7 @@ The current `next.config.mjs` uses static export (`output: 'export'`), which is 
 
 Run:
 ```bash
-cd /Users/jdbohrman/www.beaglabs.com && npm install react-markdown remark-math rehype-katex katex
+cd /Users/jdbohrman/beaglabs.com && npm install react-markdown remark-math rehype-katex katex
 ```
 
 Expected: Packages install without errors.
@@ -558,7 +558,7 @@ export function MarkdownRenderer({ children }: MarkdownRendererProps) {
 
 Run:
 ```bash
-cd /Users/jdbohrman/www.beaglabs.com && npx tsc --noEmit 2>&1 | head -30
+cd /Users/jdbohrman/beaglabs.com && npx tsc --noEmit 2>&1 | head -30
 ```
 
 Expected: No new TypeScript errors related to these files.
@@ -1835,7 +1835,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - [ ] **Step 1: Run TypeScript check**
 
 ```bash
-cd /Users/jdbohrman/www.beaglabs.com && npx tsc --noEmit 2>&1 | head -50
+cd /Users/jdbohrman/beaglabs.com && npx tsc --noEmit 2>&1 | head -50
 ```
 
 Expected: No new TypeScript errors. Any pre-existing errors from `ignoreBuildErrors: true` are acceptable.
@@ -1843,7 +1843,7 @@ Expected: No new TypeScript errors. Any pre-existing errors from `ignoreBuildErr
 - [ ] **Step 2: Run the build**
 
 ```bash
-cd /Users/jdbohrman/www.beaglabs.com && npm run build 2>&1 | tail -30
+cd /Users/jdbohrman/beaglabs.com && npm run build 2>&1 | tail -30
 ```
 
 Expected: Build succeeds. Note that Hygraph pages will show warnings/errors about missing env vars during build if `.env.local` isn't set up — this is expected and will resolve once env vars are configured.
@@ -1852,7 +1852,7 @@ Expected: Build succeeds. Note that Hygraph pages will show warnings/errors abou
 
 Run:
 ```bash
-cd /Users/jdbohrman/www.beaglabs.com && find app/blog app/research app/api lib/hygraph components/blog -type f | sort
+cd /Users/jdbohrman/beaglabs.com && find app/blog app/research app/api lib/hygraph components/blog -type f | sort
 ```
 
 Expected output:

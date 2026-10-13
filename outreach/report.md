@@ -64,7 +64,7 @@
 ---
 
 ## Pitch Info
-- **Deck URL:** https://www.beaglabs.com/raise
+- **Deck URL:** https://beaglabs.com/raise
 - **PDF:** /public/pitch/beaglabs-raise-deck.pdf
 - **Company:** Beag Labs
 - **Stage:** Pre-seed

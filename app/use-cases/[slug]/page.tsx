@@ -37,12 +37,12 @@ export async function generateMetadata({
     title: industry.title,
     description: industry.metaDescription,
     alternates: {
-      canonical: `https://www.beaglabs.com/use-cases/${slug}`,
+      canonical: `https://beaglabs.com/use-cases/${slug}`,
     },
     openGraph: {
       title: `${industry.title} — Beag Labs`,
       description: industry.metaDescription,
-      url: `https://www.beaglabs.com/use-cases/${slug}`,
+      url: `https://beaglabs.com/use-cases/${slug}`,
       images: [
         {
           url: ogUrl,

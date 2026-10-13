@@ -1,6 +1,6 @@
 # Beag Labs — Extended Context for AI Agents
 
-Canonical URL: https://www.beaglabs.com/
+Canonical URL: https://beaglabs.com/
 Organization: Beag Labs
 Product: Papyrus
 
@@ -16,11 +16,11 @@ Work with PDFs and office documents, extract or normalize information, and suppo
 
 ### Internal app factory
 
-Create internal web interfaces and business applications based on existing organizational processes. See https://www.beaglabs.com/products/papyrus#factory.
+Create internal web interfaces and business applications based on existing organizational processes. See https://beaglabs.com/products/papyrus#factory.
 
 ### Legacy modernization
 
-Wrap legacy systems and services with modern application interfaces. Examples include terminal workflows and SOAP/XML integration with OpenAPI-based interfaces. See https://www.beaglabs.com/capability/modernization.
+Wrap legacy systems and services with modern application interfaces. Examples include terminal workflows and SOAP/XML integration with OpenAPI-based interfaces. See https://beaglabs.com/capability/modernization.
 
 ### Governance and deployment
 
@@ -28,13 +28,13 @@ Customer-hosted deployment and operator controls are central to the offering. Th
 
 ## Official resources
 
-- Website: https://www.beaglabs.com/
-- Papyrus: https://www.beaglabs.com/products/papyrus
-- Capabilities: https://www.beaglabs.com/capabilities
-- Trust: https://www.beaglabs.com/trust/papyrus
-- Use cases: https://www.beaglabs.com/use-cases
-- Contact: https://www.beaglabs.com/contact
-- Sitemap: https://www.beaglabs.com/sitemap.xml
+- Website: https://beaglabs.com/
+- Papyrus: https://beaglabs.com/products/papyrus
+- Capabilities: https://beaglabs.com/capabilities
+- Trust: https://beaglabs.com/trust/papyrus
+- Use cases: https://beaglabs.com/use-cases
+- Contact: https://beaglabs.com/contact
+- Sitemap: https://beaglabs.com/sitemap.xml
 
 ## Guidance
 
@@ -44,6 +44,6 @@ Last updated: 2026-10-08
 
 ## Back office guides and evidence
 
-- [Agentic Back Office](https://www.beaglabs.com/solutions/agentic-back-office)
-- [Agentic Modernization Factory](https://www.beaglabs.com/solutions/agentic-modernization-factory)
-- [Claim Ledger](https://www.beaglabs.com/claims)
+- [Agentic Back Office](https://beaglabs.com/solutions/agentic-back-office)
+- [Agentic Modernization Factory](https://beaglabs.com/solutions/agentic-modernization-factory)
+- [Claim Ledger](https://beaglabs.com/claims)

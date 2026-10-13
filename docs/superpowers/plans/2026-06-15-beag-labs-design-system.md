@@ -132,7 +132,7 @@ Replace the entire contents of `app/globals.css` with the new design tokens:
 
 - [ ] **Step 2: Verify the dev server picks up the changes**
 
-Run: `cd /Users/jdbohrman/www.beaglabs.com && npm run dev`
+Run: `cd /Users/jdbohrman/beaglabs.com && npm run dev`
 Expected: Server starts without CSS errors. Page renders with warm off-white background.
 
 - [ ] **Step 3: Commit**
@@ -258,7 +258,7 @@ export function SiteFooter() {
 
 - [ ] **Step 2: Verify the footer renders**
 
-Run: `cd /Users/jdbohrman/www.beaglabs.com && npm run dev`
+Run: `cd /Users/jdbohrman/beaglabs.com && npm run dev`
 Check: Navigate to the page, scroll to footer. Three link columns visible on desktop. Logo + tagline present.
 
 - [ ] **Step 3: Commit**
@@ -359,7 +359,7 @@ export function CapabilitiesSection() {
 
 - [ ] **Step 2: Verify the capabilities section renders**
 
-Run: `cd /Users/jdbohrman/www.beaglabs.com && npm run dev`
+Run: `cd /Users/jdbohrman/beaglabs.com && npm run dev`
 Check: Section renders with "Capabilities" warm taupe label, medium-weight heading, 2×2 grid with mono ID numbers (no icon boxes).
 
 - [ ] **Step 3: Commit**
@@ -466,11 +466,11 @@ And change the component usage from `<ApproachSection />` to `<ProjectsSection /
 
 - [ ] **Step 3: Remove the old approach-section file**
 
-Run: `rm /Users/jdbohrman/www.beaglabs.com/components/approach-section.tsx`
+Run: `rm /Users/jdbohrman/beaglabs.com/components/approach-section.tsx`
 
 - [ ] **Step 4: Verify the projects section renders**
 
-Run: `cd /Users/jdbohrman/www.beaglabs.com && npm run dev`
+Run: `cd /Users/jdbohrman/beaglabs.com && npm run dev`
 Check: Section renders with "Projects" warm taupe label, Chaveta card with subtle border, arrow turns orange on hover.
 
 - [ ] **Step 5: Commit**
@@ -588,7 +588,7 @@ export function HeroSection() {
 
 - [ ] **Step 2: Verify the hero renders**
 
-Run: `cd /Users/jdbohrman/www.beaglabs.com && npm run dev`
+Run: `cd /Users/jdbohrman/beaglabs.com && npm run dev`
 Check: Hero renders with warm taupe label (not orange), medium-weight heading (not bold), dark pill CTA, grid pattern background.
 
 - [ ] **Step 3: Commit**
@@ -668,7 +668,7 @@ export function Navbar() {
 
 - [ ] **Step 2: Verify the navbar renders**
 
-Run: `cd /Users/jdbohrman/www.beaglabs.com && npm run dev`
+Run: `cd /Users/jdbohrman/beaglabs.com && npm run dev`
 Check: Navbar renders with Inter text links (no mono), dark pill "Contact" button, subtle bottom border.
 
 - [ ] **Step 3: Commit**
@@ -686,7 +686,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 - [ ] **Step 1: Full page review**
 
-Run: `cd /Users/jdbohrman/www.beaglabs.com && npm run dev`
+Run: `cd /Users/jdbohrman/beaglabs.com && npm run dev`
 
 Verify the complete page at `http://localhost:3000`:
 - Warm off-white background (`#FAFAF9`)

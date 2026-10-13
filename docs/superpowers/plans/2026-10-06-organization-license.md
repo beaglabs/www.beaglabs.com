@@ -62,7 +62,7 @@ Files: components/licensing/licensing-console.tsx; components/licensing/order-li
 - [ ] Add an explicit scope selector and approved tenant/domain fields for entitled customers. Show term, organization, restrictions, and issuance history before generating.
 - [ ] Provide organization license generation/download through the entitlement endpoint; retain the existing per-deployment activation and download flow.
 - [ ] Label organization licenses as unlimited deployments within the licensed organization, with offline validation and explicit expiry.
-- [ ] Update documentation with issuance through www.beaglabs.com/licensing, backend license.beaglabs.com, Azure Key Vault signing, migrations, issuer/runtime rollout order, and renewal behavior.
+- [ ] Update documentation with issuance through beaglabs.com/licensing, backend license.beaglabs.com, Azure Key Vault signing, migrations, issuer/runtime rollout order, and renewal behavior.
 - [ ] Run UI syntax/type checks and review organization issuance/download behavior. Run both repositories' diff checks, relevant tests, and contracts drift check. Report unrelated baseline failures separately.
 
 ## Execution

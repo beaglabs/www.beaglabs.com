@@ -23,7 +23,7 @@ def frame(n,label):
  c.setFillColor(HexColor(BG));c.rect(0,0,W,H,fill=1,stroke=0)
  box(28,22,30,30,INK);text('B_',33,26,19,True,'#ffffff');text('BEAG LABS',70,30,10,True);text('SOLUTION BRIEF / PAPYRUS',310,31,8,True);text(f'{n:02} / 06',530,31,8,True);rule(65)
  box(28,86,250,24,OR);text(label.upper(),38,92,8,True)
- rule(751);text('BEAG LABS / CUSTOMER-HOSTED AGENTIC WORK',28,765,7,True);text('www.beaglabs.com',465,765,7)
+ rule(751);text('BEAG LABS / CUSTOMER-HOSTED AGENTIC WORK',28,765,7,True);text('beaglabs.com',465,765,7)
 def title(lines,sub):
  y=128
  for line in lines: text(line,28,y,31,True);y+=36
@@ -37,7 +37,7 @@ def bullets(items,y):
   box(28,y+4,6,6,OR);h=para('<b>'+name+'</b> '+body,44,y,525,10);y+=h+13
  return y
 def cta(s):
- box(28,692,552,39,OR,True);text(s,40,705,11,True);c.linkURL('https://www.beaglabs.com/sales',(28,H-731,580,H-692),relative=0)
+ box(28,692,552,39,OR,True);text(s,40,705,11,True);c.linkURL('https://beaglabs.com/sales',(28,H-731,580,H-692),relative=0)
 def nextpage(): c.showPage()
 frame(1,'Customer-hosted modernization')
 title(['THE AGENTIC','MODERNIZATION','FACTORY'], 'Papyrus turns requirements, constraints, and blockers into scoped tasks, coordinated workflows, and working apps - using your documents and systems inside your environment.')
@@ -93,5 +93,5 @@ for i,(plan,price,term,body) in enumerate([
  ('ENTERPRISE LICENSE','$2,000,000','2 YEARS','Unlimited customer-hosted VMs within the licensed organization, including offline deployment. Implementation, maintenance, and support scope are defined in the agreement.')]):
  x=28+i*282;box(x,505,270,139,'#ffffff',True);text(plan,x+12,517,8,True);text(price,x+12,537,25,True);text(term,x+12,569,8,True,OR);para(body,x+12,588,246,8)
 text('DISCOVER > CONFIGURE > PILOT > EXPAND',28,660,11,True)
-cta('DISCUSS YOUR DEPLOYMENT / WWW.BEAGLABS.COM/SALES')
+cta('DISCUSS YOUR DEPLOYMENT / beaglabs.com/SALES')
 c.save();print(OUT)

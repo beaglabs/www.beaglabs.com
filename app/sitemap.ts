@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { fetchHygraph } from '@/lib/hygraph/client'
 import { GET_ALL_BLOG_SLUGS, GET_ALL_BLOG_CATEGORIES, GET_ALL_BLOG_TAGS } from '@/lib/hygraph/queries'
 
-const BASE_URL = 'https://www.beaglabs.com'
+const BASE_URL = 'https://beaglabs.com'
 
 const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${BASE_URL}/solutions/agentic-back-office`, changeFrequency: 'monthly', priority: 0.9 },
@@ -77,6 +77,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const { comparisons } = await import('@/data/comparisons/comparisons')
+    const { guides, verifiedOnIso } = await import('@/lib/compare')
+    const { platforms, profileSlug } = await import('@/lib/compare')
+    dataRoutes.push(...platforms.map((platform) => ({
+      url: `${BASE_URL}/products/${profileSlug(platform)}`,
+      lastModified: new Date(verifiedOnIso),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })))
+    dataRoutes.push(...guides.map((guide) => ({
+      url: `${BASE_URL}/compare/${guide.slug}`,
+      lastModified: new Date(verifiedOnIso),
+      changeFrequency: 'monthly' as const,
+      priority: guide.kind === 'guide' ? 0.8 : 0.7,
+    })))
     dataRoutes.push(...comparisons.map((c) => ({
       url: `${BASE_URL}/compare/${c.slug}`,
       changeFrequency: 'monthly' as const,

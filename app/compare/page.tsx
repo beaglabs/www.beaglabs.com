@@ -1,6 +1,135 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { ArrowUpRight } from 'lucide-react'
+import { AnnouncementBanner } from '@/components/announcement-banner'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { CompareFaq } from '@/components/compare/compare-faq'
+import { Methodology } from '@/components/compare/methodology'
+import { ProductCard } from '@/components/compare/product-card'
+import { SiteFooter } from '@/components/site-footer'
 import { comparisons } from '@/data/comparisons/comparisons'
-import { SEOResourcePage } from '@/components/seo-resource-page'
+import { company } from '@/data/company'
+import { ATTRIBUTES, guides, platforms, verifiedOn, verifiedOnIso } from '@/lib/compare'
+import { claims } from '@/lib/claims'
 import { pageMetadata } from '@/lib/seo'
-export const metadata: Metadata = pageMetadata({ title: "Compare Enterprise AI Automation Approaches", description: "Compare document automation, agentic internal app development, legacy modernization and customer-hosted AI with conventional approaches.", path: "/compare", label: "Comparisons" })
-export default function Page(){return <SEOResourcePage eyebrow="Comparisons" title="Compare Enterprise AI Automation Approaches" intro="Make an informed choice between custom development, legacy replacement, API wrapping, document processing tools and customer-hosted agentic software. Compare approaches against your workflow, security requirements and integration constraints." path="/compare" heading="Choose an approach based on the system you have" context="Every method has trade-offs. A good comparison weighs integration effort, data handling, operational responsibility, validation and maintainability rather than assuming agents are always the answer." cards={[...[{"title":"Document automation vs manual processing","description":"When automation improves routing and extraction, and where people should stay in control.","href":"/products/papyrus#documents"},{"title":"Internal app factory vs custom development","description":"Compare rapid application generation with traditional engineering ownership.","href":"/products/papyrus#factory"},{"title":"Legacy replacement vs API wrapping","description":"When to preserve behavior behind a new interface and when deeper replacement is necessary.","href":"/capability/modernization"},{"title":"Customer-hosted vs cloud API","description":"Examine operational control, connectivity, cost and model governance.","href":"/trust/papyrus"}], ...comparisons.map(item => ({title:item.title,description:item.metaDescription,href:`/compare/${item.slug}`,tag:'Comparison'}))]}  faqs={[{question:"Should every legacy application be replaced?",answer:"No. Wrapping a stable system with controlled APIs can be less disruptive than replacing it. Replacement makes more sense when underlying behavior or maintainability demands it."},{question:"Does document automation remove the need for review?",answer:"No. Sensitive or consequential outputs should retain validation, approvals and provenance."}]}/>}
+
+export const metadata: Metadata = pageMetadata({
+  title: 'Compare AI Agent Platforms',
+  description:
+    'Sourced comparisons of customer-controlled AI agent platforms. Every statement links to a record in the Beag Labs Claim Ledger, and every gap is marked rather than guessed.',
+  path: '/compare',
+  label: 'Comparisons',
+})
+
+export default function ComparePage() {
+  const [pillar, ...headToHeads] = guides
+  const ledgerCount = claims.filter((claim) => claim.usedOn?.some((path) => path.startsWith('/compare'))).length
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Compare AI Agent Platforms',
+    dateModified: verifiedOnIso,
+    publisher: { '@type': 'Organization', name: company.name, url: company.url },
+    hasPart: guides.map((guide) => ({ '@type': 'Article', headline: guide.title, url: `${company.url}/compare/${guide.slug}` })),
+  }
+
+  return (
+    <main className="bg-[#FAFAF9] text-[#111]">
+      <AnnouncementBanner />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      <section className="site-hero px-6 pb-16 pt-32 lg:px-9 lg:pb-20 lg:pt-36">
+        <div className="mx-auto max-w-[1440px]">
+          <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Comparisons', url: '/compare' }]} />
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <span className="nb-label">Comparisons</span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">{ledgerCount} cited claims</span>
+          </div>
+          <h1 className="max-w-[1040px] text-[44px] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[60px] lg:text-[76px]">
+            Compare AI agent platforms, with receipts<span className="text-[#ff5f1f]">.</span>
+          </h1>
+          <p className="mt-6 max-w-[780px] text-[18px] font-medium leading-[1.7] text-[#333]">
+            Buyer’s guides for organizations that want agents running in their own environment. Every statement links to a source in our Claim Ledger, and where we could not find documentation we say so instead of guessing.
+          </p>
+          <p className="mt-4 max-w-[780px] border-l-[4px] border-[#ff5f1f] pl-4 text-[14px] font-semibold leading-[1.7] text-[#333]">
+            Disclosure: Beag Labs makes Papyrus, one of the platforms covered.
+          </p>
+        </div>
+      </section>
+
+      <section className="border-y-[3px] border-[#111] bg-white px-6 py-16 lg:px-9">
+        <div className="mx-auto max-w-[1440px]">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Start here</p>
+          <div className="mt-6 grid gap-6 lg:grid-cols-[1.25fr_1fr]">
+            <Link href={`/compare/${pillar.slug}`} className="group flex min-h-[320px] flex-col justify-between border-[3px] border-[#111] bg-[#ff5f1f] p-7 shadow-[6px_6px_0_#111] transition-transform hover:-translate-y-1 focus-visible:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-[#111] motion-reduce:transform-none">
+              <div>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em]">Guide · {platforms.length} platforms</span>
+                <h2 className="mt-4 max-w-[560px] text-[34px] font-extrabold leading-[1.02] tracking-[-0.04em] sm:text-[42px]">{pillar.title}</h2>
+                <p className="mt-4 max-w-[560px] text-[15px] font-semibold leading-[1.65]">{pillar.description}</p>
+              </div>
+              <span className="mt-8 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">Open the comparison <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></span>
+            </Link>
+            <div className="grid gap-4">
+              {headToHeads.map((guide) => (
+                <Link key={guide.slug} href={`/compare/${guide.slug}`} className="group flex items-start justify-between gap-4 border-[3px] border-[#111] bg-[#fafaf9] p-5 shadow-[4px_4px_0_#111] transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-4 focus-visible:outline-[#ff5f1f] motion-reduce:transform-none">
+                  <div>
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#b33d0d]">Head to head</span>
+                    <h3 className="mt-2 text-[22px] font-extrabold leading-tight tracking-[-0.03em]">{guide.title}</h3>
+                    <p className="mt-2 text-[13px] font-medium leading-[1.6] text-[#444]">{guide.description}</p>
+                  </div>
+                  <ArrowUpRight className="mt-1 h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-6 py-16 lg:px-9">
+        <div className="mx-auto max-w-[1440px]">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">What we compare</p>
+          <h2 className="mt-3 max-w-[780px] text-[30px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[40px]">The same {ATTRIBUTES.length} attributes for every platform.</h2>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {ATTRIBUTES.map(({ key, label }) => <li key={key} className="border-2 border-[#111] bg-white px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em]">{label}</li>)}
+          </ul>
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {platforms.map((platform) => <ProductCard key={platform.slug} platform={platform} />)}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-6 pb-16 lg:px-9">
+        <div className="mx-auto max-w-[1120px]"><Methodology /></div>
+      </section>
+
+      <section className="border-y-[3px] border-[#111] bg-white px-6 py-14 lg:px-9">
+        <div className="mx-auto max-w-[1120px]">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Different question</p>
+          <h2 className="mt-3 text-[26px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[32px]">Choosing an approach rather than a product?</h2>
+          <p className="mt-3 max-w-[720px] text-[14px] font-medium leading-[1.7] text-[#444]">
+            These earlier explainers compare approaches such as custom development and legacy replacement. They are general guidance and have not yet been tied to the Claim Ledger.
+          </p>
+          <ul className="mt-5 grid gap-3 md:grid-cols-3">
+            {comparisons.map((item) => (
+              <li key={item.slug}>
+                <Link href={`/compare/${item.slug}`} className="block h-full border-2 border-[#111] bg-[#fafaf9] p-4 text-[14px] font-extrabold leading-snug transition-colors hover:bg-[#fff0e9]">{item.title}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="px-6 py-16 lg:px-9"><CompareFaq /></section>
+
+      <section className="px-6 pb-20 lg:px-9">
+        <div className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-4 border-t-[3px] border-[#111] pt-8">
+          <p className="max-w-[560px] text-[14px] font-medium leading-[1.7] text-[#444]">Want a platform covered, or think we got something wrong? Tell us and we will re-check the source.</p>
+          <a href={`mailto:${company.email}?subject=Comparison%20feedback`} className="nb-btn-orange inline-flex items-center gap-2 px-6 py-3 text-[12px] uppercase">Email {company.email}</a>
+        </div>
+      </section>
+      <SiteFooter />
+    </main>
+  )
+}

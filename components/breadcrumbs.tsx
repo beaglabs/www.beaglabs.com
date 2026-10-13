@@ -5,7 +5,7 @@ interface BreadcrumbItem {
   url: string
 }
 
-const BASE_URL = 'https://www.beaglabs.com'
+const BASE_URL = 'https://beaglabs.com'
 
 export function generateBreadcrumbJsonLd(items: BreadcrumbItem[]) {
   return {

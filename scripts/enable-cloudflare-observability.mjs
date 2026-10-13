@@ -37,7 +37,7 @@ catch { console.error('Generated Cloudflare deployment config is not valid JSON:
 // Keep production routing and public Hygraph endpoint in the deployment artifact.
 // Secrets such as HYGRAPH_TOKEN remain remotely managed in Cloudflare.
 config.routes = [{
-  pattern: 'www.beaglabs.com',
+  pattern: 'beaglabs.com',
   zone_name: 'beaglabs.com',
   custom_domain: true,
 }]

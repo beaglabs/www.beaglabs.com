@@ -26,7 +26,7 @@ export async function generateMetadata({
   const decoded = decodeURIComponent(tag)
   const title = `#${decoded} — Blog — Beag Labs`
   const description = `Blog posts tagged ${decoded}.`
-  const canonical = `https://www.beaglabs.com/blog/tag/${tag}`
+  const canonical = `https://beaglabs.com/blog/tag/${tag}`
   const ogUrl = ogImageUrl({
     title: `#${decoded}`,
     description,

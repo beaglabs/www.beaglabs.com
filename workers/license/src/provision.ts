@@ -49,14 +49,14 @@ const AGREEMENTS: Record<PortalEnvironment, Array<{
       type: 'terms-of-service',
       version: '2026-10-08',
       title: 'Commercial Terms of Service',
-      href: 'https://www.beaglabs.com/provision/commercial/terms',
+      href: 'https://beaglabs.com/provision/commercial/terms',
       summary: 'Commercial product terms governing use of the Beag Labs provisioning service and Papyrus.',
     },
     {
       type: 'privacy-policy',
       version: '2026-10-08',
       title: 'Privacy Policy',
-      href: 'https://www.beaglabs.com/provision/commercial/privacy',
+      href: 'https://beaglabs.com/provision/commercial/privacy',
       summary: 'How Beag Labs handles account, provisioning, support, and operational metadata.',
     },
   ],
@@ -65,14 +65,14 @@ const AGREEMENTS: Record<PortalEnvironment, Array<{
       type: 'government-deployment-acknowledgment',
       version: '2026-10-08',
       title: 'Government Deployment Acknowledgment',
-      href: 'https://www.beaglabs.com/provision/government/acknowledgment',
+      href: 'https://beaglabs.com/provision/government/acknowledgment',
       summary: 'Deployment responsibilities and use acknowledgment. The applicable contract, order, OTA, or license controls if terms conflict.',
     },
     {
       type: 'privacy-policy',
       version: '2026-10-08',
       title: 'Privacy & Data Handling Notice',
-      href: 'https://www.beaglabs.com/provision/government/privacy',
+      href: 'https://beaglabs.com/provision/government/privacy',
       summary: 'How Beag Labs handles provisioning and account metadata for connected government deployments.',
     },
   ],
@@ -354,11 +354,11 @@ function oauthConfig(env: Bindings, target: PortalEnvironment) {
 }
 
 function safeReturnTo(value: string | undefined, target: PortalEnvironment): string {
-  const fallback = `https://www.beaglabs.com/provision/${target}`
+  const fallback = `https://beaglabs.com/provision/${target}`
   if (!value) return fallback
   let url: URL
   try { url = new URL(value) } catch { return fallback }
-  const allowedOrigins = new Set(['https://www.beaglabs.com', 'https://beaglabs.com', 'http://localhost:3000', 'http://127.0.0.1:3000'])
+  const allowedOrigins = new Set(['https://beaglabs.com', 'https://beaglabs.com', 'http://localhost:3000', 'http://127.0.0.1:3000'])
   if (!allowedOrigins.has(url.origin) || !url.pathname.startsWith('/provision/')) return fallback
   return url.toString()
 }
@@ -811,7 +811,7 @@ app.post('/api/provision/bootstrap', async (c) => {
   }, executionContext(c))
   return c.json({
     claimToken: token,
-    portalUrl: `https://www.beaglabs.com/provision/${target}?claim=${encodeURIComponent(token)}`,
+    portalUrl: `https://beaglabs.com/provision/${target}?claim=${encodeURIComponent(token)}`,
     expiresIn: Math.floor(CLAIM_TTL_MS / 1000),
   }, 201)
 })

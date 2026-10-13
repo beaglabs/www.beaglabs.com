@@ -15,7 +15,7 @@ import provisionAdminApp from './provision-admin'
 import { buildAuth } from './auth'
 import type { Bindings } from './env'
 
-const WWW_ORIGIN = 'https://www.beaglabs.com'
+const WWW_ORIGIN = 'https://beaglabs.com'
 const ALLOWED_BROWSER_ORIGINS = new Set([
   WWW_ORIGIN,
   'https://beaglabs.com',
