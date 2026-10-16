@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@libsql/client": "0.17.4",
-    "hono": "4.13.9",
-    "stripe": "23.0.0"
+    "hono": "4.13.9"
   },
   "devDependencies": {
     "@types/node": "22.20.4",

@@ -31,27 +31,27 @@ export default function PapyrusTermsPage() {
 
       <section>
         <h2>3. Your deployment and your data</h2>
-        <p>Papyrus runs on infrastructure you control. Your records, documents, conversations, ledger and payment data are stored in your deployment, and you remain their owner and controller. You decide who can use Papyrus through your Microsoft Entra tenant and the roles you assign. You are responsible for your users, their access, your infrastructure, backups and the content you put into Papyrus.</p>
+        <p>Papyrus runs on infrastructure you control. Your records, documents, conversations, payee details and payment files are stored in your deployment, and you remain their owner and controller. You decide who can use Papyrus through your Microsoft Entra tenant and the roles you assign. You are responsible for your users, their access, your infrastructure, backups and the content you put into Papyrus.</p>
       </section>
 
       <section>
         <h2>4. Payments</h2>
         <ul>
-          <li><strong>Your bank moves your money.</strong> Payments out are made by your bank from bank files you approve and send. Your organization is the originator under your agreement with your bank and the Nacha Operating Rules, and remains responsible for authorizations, the accuracy of payee details, and compliance with those rules. Papyrus prepares files, records approvals and reconciles statements; it does not hold, transmit or have custody of your funds.</li>
-          <li><strong>Card and bank payments from the public</strong> are processed by Stripe through your organization's own Stripe account, under the <a href="https://stripe.com/legal/connect-account">Stripe Connected Account Agreement</a> and the Stripe Services Agreement, which you accept with Stripe when you set up your account. Stripe, not Beag Labs, processes those payments and pays them out to your bank.</li>
+          <li><strong>Your bank moves your money.</strong> Payments out are made by your bank from bank files you approve and send. Your organization is the originator under your agreement with your bank and the Nacha Operating Rules, and remains responsible for authorizations, the accuracy of payee details, and compliance with those rules. Papyrus workflows prepare the files and record who approved them; Papyrus does not hold, transmit or have custody of your funds.</li>
+          <li><strong>Card and bank payments from the public</strong> are processed by Stripe on your organization's own Stripe account, under the <a href="https://stripe.com/legal/ssa">Stripe Services Agreement</a> between your organization and Stripe. Papyrus connects to that account only as you authorize it (through Stripe's own sign-in and the webhooks you set up). Stripe, not Beag Labs, processes those payments and pays them out to your bank.</li>
           <li><strong>Bank account details</strong> may be collected through Plaid when a payee or your staff chooses to connect a bank. Plaid's use of that information is governed by the <a href="https://plaid.com/legal/#end-user-privacy-policy">Plaid End User Privacy Policy</a>.</li>
-          <li><strong>Controls are yours to use.</strong> Papyrus provides second-person approvals, sanctions screening and other controls. You decide how to configure and staff them, and remain responsible for the payments you approve. Sanctions screening and name checks are aids, not guarantees.</li>
+          <li><strong>Controls are yours to use.</strong> Papyrus provides approvals, sanctions screening, name checks and other controls for your workflows, and requires an approval before any workflow step that moves money. You decide how to configure and staff them, and remain responsible for the payments you approve. Sanctions screening and name checks are aids, not guarantees.</li>
         </ul>
       </section>
 
       <section>
         <h2>5. Fees</h2>
-        <p>Papyrus license fees are set by your license, Marketplace plan or agreement. Papyrus Payments, when used in live mode, is billed at <strong>$2,500 per month</strong> to your organization's Stripe account by subscription, unless your agreement says otherwise. If that subscription lapses, Papyrus keeps your data and lets payments already under way settle, but stops new payments and payment links until it is renewed.</p>
+        <p>Papyrus fees, including any fee for its payment features, are set by your license, Marketplace plan or agreement. Beag Labs takes no fee from the payments your organization makes or receives.</p>
       </section>
 
       <section>
         <h2>6. Beag Labs services</h2>
-        <p>Some features use services Beag Labs operates, including licensing, provisioning and the payments service that connects your deployment to Stripe and Plaid. These services receive only what they need to work, described in the Papyrus Privacy Policy. We may change or improve them; we will not reduce their core function during your term without notice.</p>
+        <p>Some features use services Beag Labs operates, including licensing, provisioning and the service that reads payees' bank details through Plaid. These services receive only what they need to work, described in the Papyrus Privacy Policy. We may change or improve them; we will not reduce their core function during your term without notice.</p>
       </section>
 
       <section>

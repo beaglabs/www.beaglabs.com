@@ -6,13 +6,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
   "routes": [{ "pattern": "connect.beaglabs.com", "custom_domain": true }],
-  "triggers": { "crons": ["*/5 * * * *"] },
   "observability": { "enabled": true },
   "vars": {
-    "AZURE_KEY_VAULT_URL": "https://stripe-connect.vault.azure.net",
-    "APPLICATION_FEE_BPS": "0",
-    "APPLICATION_FEE_FIXED_CENTS": "0",
-    "PLAN_MONTHLY_CENTS": "250000"
+    "AZURE_KEY_VAULT_URL": "https://stripe-connect.vault.azure.net"
   },
   "secrets": {
     "required": [

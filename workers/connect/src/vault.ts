@@ -1,4 +1,4 @@
-import type { Bindings, Mode } from './env'
+import type { Bindings } from './env'
 
 /**
  * Reads the Stripe secrets from Beag Labs' Azure Key Vault with the Worker's Entra app (client credentials), the same
@@ -37,11 +37,4 @@ export async function vaultSecret(env: Bindings, name: string): Promise<string> 
   if (!response.ok || typeof body.value !== 'string') throw new Error(`Key Vault secret ${name} could not be read (${response.status}): ${body.error?.message ?? 'unknown error'}`)
   secrets.set(name, { value: body.value, expiresAt: Date.now() + SECRET_TTL_MS })
   return body.value
-}
-
-/** The secret names for a mode, with defaults; a missing live configuration is an error, never a fallback to test. */
-export function secretNames(env: Bindings, mode: Mode) {
-  return mode === 'live'
-    ? { apiKey: env.STRIPE_SECRET_KEY_LIVE_NAME ?? 'stripe-secret-key-live', webhook: env.STRIPE_WEBHOOK_SECRET_LIVE_NAME ?? 'stripe-webhook-secret-live', thin: env.STRIPE_THIN_WEBHOOK_SECRET_LIVE_NAME ?? 'stripe-thin-webhook-secret-live' }
-    : { apiKey: env.STRIPE_SECRET_KEY_TEST_NAME ?? 'stripe-secret-key-test', webhook: env.STRIPE_WEBHOOK_SECRET_TEST_NAME ?? 'stripe-webhook-secret-test', thin: env.STRIPE_THIN_WEBHOOK_SECRET_TEST_NAME ?? 'stripe-thin-webhook-secret-test' }
 }
