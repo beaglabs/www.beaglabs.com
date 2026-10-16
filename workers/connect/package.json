@@ -1,0 +1,24 @@
+{
+  "name": "@beaglabs/connect-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --config wrangler.jsonc",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "check": "npm run typecheck && npm test && wrangler deploy --dry-run --config wrangler.jsonc --outdir .wrangler-dry-run",
+    "db:apply": "node --env-file-if-exists=.dev.vars scripts/apply-schema.mjs",
+    "deploy": "npm run db:apply && wrangler deploy --config wrangler.jsonc"
+  },
+  "dependencies": {
+    "@libsql/client": "0.17.4",
+    "hono": "4.13.9",
+    "stripe": "23.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.4",
+    "typescript": "5.9.3",
+    "wrangler": "4.147.0"
+  }
+}
