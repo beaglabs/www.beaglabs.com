@@ -2,6 +2,7 @@
 import { Hono } from 'hono'
 import adminRoutes from './admin-routes'
 import chatRoutes, { waitUntilOf } from './chat-routes'
+import { handleControlPlaneExchange } from './control-plane'
 import type { Bindings } from './env'
 import { handleBootstrap, handlePapyrusSession } from './registration'
 import { handleSentryWebhook } from './sentry'
@@ -14,6 +15,7 @@ api.onError((error) => errorResponse(error))
 api.notFound(() => Response.json({ error: 'not_found', message: 'Not found.' }, { status: 404, headers: { 'Cache-Control': 'no-store' } }))
 
 api.post('/api/provision/bootstrap', (c) => handleBootstrap(c.req.raw, c.env, waitUntilOf(c)))
+api.post('/api/provision/control-plane/exchange', (c) => handleControlPlaneExchange(c.req.raw, c.env))
 api.post('/api/papyrus/session', (c) => handlePapyrusSession(c.req.raw, c.env, waitUntilOf(c)))
 api.post('/api/v1/track', (c) => handleTrack(c.req.raw, c.env, waitUntilOf(c)))
 api.post('/api/sentry/webhook', (c) => handleSentryWebhook(c.req.raw, c.env, waitUntilOf(c)))
@@ -21,7 +23,7 @@ api.route('/', chatRoutes)
 api.route('/', adminRoutes)
 
 /** Paths served by `api`. */
-export const API_PREFIXES = ['/api/provision/bootstrap', '/api/papyrus/', '/api/v1/track', '/api/sentry/', '/api/chat/', '/api/huddles/', '/api/admin/']
+export const API_PREFIXES = ['/api/provision/bootstrap', '/api/provision/control-plane/exchange', '/api/papyrus/', '/api/v1/track', '/api/sentry/', '/api/chat/', '/api/huddles/', '/api/admin/']
 
 /**
  * Bearer/Deployment-header APIs (no cookies) that browsers on arbitrary Papyrus

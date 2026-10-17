@@ -12,6 +12,8 @@ export interface LicenseBase {
 export interface DeploymentLicensePayload extends LicenseBase {
   scope?: 'deployment'
   deploymentId: string
+  /** Bound origin (https://<hostname>) for control-plane deployments. */
+  publicOrigin?: string
   branding?: { entraAppLogoUrl: string }
 }
 export interface OrganizationLicensePayload extends LicenseBase {

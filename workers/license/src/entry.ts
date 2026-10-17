@@ -5,6 +5,7 @@ import type { Bindings } from './env'
 import api, { isApiPath, isOpenCorsPath } from './api'
 
 export { ConversationRoom } from './conversation-room'
+export { LicenseRpc } from './license-rpc'
 
 const WWW_ORIGIN = 'https://beaglabs.com'
 const ALLOWED_BROWSER_ORIGINS = new Set([

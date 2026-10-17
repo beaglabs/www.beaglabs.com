@@ -214,3 +214,20 @@ CREATE TABLE IF NOT EXISTS inbox_item_done (
   done_at TEXT NOT NULL,
   PRIMARY KEY (item_id, account_manager_id)
 );
+
+-- Deployments created by the Papyrus control plane (papyrus.beaglabs.com) through
+-- the LicenseRpc service binding. Each has a papyrus_deployments row (vm_id
+-- 'control-plane:<id>', unusable placeholder key) until Papyrus exchanges its
+-- one-time bootstrap token for a real deployment key.
+CREATE TABLE IF NOT EXISTS control_plane_deployments (
+  deployment_id TEXT PRIMARY KEY REFERENCES papyrus_deployments(id),
+  account_id TEXT NOT NULL,
+  hostname TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  organization TEXT NOT NULL,
+  bootstrap_sha256 TEXT NOT NULL UNIQUE,
+  bootstrap_expires_at TEXT NOT NULL,
+  exchanged_at TEXT,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_control_plane_deployments_account ON control_plane_deployments(account_id);
