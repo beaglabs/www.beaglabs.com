@@ -8,7 +8,7 @@ export type Bindings = {
   MICROSOFT_CLIENT_ID: string
   MICROSOFT_CLIENT_SECRET: string
   MICROSOFT_TENANT_ID: string
-  /** Used by the offline license CLI (scripts/issue-license.ts), not by the Worker. */
+  /** Key Vault license/status signer: the offline CLI (scripts/issue-license.ts) and LicenseRpc (control plane). */
   AZURE_KEY_VAULT_TENANT_ID: string
   AZURE_KEY_VAULT_CLIENT_ID: string
   AZURE_KEY_VAULT_CLIENT_SECRET: string
