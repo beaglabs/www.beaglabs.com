@@ -1,0 +1,22 @@
+name: Control Plane Worker
+
+on:
+  pull_request:
+    paths:
+      - 'workers/control-plane/**'
+      - '.github/workflows/control-plane-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/control-plane
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run check
