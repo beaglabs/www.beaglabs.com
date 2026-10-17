@@ -25,4 +25,13 @@ export interface LicenseRpcApi {
   verifyDeploymentKey(deploymentId: string, deploymentKey: string): Promise<boolean>
   signStatus(input: { deploymentId: string; state: StatusState }): Promise<SignedStatus>
   registrationState(deploymentId: string): Promise<'pending' | 'registered'>
+  /** Customer chat session for a signed-in user; same shape as the license Worker's `POST /api/papyrus/session`. */
+  chatSession(input: { accountId: string; userId: string; email: string; name: string; deploymentId?: string; tenantId?: string }): Promise<ChatSession>
+}
+
+export interface ChatSession {
+  token: string
+  expiresAt: string
+  tenantId: string
+  user: { oid: string; name: string }
 }

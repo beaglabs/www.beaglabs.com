@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('../src/db', () => import('./helpers/fake-db'))
 
 import { getDb, resetDb } from './helpers/fake-db'
-import { TENANT_A, call, customerIdToken, installFetch, makeEnv, type TestEnv } from './helpers/harness'
+import { TENANT_A, TENANT_B, call, customerIdToken, installFetch, makeEnv, staffToken, type TestEnv } from './helpers/harness'
+import { verifyChatSession } from '../src/auth'
+import { insertMessage } from '../src/chat-store'
 import { CONTROL_PLANE_FEATURES } from '../src/control-plane'
 import { canonical } from '../src/license'
 import { LicenseRpc } from '../src/license-rpc'
@@ -140,5 +142,78 @@ describe('LicenseRpc.signStatus', () => {
 describe('LicenseRpc.registrationState', () => {
   it('treats unknown ids as pending', async () => {
     expect(await rpc.registrationState('dep_missing')).toBe('pending')
+  })
+})
+
+describe('LicenseRpc.chatSession', () => {
+  const user = { accountId: 'acct_1', userId: 'acct_1', email: 'jane@contoso.com', name: 'Jane Doe' }
+  const bindTenant = async (tid = TENANT_A) => {
+    const created = await create()
+    const { deploymentKey } = (await exchange({ deploymentId: created.deploymentId, bootstrapToken: created.bootstrapToken })).json
+    const papyrus = await call(env, 'POST', '/api/papyrus/session', { deploymentKey, body: { idToken: await customerIdToken(tid, 'papyrus-user', { aud: 'api://papyrus' }) } })
+    expect(papyrus.status).toBe(200)
+    return { deploymentId: created.deploymentId, papyrusToken: papyrus.json.token as string }
+  }
+
+  it('scopes an account with no deployment to the account, visible to staff as that customer', async () => {
+    const session = await rpc.chatSession(user)
+    expect(session).toMatchObject({ tenantId: 'cp:acct_1', user: { oid: 'acct_1', name: 'Jane Doe' } })
+    expect(Date.parse(session.expiresAt) - Date.now()).toBeGreaterThan(3500_000)
+    expect(await verifyChatSession(env, session.token)).toEqual({ kind: 'customer', oid: 'acct_1', tenantId: 'cp:acct_1', deploymentId: '', name: 'Jane Doe' })
+
+    const conversations = await call(env, 'GET', '/api/chat/conversations', { token: session.token })
+    expect(conversations.status).toBe(200)
+    expect(conversations.json).toEqual([expect.objectContaining({ tenantId: 'cp:acct_1', kind: 'team' })])
+
+    const customers = await call(env, 'GET', '/api/admin/customers', { token: await staffToken() })
+    expect(customers.json).toContainEqual(expect.objectContaining({ tenantId: 'cp:acct_1', name: 'Jane Doe · jane@contoso.com' }))
+  })
+
+  it('a deployment without a bound tenant keeps the account scope but names the deployment', async () => {
+    const { deploymentId } = await create()
+    const session = await rpc.chatSession({ ...user, deploymentId })
+    expect(session.tenantId).toBe('cp:acct_1')
+    expect((await verifyChatSession(env, session.token)).deploymentId).toBe(deploymentId)
+  })
+
+  it('joins the team thread of the deployment once it is bound to a tenant', async () => {
+    const { deploymentId, papyrusToken } = await bindTenant()
+    const session = await rpc.chatSession({ ...user, deploymentId, tenantId: TENANT_A.toUpperCase() })
+    expect(session.tenantId).toBe(TENANT_A)
+    expect(await verifyChatSession(env, session.token)).toMatchObject({ oid: 'acct_1', tenantId: TENANT_A, deploymentId })
+
+    const mine = (await call(env, 'GET', '/api/chat/conversations', { token: session.token })).json
+    const theirs = (await call(env, 'GET', '/api/chat/conversations', { token: papyrusToken })).json
+    expect(mine.map((c: { id: string }) => c.id)).toEqual(theirs.map((c: { id: string }) => c.id))
+    expect(mine[0]).toMatchObject({ kind: 'team', tenantId: TENANT_A })
+    // Without an explicit deployment the account's bound deployment is found.
+    expect((await rpc.chatSession(user)).tenantId).toBe(TENANT_A)
+  })
+
+  it('moves conversations from before the tenant into the tenant team thread', async () => {
+    const early = await rpc.chatSession(user)
+    await call(env, 'GET', '/api/chat/conversations', { token: early.token })
+    const [team] = (await getDb().execute("SELECT id FROM conversations WHERE tenant_id='cp:acct_1'")).rows
+    await insertMessage(env, { conversationId: String(team.id), sender: { type: 'customer', id: 'acct_1', name: 'Jane Doe', photoUrl: null }, body: 'Before deploy' })
+    const privateThread = await call(env, 'POST', '/api/chat/conversations', { token: early.token, body: { kind: 'private' } })
+
+    const { papyrusToken } = await bindTenant()
+    const papyrusTeam = (await call(env, 'GET', '/api/chat/conversations', { token: papyrusToken })).json[0]
+    await insertMessage(env, { conversationId: papyrusTeam.id, sender: { type: 'customer', id: 'papyrus-user', name: 'P', photoUrl: null }, body: 'From Papyrus' })
+
+    const later = await rpc.chatSession(user)
+    expect(later.tenantId).toBe(TENANT_A)
+    const conversations = (await call(env, 'GET', '/api/chat/conversations', { token: later.token })).json
+    expect(conversations.map((c: { id: string }) => c.id)).toEqual([papyrusTeam.id, privateThread.json.id])
+    const messages = (await call(env, 'GET', `/api/chat/conversations/${papyrusTeam.id}/messages`, { token: later.token })).json
+    expect(messages.map((m: { body: string }) => m.body)).toEqual(['From Papyrus', 'Before deploy'])
+    expect((await getDb().execute("SELECT COUNT(*) AS n FROM tenants WHERE tenant_id='cp:acct_1'")).rows[0].n).toBe(0)
+  })
+
+  it("rejects another account's deployment and a tenant the account is not bound to", async () => {
+    const { deploymentId } = await bindTenant()
+    await expect(rpc.chatSession({ ...user, accountId: 'acct_2', userId: 'acct_2', deploymentId })).rejects.toMatchObject({ status: 403, code: 'deployment_not_owned' })
+    await expect(rpc.chatSession({ ...user, tenantId: TENANT_B })).rejects.toMatchObject({ status: 403, code: 'tenant_mismatch' })
+    await expect(rpc.chatSession({ ...user, accountId: 'acct_2', userId: 'acct_2', tenantId: TENANT_A })).rejects.toMatchObject({ status: 403, code: 'tenant_mismatch' })
   })
 })
