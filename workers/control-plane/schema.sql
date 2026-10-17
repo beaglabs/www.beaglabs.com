@@ -57,3 +57,27 @@ CREATE TABLE IF NOT EXISTS stripe_events (
   id TEXT PRIMARY KEY,
   received_at TEXT NOT NULL
 );
+
+-- Beag Labs switches bring-your-own-cloud on for one account (BYOC_ENABLED="true" turns it on for everyone).
+-- Enable: INSERT OR REPLACE INTO account_flags (account_id, byoc_enabled) VALUES ('acct_…', 1);
+CREATE TABLE IF NOT EXISTS account_flags (
+  account_id TEXT PRIMARY KEY REFERENCES accounts(id),
+  byoc_enabled INTEGER NOT NULL DEFAULT 0
+);
+
+-- Hosted org names: <org_name>.papyrus.beaglabs.com. The primary key is the uniqueness check.
+-- slot: per-customer listener rule priority, and (offset) the POSIX uid/gid of the customer's EFS access point.
+CREATE TABLE IF NOT EXISTS hosted_orgs (
+  org_name TEXT PRIMARY KEY,
+  deployment_id TEXT NOT NULL UNIQUE REFERENCES deployments(id),
+  account_id TEXT NOT NULL REFERENCES accounts(id),
+  slot INTEGER NOT NULL UNIQUE,
+  created_at TEXT NOT NULL
+);
+
+-- Shared hosted infrastructure ids (one row, id 'aws'), written by POST /admin/hosted/bootstrap.
+CREATE TABLE IF NOT EXISTS hosted_infra (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);

@@ -5,7 +5,8 @@ import { quickCreateUrl } from './providers/aws'
 import { LOGOS } from './providers/logos'
 import { PROVIDERS } from './providers/registry'
 import type { CredentialField, ProviderEntry } from './providers/types'
-import { STEP_IDS, STEP_LABELS, canRun, isDone, type Steps } from './setup'
+import { HOSTED_DOMAIN, HOSTED_PROVIDER } from './hosted'
+import { STEP_IDS, STEP_LABELS, canRun, isDone, stepLabel, visibleSteps, type Steps } from './setup'
 import type { Account, Deployment } from './services'
 
 export const esc = (value: unknown) =>
@@ -77,14 +78,17 @@ th{background:#000;color:#fff;text-transform:uppercase;font-size:11px}
 const MICROSOFT = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="10" height="10" fill="#F25022"/><rect x="13" y="1" width="10" height="10" fill="#7FBA00"/><rect x="1" y="13" width="10" height="10" fill="#00A4EF"/><rect x="13" y="13" width="10" height="10" fill="#FFB900"/></svg>`
 const GOOGLE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.5z"/><path fill="#34A853" d="M12 23.5c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3A11.5 11.5 0 0 0 12 23.5z"/><path fill="#FBBC05" d="M5.6 14.2a6.9 6.9 0 0 1 0-4.4v-3H1.8a11.5 11.5 0 0 0 0 10.4z"/><path fill="#EA4335" d="M12 5.1c1.7 0 3.2.6 4.4 1.7l3.3-3.3A11.5 11.5 0 0 0 1.8 6.8l3.8 3c.9-2.7 3.4-4.7 6.4-4.7z"/></svg>`
 
-export const layout = (title: string, body: string, account?: Account | null) => `<!doctype html>
+/** Served at ORG_NAME_SCRIPT_PATH: live org-name validation and availability on the setup page. */
+export const ORG_NAME_SCRIPT_PATH = '/assets/org-name.js'
+
+export const layout = (title: string, body: string, account?: Account | null, options: { byoc?: boolean } = {}) => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} · Papyrus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Roboto+Condensed:wght@700;800&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>${STYLES}${account ? CHAT_STYLES : ''}</style></head>
 <body><header class="chrome"><div class="in"><a class="brand" href="/">Beag Labs <span>/</span> Papyrus</a>
-<nav>${account ? `<a href="/deploy">Deployments</a><a href="/provision">Provision</a><a href="/billing">Billing</a><a href="/logout">Sign out</a>` : `<a href="/login">Sign in</a><a href="/signup">Sign up</a>`}</nav></div></header>
+<nav>${account ? `<a href="/deploy">Deployments</a>${options.byoc ? '<a href="/provision">Provision</a>' : ''}<a href="/billing">Billing</a><a href="/logout">Sign out</a>` : `<a href="/login">Sign in</a><a href="/signup">Sign up</a>`}</nav></div></header>
 <main>${body}</main>${account ? chatBubbleMarkup() : ''}</body></html>`
 
 const notice = (message?: string | null, kind: 'error' | 'ok' = 'error') => (message ? `<div class="notice ${kind}" role="${kind === 'error' ? 'alert' : 'status'}">${esc(message)}</div>` : '')
@@ -96,8 +100,8 @@ const ssoButtons = (verb: string) => `<div class="row" style="margin-top:16px">
 export const signupPage = (error?: string | null) =>
   layout(
     'Sign up',
-    `<h1>Run Papyrus in your cloud</h1>
-<p class="lede">${esc(`$${(PLAN.amountCents / 100).toLocaleString('en-US')}/month per deployment, unlimited users, after a ${PLAN.trialDays}-day free trial.`)} Sign up, add a card, connect your cloud account, and we deploy the hardened Papyrus container into it.</p>
+    `<h1>Papyrus, hosted by Beag Labs</h1>
+<p class="lede">${esc(`$${(PLAN.amountCents / 100).toLocaleString('en-US')}/month per deployment, unlimited users, after a ${PLAN.trialDays}-day free trial.`)} Sign up, add a card and pick your organization name: Papyrus goes live at <span class="mono">your-org.${esc(HOSTED_DOMAIN)}</span>, then you connect Microsoft.</p>
 ${notice(error)}
 <div class="grid"><form class="card" method="post" action="/signup">
 <h2>Create your account</h2>
@@ -132,7 +136,9 @@ const billingChip = (deployment: Deployment) => {
 
 const deploymentName = (deployment: Deployment) => deployment.hostname ?? `Deployment ${deployment.id.slice(-6)}`
 
-export const billingPage = (account: Account, deployments: Deployment[], message?: string | null) =>
+const providerName = (deployment: Deployment) => (deployment.provider === HOSTED_PROVIDER ? 'Hosted by Beag Labs' : deployment.provider ?? '—')
+
+export const billingPage = (account: Account, deployments: Deployment[], message?: string | null, byoc = false) =>
   layout(
     'Billing',
     `<h1>Billing</h1><p class="lede">One subscription per deployment. Cards and invoices live in the Stripe customer portal.</p>${notice(message)}
@@ -153,6 +159,7 @@ export const billingPage = (account: Account, deployments: Deployment[], message
             .join('')}</tbody></table>`
     }</div></div>`,
     account,
+    { byoc },
   )
 
 const fieldInput = (field: CredentialField, saved: Record<string, boolean>) => {
@@ -206,24 +213,26 @@ ${credentialForm(provider, input.saved)}
     : ''
 }</div>`,
     input.account,
+    { byoc: true },
   )
 }
 
-export const deployListPage = (account: Account, deployments: Deployment[]) =>
+export const deployListPage = (account: Account, deployments: Deployment[], byoc = false) =>
   layout(
     'Deployments',
-    `<h1>Deployments</h1><p class="lede">Each deployment runs in your cloud account and has its own subscription.</p>
+    `<h1>Deployments</h1><p class="lede">Each deployment has its own address and its own subscription.</p>
 <div class="card">${
       deployments.length === 0
         ? `<p>No deployments yet.</p><p><a class="btn" href="/billing">Start a ${PLAN.trialDays}-day trial</a></p>`
         : `<table><thead><tr><th>Deployment</th><th>Provider</th><th>Billing</th><th>Setup</th></tr></thead><tbody>${deployments
             .map(
               (d) =>
-                `<tr><td><a href="/deploy/${esc(d.id)}">${esc(deploymentName(d))}</a></td><td>${esc(d.provider ?? '—')}</td><td>${billingChip(d)}</td><td>${isDone(d.steps) ? '<span class="chip pass">live</span>' : '<span class="chip pending">in progress</span>'}</td></tr>`,
+                `<tr><td><a href="/deploy/${esc(d.id)}">${esc(deploymentName(d))}</a></td><td>${esc(providerName(d))}</td><td>${billingChip(d)}</td><td>${isDone(d.steps) ? '<span class="chip pass">live</span>' : '<span class="chip pending">in progress</span>'}</td></tr>`,
             )
             .join('')}</tbody></table><p style="margin-top:16px"><a class="btn light" href="/billing">Add a deployment</a></p>`
     }</div>`,
     account,
+    { byoc },
   )
 
 const dnsTable = (records: DnsRecord[]) =>
@@ -233,7 +242,54 @@ const dnsTable = (records: DnsRecord[]) =>
         .map((r) => `<tr><td>${esc(r.type)}</td><td>${esc(r.name)}</td><td>${esc(r.value)}</td><td style="word-break:normal">${esc(r.purpose ?? '')}</td></tr>`)
         .join('')}</tbody></table><p class="help">If your DNS is on Cloudflare, set these to "DNS only" (grey cloud).</p>`
 
-export const setupPage = (account: Account, deployment: Deployment, message?: string | null) => {
+/** Pick an org name (hosted, the default): live validation from ORG_NAME_SCRIPT_PATH, plain form post without it. */
+const orgNameCard = (deployment: Deployment, byoc: boolean) => `<div class="card"><h2>Choose your organization name</h2>
+<p class="help">Papyrus goes live at this address. Lowercase letters, numbers and hyphens, 3–40 characters. It can't be changed later.</p>
+<form method="post" action="/deploy/${esc(deployment.id)}/org" data-org-form data-check="/api/org-names/check">
+<label for="org">Organization name</label>
+<div class="row" style="flex-wrap:nowrap;max-width:560px"><input id="org" name="org" required minlength="3" maxlength="40" pattern="[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="acme" aria-describedby="org-status"><span class="mono" style="white-space:nowrap">.${esc(HOSTED_DOMAIN)}</span></div>
+<p id="org-status" class="help" aria-live="polite"></p>
+<p style="margin-top:16px"><button class="btn" type="submit">Go live</button></p></form>
+${byoc ? `<p class="help" style="margin-top:16px"><a href="/provision?deployment=${esc(deployment.id)}">Deploy in your own cloud instead</a></p>` : ''}</div>
+<script src="${ORG_NAME_SCRIPT_PATH}" defer></script>`
+
+export const setupPage = (account: Account, deployment: Deployment, message?: string | null, options: { byoc?: boolean } = {}) => {
+  const steps: Steps = deployment.steps
+  const byoc = options.byoc ?? false
+  const choosing = !deployment.provider
+  const hosted = choosing || deployment.provider === HOSTED_PROVIDER
+  if (hosted) {
+    const stepIds = visibleSteps('hosted')
+    const action = (id: (typeof STEP_IDS)[number]) => {
+      if (choosing || !canRun(steps, id)) return ''
+      const label = steps[id].status === 'pending' && !steps[id].at ? 'Run' : 'Retry'
+      return `<form method="post" action="/deploy/${esc(deployment.id)}/steps/${id}"><button class="btn${steps[id].status === 'pass' ? ' light' : ''}" type="submit">${steps[id].status === 'pass' ? (id === 'deploy' ? 'Redeploy' : 'Recheck') : label}</button></form>`
+    }
+    const extra = (id: (typeof STEP_IDS)[number]) =>
+      id === 'microsoft' && deployment.hostname && canRun(steps, 'microsoft')
+        ? `<p class="reason"><a href="https://${esc(deployment.hostname)}/" target="_blank" rel="noopener">Open Papyrus and Connect Microsoft ↗</a> (sign-in stays Microsoft Entra in your own tenant).</p>`
+        : ''
+    return layout(
+      'Setup',
+      `<h1>${esc(choosing ? 'Set up Papyrus' : deploymentName(deployment))}</h1>
+<p class="lede">Hosted by Beag Labs · Billing ${billingChip(deployment)}${deployment.license_deployment_id ? ` · <span class="mono">${esc(deployment.license_deployment_id)}</span>` : ''}</p>
+${notice(message)}${isDone(steps) ? notice(`Papyrus is live at https://${deployment.hostname}/`, 'ok') : ''}
+${choosing ? orgNameCard(deployment, byoc) : ''}
+<div class="card"><h2>Setup</h2><ol class="steps">${stepIds
+        .map(
+          (id) => `<li id="${id}"><div><strong>${esc(stepLabel('hosted', id))}</strong> <span class="chip ${steps[id].status}">${steps[id].status}</span>
+${steps[id].reason ? `<p class="reason">${esc(steps[id].reason)}</p>` : ''}${extra(id)}</div>${action(id)}</li>`,
+        )
+        .join('')}</ol></div>`,
+      account,
+      { byoc },
+    )
+  }
+  return byocSetupPage(account, deployment, message, byoc)
+}
+
+/** Bring-your-own-cloud setup page (unchanged from before hosted). */
+const byocSetupPage = (account: Account, deployment: Deployment, message: string | null | undefined, byoc: boolean) => {
   const steps: Steps = deployment.steps
   const provider = PROVIDERS.find((p) => p.id === deployment.provider)
   const hostnameLocked = Boolean(deployment.license_deployment_id)
@@ -261,5 +317,35 @@ ${hostnameLocked ? '<span class="help">Bound to the license issued at deploy.</s
 ${steps[id].reason ? `<p class="reason">${esc(steps[id].reason)}</p>` : ''}${extra(id)}</div>${action(id)}</li>`,
     ).join('')}</ol>${dnsTable(deployment.dnsRecords)}</div>`,
     account,
+    { byoc },
   )
 }
+
+/** Live org-name check: lowercases as you type, then asks the server (syntax, reserved list, uniqueness). Plain ES2020. */
+export const ORG_NAME_JS = `(function () {
+  var form = document.querySelector('[data-org-form]')
+  if (!form) return
+  var input = form.querySelector('input[name="org"]')
+  var status = document.getElementById('org-status')
+  var button = form.querySelector('button[type="submit"]')
+  var timer = null
+  var seq = 0
+  function show(text, ok) {
+    status.textContent = text
+    status.style.color = ok === true ? 'var(--pass)' : ok === false ? 'var(--fail)' : ''
+    if (button) button.disabled = ok === false
+  }
+  function check() {
+    var name = input.value.trim().toLowerCase()
+    if (input.value !== name) input.value = name
+    if (!name) return show('', null)
+    var mine = ++seq
+    show('Checking ' + name + '…', null)
+    fetch(form.getAttribute('data-check') + '?name=' + encodeURIComponent(name), { headers: { accept: 'application/json' }, credentials: 'same-origin' })
+      .then(function (r) { return r.json() })
+      .then(function (body) { if (mine === seq) show(body.reason || '', body.available === true) })
+      .catch(function () { if (mine === seq) show('', null) })
+  }
+  input.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(check, 250) })
+})()
+`

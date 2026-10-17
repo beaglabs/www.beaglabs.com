@@ -28,8 +28,11 @@ import { ProviderError, providerError, required, type AwsBase, type DeployContex
 export const STACK_NAME = 'BeagLabsPapyrus'
 export const CONTROL_PLANE_ROLE = 'BeagLabsPapyrusControlPlane'
 export const TASK_EXECUTION_ROLE = 'PapyrusTaskExecution'
-const PORT = 3210
-const UID = 65532
+export const PORT = 3210
+export const UID = 65532
+
+/** Fargate CPU architecture. Unset = the task definition says nothing (Fargate's default, X86_64). */
+export type CpuArchitecture = 'ARM64' | 'X86_64'
 
 /** CloudFormation quick-create link for the Connect AWS button. */
 export const quickCreateUrl = (input: { templateUrl: string; externalId: string; principalArn: string; region?: string }) => {
@@ -119,10 +122,12 @@ Resources:
                   - elasticloadbalancing:CreateTargetGroup
                   - elasticloadbalancing:CreateListener
                   - elasticloadbalancing:ModifyListener
+                  - elasticloadbalancing:CreateRule
                   - elasticloadbalancing:Describe*
                   - elasticloadbalancing:AddTags
                   - acm:RequestCertificate
                   - acm:DescribeCertificate
+                  - acm:ListCertificates
                   - acm:AddTagsToCertificate
                   - logs:CreateLogGroup
                   - logs:PutRetentionPolicy
@@ -155,7 +160,7 @@ Outputs:
 
 const ROLE_ARN = /^arn:aws(-[a-z]+)*:iam::(\d{12}):role\/[\w+=,.@/-]+$/
 
-const regionOf = (ctx: ProviderContext) => (ctx.credentials.region?.trim() || 'us-east-1') as RegionName
+export const regionOf = (ctx: ProviderContext) => (ctx.credentials.region?.trim() || 'us-east-1') as RegionName
 
 /** Assume the customer's role with Beag Labs' principal and the customer's ExternalId. */
 export const assumeCustomerRole = (base: AwsBase, roleArn: string, externalId: string, region: RegionName) =>
@@ -178,7 +183,7 @@ export const assumeCustomerRole = (base: AwsBase, roleArn: string, externalId: s
     )
   })
 
-const customerLayer = (ctx: ProviderContext) =>
+export const customerLayer = (ctx: ProviderContext) =>
   Effect.gen(function* () {
     const roleArn = yield* required(ctx.credentials, 'roleArn')
     if (!ROLE_ARN.test(roleArn)) return yield* new ProviderError({ message: 'roleArn must look like arn:aws:iam::123456789012:role/BeagLabsPapyrusControlPlane' })
@@ -194,15 +199,15 @@ export const awsCheck = (ctx: ProviderContext) =>
     return `AWS account ${identity.Account ?? accountId}, ${regionOf(ctx)}`
   })
 
-const tags = (ctx: DeployContext) => [
+export const tags = (ctx: DeployContext) => [
   { Key: 'beaglabs:papyrus', Value: ctx.licenseDeploymentId },
   { Key: 'Name', Value: `papyrus-${ctx.deploymentId}` },
 ]
 
-const short = (ctx: DeployContext) => ctx.deploymentId.replace(/^dep_/, '').slice(0, 16)
+export const short = (ctx: DeployContext) => ctx.deploymentId.replace(/^dep_/, '').slice(0, 16)
 
 /** Remember a resource id the moment it exists, so a retry never creates a second one. */
-const remember = <A>(ctx: DeployContext, key: string, create: Effect.Effect<A, ProviderError, any>, pick: (value: A) => string | undefined) =>
+export const remember = <A>(ctx: Pick<DeployContext, 'resources'>, key: string, create: Effect.Effect<A, ProviderError, any>, pick: (value: A) => string | undefined) =>
   Effect.gen(function* () {
     const existing = ctx.resources[key]
     if (typeof existing === 'string') return existing
@@ -212,12 +217,107 @@ const remember = <A>(ctx: DeployContext, key: string, create: Effect.Effect<A, P
     return id
   })
 
-const ignoreDuplicate = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+export const ignoreDuplicate = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
   effect.pipe(Effect.catch((error) => (/Duplicate|AlreadyExists/i.test(String((error as { _tag?: string })?._tag ?? '') + String((error as { message?: string })?.message ?? '')) ? Effect.void : Effect.fail(error))))
 
-const pending = (reason: string, dnsRecords: DnsRecord[] = []): DeployResult => ({ status: 'pending', reason, dnsRecords })
+export const pending = (reason: string, dnsRecords: DnsRecord[] = []): DeployResult => ({ status: 'pending', reason, dnsRecords })
 
-const deploy = (ctx: DeployContext) =>
+/** Secrets: bootstrap token, license, and the master key (generated once, only ever in Secrets Manager), under papyrus/<deploymentId>/. */
+export const ensureSecrets = (ctx: DeployContext) =>
+  Effect.gen(function* () {
+    const secret = (key: string, secretName: string, value: () => string) =>
+      remember(
+        ctx,
+        key,
+        SecretsManager.createSecret({ Name: secretName, SecretString: value(), Tags: tags(ctx) }).pipe(Effect.mapError(providerError(`Creating secret ${secretName} failed`))),
+        (out) => out.ARN,
+      )
+    const prefix = `papyrus/${ctx.licenseDeploymentId}`
+    const bootstrapArn = yield* secret('bootstrapSecretArn', `${prefix}/bootstrap-token`, () => ctx.secretEnv.PAPYRUS_BOOTSTRAP_TOKEN ?? '')
+    const licenseArn = yield* secret('licenseSecretArn', `${prefix}/license`, () => ctx.secretEnv.PAPYRUS_LICENSE ?? '')
+    const masterKeyArn = yield* secret('masterKeySecretArn', `${prefix}/master-key`, () => toBase64(randomBytes(32)))
+    return { bootstrapArn, licenseArn, masterKeyArn }
+  })
+
+export const ensureLogGroup = (ctx: DeployContext) =>
+  Effect.gen(function* () {
+    const logGroup = `/papyrus/${ctx.licenseDeploymentId}`
+    if (!ctx.resources.logGroup) {
+      yield* ignoreDuplicate(Logs.createLogGroup({ logGroupName: logGroup })).pipe(Effect.mapError(providerError('Creating the log group failed')))
+      ctx.resources.logGroup = logGroup
+    }
+    return logGroup
+  })
+
+/** Task definition: keywriter writes the master key to a task-local volume; Papyrus mounts it read-only. 2 vCPU / 8 GB. */
+export const registerTask = (
+  ctx: DeployContext,
+  input: {
+    family: string
+    accountId: string
+    region: string
+    fileSystemId: string
+    accessPointId: string
+    logGroup: string
+    secrets: { bootstrapArn: string; licenseArn: string; masterKeyArn: string }
+    /** Omitted: no runtimePlatform (Fargate default, X86_64). */
+    architecture?: CpuArchitecture
+  },
+) => {
+  const keyDir = ctx.secretKeyPath.replace(/\/[^/]+$/, '')
+  const environment = Object.entries(ctx.env).map(([key, value]) => ({ name: key, value }))
+  const { family, accountId, region, fileSystemId, accessPointId, logGroup } = input
+  return Ecs.registerTaskDefinition({
+    family,
+    networkMode: 'awsvpc',
+    requiresCompatibilities: ['FARGATE'],
+    cpu: '2048',
+    memory: '8192',
+    ...(input.architecture ? { runtimePlatform: { cpuArchitecture: input.architecture, operatingSystemFamily: 'LINUX' } } : {}),
+    executionRoleArn: `arn:aws:iam::${accountId}:role/${TASK_EXECUTION_ROLE}`,
+    volumes: [
+      { name: 'data', efsVolumeConfiguration: { fileSystemId, transitEncryption: 'ENABLED', authorizationConfig: { accessPointId, iam: 'DISABLED' } } },
+      { name: 'secret-key' },
+    ],
+    containerDefinitions: [
+      {
+        name: 'keywriter',
+        image: 'public.ecr.aws/docker/library/busybox:1.37',
+        essential: false,
+        secrets: [{ name: 'KEY_B64', valueFrom: input.secrets.masterKeyArn }],
+        command: ['sh', '-c', `umask 222 && printf %s "$KEY_B64" | base64 -d > ${ctx.secretKeyPath} && chown ${UID}:${UID} ${ctx.secretKeyPath} && chmod 0400 ${ctx.secretKeyPath}`],
+        mountPoints: [{ sourceVolume: 'secret-key', containerPath: keyDir }],
+        logConfiguration: { logDriver: 'awslogs', options: { 'awslogs-group': logGroup, 'awslogs-region': region, 'awslogs-stream-prefix': 'keywriter' } },
+      },
+      {
+        name: 'papyrus',
+        image: ctx.image,
+        essential: true,
+        user: `${UID}:${UID}`,
+        portMappings: [{ containerPort: PORT, protocol: 'tcp' }],
+        environment,
+        secrets: [
+          { name: 'PAPYRUS_BOOTSTRAP_TOKEN', valueFrom: input.secrets.bootstrapArn },
+          { name: 'PAPYRUS_LICENSE', valueFrom: input.secrets.licenseArn },
+        ],
+        mountPoints: [
+          { sourceVolume: 'data', containerPath: '/var/lib/papyrus' },
+          { sourceVolume: 'secret-key', containerPath: keyDir, readOnly: true },
+        ],
+        dependsOn: [{ containerName: 'keywriter', condition: 'SUCCESS' }],
+        logConfiguration: { logDriver: 'awslogs', options: { 'awslogs-group': logGroup, 'awslogs-region': region, 'awslogs-stream-prefix': 'papyrus' } },
+      },
+    ],
+    tags: tags(ctx).map(({ Key, Value }) => ({ key: Key, value: Value })),
+  }).pipe(Effect.mapError(providerError('Registering the task definition failed')))
+}
+
+export interface AwsRecipeOptions {
+  /** Fargate CPU architecture; unset keeps the task definition as it always was (no runtimePlatform). */
+  architecture?: CpuArchitecture
+}
+
+const deploy = (options: AwsRecipeOptions) => (ctx: DeployContext) =>
   Effect.gen(function* () {
     const { layer, accountId } = yield* customerLayer(ctx)
     const region = regionOf(ctx)
@@ -289,24 +389,8 @@ const deploy = (ctx: DeployContext) =>
         (out) => out.AccessPointId,
       )
 
-      // Secrets: bootstrap token, license, and the master key (generated once, only ever in Secrets Manager).
-      const secret = (key: string, secretName: string, value: () => string) =>
-        remember(
-          ctx,
-          key,
-          SecretsManager.createSecret({ Name: secretName, SecretString: value(), Tags: tags(ctx) }).pipe(Effect.mapError(fail(`Creating secret ${secretName} failed`))),
-          (out) => out.ARN,
-        )
-      const prefix = `papyrus/${ctx.licenseDeploymentId}`
-      const bootstrapArn = yield* secret('bootstrapSecretArn', `${prefix}/bootstrap-token`, () => ctx.secretEnv.PAPYRUS_BOOTSTRAP_TOKEN ?? '')
-      const licenseArn = yield* secret('licenseSecretArn', `${prefix}/license`, () => ctx.secretEnv.PAPYRUS_LICENSE ?? '')
-      const masterKeyArn = yield* secret('masterKeySecretArn', `${prefix}/master-key`, () => toBase64(randomBytes(32)))
-
-      const logGroup = `/papyrus/${ctx.licenseDeploymentId}`
-      if (!ctx.resources.logGroup) {
-        yield* ignoreDuplicate(Logs.createLogGroup({ logGroupName: logGroup })).pipe(Effect.mapError(fail('Creating the log group failed')))
-        ctx.resources.logGroup = logGroup
-      }
+      const { bootstrapArn, licenseArn, masterKeyArn } = yield* ensureSecrets(ctx)
+      const logGroup = yield* ensureLogGroup(ctx)
 
       // Load balancer, target group and certificate.
       const targetGroupArn = yield* remember(
@@ -359,51 +443,7 @@ const deploy = (ctx: DeployContext) =>
       )
       ctx.resources.certificateHostname = ctx.hostname
 
-      // Task definition: keywriter writes the master key to a task-local volume; Papyrus mounts it read-only.
-      const keyDir = ctx.secretKeyPath.replace(/\/[^/]+$/, '')
-      const environment = Object.entries(ctx.env).map(([key, value]) => ({ name: key, value }))
-      const task = yield* Ecs.registerTaskDefinition({
-        family: name,
-        networkMode: 'awsvpc',
-        requiresCompatibilities: ['FARGATE'],
-        cpu: '2048',
-        memory: '8192',
-        executionRoleArn: `arn:aws:iam::${accountId}:role/${TASK_EXECUTION_ROLE}`,
-        volumes: [
-          { name: 'data', efsVolumeConfiguration: { fileSystemId, transitEncryption: 'ENABLED', authorizationConfig: { accessPointId, iam: 'DISABLED' } } },
-          { name: 'secret-key' },
-        ],
-        containerDefinitions: [
-          {
-            name: 'keywriter',
-            image: 'public.ecr.aws/docker/library/busybox:1.37',
-            essential: false,
-            secrets: [{ name: 'KEY_B64', valueFrom: masterKeyArn }],
-            command: ['sh', '-c', `umask 222 && printf %s "$KEY_B64" | base64 -d > ${ctx.secretKeyPath} && chown ${UID}:${UID} ${ctx.secretKeyPath} && chmod 0400 ${ctx.secretKeyPath}`],
-            mountPoints: [{ sourceVolume: 'secret-key', containerPath: keyDir }],
-            logConfiguration: { logDriver: 'awslogs', options: { 'awslogs-group': logGroup, 'awslogs-region': region, 'awslogs-stream-prefix': 'keywriter' } },
-          },
-          {
-            name: 'papyrus',
-            image: ctx.image,
-            essential: true,
-            user: `${UID}:${UID}`,
-            portMappings: [{ containerPort: PORT, protocol: 'tcp' }],
-            environment,
-            secrets: [
-              { name: 'PAPYRUS_BOOTSTRAP_TOKEN', valueFrom: bootstrapArn },
-              { name: 'PAPYRUS_LICENSE', valueFrom: licenseArn },
-            ],
-            mountPoints: [
-              { sourceVolume: 'data', containerPath: '/var/lib/papyrus' },
-              { sourceVolume: 'secret-key', containerPath: keyDir, readOnly: true },
-            ],
-            dependsOn: [{ containerName: 'keywriter', condition: 'SUCCESS' }],
-            logConfiguration: { logDriver: 'awslogs', options: { 'awslogs-group': logGroup, 'awslogs-region': region, 'awslogs-stream-prefix': 'papyrus' } },
-          },
-        ],
-        tags: tags(ctx).map(({ Key, Value }) => ({ key: Key, value: Value })),
-      }).pipe(Effect.mapError(fail('Registering the task definition failed')))
+      const task = yield* registerTask(ctx, { family: name, accountId, region, fileSystemId, accessPointId, logGroup, secrets: { bootstrapArn, licenseArn, masterKeyArn }, architecture: options.architecture })
       ctx.resources.taskDefinitionArn = task.taskDefinition?.taskDefinitionArn
       ctx.resources.subnetIds = subnetIds
       yield* remember(ctx, 'clusterArn', Ecs.createCluster({ clusterName: name }).pipe(Effect.mapError(fail('Creating the ECS cluster failed'))), (out) => out.cluster?.clusterArn)
@@ -480,4 +520,7 @@ const afterDns = (ctx: DeployContext) =>
     return yield* program.pipe(Effect.provide(layer))
   })
 
-export const awsRecipe: DeployRecipe = { deploy, afterDns }
+/** The customer-cloud (BYOC) recipe. `architecture` is only set when passed. */
+export const makeAwsRecipe = (options: AwsRecipeOptions = {}): DeployRecipe => ({ deploy: deploy(options), afterDns })
+
+export const awsRecipe: DeployRecipe = makeAwsRecipe()

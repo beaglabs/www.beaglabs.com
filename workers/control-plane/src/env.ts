@@ -18,6 +18,12 @@ export interface Bindings {
   AWS_CONNECT_TEMPLATE_URL: string
   /** Optional: a Stripe Price id to bill with; otherwise Checkout uses inline price_data ($13,000/month). */
   STRIPE_PRICE_ID?: string
+  /** "true" turns bring-your-own-cloud on for every account; otherwise only accounts flagged in account_flags. */
+  BYOC_ENABLED: string
+  /** Hosted by Beag Labs: the Connect AWS role deployed once into Beag Labs' own account. */
+  HOSTED_AWS_ROLE_ARN: string
+  /** Region of the shared hosted infrastructure (us-east-2). */
+  HOSTED_AWS_REGION: string
 
   /** base64 of 32 random bytes: AES-256-GCM key for provider credentials. */
   CREDENTIALS_KEY: string
@@ -33,4 +39,8 @@ export interface Bindings {
   /** Access key of AWS_PRINCIPAL_ARN; used only to sts:AssumeRole into customer roles. */
   AWS_ACCESS_KEY_ID: string
   AWS_SECRET_ACCESS_KEY: string
+  /** ExternalId of the hosted role in Beag Labs' account (fixed; the stack was launched with it). */
+  HOSTED_AWS_EXTERNAL_ID: string
+  /** Bearer token for /admin/* (the one-time hosted bootstrap). */
+  ADMIN_TOKEN: string
 }

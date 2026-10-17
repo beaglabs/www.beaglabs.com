@@ -37,7 +37,7 @@ export const startCheckout = (account: Account, deployment: Deployment) =>
       line_items: [lineItem],
       subscription_data: { trial_period_days: PLAN.trialDays, metadata: { deployment_id: deployment.id, account_id: account.id } },
       metadata: { deployment_id: deployment.id },
-      success_url: `${env.BASE_URL}/provision?deployment=${deployment.id}`,
+      success_url: `${env.BASE_URL}/deploy/${deployment.id}`,
       cancel_url: `${env.BASE_URL}/billing`,
     }).pipe(Effect.provide(stripeLayer(env)), Effect.mapError(stripeFailure))
     if (!session.url) return yield* new UserError({ message: 'Stripe did not return a Checkout URL', status: 502 })

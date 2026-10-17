@@ -3,7 +3,9 @@ import * as Effect from 'effect/Effect'
 import * as HttpClient from 'effect/http/HttpClient'
 import * as HttpClientRequest from 'effect/http/HttpClientRequest'
 import { decryptJson, encryptJson } from './crypto'
-import { checkRecords, describeFailures } from './dns'
+import { checkRecord, checkRecords, describeFailures } from './dns'
+import { HOSTED_PROVIDER, hostedOrgFor, hostedProviderContext, loadHostedInfra } from './hosted'
+import { hostedDeploy } from './providers/aws-hosted'
 import type { Bindings } from './env'
 import type { SignedLicense } from './license-rpc'
 import { providerById } from './providers/registry'
@@ -81,10 +83,11 @@ const ensureRegistered = (deployment: Deployment, account: Account) =>
 const deployContext = (deployment: Deployment, account: Account) =>
   Effect.gen(function* () {
     const env = yield* Env
-    const credentials = yield* loadCredentials(deployment)
+    const hosted = deployment.provider === HOSTED_PROVIDER
+    const base = hosted ? hostedProviderContext(env) : providerContext(env, deployment, yield* loadCredentials(deployment))
     const registered = yield* ensureRegistered(deployment, account)
     return {
-      ...providerContext(env, deployment, credentials),
+      ...base,
       deploymentId: deployment.id,
       licenseDeploymentId: registered.deploymentId,
       hostname: deployment.hostname!,
@@ -110,6 +113,7 @@ const outcome = (status: StepOutcome['status'], reason?: string): StepOutcome =>
 const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Effect.Effect<StepOutcome, never, Env | HttpClient.HttpClient> => {
   const program: Effect.Effect<StepOutcome, unknown, Env | HttpClient.HttpClient> = Effect.gen(function* () {
     const provider = providerById(deployment.provider)
+    const hosted = deployment.provider === HOSTED_PROVIDER
     switch (step) {
       case 'connect': {
         const summary = yield* checkCredentials(deployment, yield* loadCredentials(deployment))
@@ -117,6 +121,13 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
       }
       case 'deploy': {
         if (deployment.billing_state !== 'active') return outcome('fail', 'Billing is not active. Start or renew the subscription on the Billing page.')
+        if (hosted) {
+          const org = yield* hostedOrgFor(deployment.id)
+          if (!org || !deployment.hostname) return outcome('fail', 'Choose your organization name first.')
+          const ctx = yield* deployContext(deployment, account)
+          const result = yield* hostedDeploy(ctx, yield* loadHostedInfra(), { name: org.org_name, slot: org.slot })
+          return outcome(result.status, result.reason)
+        }
         if (!deployment.hostname) return outcome('fail', 'Choose the hostname Papyrus will use.')
         if (!provider) return outcome('fail', 'Choose a provider.')
         const ctx = yield* deployContext(deployment, account)
@@ -125,6 +136,13 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
         return outcome(result.status, result.reason ?? (result.status === 'pass' ? 'Deployed. Create the DNS records below.' : undefined))
       }
       case 'dns': {
+        if (hosted) {
+          // One wildcard record covers every hosted customer; this only confirms the name resolves to the shared ALB.
+          const infra = yield* loadHostedInfra()
+          if (!infra.loadBalancerDns || !deployment.hostname) return outcome('fail', 'Hosted infrastructure is not ready yet. Retry shortly.')
+          const check = yield* checkRecord({ type: 'CNAME', name: deployment.hostname, value: infra.loadBalancerDns })
+          return check.ok ? outcome('pass', `${deployment.hostname} resolves (checked with 1.1.1.1).`) : outcome('pending', `${deployment.hostname} does not resolve yet. Retry in a minute.`)
+        }
         if (deployment.dnsRecords.length === 0) return outcome('fail', 'No DNS records yet. Run the deploy step again.')
         const checks = yield* checkRecords(deployment.dnsRecords)
         if (checks.some((check) => !check.ok)) return outcome('fail', describeFailures(checks))

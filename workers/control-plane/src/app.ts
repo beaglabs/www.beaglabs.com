@@ -8,7 +8,9 @@ import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
 import { handleWebhook, portalUrl, startCheckout } from './billing'
 import { CHAT_BUBBLE_JS, CHAT_SCRIPT_PATH, CHAT_SESSION_PATH } from './chat-bubble'
-import { encryptJson, randomToken } from './crypto'
+import { encryptJson, randomToken, timingSafeEqual } from './crypto'
+import { HOSTED_PROVIDER, byocEnabled, claimOrgName, hostedHostname, hostedProviderContext, loadHostedInfra, orgNameAvailability, saveHostedInfra } from './hosted'
+import { bootstrapHosted } from './providers/aws-hosted'
 import type { Bindings } from './env'
 import { connectTemplate } from './providers/aws'
 import { credentialsFromForm, missingFields, providerById } from './providers/registry'
@@ -160,7 +162,14 @@ export function createApp(deps: AppDeps = {}) {
 
   // Billing -------------------------------------------------------------------------------------------------------
 
-  app.get('/billing', (c) => signedIn(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.html(Views.billingPage(account, deployments)))))
+  app.get('/billing', (c) =>
+    signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployments = yield* listDeployments(account.id)
+        return c.html(Views.billingPage(account, deployments, null, yield* byocEnabled(account)))
+      }),
+    ),
+  )
 
   app.post('/billing/checkout', async (c) => {
     const form = await c.req.parseBody()
@@ -196,6 +205,10 @@ export function createApp(deps: AppDeps = {}) {
     return c.json({ error: failure.message }, failure.status as 400)
   })
 
+  /** Bring-your-own-cloud routes answer 404 unless BYOC is on for this account (or for everyone). */
+  const requireByoc = (account: Account | null) =>
+    Effect.flatMap(byocEnabled(account), (enabled) => (enabled ? Effect.void : Effect.fail(new UserError({ message: 'Not found', status: 404 }))))
+
   // Provision -----------------------------------------------------------------------------------------------------
 
   /** Which secret fields already have a saved value (never the values themselves). */
@@ -228,10 +241,12 @@ export function createApp(deps: AppDeps = {}) {
   app.get('/provision', (c) =>
     signedIn(c, (account) =>
       Effect.gen(function* () {
+        yield* requireByoc(account)
         const requested = c.req.query('deployment')
         const deployments = yield* listDeployments(account.id)
         const deployment = requested ? yield* getOwnedDeployment(account.id, requested) : deployments.find((d) => d.steps.connect.status !== 'pass') ?? deployments[0]
         if (!deployment) return c.redirect('/billing', 303)
+        if (deployment.provider === HOSTED_PROVIDER) return c.redirect(`/deploy/${deployment.id}`, 303)
         return yield* renderProvision(c, account, deployment, c.req.query('provider'))
       }),
     ),
@@ -241,7 +256,9 @@ export function createApp(deps: AppDeps = {}) {
     const form = Object.fromEntries(Object.entries(await c.req.parseBody()).map(([key, value]) => [key, typeof value === 'string' ? value : ''])) as Record<string, string>
     return signedIn(c, (account) =>
       Effect.gen(function* () {
+        yield* requireByoc(account)
         const deployment = yield* getOwnedDeployment(account.id, form.deployment ?? '')
+        if (deployment.provider === HOSTED_PROVIDER) return yield* new UserError({ message: 'This deployment is hosted by Beag Labs.', status: 409 })
         const provider = providerById(form.provider)
         if (!provider) return yield* renderProvision(c, account, deployment, undefined, { text: 'Choose a provider', kind: 'error' })
         if (deployment.license_deployment_id && deployment.provider && deployment.provider !== provider.id) {
@@ -272,15 +289,73 @@ export function createApp(deps: AppDeps = {}) {
     )
   })
 
-  app.get('/aws/connect-template.yaml', (c) => c.body(connectTemplate(), 200, { 'content-type': 'text/yaml; charset=utf-8' }))
+  app.get('/aws/connect-template.yaml', (c) =>
+    page(
+      c,
+      Effect.gen(function* () {
+        yield* requireByoc(yield* currentAccount(c))
+        return c.body(connectTemplate(), 200, { 'content-type': 'text/yaml; charset=utf-8' })
+      }),
+    ),
+  )
 
   // Deploy and setup ----------------------------------------------------------------------------------------------
 
-  app.get('/deploy', (c) => signedIn(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.html(Views.deployListPage(account, deployments)))))
+  app.get('/deploy', (c) =>
+    signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployments = yield* listDeployments(account.id)
+        return c.html(Views.deployListPage(account, deployments, yield* byocEnabled(account)))
+      }),
+    ),
+  )
 
   app.get('/deploy/:id', (c) =>
-    signedIn(c, (account) => Effect.map(getOwnedDeployment(account.id, c.req.param('id')), (deployment) => c.html(Views.setupPage(account, deployment, c.req.query('error'))))),
+    signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+        return c.html(Views.setupPage(account, deployment, c.req.query('error'), { byoc: yield* byocEnabled(account) }))
+      }),
+    ),
   )
+
+  app.get(Views.ORG_NAME_SCRIPT_PATH, (c) => c.body(Views.ORG_NAME_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
+
+  /** Live check for the org-name form: syntax, reserved names, uniqueness. */
+  app.get('/api/org-names/check', async (c) => {
+    const exit = await exec(
+      c,
+      Effect.gen(function* () {
+        const account = yield* currentAccount(c)
+        return account ? yield* orgNameAvailability(c.req.query('name') ?? '') : null
+      }),
+    )
+    if (Exit.isSuccess(exit)) return exit.value ? c.json(exit.value, 200, { 'cache-control': 'no-store' }) : c.json({ error: 'Sign in first' }, 401)
+    const failure = userError(exit)!
+    return c.json({ error: failure.message }, failure.status as 500)
+  })
+
+  /** Hosted (the default): claim <org>.papyrus.beaglabs.com and deploy straight away when billing is active. */
+  app.post('/deploy/:id/org', async (c) => {
+    const org = String((await c.req.parseBody()).org ?? '')
+    return signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+        const byoc = yield* byocEnabled(account)
+        if (deployment.provider || deployment.license_deployment_id) return c.html(Views.setupPage(account, deployment, 'This deployment already has its address.', { byoc }), 409)
+        const claimed = yield* claimOrgName(account.id, deployment.id, org).pipe(Effect.result)
+        if (claimed._tag === 'Failure') return c.html(Views.setupPage(account, deployment, claimed.failure.message, { byoc }), (claimed.failure.status ?? 400) as 400)
+        const hostname = hostedHostname(claimed.success)
+        yield* run('UPDATE deployments SET provider = ?, hostname = ?, updated_at = ? WHERE id = ?', HOSTED_PROVIDER, hostname, nowIso(), deployment.id)
+        deployment.provider = HOSTED_PROVIDER
+        deployment.hostname = hostname
+        deployment.steps = record(resetFrom(deployment.steps, 'connect'), 'connect', { status: 'pass', reason: 'Hosted by Beag Labs.' })
+        yield* saveProgress(deployment)
+        if (deployment.billing_state === 'active') yield* runStep(deployment, account, 'deploy')
+        return c.redirect(`/deploy/${deployment.id}`, 303)
+      }),
+    )
+  })
   app.get('/setup/:id', (c) => c.redirect(`/deploy/${encodeURIComponent(c.req.param('id'))}`, 301))
 
   app.post('/deploy/:id/hostname', async (c) => {
@@ -288,8 +363,10 @@ export function createApp(deps: AppDeps = {}) {
     return signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
-        if (deployment.license_deployment_id) return c.html(Views.setupPage(account, deployment, 'The hostname is bound to the license issued at deploy.'), 409)
-        if (!isHostname(hostname)) return c.html(Views.setupPage(account, deployment, 'Enter a hostname you control, like papyrus.example.com'), 400)
+        const byoc = yield* byocEnabled(account)
+        if (!byoc || !deployment.provider || deployment.provider === HOSTED_PROVIDER) return yield* new UserError({ message: 'Hosted deployments use their organization name as the address.', status: 409 })
+        if (deployment.license_deployment_id) return c.html(Views.setupPage(account, deployment, 'The hostname is bound to the license issued at deploy.', { byoc }), 409)
+        if (!isHostname(hostname)) return c.html(Views.setupPage(account, deployment, 'Enter a hostname you control, like papyrus.example.com', { byoc }), 400)
         yield* run('UPDATE deployments SET hostname = ?, updated_at = ? WHERE id = ?', hostname, nowIso(), deployment.id)
         deployment.hostname = hostname
         deployment.steps = deployment.steps.connect.status === 'pass' ? resetFrom(deployment.steps, 'deploy') : deployment.steps
@@ -310,6 +387,30 @@ export function createApp(deps: AppDeps = {}) {
       }),
     ),
   )
+
+  // Admin: one-time hosted bootstrap ------------------------------------------------------------------------------
+
+  /**
+   * Creates (or finds) the shared hosted infrastructure in Beag Labs' AWS account and prints the Cloudflare records
+   * to add. Idempotent: rerun it until it says ready. `Authorization: Bearer <ADMIN_TOKEN>`.
+   */
+  app.post('/admin/hosted/bootstrap', async (c) => {
+    const token = (c.req.header('authorization') ?? '').replace(/^Bearer\s+/i, '')
+    if (!c.env.ADMIN_TOKEN || !token || !timingSafeEqual(token, c.env.ADMIN_TOKEN)) return c.json({ error: 'Not found' }, 404)
+    const exit = await exec(
+      c,
+      Effect.gen(function* () {
+        const infra = yield* loadHostedInfra()
+        const result = yield* bootstrapHosted(hostedProviderContext(c.env), infra).pipe(Effect.ensuring(saveHostedInfra(infra).pipe(Effect.ignore)), Effect.result)
+        if (result._tag === 'Failure') return { status: 'fail' as const, reason: (result.failure as { message?: string }).message ?? 'failed', cloudflare: [] as string[], infra }
+        const cloudflare = result.success.dnsRecords.map((r) => `${r.type} ${r.name} → ${r.value} (DNS only) — ${r.purpose ?? ''}`)
+        return { status: result.success.status, reason: result.success.reason, dnsRecords: result.success.dnsRecords, cloudflare, infra }
+      }),
+    )
+    if (Exit.isSuccess(exit)) return c.json(exit.value, exit.value.status === 'fail' ? 502 : 200, { 'cache-control': 'no-store' })
+    const failure = userError(exit)!
+    return c.json({ error: failure.message }, failure.status as 500)
+  })
 
   // Beag Labs chat -----------------------------------------------------------------------------------------------
 

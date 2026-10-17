@@ -31,7 +31,7 @@ const fakeNetwork = (calls: Call[]) =>
 
 async function signedInWithDeployment(billing: 'active' | 'none') {
   const calls: Call[] = []
-  const h = harness({ fetch: fakeNetwork(calls) })
+  const h = harness({ fetch: fakeNetwork(calls), env: { BYOC_ENABLED: 'true' } })
   h.insertAccount('acct_1')
   const token = 'session-token'
   h.sql.prepare('INSERT INTO sessions (id_hash, account_id, expires_at) VALUES (?, ?, ?)').run(createHash('sha256').update(token).digest('hex'), 'acct_1', '2999-01-01T00:00:00.000Z')

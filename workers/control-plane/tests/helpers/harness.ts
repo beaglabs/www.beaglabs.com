@@ -57,7 +57,7 @@ export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'goo
   return license
 }
 
-export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi } = {}) {
+export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi; env?: Partial<Bindings> } = {}) {
   const { sql, db } = fakeD1()
   const license = options.license ?? fakeLicense()
   const env = {
@@ -81,6 +81,12 @@ export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi
     RESEND_API_KEY: 're_x',
     AWS_ACCESS_KEY_ID: 'AKIA',
     AWS_SECRET_ACCESS_KEY: 'secret',
+    BYOC_ENABLED: 'false',
+    HOSTED_AWS_ROLE_ARN: 'arn:aws:iam::222222222222:role/BeagLabsPapyrusControlPlane',
+    HOSTED_AWS_REGION: 'us-east-2',
+    HOSTED_AWS_EXTERNAL_ID: 'hosted-external-id',
+    ADMIN_TOKEN: 'admin-token',
+    ...options.env,
   } satisfies Bindings
   const app = createApp({ fetch: options.fetch ?? (async () => new Response('unexpected fetch', { status: 599 })) })
   const call = (path: string, init: RequestInit = {}) => app.request(`https://papyrus.beaglabs.test${path}`, init, env)

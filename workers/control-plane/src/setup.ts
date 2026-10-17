@@ -19,6 +19,16 @@ export const STEP_LABELS: Record<StepId, string> = {
   registration: 'Registration',
 }
 
+export type SetupMode = 'hosted' | 'byoc'
+
+/**
+ * Steps the setup page shows. Hosted deployments have no provider step (Beag Labs' account; `connect` is recorded as
+ * passed when the org name is claimed) and their DNS step only confirms `<org>.papyrus.beaglabs.com` resolves.
+ */
+export const visibleSteps = (mode: SetupMode): readonly StepId[] => (mode === 'hosted' ? STEP_IDS.filter((id) => id !== 'connect') : STEP_IDS)
+
+export const stepLabel = (mode: SetupMode, id: StepId): string => (mode === 'hosted' && id === 'dns' ? 'Address' : STEP_LABELS[id])
+
 /** `pending` = not run yet, or running but not finished (e.g. a certificate still being issued); `reason` says which. */
 export type StepStatus = 'pending' | 'pass' | 'fail'
 

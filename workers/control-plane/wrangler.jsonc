@@ -22,7 +22,12 @@
     "MAGIC_LINK_FROM_EMAIL": "Papyrus <papyrus@mail.beaglabs.com>",
     // Beag Labs' IAM principal that customer roles trust, and the S3 copy of /aws/connect-template.yaml.
     "AWS_PRINCIPAL_ARN": "arn:aws:iam::615583899145:user/papyrus-control-plane",
-    "AWS_CONNECT_TEMPLATE_URL": "https://beaglabs-public.s3.us-east-2.amazonaws.com/connect-aws.yaml"
+    "AWS_CONNECT_TEMPLATE_URL": "https://beaglabs-public.s3.us-east-2.amazonaws.com/connect-aws.yaml",
+    // Bring-your-own-cloud is off: "true" turns it on for every account (else per account in D1 account_flags).
+    "BYOC_ENABLED": "false",
+    // Hosted by Beag Labs: the Connect AWS stack deployed once into Beag Labs' own account (README → Hosted setup).
+    "HOSTED_AWS_ROLE_ARN": "arn:aws:iam::615583899145:role/BeagLabsPapyrusControlPlane",
+    "HOSTED_AWS_REGION": "us-east-2"
   },
   "secrets": {
     "required": [
@@ -36,7 +41,9 @@
       "GOOGLE_CLIENT_SECRET",
       "RESEND_API_KEY",
       "AWS_ACCESS_KEY_ID",
-      "AWS_SECRET_ACCESS_KEY"
+      "AWS_SECRET_ACCESS_KEY",
+      "HOSTED_AWS_EXTERNAL_ID",
+      "ADMIN_TOKEN"
     ]
   }
 }
