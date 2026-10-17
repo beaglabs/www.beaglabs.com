@@ -32,7 +32,7 @@ export function EngagementModelSection() {
         <div className="mb-14 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-end">
           <div>
             <span className="nb-label mb-5 inline-block !bg-white">How It Works</span>
-            <h2 className="display-black max-w-[700px] text-[48px] leading-[0.95] text-[#111] sm:text-[58px] lg:text-[72px]">
+            <h2 className="display-black max-w-[700px] text-[length:min(48px,9vw)] leading-[0.95] text-[#111] sm:text-[58px] lg:text-[72px]">
               From conversation to deployed model — we handle it all.
             </h2>
           </div>

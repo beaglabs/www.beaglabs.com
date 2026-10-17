@@ -1,0 +1,56 @@
+{
+  "slug": "generate-a-compliance-evidence-package",
+  "source": "http://localhost:3210",
+  "productVersion": "0.1.0",
+  "verifiedAt": "2026-10-13T16:31:18.853Z",
+  "checkpoints": [
+    {
+      "id": "01-describe-the-job",
+      "file": "/playbooks/generate-a-compliance-evidence-package/generate-a-compliance-evidence-package-step-01-describe-the-job.webp",
+      "action": "Typed request into the composer on Home (not submitted): \"Collect access-review evidence from Okta and pull request approval evidence from GitHub for the quarterly audit.\"",
+      "evidence": "Collect access-review evidence from Okta",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/",
+      "width": 1280,
+      "height": 800,
+      "bytes": 34526,
+      "visibleText": "LO Search sessions / ＋ New session ✦ Your workspace, connected What would you like to work on? Explore information, create documents, or work with your connected systems. You stay in control of actions that need permission. Create a briefing from my files ↗ Analyze a spreadsheet ↗ Explore my connected tools ↗ O CohereLabs/aya-expanse-32b ⌄ ✦ Papyrus × Attach documents Enter to send · Shift+Enter for a new line · up to 12 files SEND ↑ Search sessions Collect access-review evidence from Okta and pull request approval evidence from GitHub for the quarterly audit."
+    },
+    {
+      "id": "02-connect-source",
+      "file": "/playbooks/generate-a-compliance-evidence-package/generate-a-compliance-evidence-package-step-02-connector-okta.webp",
+      "action": "Filtered the Integrations catalog for \"Okta\"",
+      "evidence": "Okta",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/integrations",
+      "width": 1280,
+      "height": 800,
+      "bytes": 17708,
+      "visibleText": "LO AGENT CONNECTORS Integrations DAEMON HEALTHY Customer Agent Operations AGENT CONNECTORS Integrations Connect your accounts to read and update supported services. Every connection is verified before use. Okta NEEDS SETUP Official OpenAPI operations with verified runtime credentials. CONNECT Okta"
+    },
+    {
+      "id": "03-connect-source",
+      "file": "/playbooks/generate-a-compliance-evidence-package/generate-a-compliance-evidence-package-step-03-connector-github.webp",
+      "action": "Filtered the Integrations catalog for \"GitHub\"",
+      "evidence": "GitHub",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/integrations",
+      "width": 1280,
+      "height": 800,
+      "bytes": 17938,
+      "visibleText": "LO AGENT CONNECTORS Integrations DAEMON HEALTHY Customer Agent Operations AGENT CONNECTORS Integrations Connect your accounts to read and update supported services. Every connection is verified before use. GitHub NEEDS SETUP Official OpenAPI operations with verified runtime credentials. CONNECT GitHub"
+    },
+    {
+      "id": "04-library",
+      "file": "/playbooks/generate-a-compliance-evidence-package/generate-a-compliance-evidence-package-step-04-library-files.webp",
+      "action": "Opened /portal/library",
+      "evidence": "Durable files created or attached in Agent sessions",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/library",
+      "width": 1280,
+      "height": 800,
+      "bytes": 46116,
+      "visibleText": "LO AGENTFS FILE AUTHORITY Library DAEMON HEALTHY Customer Agent Operations AGENTFS · LOCAL SQLITE Library Durable files created or attached in Agent sessions. Files remain inside the customer-hosted AgentFS authority; this page is a browser, not a second storage system. REFRESH LIBRARY NAME SIZE MODIFIED ACTIONS ZIP dbcb45b635728fb4b761dad1433bfac7de15eebae4f9393108e2984459037fc5.zip /Library/Sessions/ca04173a7b57d5dce20b9bc6602095afd99e51571e76da0f69bf2f6fe7918843/Library/Apps/0c606f23-beea-4f0b-a45c-a064e6c708ad/releases/dbcb45b635728fb4b761dad1433bfac7de15eebae4f9393108e2984459037fc5.zip 2.1 MiB 10/12/2026 Open Download TSX frequencies.tsx /Library/Sessions/ca04173a7b57d5dce20b9bc6602095afd99e51571e76da0f69bf2f6fe7918843/Library/Apps/0c606f23-beea-4f0b-a45c-a064e6c708ad/src/routes/frequ"
+    }
+  ]
+}

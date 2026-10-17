@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
-import type { Bindings } from './env'
-import { canonical, type LicensePayload, type SignedLicense } from './license'
+import type { Bindings } from './env.ts'
+import { canonical, type LicensePayload, type SignedLicense } from './license.ts'
 
 const KEY_VAULT_API_VERSION = '2025-07-01'
 const TOKEN_SCOPE = 'https://vault.azure.net/.default'

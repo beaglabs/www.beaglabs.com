@@ -1,150 +1,69 @@
-# Beag Labs License + Partner Worker
+# Beag Labs License Worker
 
-Cloudflare Worker for Beag Labs partner onboarding, commercial/provisioning state, OAuth identity, and Papyrus offline license issuance.
+Cloudflare Worker for Azure Marketplace lead and usage ingestion, the website's trial-click notification, and the backend for the Papyrus admin app, the Papyrus customer chat bubble (chat, attachments, huddles), deployment registration, the tenant event pipe and Sentry error intake. Papyrus offline licenses are issued locally with the `license:issue` CLI.
+
+Design: `docs/superpowers/specs/2026-10-17-papyrus-admin-app-design.md`. API contract (authoritative request/response shapes, plus a Deviations section): `docs/superpowers/specs/2026-10-17-admin-app-api-contract.md`.
 
 ## Boundary
 
 - Host: `https://license.beaglabs.com`
 - Runtime: Cloudflare Workers
 - Database: Turso / libSQL
-- Admin authentication: Microsoft Entra ID through Better Auth
-- Partner authentication: approved-invite-only Better Auth magic links
-- OAuth/OIDC issuer: Better Auth OAuth Provider
-- Partner self-service: catalog access and **draft order submission only**
-- Papyrus licensing: Beag-admin-only signed offline JSON with deployment or explicitly approved organization scope
-- License signer: version-pinned Azure Key Vault key; the authority private key never enters the Worker
+- License signer: version-pinned Azure Key Vault key; the authority private key never leaves Key Vault
+- Customers deploy and are billed through Azure Marketplace. There is no web customer portal, web admin UI or partner program; staff use the native admin app.
 
-Partner OAuth users cannot book orders, create entitlements, register deployments, issue licenses, or revoke licenses. Every `/api/v1/*` endpoint remains Microsoft-admin-only and requires an Entra tenant ID matching `MICROSOFT_TENANT_ID` plus an immutable object ID (`oid`) in `ADMIN_MICROSOFT_OIDS`.
+## Routes
 
-## Partner onboarding
+- `GET /health`
+- `POST /api/events/trial-click` — anonymous website trial-button click, forwarded to the Teams webhook (browser origin allowlist + hourly rate limit)
+- `POST /api/marketplace/leads` — Microsoft Marketplace lead webhook (`MARKETPLACE_LEAD_WEBHOOK_SECRET`)
+- Cron `17 */6 * * *` — syncs Papyrus VM normalized usage from the Partner Center scheduled report
 
-Public application: `GET /partners/apply`
+Admin app / Papyrus (see the contract for shapes):
 
-Required application fields:
+- `POST /api/provision/bootstrap` — no auth; verifies the Azure IMDS attested document (PKCS#7 signed by `*.metadata.azure.com`, chained to the embedded Azure roots in `src/azure-roots.ts`, intermediate fetched from the signer's AIA URL), checks the nonce and optional Marketplace plan, returns a `Deployment` key (only its SHA-256 is stored)
+- `POST /api/papyrus/session` — `Authorization: Deployment <key>` + the signed-in user's Entra ID token → 1-hour chat session JWT; first token binds the deployment to its tenant
+- `POST /api/v1/track` — Analytics.js batches (Deployment, chat session, staff, or anonymous web); stored in `tenant_events`, forwarded to Customer.io
+- `/api/chat/*`, `/api/huddles/*` — conversations, messages, WebSocket (`ConversationRoom` Durable Object), attachments (R2), account manager card/photo, RealtimeKit huddles
+- `/api/admin/*` — staff (Entra) API: me, devices, inbox, leads, customers + timeline, account managers, assignment
+- `POST /api/sentry/webhook` — Sentry `issue` / `event_alert` webhooks (`Sentry-Hook-Signature`)
 
-- Company name
-- Company domain
-- Annual revenue (USD)
-- UEI (12 characters)
-- CAGE (5 characters)
-- Partner type
-- Main POC name
-- Main POC email
-- One or more SKUs of interest
+Chat, session, track and admin routes allow any CORS origin (no cookies; auth is always an `Authorization` header or `?token=` for WebSockets and attachment downloads).
 
-Flow:
+Module map: `auth.ts` (staff/customer/session/deployment auth), `jwt.ts`, `azure-attested.ts`, `registration.ts`, `track.ts` + `events.ts`, `chat-routes.ts` + `chat-store.ts` + `conversation-room.ts`, `attachments.ts`, `huddles.ts` + `realtimekit.ts`, `admin-routes.ts`, `inbox.ts` + `push.ts`, `sentry.ts`, `visibility.ts`.
 
-1. The application is stored in `partner_applications` with a one-time decision token.
-2. `partnerships@beaglabs.com` receives an approve/reject email.
-3. Email buttons open a review page; **GET never mutates approval state** so mail-security scanners cannot approve an application.
-4. A confirmed approval creates or links the commercial organization and partner record.
-5. The Main POC receives a 72-hour, single-use partner invitation.
-6. The invitation can request a Better Auth magic link only for the exact approved email address.
-7. Successful redemption creates the `partner_users` mapping and opens `/portal`.
+## Issuing offline licenses
 
-Existing partners can be invited from the admin portal using their primary contact email without reapplying.
+```bash
+cd workers/license
+npm run license:issue -- --help
+```
 
-## Partner portal
+Organization license (any VM in the listed Entra tenants):
 
-`GET /portal`
+```bash
+npm run license:issue -- --scope organization --licensee "Acme County" \
+  --sku PAP-FED-PILOT-90 --tenant <entra-tenant-uuid> --domain acme.gov --out acme.license.json
+```
 
-Approved partner users can:
+Deployment license (one Papyrus deployment ID):
 
-- View active Papyrus SKUs and list prices.
-- Submit draft commercial order requests.
-- Identify an optional end customer and federal identifiers.
-- Track submitted orders.
-- Read the provisioning workflow.
+```bash
+npm run license:issue -- --scope deployment --licensee "Acme County" \
+  --deployment-id <papyrus-deployment-id> --sku PAP-FED-DISC-1Y
+```
 
-Products with no configured list price are automatically marked `quote required`. Partner requests never accept a caller-supplied price and never automatically change an order from `draft` to `booked`.
+`--sku` fills features, profiles and term from the SKUs seeded in `schema.sql`; `--features`, `--profile`, `--expires`/`--days` and `--classification <level>` override them. `--dry-run` prints the unsigned payload without calling Key Vault. The output is the same signed JSON document the retired admin API returned, so Papyrus verification is unchanged.
 
-## Admin portal
-
-`GET /admin`
-
-The Neobrutalist admin portal includes:
-
-- Pending and historical partner applications.
-- Active partner table with company logos resolved from company domain using Logo.dev.
-- Existing-partner invitation actions.
-- Partner-submitted order activity and quote-required state.
-- Recent audit events.
-- Provisioning boundary/instructions.
-
-Logo.dev uses the publishable token in `LOGO_DEV_TOKEN`. If using a Logo.dev plan that requires attribution, keep the `Logo.dev` attribution rendered below the active-partner table.
-
-## OAuth / OIDC
-
-The Worker mounts Better Auth OAuth Provider with dynamic client registration disabled. The configured partner scopes are:
-
-- `openid`
-- `profile`
-- `email`
-- `offline_access`
-- `partner:catalog`
-- `partner:orders`
-
-Discovery endpoints are routed from `/.well-known/*` to Better Auth. Partner authorization uses `/partner/login` and `/oauth/consent`.
-
-### CIMD
-
-CIMD is intentionally **not enabled on the Cloudflare Worker**. Better Auth's current CIMD security guidance requires DNS resolution plus connection pinning and explicitly warns against DNS-check-then-`fetch` implementations because they remain vulnerable to DNS rebinding. Standard Workers `fetch` does not expose the required transport pinning primitive. OAuth/OIDC partner identity does not depend on CIMD; CIMD can be added later on a runtime that can satisfy the documented transport requirements.
-
-## Commercial and provisioning flow
-
-The service does not infer contract acceptance from partner activity.
-
-1. Partner submits a draft order request, or Beag creates an order administratively.
-2. Beag validates pricing, customer identity, and contract/vehicle flow.
-3. Beag explicitly moves the order to `booked` or `fulfilled` after the commercial event is known.
-4. Beag explicitly creates an entitlement from a license-product order item.
-5. Beag approves an organization scope with customer Entra tenants and optional exact hostnames, or registers a single deployment using its activation identity.
-6. Beag explicitly issues the signed license from its deployment or organization entitlement.
-
-The license issuance endpoint does **not** accept arbitrary license fields. Licensee, deployment ID, profile, features, expiration, and provisioned branding are derived from Turso records. The final payload is signed by Azure Key Vault before the issuance row is committed.
-
-## Products seeded by `schema.sql`
-
-- `PAP-FED-PILOT-90` — Papyrus Federal 90-Day Mission Pilot — $250,000 FFP list price
-- `PAP-FED-ENT-1Y` — Papyrus Federal Enterprise — Annual
-- `PAP-FED-DISC-1Y` — Papyrus Federal Disconnected — Annual
-- `PAP-FED-SUPPORT-PREM` — Premium Mission Support
-
-## Environment
-
-Copy `.dev.vars.example` to `.dev.vars` for local development. Real values must never be committed.
-
-Required Worker secrets:
-
-- `TURSO_DATABASE_URL`
-- `TURSO_AUTH_TOKEN`
-- `BETTER_AUTH_SECRET`
-- `MICROSOFT_CLIENT_ID`
-- `MICROSOFT_CLIENT_SECRET`
-- `MICROSOFT_TENANT_ID`
-- `ADMIN_MICROSOFT_OIDS` — comma-separated Entra object IDs, not email addresses
-- `AZURE_KEY_VAULT_TENANT_ID` — tenant containing the dedicated license-signer service principal
-- `AZURE_KEY_VAULT_CLIENT_ID` — dedicated license-signer application/service principal client ID
-- `AZURE_KEY_VAULT_CLIENT_SECRET` — credential for the sign-only service principal
-- `AZURE_KEY_VAULT_KEY_ID` — full **versioned** Azure Key Vault key URI, for example `https://beag-license.vault.azure.net/keys/papyrus-license/<version>`
-- `RESEND_API_KEY`
-
-Configured non-secret vars:
-
-- `BASE_URL=https://license.beaglabs.com`
-- `PARTNERS_EMAIL=partnerships@beaglabs.com`
-- `PARTNER_FROM_EMAIL=Beag Labs Partners <partnerships@beaglabs.com>`
-- `LOGO_DEV_TOKEN` — Logo.dev publishable key
-
-`PAPYRUS_LICENSE_PRIVATE_KEY_PEM` and `PAPYRUS_LICENSE_KEY_ID` are deprecated and are not required by the deployed Worker. The full versioned Azure Key Vault key URI is embedded in the signed document as `keyId`.
+The CLI reads `AZURE_KEY_VAULT_TENANT_ID`, `AZURE_KEY_VAULT_CLIENT_ID`, `AZURE_KEY_VAULT_CLIENT_SECRET` and `AZURE_KEY_VAULT_KEY_ID` from the environment; the npm script loads `.dev.vars` if present. Issued licenses are not recorded in the database, so keep the output file (or its `licenseId`) with the customer record.
 
 ## Azure Key Vault license authority
 
-Use an Azure Key Vault **Premium** vault with an HSM-backed RSA key. The Worker uses `RS256`; a 3072-bit `RSA-HSM` key keeps compatibility with Papyrus's existing SHA-256/RSA verification path while keeping the private key non-exportable.
+Use an Azure Key Vault **Premium** vault with an HSM-backed RSA key. Signing uses `RS256`; a 3072-bit `RSA-HSM` key keeps compatibility with Papyrus's SHA-256/RSA verification path while keeping the private key non-exportable.
 
 Create the signing key with sign/verify operations only and pin `AZURE_KEY_VAULT_KEY_ID` to the returned key **version**, not merely the key name. Key rotation then produces a new `keyId`, while already-issued licenses continue to identify the exact public key that signed them.
 
-The Worker authenticates to Key Vault with a dedicated Microsoft Entra service principal using client credentials. Grant that principal only `Microsoft.KeyVault/vaults/keys/sign/action` at the individual key scope (preferred custom role), or use `Key Vault Crypto User` scoped to the individual key if a built-in role is required. Do not grant key create, import, delete, rotate, secret access, or vault administration to the Worker identity.
+Authenticate with a dedicated Microsoft Entra service principal using client credentials. Grant it only `Microsoft.KeyVault/vaults/keys/sign/action` at the individual key scope (preferred custom role), or `Key Vault Crypto User` scoped to the individual key.
 
 Papyrus must trust the corresponding public key through `PAPYRUS_LICENSE_AUTHORITIES`, using the exact versioned Azure key URI as the map key:
 
@@ -154,118 +73,69 @@ Papyrus must trust the corresponding public key through `PAPYRUS_LICENSE_AUTHORI
 }
 ```
 
-The private key is never exported to Cloudflare, GitHub, Turso, or a Papyrus deployment.
+## Offline revocation semantics
 
-## Microsoft app registration
+Papyrus disconnected deployments do not phone home. A license document already imported into an offline deployment cannot be revoked retroactively; expiration or replacement is the enforcement mechanism.
 
-Register this production redirect URI in Microsoft Entra:
+## Environment
 
-`https://license.beaglabs.com/api/auth/callback/microsoft`
+Copy `.dev.vars.example` to `.dev.vars` for local development. Real values must never be committed.
 
-Microsoft authentication is for Beag administrator access. Approved partner users use Beag passwordless identities, not your internal Microsoft tenant.
+Required Worker secrets:
 
-The Key Vault signer should use a **separate** app registration/service principal from this interactive licensing-admin app. Compromise of the admin OAuth client must not automatically grant license-signing authority.
+- `TURSO_DATABASE_URL`
+- `TURSO_AUTH_TOKEN`
+- `MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`, `MICROSOFT_TENANT_ID` — Partner Center analytics credentials (overridable with `MARKETPLACE_ANALYTICS_*`)
+- `RESEND_API_KEY`
+- `MARKETPLACE_LEAD_WEBHOOK_SECRET`
 
-## Email setup
+- `CHAT_SESSION_SECRET` — HMAC key for customer chat session JWTs (`openssl rand -base64 48`)
 
-The Worker uses Resend for:
+Optional: `TRIAL_NOTIFICATIONS_WEBHOOK_URL`, `MARKETPLACE_NOTIFICATIONS_WEBHOOK_URL`, `TRIAL_NOTIFICATIONS_FROM`.
 
-- application approval/rejection review emails to `partnerships@beaglabs.com`;
-- approved partner invitations;
-- partner magic-link sign-in.
+Optional admin-app integrations (each is skipped cleanly when unset):
 
-Ensure the domain/address in `PARTNER_FROM_EMAIL` is authorized by the Resend account before production deployment.
+- Huddles: `CF_ACCOUNT_ID`, `REALTIMEKIT_APP_ID`, `REALTIMEKIT_API_TOKEN` (API token with Realtime / Realtime Admin permission). Without them, starting a huddle returns 503 `huddles_not_configured`.
+- Customer.io: `CUSTOMERIO_SITE_ID`, `CUSTOMERIO_API_KEY` (Track API credentials), optional `CUSTOMERIO_REGION=eu`.
+- Sentry: `SENTRY_CLIENT_SECRET` (internal integration client secret; webhook URL `https://license.beaglabs.com/api/sentry/webhook`, enable issue + alert-rule-action webhooks). Without it the webhook returns 503.
+- Android push: `FCM_PROJECT_ID`, `FCM_SERVICE_ACCOUNT_JSON` (service-account key JSON with the Firebase Messaging role).
+- macOS push: `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_PRIVATE_KEY` (.p8 contents), optional `APNS_ENVIRONMENT=sandbox`.
+- Registration plan pin: `PAPYRUS_MARKETPLACE_PUBLISHER`, `PAPYRUS_MARKETPLACE_PRODUCT` (unset = only the Microsoft signature is checked).
+
+Configured non-secret vars: `BASE_URL`, `MARKETPLACE_FROM_EMAIL`, `TRIAL_NOTIFICATIONS_EMAIL`, `ADMIN_API_CLIENT_ID`, `APNS_BUNDLE_ID`, `REALTIMEKIT_PRESET_NAME` (must name a preset that exists in the RealtimeKit app).
+
+Cloudflare resources: R2 bucket `beaglabs-chat-attachments` (`npx wrangler r2 bucket create beaglabs-chat-attachments`) and the `ConversationRoom` Durable Object (created by the `v1-conversation-room` migration on deploy).
+
+## Entra setup for the admin app
+
+In the Beag Labs tenant, on app registration `76fd8c28-6c8d-4b41-ae10-a99da42880a1`:
+
+1. **Expose an API**: set the Application ID URI to `api://76fd8c28-6c8d-4b41-ae10-a99da42880a1` and add the delegated scope `access_as_user` (admins and users can consent).
+2. **Manifest**: set `requestedAccessTokenVersion` (`accessTokenAcceptedVersion` in the legacy manifest) to `2`. The Worker only accepts v2 issuers (`https://login.microsoftonline.com/<tenant>/v2.0`).
+3. **App roles** (allowed member type Users/Groups): `Papyrus.System.Owner` and `Papyrus.Account.Manager`. Assign them to staff under Enterprise applications → Users and groups. Users with neither role get 403.
+4. **Authentication**: add a *Mobile and desktop applications* platform with the Tauri app's redirect URIs (for example a loopback `http://localhost` / `http://127.0.0.1` redirect for macOS and the Android custom-scheme or App Link redirect the app registers), and set **Allow public client flows** to *Yes* (authorization code + PKCE without a client secret).
+5. The app requests `api://76fd8c28-6c8d-4b41-ae10-a99da42880a1/access_as_user offline_access openid profile`.
+
+Papyrus customer sign-in uses each customer's own (multi-tenant) app registration; when Papyrus sends `entraClientId` at registration, `/api/papyrus/session` requires the ID token's `aud` to match it.
 
 ## Database
-
-From `workers/license`:
 
 ```bash
 npm install
 npm run db:apply
 ```
 
-`db:apply` applies:
+`db:apply` applies the SQL schema files and data migrations idempotently, ending with `papyrus-admin-schema.sql` (admin app, chat, events, errors, inbox, devices). Tables from the retired portal, admin and partner features are left in place; nothing drops them.
 
-1. `schema.sql` — commercial/provisioning tables and seeded SKUs;
-2. `partner-schema.sql` — partner applications, invites, users, and partner order metadata;
-3. Better Auth programmatic migrations — core auth, magic-link, JWT, and OAuth Provider schema.
-
-The migration SQL is idempotent where possible; Better Auth's migrator introspects its own required schema before applying changes.
-
-## Validation
+## Validation and deploy
 
 ```bash
-npm run check
-```
-
-This runs TypeScript typechecking and a Wrangler dry-run bundle. GitHub Actions also applies all database migrations to an ephemeral local libSQL database as a smoke test.
-
-## Deploy
-
-Set each required secret on the Worker, apply the database migration, then deploy:
-
-```bash
-npm run db:apply
+npm run typecheck
+npm test
+npx wrangler deploy --dry-run --config wrangler.jsonc --outdir .wrangler-dry-run
 npm run deploy
 ```
 
-`wrangler.jsonc` declares `license.beaglabs.com` as a Cloudflare Worker Custom Domain and disables the `workers.dev` hostname.
+Tests run on plain Vitest with an in-memory libSQL database loaded from the real schema files, fake R2 / Durable Object bindings, and locally generated Entra signing keys. The IMDS attested-data fixture is synthetic (`tests/fixtures/make-attested-fixture.sh` regenerates it with OpenSSL); a real document can only come from an Azure VM.
 
-## Route summary
-
-Public/bootstrap:
-
-- `GET /health`
-- `GET /partners/apply`
-- `POST /api/partner/applications`
-- `GET /partner-application/review`
-- `POST /partner-application/decision`
-- `GET /partner/invite`
-- `POST /api/partner/invite/send`
-- `GET /partner/login`
-- `/api/auth/*` — Better Auth
-- `/.well-known/*` — OAuth/OIDC discovery
-
-Approved partner:
-
-- `GET /portal`
-- `GET /api/partner/catalog`
-- `GET /api/partner/orders`
-- `POST /api/partner/orders`
-- `GET /oauth/consent`
-
-Microsoft admin:
-
-- `GET /admin`
-- `POST /api/partner/admin/partners/:id/invite`
-- all existing `/api/v1/*` commercial, entitlement, deployment, license, and audit APIs
-
-## Offline revocation semantics
-
-Papyrus disconnected deployments do not phone home. Marking a license issuance `revoked` records Beag Labs' commercial/admin state but cannot retroactively invalidate a license document already imported into an offline deployment. Expiration or replacement is the enforcement mechanism available to the disconnected runtime.
-
-## Organization licenses
-
-The website console at https://beaglabs.com/licensing now supports organization licenses on the Entitlements tab. These allow unlimited VMs within approved Entra tenants, optional exact hostnames, and a mandatory expiry. Scope approval and issuance require Beag Microsoft administrator identity; all license rights derive from booked customer entitlements.
-
-See [administration and rollout](../../docs/organization-licensing.md) for generation, download, setup, migration order, renewal, and offline enforcement limits. Apply `organization-license-schema.sql` before deploying this Worker; `scripts/apply-schema.mjs` includes it. No per-VM deployment registration is needed for organization issuance. Existing deployment-bound licenses and issuance tables remain supported.
-
-## Provisioning control plane
-
-The customer-facing Papyrus control plane lives at `https://beaglabs.com/provision` and uses this Worker for authentication, deployment registration, Marketplace billing mirrors, agreement acceptance, Account Manager assignment, Azure VM resize operations, and offline-license downloads.
-
-Its additive schema is `provisioning-schema.sql` and is applied by the normal migration command:
-
-```bash
-cd workers/license
-npm run db:apply
-```
-
-Account Managers are internal Beag Labs Microsoft Entra identities. An authorized licensing administrator signs into `/licensing/account-managers` and selects **Add/update me** to create or refresh their Account Manager record. Customer-to-manager assignment is stored in the control plane, while identity authorization remains anchored to the existing Entra tenant and immutable OID allowlist.
-
-Customer provisioning authentication is separate from internal licensing administration. Commercial provisioning uses a multitenant Microsoft Entra app registration; Azure Government requires a separate app registration in the government national cloud. Configure the optional `PROVISION_COMMERCIAL_CLIENT_ID` / `PROVISION_COMMERCIAL_CLIENT_SECRET` and `PROVISION_GOVERNMENT_CLIENT_ID` / `PROVISION_GOVERNMENT_CLIENT_SECRET` bindings described in `.dev.vars.example`.
-
-Marketplace deployments register through a short-lived opaque claim. The portal verifies the signed-in user's VM-management permission against the exact Azure VM before binding it to the organization. Azure access tokens are encrypted at rest and deliberately short-lived; users reauthenticate before later management actions when the token expires.
-
-The portal does not replace Microsoft billing. `/provision/commercial/billing` mirrors Papyrus Marketplace usage already synchronized from Partner Center, while Microsoft remains the invoice and billing system of record.
+`npm run check` runs TypeScript typechecking and a Wrangler dry-run bundle. `wrangler.jsonc` declares `license.beaglabs.com` as a Cloudflare Worker Custom Domain and disables the `workers.dev` hostname.

@@ -17,30 +17,31 @@
   "observability": {
     "enabled": true
   },
+  // Admin app + Papyrus customer chat: one ConversationRoom per conversation id.
+  "durable_objects": {
+    "bindings": [{ "name": "CONVERSATION_ROOM", "class_name": "ConversationRoom" }]
+  },
+  "migrations": [{ "tag": "v1-conversation-room", "new_sqlite_classes": ["ConversationRoom"] }],
+  // Chat attachments and account-manager photos. Create once: wrangler r2 bucket create beaglabs-chat-attachments
+  "r2_buckets": [{ "binding": "CHAT_ATTACHMENTS", "bucket_name": "beaglabs-chat-attachments" }],
   "vars": {
     "BASE_URL": "https://license.beaglabs.com",
-    "PARTNERS_EMAIL": "partnerships@beaglabs.com",
-    "PARTNER_FROM_EMAIL": "Beag Labs Partners <partners@mail.beaglabs.com>",
     "MARKETPLACE_FROM_EMAIL": "Beag Labs Marketplace <sales@mail.beaglabs.com>",
     "TRIAL_NOTIFICATIONS_EMAIL": "4661da0e.beaglabs.onmicrosoft.com@amer.teams.ms",
-    "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ",
-    "PAPYRUS_VCPU_HOURLY_USD": "0.50"
+    "ADMIN_API_CLIENT_ID": "76fd8c28-6c8d-4b41-ae10-a99da42880a1",
+    "APNS_BUNDLE_ID": "com.beaglabs.papyrus.admin",
+    "REALTIMEKIT_PRESET_NAME": "group_call_participant"
   },
   "secrets": {
     "required": [
       "TURSO_DATABASE_URL",
       "TURSO_AUTH_TOKEN",
-      "BETTER_AUTH_SECRET",
       "MICROSOFT_CLIENT_ID",
       "MICROSOFT_CLIENT_SECRET",
       "MICROSOFT_TENANT_ID",
-      "ADMIN_MICROSOFT_OIDS",
-      "AZURE_KEY_VAULT_TENANT_ID",
-      "AZURE_KEY_VAULT_CLIENT_ID",
-      "AZURE_KEY_VAULT_CLIENT_SECRET",
-      "AZURE_KEY_VAULT_KEY_ID",
       "RESEND_API_KEY",
-      "MARKETPLACE_LEAD_WEBHOOK_SECRET"
+      "MARKETPLACE_LEAD_WEBHOOK_SECRET",
+      "CHAT_SESSION_SECRET"
     ]
   }
 }

@@ -24,7 +24,7 @@ const principles = [
 
 export function Methodology({ compact = false }: { compact?: boolean }) {
   return (
-    <section id="methodology" className="scroll-mt-28 border-[3px] border-[#111] bg-white p-6 shadow-[6px_6px_0_#111] sm:p-8">
+    <section id="methodology" className="scroll-mt-12 border-[3px] border-[#111] bg-white p-6 shadow-[6px_6px_0_#111] sm:p-8">
       <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Methodology and disclosure</p>
       <h2 className="mt-3 max-w-[760px] text-[28px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[36px]">
         How these comparisons are built and checked.

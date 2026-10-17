@@ -51,12 +51,12 @@ export default function SupportPage() {
     <main className="bg-[#FAFAF9] text-[#111]">
 
 
-      <section className="site-hero overflow-hidden border-b-[3px] border-[#111] pt-16">
+      <section className="site-hero overflow-hidden border-b-[3px] border-[#111]">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
           <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
             <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Support', url: '/support' }]} />
             <p className="nb-label mb-5 inline-block">Papyrus support</p>
-            <h1 className="max-w-[760px] text-[52px] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
+            <h1 className="max-w-[760px] text-[length:min(52px,9vw)] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
               Support starts with the right channel.
             </h1>
             <p className="mt-7 max-w-[680px] text-[18px] font-medium leading-[1.7] text-[#444]">
@@ -101,7 +101,7 @@ export default function SupportPage() {
           <div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
               <span className="nb-label mb-5 inline-block">Choose a path</span>
-              <h2 className="max-w-[760px] text-[38px] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
+              <h2 className="max-w-[760px] text-[length:min(38px,9vw)] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
                 Two support channels, one product.
               </h2>
             </div>
@@ -112,7 +112,7 @@ export default function SupportPage() {
 
           <div className="grid gap-8 lg:grid-cols-2">
             {SUPPORT_PATHS.map((path) => (
-              <article key={path.id} id={path.id} className="nb-card scroll-mt-24 overflow-hidden p-0">
+              <article key={path.id} id={path.id} className="nb-card scroll-mt-8 overflow-hidden p-0">
                 <div className="border-b-2 border-[#111] p-7 sm:p-8">
                   <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">{path.eyebrow}</p>
                   <h3 className="mt-2 text-[28px] font-extrabold tracking-[-0.04em]">{path.title}</h3>
@@ -156,7 +156,7 @@ export default function SupportPage() {
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[.8fr_1.2fr]">
           <div className="border-b-[3px] border-[#111] px-6 py-20 lg:border-b-0 lg:border-r-[3px] lg:px-9 lg:py-28">
             <span className="nb-label mb-5 inline-block">Response targets</span>
-            <h2 className="text-[38px] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
+            <h2 className="text-[length:min(38px,9vw)] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
               Severity drives first response.
             </h2>
             <p className="mt-6 max-w-[520px] text-[15px] leading-[1.7] text-[#555]">

@@ -1,4 +1,4 @@
-import { createHash, sign } from 'node:crypto'
+import { createHash } from 'node:crypto'
 import type { DeploymentProfile } from './env'
 
 export interface LicenseBase {
@@ -12,6 +12,7 @@ export interface LicenseBase {
 export interface DeploymentLicensePayload extends LicenseBase {
   scope?: 'deployment'
   deploymentId: string
+  branding?: { entraAppLogoUrl: string }
 }
 export interface OrganizationLicensePayload extends LicenseBase {
   scope: 'organization'
@@ -34,27 +35,6 @@ export function canonical(value: unknown): string {
     .join(',')}}`
 }
 
-function normalizePem(value: string): string {
-  return value.includes('\\n') ? value.replace(/\\n/g, '\n') : value
-}
-
-/**
- * Legacy in-process signer retained only for the non-exported base Hono app.
- * Production issuance is intercepted by provisioning-branding.ts and uses the
- * Azure Key Vault signer. With the old secrets absent, this path fails closed.
- */
-export function signLicense(payload: LicensePayload, keyId?: string, privateKeyPem?: string): SignedLicense {
-  if (!keyId?.trim() || !privateKeyPem?.trim()) {
-    throw new Error('Legacy PEM license signer is disabled; use Azure Key Vault provisioning')
-  }
-  const signature = sign('sha256', Buffer.from(canonical(payload)), normalizePem(privateKeyPem)).toString('base64')
-  return { ...payload, keyId: keyId.trim(), signature }
-}
-
 export function payloadSha256(payload: LicensePayload): string {
   return createHash('sha256').update(canonical(payload)).digest('hex')
-}
-
-export function deploymentIdForPublicKey(publicKeyPem: string): string {
-  return createHash('sha256').update(publicKeyPem).digest('hex')
 }

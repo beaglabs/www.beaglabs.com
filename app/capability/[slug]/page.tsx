@@ -38,7 +38,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
 
 
       {/* ─── HERO ─── */}
-      <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9] pt-[calc(4rem+2.375rem)]">
+      <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9]">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 pb-20 pt-10 lg:grid-cols-[1.05fr_minmax(420px,560px)] lg:gap-16 lg:px-9 lg:pb-24 lg:pt-14">
           <div className="max-w-[760px]">
             <Breadcrumbs
@@ -55,7 +55,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
               </span>
             </div>
 
-            <h1 className="mb-6 text-[44px] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[56px] lg:text-[72px]">
+            <h1 className="mb-6 text-[length:min(44px,9vw)] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[56px] lg:text-[72px]">
               {cap.title}
             </h1>
 
@@ -227,7 +227,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
           <span className="mb-4 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#111]">
             Next step
           </span>
-          <h2 className="mb-5 max-w-[820px] text-[36px] font-extrabold leading-[1.05] tracking-[-0.04em] text-[#111] sm:text-[48px]">
+          <h2 className="mb-5 max-w-[820px] text-[length:min(36px,9vw)] font-extrabold leading-[1.05] tracking-[-0.04em] text-[#111] sm:text-[48px]">
             {cap.cta.headline}
           </h2>
           <p className="mb-10 max-w-[640px] text-[16px] leading-[1.6] text-[#111] font-medium">

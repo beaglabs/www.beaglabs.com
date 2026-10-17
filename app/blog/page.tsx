@@ -45,7 +45,7 @@ export default async function BlogPage({
             [ Blog ]
           </span>
           <div className="max-w-[720px] lg:justify-self-end">
-            <h1 className="mb-5 text-[44px] font-extrabold leading-[1.0] tracking-[-0.05em] text-[#111] sm:text-[56px] lg:text-[68px]">
+            <h1 className="mb-5 text-[length:min(44px,9vw)] font-extrabold leading-[1.0] tracking-[-0.05em] text-[#111] sm:text-[56px] lg:text-[68px]">
               Making back office work better.
             </h1>
             <p className="mb-9 max-w-[600px] text-[17px] font-medium leading-[1.6] text-[#111]">

@@ -1,0 +1,56 @@
+{
+  "slug": "modernize-a-legacy-terminal-workflow",
+  "source": "http://localhost:3210",
+  "productVersion": "0.1.0",
+  "verifiedAt": "2026-10-13T16:31:18.853Z",
+  "checkpoints": [
+    {
+      "id": "01-describe-the-job",
+      "file": "/playbooks/modernize-a-legacy-terminal-workflow/modernize-a-legacy-terminal-workflow-step-01-describe-the-job.webp",
+      "action": "Typed request into the composer on Home (not submitted): \"Look up a customer record on the mainframe by account number and summarize its status.\"",
+      "evidence": "Look up a customer record on the mainfra",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/",
+      "width": 1280,
+      "height": 800,
+      "bytes": 33150,
+      "visibleText": "LO Search sessions / ＋ New session ✦ Your workspace, connected What would you like to work on? Explore information, create documents, or work with your connected systems. You stay in control of actions that need permission. Create a briefing from my files ↗ Analyze a spreadsheet ↗ Explore my connected tools ↗ O CohereLabs/aya-expanse-32b ⌄ ✦ Papyrus × Attach documents Enter to send · Shift+Enter for a new line · up to 12 files SEND ↑ Search sessions Look up a customer record on the mainframe by account number and summarize its status."
+    },
+    {
+      "id": "02-connect-source",
+      "file": "/playbooks/modernize-a-legacy-terminal-workflow/modernize-a-legacy-terminal-workflow-step-02-connector-mainframe.webp",
+      "action": "Filtered the Integrations catalog for \"Mainframe\"",
+      "evidence": "Mainframe",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/integrations",
+      "width": 1280,
+      "height": 800,
+      "bytes": 19102,
+      "visibleText": "LO AGENT CONNECTORS Integrations DAEMON HEALTHY Customer Agent Operations AGENT CONNECTORS Integrations Connect your accounts to read and update supported services. Every connection is verified before use. MF Mainframe TN3270 NEEDS SETUP Verified terminal connection for reviewed screen workflows. Credentials stay server-side. CONNECT Mainframe"
+    },
+    {
+      "id": "03-connect-dialog",
+      "file": "/playbooks/modernize-a-legacy-terminal-workflow/modernize-a-legacy-terminal-workflow-step-03-tn3270-connection-form.webp",
+      "action": "Opened the Mainframe connection form on Integrations; no values entered",
+      "evidence": "Connect Mainframe TN3270",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/integrations",
+      "width": 1280,
+      "height": 800,
+      "bytes": 25144,
+      "visibleText": "LO AGENT CONNECTORS Integrations DAEMON HEALTHY Customer Agent Operations AGENT CONNECTORS Integrations Connect your accounts to read and update supported services. Every connection is verified before use. MF Mainframe TN3270 NEEDS SETUP Verified terminal connection for reviewed screen workflows. Credentials stay server-side. CONNECT MF Connect Mainframe TN3270 Enter credentials here. Papyrus verifies the connection before enabling tools. Credentials stay outside chat and are stored encrypted. TELNET HOST URL Enter your host and port, including telnets:// for TLS. For the local demo, use telnet://127.0.0.1:3271. SIGNED-ON SCREEN TEXT SIGN-ON FIELD MAPPING Use [] for the local sample host. For live hosts, provide reviewed screen anchors, keys, and fields referencing username or token. Crede"
+    },
+    {
+      "id": "04-workflows",
+      "file": "/playbooks/modernize-a-legacy-terminal-workflow/modernize-a-legacy-terminal-workflow-step-04-workflows-list.webp",
+      "action": "Opened /portal/workflows",
+      "evidence": "Workflows are created, edited and published by the agent",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/workflows",
+      "width": 1280,
+      "height": 800,
+      "bytes": 22686,
+      "visibleText": "LO DURABLE AUTOMATIONS Workflows DAEMON HEALTHY Customer Agent Operations GOVERNED AUTOMATIONS Workflows Workflows are created, edited and published by the agent in a session. This list shows what exists and lets you pause or delete it. All Personal Team Organization Factory Workflow Scope Status Schedule Last run Updated Actions My Test Workflow A simple test workflow that fetches a URL and reports the result person draft — — 10/12/2026 Run infoDelete"
+    }
+  ]
+}

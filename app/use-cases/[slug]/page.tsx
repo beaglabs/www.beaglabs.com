@@ -100,7 +100,7 @@ export default async function UseCaseDetailPage({
           <div className="mt-8 mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             {industry.industry}
           </div>
-          <h1 className="mb-5 max-w-[820px] text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
+          <h1 className="mb-5 max-w-[820px] text-[length:min(42px,9vw)] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
             {industry.title}
           </h1>
           <p className="max-w-[640px] text-[17px] leading-[1.72] text-[#404040] font-medium">
@@ -114,7 +114,7 @@ export default async function UseCaseDetailPage({
           <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Use Cases
           </div>
-          <h2 className="mb-12 max-w-[600px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+          <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
             What you can automate.
           </h2>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -167,7 +167,7 @@ export default async function UseCaseDetailPage({
           <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
             Compliance &amp; Security
           </div>
-          <h2 className="mb-12 max-w-[600px] text-[38px] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+          <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
             Built for your security requirements.
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -194,7 +194,7 @@ export default async function UseCaseDetailPage({
             <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#FFB074]">
               Get started
             </div>
-            <h2 className="mb-4 max-w-[720px] text-[42px] font-extrabold leading-[0.96] tracking-[-0.05em] text-white lg:text-[56px]">
+            <h2 className="mb-4 max-w-[720px] text-[length:min(42px,9vw)] font-extrabold leading-[0.96] tracking-[-0.05em] text-white lg:text-[56px]">
               {industry.ctaText}
             </h2>
             <p className="max-w-[560px] text-[18px] leading-[1.65] text-[#C9C9C9] font-medium">

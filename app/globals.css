@@ -85,6 +85,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Long words in big headlines wrap instead of running past the narrow mobile viewport */
+  h1, h2 {
+    overflow-wrap: break-word;
+  }
   html {
     overscroll-behavior-y: none;
     background-color: var(--background);

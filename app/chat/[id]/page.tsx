@@ -22,7 +22,7 @@ export default async function ChatPage({
     <div className="bg-background text-foreground flex min-h-screen flex-col">
       <AnnouncementBanner />
 
-      <main className="flex flex-1 flex-col pt-[calc(4rem+2.375rem)]">
+      <main className="flex flex-1 flex-col">
         <ChatView id={id} initialMessage={q} />
       </main>
       <SiteFooter />

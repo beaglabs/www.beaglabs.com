@@ -69,7 +69,7 @@ export default async function ProductProfilePage({ params }: ProductPageProps) {
       <AnnouncementBanner />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="site-hero px-6 pb-14 pt-32 lg:px-9 lg:pb-16 lg:pt-36">
+      <section className="site-hero px-6 pb-14 pt-16 lg:px-9 lg:pb-16 lg:pt-20">
         <div className="mx-auto max-w-[1280px]">
           <Breadcrumbs items={[
             { name: 'Home', url: '/' },
@@ -83,7 +83,7 @@ export default async function ProductProfilePage({ params }: ProductPageProps) {
                 <span className="nb-label">Sourced profile</span>
                 <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
               </div>
-              <h1 className="mt-3 text-[44px] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[60px]">{platform.name}<span className="text-[#ff5f1f]">.</span></h1>
+              <h1 className="mt-3 text-[length:min(44px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[60px]">{platform.name}<span className="text-[#ff5f1f]">.</span></h1>
               <p className="mt-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#666]">by {platform.vendor}</p>
             </div>
           </div>

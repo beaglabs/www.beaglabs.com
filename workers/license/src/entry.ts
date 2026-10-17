@@ -1,56 +1,17 @@
 import { postTrialWebhook } from './trial-webhook'
-import licenseApp from './index'
-import portalApp from './portal'
-import applicationApp from './application'
-import oauthPagesApp from './oauth-pages'
-import publicApp from './public-api'
-import organizationLicensingApp from './organization-licensing'
-import entitlementAddonsApp from './entitlement-addons'
-import provisioningBrandingApp from './provisioning-branding'
-import marketplaceApp from './marketplace'
 import marketplaceLeadApp from './marketplace-leads'
-import marketplaceReportApp, { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
-import provisionApp from './provision'
-import provisionAdminApp from './provision-admin'
-import { buildAuth } from './auth'
+import { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
 import type { Bindings } from './env'
+import api, { isApiPath, isOpenCorsPath } from './api'
+
+export { ConversationRoom } from './conversation-room'
 
 const WWW_ORIGIN = 'https://beaglabs.com'
 const ALLOWED_BROWSER_ORIGINS = new Set([
   WWW_ORIGIN,
-  'https://beaglabs.com',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
 ])
-
-const UI_REDIRECTS = new Map<string, string>([
-  ['/', '/crm'],
-  ['/login', '/crm'],
-  ['/admin', '/crm'],
-  ['/partners/apply', '/partners/apply'],
-  ['/partner/login', '/partners/login'],
-  ['/partner/invite', '/partners/invite'],
-  ['/partner-application/review', '/partners/review'],
-  ['/portal', '/partners/portal'],
-  ['/oauth/consent', '/partners/oauth/consent'],
-])
-
-function usePortal(path: string): boolean {
-  return path === '/' ||
-    path === '/login' ||
-    path === '/admin' ||
-    path.startsWith('/partner/') ||
-    path.startsWith('/partner-application/') ||
-    path === '/portal' ||
-    path.startsWith('/api/partner/') ||
-    path.startsWith('/oauth/')
-}
-
-function useProvisioningBranding(path: string, method: string): boolean {
-  return (path === '/api/v1/deployments' && method === 'POST') ||
-    (/^\/api\/v1\/deployments\/[^/]+\/branding\/?$/.test(path) && (method === 'PUT' || method === 'PATCH')) ||
-    (/^\/api\/v1\/deployments\/[^/]+\/licenses\/?$/.test(path) && method === 'POST')
-}
 
 function allowedOrigin(request: Request): string | null {
   const origin = request.headers.get('origin')
@@ -68,26 +29,36 @@ function appendVary(headers: Headers, value: string): void {
   }
 }
 
+const OPEN_CORS_HEADERS: Record<string, string> = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Range',
+  'Access-Control-Expose-Headers': 'Content-Disposition, Content-Range, Content-Length, Accept-Ranges',
+  'Access-Control-Max-Age': '86400',
+}
+
+/** Header-authenticated APIs (chat, session, track, admin): any origin, never credentials. */
+function withOpenCors(response: Response): Response {
+  if (response.status === 101) return response // WebSocket upgrades must pass through untouched
+  const wrapped = new Response(response.body, response)
+  for (const [name, value] of Object.entries(OPEN_CORS_HEADERS)) wrapped.headers.set(name, value)
+  return wrapped
+}
+
 function withCors(request: Request, response: Response): Response {
+  if (isOpenCorsPath(new URL(request.url).pathname)) return withOpenCors(response)
+  if (response.status === 101) return response
   const origin = allowedOrigin(request)
   if (!origin) return response
 
   const wrapped = new Response(response.body, response)
   wrapped.headers.set('Access-Control-Allow-Origin', origin)
   wrapped.headers.set('Access-Control-Allow-Credentials', 'true')
-  wrapped.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+  wrapped.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   wrapped.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Beag-Signature, X-Beag-Timestamp')
   wrapped.headers.set('Access-Control-Expose-Headers', 'Content-Disposition')
   appendVary(wrapped.headers, 'Origin')
   return wrapped
-}
-
-function uiRedirect(url: URL): Response | null {
-  const destination = UI_REDIRECTS.get(url.pathname.replace(/\/$/, '') || '/')
-  if (!destination) return null
-  const target = new URL(destination, WWW_ORIGIN)
-  target.search = url.search
-  return Response.redirect(target.toString(), 302)
 }
 
 const recentTrialClicks = new Map<string, number>()
@@ -127,7 +98,7 @@ async function notifyTrialClick(request: Request, env: Bindings): Promise<Respon
       Placement: String(input.placement),
       Page: page,
       Time: new Date(now).toISOString(),
-      Destination: '/provision/commercial',
+      Destination: 'Azure Marketplace listing',
       Note: 'Anonymous button click; not a confirmed Azure trial.',
     })
     return new Response(null, {status:204})
@@ -142,78 +113,33 @@ async function notifyTrialClick(request: Request, env: Bindings): Promise<Respon
 }
 
 async function route(request: Request, env: Bindings, ctx: any): Promise<Response> {
-  const url = new URL(request.url)
-  const path = url.pathname
+  const path = new URL(request.url).pathname
 
-  if (request.method === 'GET') {
-    const redirect = uiRedirect(url)
-    if (redirect) return redirect
+  if (path === '/health' && request.method === 'GET') {
+    return Response.json({ ok: true }, { headers: { 'Cache-Control': 'no-store' } })
   }
 
   if (path === '/api/events/trial-click' && request.method === 'POST') {
     return notifyTrialClick(request, env)
   }
 
-  if (path.startsWith('/.well-known/')) {
-    return buildAuth(env).handler(request)
-  }
-
-  // These two routes intentionally override the legacy Marketplace handlers:
-  // lead ingestion enforces Microsoft ActionCode semantics, while VM analytics
-  // uses Partner Center's production Scheduled Reports API instead of the
-  // testQueryResult endpoint.
+  // Lead ingestion enforces Microsoft ActionCode semantics.
   if (path === '/api/marketplace/leads' && request.method === 'POST') {
     return marketplaceLeadApp.fetch(request, env, ctx)
   }
-  if (path === '/api/v1/marketplace/sync' && request.method === 'POST') {
-    return marketplaceReportApp.fetch(request, env, ctx)
+
+  if (isApiPath(path)) {
+    return api.fetch(request, env, ctx)
   }
 
-  if (path.startsWith('/api/marketplace/') || path.startsWith('/api/v1/marketplace/')) {
-    return marketplaceApp.fetch(request, env, ctx)
-  }
-
-  if (path.startsWith('/api/public/')) {
-    return publicApp.fetch(request, env, ctx)
-  }
-
-  if (path.startsWith('/api/provision/')) {
-    return provisionApp.fetch(request, env, ctx)
-  }
-
-  if (path.startsWith('/api/v1/provisioned-accounts')) {
-    return provisionAdminApp.fetch(request, env, ctx)
-  }
-
-  if (path === '/partners/apply' || path === '/partners/apply/') {
-    return applicationApp.fetch(request, env, ctx)
-  }
-
-  if (path === '/partner/login' || path === '/oauth/consent') {
-    return oauthPagesApp.fetch(request, env, ctx)
-  }
-
-  if (/^\/api\/v1\/entitlements\/[^/]+\/(?:license-scope|licenses)\/?$/.test(path)) {
-    return organizationLicensingApp.fetch(request, env, ctx)
-  }
-
-  if (/^\/api\/v1\/entitlements\/[^/]+\/addons(?:\/[^/]+\/revoke)?\/?$/.test(path)) {
-    return entitlementAddonsApp.fetch(request, env, ctx)
-  }
-
-  if (useProvisioningBranding(path, request.method)) {
-    return provisioningBrandingApp.fetch(request, env, ctx)
-  }
-
-  if (usePortal(path)) {
-    return portalApp.fetch(request, env, ctx)
-  }
-
-  return licenseApp.fetch(request, env, ctx)
+  return Response.json({ error: 'not_found' }, { status: 404, headers: { 'Cache-Control': 'no-store' } })
 }
 
 export default {
   async fetch(request: Request, env: Bindings, ctx: any): Promise<Response> {
+    if (request.method === 'OPTIONS' && isOpenCorsPath(new URL(request.url).pathname)) {
+      return withOpenCors(new Response(null, { status: 204 }))
+    }
     if (request.method === 'OPTIONS' && allowedOrigin(request)) {
       return withCors(request, new Response(null, { status: 204 }))
     }

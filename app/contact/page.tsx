@@ -21,13 +21,13 @@ export default function ContactPage() {
   return (
     <>
 
-      <main className="site-page-grid min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-28 lg:px-9 lg:pb-28 lg:pt-32">
+      <main className="site-page-grid min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-12 lg:px-9 lg:pb-28 lg:pt-16">
         <div className="mx-auto w-full max-w-[1180px]">
           <div className="mx-auto mb-9 max-w-[760px] text-center">
             <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-[#ff5f1f]">
               Contact / Schedule
             </p>
-            <h1 className="mt-3 text-[42px] font-extrabold leading-[0.98] tracking-[-0.05em] text-[#111] sm:text-[58px]">
+            <h1 className="mt-3 text-[length:min(42px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] text-[#111] sm:text-[58px]">
               Talk with Beag Labs.
             </h1>
             <p className="mx-auto mt-5 max-w-[650px] text-[16px] font-medium leading-7 text-[#555]">

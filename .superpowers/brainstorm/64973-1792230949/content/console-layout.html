@@ -1,0 +1,86 @@
+<h2>/provision console: which layout?</h2>
+<p class="subtitle">Both use the black rail from the site. A replaces the site's marketing rail with the console's own sections. B keeps the marketing rail and adds the console menu next to it.</p>
+
+<style>
+  .pv { font-family: ui-sans-serif, system-ui, sans-serif; color:#111; display:flex; height:440px; border:3px solid #111; overflow:hidden; background:#fafaf9; }
+  .pv * { box-sizing:border-box; }
+  .rail { width:72px; background:#111; display:flex; flex-direction:column; align-items:center; gap:12px; padding:12px 0; flex-shrink:0; }
+  .tile { width:46px; height:46px; border-radius:12px; border:2px solid #111; background:#fff; box-shadow:3px 3px 0 #ff5f1f; display:flex; align-items:center; justify-content:center; font-size:18px; position:relative; }
+  .tile.logo { background:#ff5f1f; box-shadow:3px 3px 0 #fff; font-weight:800; font-size:15px; margin-bottom:6px; }
+  .tile.on { background:#ff5f1f; box-shadow:1px 1px 0 #ff5f1f; transform:translate(2px,2px); }
+  .tile.avatar { background:#7cc4ff; font-weight:900; font-size:13px; }
+  .lbl { font:700 7px ui-monospace,monospace; text-transform:uppercase; letter-spacing:.06em; color:#bbb; margin-top:-7px; }
+  .main { flex:1; min-width:0; padding:16px 22px; background-image:linear-gradient(to right,rgba(17,17,17,.06) 1px,transparent 1px),linear-gradient(to bottom,rgba(17,17,17,.06) 1px,transparent 1px); background-size:24px 24px; }
+  .tabs { display:flex; gap:6px; border-bottom:3px solid #111; }
+  .tab { border:2px solid #111; border-bottom:none; border-radius:10px 10px 0 0; padding:6px 12px; font-weight:800; font-size:11px; background:#fff; box-shadow:3px 0 0 #111; }
+  .eyebrow { font:900 8px ui-monospace,monospace; letter-spacing:.14em; text-transform:uppercase; color:#b63700; margin-top:16px; }
+  .h { font-weight:900; font-size:26px; letter-spacing:-.04em; margin-top:4px; }
+  .card { margin-top:12px; border:2.5px solid #111; border-radius:14px; background:#fff; box-shadow:4px 4px 0 #111; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; }
+  .pill { display:inline-block; border:2px solid #111; border-radius:999px; padding:1px 8px; font:900 8px ui-monospace,monospace; text-transform:uppercase; background:#d9f99d; }
+  .meta { font:700 9px ui-monospace,monospace; color:#555; margin-top:4px; }
+  .btn { border:2px solid #111; border-radius:999px; padding:6px 12px; font-weight:800; font-size:10px; background:#ff5f1f; box-shadow:2px 2px 0 #111; white-space:nowrap; }
+  .btn.w { background:#fff; }
+  .side { width:170px; background:#fff; border-right:3px solid #111; padding:12px 10px; flex-shrink:0; }
+  .side .it { border:2px solid transparent; padding:7px 8px; font-weight:800; font-size:11px; border-radius:8px; }
+  .side .it.on { border-color:#111; background:#ff5f1f; box-shadow:2px 2px 0 #111; }
+  .mgr { margin-top:12px; border:2.5px dashed #999; border-radius:12px; padding:10px; font-size:10px; color:#666; }
+</style>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="padding:0">
+    <div class="card-image" style="padding:0">
+      <div class="pv">
+        <div class="rail">
+          <div class="tile logo">B_</div>
+          <div class="tile on">🖥</div><div class="lbl">Deploys</div>
+          <div class="tile">$</div><div class="lbl">Billing</div>
+          <div class="tile">🔑</div><div class="lbl">Licenses</div>
+          <div class="tile">🏛</div><div class="lbl">Org</div>
+          <div class="tile">✓</div><div class="lbl">Terms</div>
+          <div style="flex:1"></div>
+          <div class="tile avatar">AC</div><div class="lbl">You</div>
+        </div>
+        <div class="main">
+          <div class="tabs"><div class="tab">⌂ Deployments</div></div>
+          <div class="eyebrow">Acme County · Commercial</div>
+          <div class="h">Deployments</div>
+          <div class="card"><div><b style="font-size:13px">papyrus-prod-01</b> <span class="pill">running</span><div class="meta">eastus · D8s_v5 · 8 vCPU · $2.40/hr</div></div><div style="display:flex;gap:6px"><span class="btn">Resize</span><span class="btn w">Open ↗</span></div></div>
+          <div class="card" style="border-style:dashed;box-shadow:none;justify-content:center;color:#666;font-size:11px;font-weight:700">+ Deploy another from Azure Marketplace ↗</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A: One rail (recommended)</h3>
+      <p>The console's sections become the rail, like the Papyrus app. The <b>B_</b> tile goes back to the main site. The account tile at the bottom opens your account manager and sign-out.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="padding:0">
+    <div class="card-image" style="padding:0">
+      <div class="pv">
+        <div class="rail">
+          <div class="tile logo">B_</div>
+          <div class="tile">◧</div><div class="lbl">Solutions</div>
+          <div class="tile">◎</div><div class="lbl">Explore</div>
+          <div class="tile">▤</div><div class="lbl">Resources</div>
+          <div class="tile">▦</div><div class="lbl">Company</div>
+        </div>
+        <div class="side">
+          <div style="font:900 8px ui-monospace,monospace;letter-spacing:.14em;color:#b63700;text-transform:uppercase;margin-bottom:8px">Control plane</div>
+          <div class="it on">🖥 Deployments</div><div class="it">$ Billing</div><div class="it">🔑 Licenses</div><div class="it">🏛 Organization</div><div class="it">✓ Agreements</div>
+          <div class="mgr">Account manager card</div>
+        </div>
+        <div class="main">
+          <div class="tabs"><div class="tab">⌂ Deployments</div></div>
+          <div class="eyebrow">Acme County · Commercial</div>
+          <div class="h">Deployments</div>
+          <div class="card"><div><b style="font-size:13px">papyrus-prod-01</b> <span class="pill">running</span><div class="meta">eastus · D8s_v5 · 8 vCPU</div></div><span class="btn">Resize</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B: Site rail + console menu</h3>
+      <p>Keeps the marketing navigation. The console menu is restyled in the Papyrus look but still takes up a second column. It's tight on phones.</p>
+    </div>
+  </div>
+</div>

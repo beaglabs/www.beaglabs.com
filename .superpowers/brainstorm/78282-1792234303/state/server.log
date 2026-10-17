@@ -1,0 +1,2 @@
+{"type":"server-started","port":56251,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:56251/?key=04c51cb41803f281d69ff8eea52da9172420ab6ac7640a548601ac2bd225b1de","screen_dir":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/78282-1792234303/content","state_dir":"/Users/jdbohrman/www.beaglabs.com/.superpowers/brainstorm/78282-1792234303/state","idle_timeout_ms":14400000}
+{"type":"server-stopped","reason":"idle timeout"}

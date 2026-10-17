@@ -1,0 +1,56 @@
+{
+  "slug": "automate-government-document-intake",
+  "source": "http://localhost:3210",
+  "productVersion": "0.1.0",
+  "verifiedAt": "2026-10-13T16:31:18.853Z",
+  "checkpoints": [
+    {
+      "id": "01-describe-the-job",
+      "file": "/playbooks/automate-government-document-intake/automate-government-document-intake-step-01-describe-the-job.webp",
+      "action": "Typed request into the composer on Home (not submitted): \"Read each incoming benefits form, extract applicant and facility fields, and route incomplete forms to a reviewer.\"",
+      "evidence": "Read each incoming benefits form, extrac",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/",
+      "width": 1280,
+      "height": 800,
+      "bytes": 34424,
+      "visibleText": "LO Search sessions / ＋ New session ✦ Your workspace, connected What would you like to work on? Explore information, create documents, or work with your connected systems. You stay in control of actions that need permission. Create a briefing from my files ↗ Analyze a spreadsheet ↗ Explore my connected tools ↗ O CohereLabs/aya-expanse-32b ⌄ ✦ Papyrus × Attach documents Enter to send · Shift+Enter for a new line · up to 12 files SEND ↑ Search sessions Read each incoming benefits form, extract applicant and facility fields, and route incomplete forms to a reviewer."
+    },
+    {
+      "id": "02-connect-source",
+      "file": "/playbooks/automate-government-document-intake/automate-government-document-intake-step-02-connector-va-forms.webp",
+      "action": "Filtered the Integrations catalog for \"VA Forms\"",
+      "evidence": "VA Forms",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/integrations",
+      "width": 1280,
+      "height": 800,
+      "bytes": 17966,
+      "visibleText": "LO AGENT CONNECTORS Integrations DAEMON HEALTHY Customer Agent Operations AGENT CONNECTORS Integrations Connect your accounts to read and update supported services. Every connection is verified before use. VA Forms NEEDS SETUP Official OpenAPI operations with verified runtime credentials. CONNECT VA Forms"
+    },
+    {
+      "id": "03-library",
+      "file": "/playbooks/automate-government-document-intake/automate-government-document-intake-step-03-library-files.webp",
+      "action": "Opened /portal/library",
+      "evidence": "Durable files created or attached in Agent sessions",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/library",
+      "width": 1280,
+      "height": 800,
+      "bytes": 46116,
+      "visibleText": "LO AGENTFS FILE AUTHORITY Library DAEMON HEALTHY Customer Agent Operations AGENTFS · LOCAL SQLITE Library Durable files created or attached in Agent sessions. Files remain inside the customer-hosted AgentFS authority; this page is a browser, not a second storage system. REFRESH LIBRARY NAME SIZE MODIFIED ACTIONS ZIP dbcb45b635728fb4b761dad1433bfac7de15eebae4f9393108e2984459037fc5.zip /Library/Sessions/ca04173a7b57d5dce20b9bc6602095afd99e51571e76da0f69bf2f6fe7918843/Library/Apps/0c606f23-beea-4f0b-a45c-a064e6c708ad/releases/dbcb45b635728fb4b761dad1433bfac7de15eebae4f9393108e2984459037fc5.zip 2.1 MiB 10/12/2026 Open Download TSX frequencies.tsx /Library/Sessions/ca04173a7b57d5dce20b9bc6602095afd99e51571e76da0f69bf2f6fe7918843/Library/Apps/0c606f23-beea-4f0b-a45c-a064e6c708ad/src/routes/frequ"
+    },
+    {
+      "id": "04-gateways",
+      "file": "/playbooks/automate-government-document-intake/automate-government-document-intake-step-04-model-gateways.webp",
+      "action": "Opened /portal/gateways",
+      "evidence": "Configure the endpoints Papyrus is actually allowed to use",
+      "evidenceFound": true,
+      "url": "http://localhost:3210/portal/gateways",
+      "width": 1280,
+      "height": 800,
+      "bytes": 39280,
+      "visibleText": "LO INFERENCE CONTROL PLANE Gateways DAEMON HEALTHY Customer Agent Operations MASTRA MODEL GATEWAYS Inference gateways Configure the endpoints Papyrus is actually allowed to use. The session model picker is generated from these connected gateway catalogs only. CONFIGURE WITH AGENT → 1 CONNECTED 128 SELECTABLE MODELS Huggingface Gateway NEW-SESSION DEFAULT CONNECTED GATEWAYS Runtime sources 1/1 HG Huggingface Gateway Openai Compatible · openai-compatible DEFAULT FOR NEW SESSIONS CONNECTED ENDPOINT https://router.huggingface.co/v1 MASTRA CATALOG 128 models CohereLabs/aya-expanse-32b CohereLabs/aya-vision-32b · VISION CohereLabs/c4ai-command-a-03-2025 CohereLabs/c4ai-command-r-08-2024 CohereLabs/c4ai-command-r7b-12-2024 CohereLabs/c4ai-command-r7b-arabic-02-2025 CohereLabs/command-a-reasoning-"
+    }
+  ]
+}

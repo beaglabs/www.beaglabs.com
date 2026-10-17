@@ -1,17 +1,11 @@
-import { Hono, type Context } from 'hono'
 import { Resend } from 'resend'
 
-import { buildAuth } from './auth'
 import { first, getDb } from './db'
-import { adminOids, type Bindings } from './env'
+import type { Bindings } from './env'
 import { notifyMarketplaceEvent } from './marketplace-notify'
 
 type Row = Record<string, unknown>
-type AppEnv = { Bindings: Bindings }
-type AppContext = Context<AppEnv>
-type Admin = { oid: string; tenantId: string; email?: string; name?: string }
 
-const app = new Hono<AppEnv>()
 const PARTNER_CENTER_API = 'https://api.partnercenter.microsoft.com/insights/v1.1/cmp'
 const VM_USAGE_QUERY_ID = '2c6f384b-ad52-4aed-965f-32bfa09b3778'
 const REPORT_STATE_KEY = 'vm-normalized-usage'
@@ -516,27 +510,3 @@ export async function syncMarketplaceVmUsageScheduled(env: Bindings): Promise<{
     throw error
   }
 }
-
-async function getAdmin(c: AppContext): Promise<Admin | null> {
-  const session = await buildAuth(c.env).api.getSession({ headers: c.req.raw.headers })
-  if (!session) return null
-  const user = session.user as typeof session.user & { entraOid?: string; entraTenantId?: string }
-  const oid = user.entraOid?.toLowerCase() ?? ''
-  const tenantId = user.entraTenantId?.toLowerCase() ?? ''
-  if (!oid || !tenantId) return null
-  if (tenantId !== c.env.MICROSOFT_TENANT_ID.toLowerCase() || !adminOids(c.env).has(oid)) return null
-  return { oid, tenantId, email: user.email ?? undefined, name: user.name ?? undefined }
-}
-
-app.post('/api/v1/marketplace/sync', async (c) => {
-  const admin = await getAdmin(c)
-  if (!admin) return c.json({ error: 'unauthorized', message: 'Microsoft administrator sign-in required.' }, 401)
-  try {
-    return c.json(await syncMarketplaceVmUsageScheduled(c.env))
-  } catch (error) {
-    console.error('Marketplace scheduled report sync failed', error)
-    return c.json({ error: 'sync_failed', message: error instanceof Error ? error.message : 'Marketplace analytics sync failed.' }, 502)
-  }
-})
-
-export default app

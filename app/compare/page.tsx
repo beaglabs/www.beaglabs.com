@@ -39,7 +39,7 @@ export default function ComparePage() {
       <AnnouncementBanner />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="site-hero px-6 pb-16 pt-32 lg:px-9 lg:pb-20 lg:pt-36">
+      <section className="site-hero px-6 pb-16 pt-16 lg:px-9 lg:pb-20 lg:pt-20">
         <div className="mx-auto max-w-[1440px]">
           <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Comparisons', url: '/compare' }]} />
           <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -47,7 +47,7 @@ export default function ComparePage() {
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">{ledgerCount} cited claims</span>
           </div>
-          <h1 className="max-w-[1040px] text-[44px] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[60px] lg:text-[76px]">
+          <h1 className="max-w-[1040px] text-[length:min(44px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[60px] lg:text-[76px]">
             Compare AI agent platforms, with receipts<span className="text-[#ff5f1f]">.</span>
           </h1>
           <p className="mt-6 max-w-[780px] text-[18px] font-medium leading-[1.7] text-[#333]">

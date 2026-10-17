@@ -117,7 +117,7 @@ export default async function ComparisonDetailPage({
       <AnnouncementBanner />
 
 
-      <section className="site-hero px-6 pt-32 pb-20 lg:px-9 lg:pt-36 lg:pb-24">
+      <section className="site-hero px-6 pt-16 pb-20 lg:px-9 lg:pt-20 lg:pb-24">
         <div className="mx-auto max-w-[1440px]">
           <script
             type="application/ld+json"
@@ -130,7 +130,7 @@ export default async function ComparisonDetailPage({
             Comparison
           </p>
 
-          <h1 className="mb-6 max-w-[820px] text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
+          <h1 className="mb-6 max-w-[820px] text-[length:min(42px,9vw)] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
             {comparison.title}
           </h1>
 

@@ -19,7 +19,6 @@ const footerColumns = [
   { title: 'Resources', links: [
     { label: 'Claim Ledger', href: '/claims' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Partners', href: '/partners' },
     { label: 'Support', href: '/support' },
   ] },
   { title: 'Company & Legal', links: [

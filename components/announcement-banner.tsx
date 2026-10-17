@@ -11,7 +11,7 @@ export function AnnouncementBanner() {
         <p className="text-[12px] leading-[1.5] text-[#C9C9C9]">
           Looking for a AI enablement partner? Learn about our collaboration offerings {" "}
           <Link
-            href="/partners"
+            href="/contact"
             className="font-extrabold text-[#ff5f1f] underline decoration-[#ff5f1f] decoration-2 underline-offset-3 transition-colors hover:text-[#FF7A1A]"
           >
             Learn More &rarr;

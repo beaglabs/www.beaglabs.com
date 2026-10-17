@@ -15,7 +15,7 @@ export default function ImprintPage() {
   return (
     <main className="bg-white text-[#0a0a0a]">
 
-      <section className="site-hero pt-28 pb-20 px-6 lg:px-8">
+      <section className="site-hero pt-12 pb-20 px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold tracking-[-0.03em] text-[#111] mb-8">
             Imprint

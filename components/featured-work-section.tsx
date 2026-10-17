@@ -23,7 +23,7 @@ export function FeaturedWorkSection() {
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
         <div className="lg:sticky lg:top-32">
           <span className="nb-label mb-5 inline-block">Domains</span>
-          <h2 className="display-black mb-5 max-w-[560px] text-[48px] leading-[0.95] text-[#111] sm:text-[58px] lg:text-[70px]">
+          <h2 className="display-black mb-5 max-w-[560px] text-[length:min(48px,9vw)] leading-[0.95] text-[#111] sm:text-[58px] lg:text-[70px]">
             Built for regulated, document-heavy industries.
           </h2>
           <p className="max-w-[470px] border-t-[3px] border-[#111] pt-5 text-[17px] font-medium leading-[1.65] text-[#333]">

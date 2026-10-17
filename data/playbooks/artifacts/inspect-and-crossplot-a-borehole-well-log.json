@@ -1,0 +1,265 @@
+{
+  "slug": "inspect-and-crossplot-a-borehole-well-log",
+  "source": "http://localhost:3210",
+  "productVersion": "0.1.0",
+  "verifiedAt": "2026-10-13T18:06:34.492Z",
+  "model": "DeepSeek V4.1 Flash",
+  "kind": "run",
+  "prompt": "Use your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT.",
+  "files": [
+    "scorpio-e1-mt-eba-borehole-6038187.las"
+  ],
+  "approvals": [
+    {
+      "request": "Crossplot Well Log /Library/Sessions/980173f18e3b1b3c04131b24513bb3721482e5e9adffb78d481…"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "Well-log tracks",
+      "file": null
+    },
+    {
+      "name": "Well-log crossplot",
+      "file": null
+    }
+  ],
+  "transcript": "YOU\nUse your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT.\nPAPYRUS\nI'll inspect the LAS file first, then run the crossplot.\n◫ Well-log tracks ↗\nPAPYRUS\nNow the crossplot with the requested curves.\n◫ Well-log crossplot ↗\nPAPYRUS\nWell log inspection — Scorpio E1\nSource: …/Library/Uploads/73b321fbcc56d844bc71918172ce2baab98eebc096221428f2691878586c2c4a-89c7dd2f-scorpio-e1-mt-eba-borehole-6038187.las\nHeader: WELL = Scorpio E1 · UWI 6038-187 · LOC = Mt Eba · DATE 15/03/2015 · STRT 0.050 · STOP 136.600 · STEP 0.050 · NULL −99999 · 2,732 rows.\nDepth range\n0.05 m to 136.60 m (DEPT, unit M), regularly sampled at 0.05 m — roughly 136.6 m of section in 2,732 rows.\nCurves with units\nMNEMONIC\tUNIT\tMIN\tMAX\tVALID ROWS\nDEPT\tM\t0.05\t136.6\t2732\nCALI\tMM\t−56.28\t103.38\t2732\nDFAR\tG/CM3\t0.725\t5.989\t2701\nDNEAR\tG/CM3\t0.657\t3.382\t2701\nGAMN\tGAPI\t−2324.28\t169.67\t2691\nNEUT\tCPS\t81.00\t1666.0\t2492\nPR\tOHM/M\t115.51\t50499.9\t2692\nSP\tMV\t−3.049\t102.90\t2692\nCOND\tMS/M\t−117.00\t4978.16\t2697\nData-quality issues (these are genuine, from the values themselves)\nExtensive null runs at both ends of the log. NEUT, PR, SP, COND, GAMN, DFAR and DNEAR all carry nulls over roughly the first ~5 m and the last ~2.5 m. The logging suite effectively starts near 5 m and ends near 134.3 m, even though the header claims 0.05–136.60 m.\nNEUT is the sparsest curve — 2,492 valid of 2,732 (240 nulls, ~8.8%). It also splits into two clearly different populations: ~550–1,665 CPS in the upper/earlier part of the run and then ~81–400 CPS over the deeper logged interval. That step is a tool/scale condition change, not geology.\nConstant sentinel values masquerading as data. CALI = 49.765 MM repeated for the top 86 samples; DFAR = 4.587 G/CM3 repeated at top and bottom; DNEAR = 3.382 G/CM3 repeated; GAMN = −2324.28 GAPI repeated (a null-coded value that did not match the declared NULL of −99999, so it was read as a real number and drove GAMN's negative minimum); PR = 115.508 OHM/M repeated; SP = −3.049 MV repeated. These are pre-logging filler, not measurements.\nSensor spikes. CALI drops to −56.275 mm (physically impossible caliper) and spikes to 103.38 mm; PR hits the 50,499.9 Ω·m rail for long stretches (a saturated/rail value, not resistance); COND contains negative values down to −116.998 mS/m (non-physical). GAMN's −2324.28 GAPI floor reflects the same issue.\nDFAR envelope outliers. DFAR ranges 0.725–5.989 g/cm³, where 5.989 g/cm³ exceeds any real formation density — the 4.587 sentinel is the culprit. DNEAR's 3.382 g/cm³ top-of-log constant is likewise implausible as rock.\nNulls are not uniformly distributed, so any depth-by-depth multi-curve comparison silently drops different intervals per curve — the crossplot below keeps only 1,246 of 2,732 rows.\nCrossplot: DFAR (x) vs NEUT (y)\nPlot rendered in the Crossplot view. Axis ranges: DFAR 0.725 → 2.207 g/cm³ (linear), NEUT 81.0 → 1,607 CPS (linear).\nPlotted points: 1,246 — the tool thinned the log to every 2nd sample (2,732 rows) and kept only depths where both curves have values.\nPearson r = −0.572 (n = 1,246, both axes linear).\nShape: the cloud is broad and largely unstructured — not a single tight hyperbolic trend. There is a dense low-NEUT cluster (roughly 80–400 CPS) spread across the whole DFAR span, plus a separate higher-NEUT band (≈550–1,600 CPS) at lower DFAR. The split tracks the NEUT scale change noted above rather than a clean density–neutron response, which is why r is moderate and negative (negative being the conventional direction for this pairing).\nCaveats the tool flags: the statistic is descriptive of the plotted samples only, on linear–linear axes, and is not a validated relationship. It is also computed on a thinned sample and on data containing the sentinels, rails and nulls listed above — most notably the DFAR 4.587 constant and the PR/CALI spikes — so treat r as indicative, not as a calibrated density–neutron cross-plot.\nNo lithology, porosity or other interpretation has been inferred; these are the measured values and their quality only.\nDone\nACTIVITY\n2 STEPS\n↓ Latest message\n✦\n⌘ ↗",
+  "turns": [
+    {
+      "role": "user",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "Use your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "I'll inspect the LAS file first, then run the crossplot."
+        },
+        {
+          "type": "artifact",
+          "name": "Well-log tracks"
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "Now the crossplot with the requested curves."
+        },
+        {
+          "type": "artifact",
+          "name": "Well-log crossplot"
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Well log inspection — Scorpio E1"
+        },
+        {
+          "type": "paragraph",
+          "text": "**Source:** `…/Library/Uploads/73b321fbcc56d844bc71918172ce2baab98eebc096221428f2691878586c2c4a-89c7dd2f-scorpio-e1-mt-eba-borehole-6038187.las`"
+        },
+        {
+          "type": "paragraph",
+          "text": "**Header:** WELL = Scorpio E1 · UWI 6038-187 · LOC = Mt Eba · DATE 15/03/2015 · STRT 0.050 · STOP 136.600 · STEP 0.050 · NULL −99999 · 2,732 rows."
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "Depth range"
+        },
+        {
+          "type": "paragraph",
+          "text": "0.05 m to 136.60 m (DEPT, unit M), regularly sampled at 0.05 m — roughly 136.6 m of section in 2,732 rows."
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "Curves with units"
+        },
+        {
+          "type": "table",
+          "head": [
+            "MNEMONIC",
+            "UNIT",
+            "MIN",
+            "MAX",
+            "VALID ROWS"
+          ],
+          "rows": [
+            [
+              "DEPT",
+              "M",
+              "0.05",
+              "136.6",
+              "2732"
+            ],
+            [
+              "CALI",
+              "MM",
+              "−56.28",
+              "103.38",
+              "2732"
+            ],
+            [
+              "DFAR",
+              "G/CM3",
+              "0.725",
+              "5.989",
+              "2701"
+            ],
+            [
+              "DNEAR",
+              "G/CM3",
+              "0.657",
+              "3.382",
+              "2701"
+            ],
+            [
+              "GAMN",
+              "GAPI",
+              "−2324.28",
+              "169.67",
+              "2691"
+            ],
+            [
+              "NEUT",
+              "CPS",
+              "81.00",
+              "1666.0",
+              "2492"
+            ],
+            [
+              "PR",
+              "OHM/M",
+              "115.51",
+              "50499.9",
+              "2692"
+            ],
+            [
+              "SP",
+              "MV",
+              "−3.049",
+              "102.90",
+              "2692"
+            ],
+            [
+              "COND",
+              "MS/M",
+              "−117.00",
+              "4978.16",
+              "2697"
+            ]
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "Data-quality issues (these are genuine, from the values themselves)"
+        },
+        {
+          "type": "list",
+          "ordered": true,
+          "items": [
+            "**Extensive null runs at both ends of the log.** NEUT, PR, SP, COND, GAMN, DFAR and DNEAR all carry nulls over roughly the first ~5 m and the last ~2.5 m. The logging suite effectively starts near 5 m and ends near 134.3 m, even though the header claims 0.05–136.60 m.",
+            "**NEUT is the sparsest curve — 2,492 valid of 2,732 (240 nulls, ~8.8%).** It also splits into two clearly different populations: ~550–1,665 CPS in the upper/earlier part of the run and then ~81–400 CPS over the deeper logged interval. That step is a tool/scale condition change, not geology.",
+            "**Constant sentinel values masquerading as data.** CALI = 49.765 MM repeated for the top 86 samples; DFAR = 4.587 G/CM3 repeated at top and bottom; DNEAR = 3.382 G/CM3 repeated; GAMN = −2324.28 GAPI repeated (a null-coded value that did **not** match the declared NULL of −99999, so it was read as a real number and drove GAMN's negative minimum); PR = 115.508 OHM/M repeated; SP = −3.049 MV repeated. These are pre-logging filler, not measurements.",
+            "**Sensor spikes.** CALI drops to −56.275 mm (physically impossible caliper) and spikes to 103.38 mm; PR hits the 50,499.9 Ω·m rail for long stretches (a saturated/rail value, not resistance); COND contains negative values down to −116.998 mS/m (non-physical). GAMN's −2324.28 GAPI floor reflects the same issue.",
+            "**DFAR envelope outliers.** DFAR ranges 0.725–5.989 g/cm³, where 5.989 g/cm³ exceeds any real formation density — the 4.587 sentinel is the culprit. DNEAR's 3.382 g/cm³ top-of-log constant is likewise implausible as rock.",
+            "**Nulls are not uniformly distributed**, so any depth-by-depth multi-curve comparison silently drops different intervals per curve — the crossplot below keeps only 1,246 of 2,732 rows."
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Crossplot: DFAR (x) vs NEUT (y)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Plot rendered in the Crossplot view. Axis ranges: DFAR 0.725 → 2.207 g/cm³ (linear), NEUT 81.0 → 1,607 CPS (linear)."
+        },
+        {
+          "type": "list",
+          "ordered": false,
+          "items": [
+            "**Plotted points:** 1,246 — the tool thinned the log to every 2nd sample (2,732 rows) and kept only depths where _both_ curves have values.",
+            "**Pearson r = −0.572** (n = 1,246, both axes linear).",
+            "**Shape:** the cloud is broad and largely unstructured — not a single tight hyperbolic trend. There is a dense low-NEUT cluster (roughly 80–400 CPS) spread across the whole DFAR span, plus a separate higher-NEUT band (≈550–1,600 CPS) at lower DFAR. The split tracks the NEUT scale change noted above rather than a clean density–neutron response, which is why r is moderate and negative (negative being the conventional direction for this pairing).",
+            "**Caveats the tool flags:** the statistic is descriptive of the plotted samples only, on linear–linear axes, and is not a validated relationship. It is also computed on a thinned sample and on data containing the sentinels, rails and nulls listed above — most notably the DFAR 4.587 constant and the PR/CALI spikes — so treat r as indicative, not as a calibrated density–neutron cross-plot."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "No lithology, porosity or other interpretation has been inferred; these are the measured values and their quality only."
+        }
+      ]
+    }
+  ],
+  "runSeconds": 53,
+  "checkpoints": [
+    {
+      "id": "composer",
+      "file": "/playbooks/inspect-and-crossplot-a-borehole-well-log/inspect-and-crossplot-a-borehole-well-log-01-composer.webp",
+      "evidence": "Use your inspectWellLog tool on the atta",
+      "evidenceFound": true,
+      "width": 1280,
+      "height": 800,
+      "bytes": 38300,
+      "visibleText": "LO New session Search sessions / ＋ New session DA DeepSeek V4.1 Flash ⌄ ✦ Your workspace, connected What would you like to work on? Explore information, create documents, or work with your connected systems. You stay in control of actions that need permission. Create a briefing from my files ↗ Analyze a spreadsheet ↗ Explore my connected tools ↗ ✦ Papyrus × ▤ 89c7dd2f-scorpio-e1-mt-eba-borehole-6038187.las × Attach documents Enter to send · Shift+Enter for a new line · up to 12 files SEND ↑ Use your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT."
+    },
+    {
+      "id": "approval-1",
+      "file": "/playbooks/inspect-and-crossplot-a-borehole-well-log/inspect-and-crossplot-a-borehole-well-log-02-approval-1.webp",
+      "evidence": "Allow once",
+      "evidenceFound": true,
+      "width": 1280,
+      "height": 800,
+      "bytes": 31402,
+      "visibleText": "LO New session Search sessions / ＋ New session DA DeepSeek V4.1 Flash ⌄ YOU Use your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT. PAPYRUS I'll inspect the LAS file first, then run the crossplot. ◫ Well-log tracks ↗ PAPYRUS Now the crossplot with the requested curves. Waiting for approval ACTIVITY 2 STEPS PERMISSION REQUIRED · ONE USE Crossplot Well Log /Library/Sessions/980173f18e3b1b3c04131b24513bb3721482e5e9adffb78d481… Review this action before allowing this tool call to continue. INSPECT PAYLOAD DECLINE ALLOW ONCE ✦ ■ Stop"
+    },
+    {
+      "id": "result",
+      "file": "/playbooks/inspect-and-crossplot-a-borehole-well-log/inspect-and-crossplot-a-borehole-well-log-03-result.webp",
+      "evidence": null,
+      "evidenceFound": true,
+      "width": 1280,
+      "height": 800,
+      "bytes": 51716,
+      "visibleText": "LO Use your i Search sessions / ＋ New session DA DeepSeek V4.1 Flash ⌄ YOU Use your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT. PAPYRUS I'll inspect the LAS file first, then run the crossplot. ◫ Well-log tracks ↗ PAPYRUS Now the crossplot with the requested curves. ◫ Well-log crossplot ↗ PAPYRUS Well log inspection — Scorpio E1 Source: …/Library/Uploads/73b321fbcc56d844bc71918172ce2baab98eebc096221428f2691878586c2c4a-89c7dd2f-scorpio-e1-mt-eba-borehole-6038187.las Header: WELL = Scorpio E1 · UWI 6038-187 · LOC = Mt Eba · DATE 15/03/2015 · STRT 0.050 · STOP 136.600 · STEP 0.050 · NULL −99999 · 2,732 rows. Depth range 0.05 m to 136.60 m (DEPT, unit M), regularly sampled at 0.05 m — roughly 136.6 m of section in 2,732 rows. Curves with units MNEMONIC UNIT MIN MAX VALID ROWS DEPT M 0.05 136.6 2732 CALI MM −56.28 103.38 2732 DFAR G/CM3 0.725 5.989 2701 DNEAR G/CM3 0.657 3.382 2701 GAMN GAPI −2324.28 169.67 2691 NEUT CPS 81.00 1666.0 2492 PR OHM/M 115.51 50499.9 2692 SP MV −3.049 102.90 2692 COND MS/M −117.00 4978.16 2697 Data-quality issues (these are genuine, from the values themselves) Extensive null runs at both ends of the log. NEUT, PR, SP, COND, GAMN, DFAR and DNEAR all carry nulls over roughly the first ~5 m and the last ~2.5 m. The logging suite effectively starts near 5 m and ends near 134.3 m, even though the header claims 0.05–136.60 m. NEUT"
+    },
+    {
+      "id": "artifact-1",
+      "file": "/playbooks/inspect-and-crossplot-a-borehole-well-log/inspect-and-crossplot-a-borehole-well-log-04-artifact-1.webp",
+      "evidence": "Well-log tracks",
+      "evidenceFound": true,
+      "width": 1280,
+      "height": 800,
+      "bytes": 41664,
+      "visibleText": "LO Use your i Search sessions / ＋ New session DA DeepSeek V4.1 Flash ⌄ YOU Use your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT. PAPYRUS I'll inspect the LAS file first, then run the crossplot. ◫ Well-log tracks ↗ PAPYRUS Now the crossplot with the requested curves. ◫ Well-log crossplot ↗ PAPYRUS Well log inspection — Scorpio E1 Source: …/Library/Uploads/73b321fbcc56d844bc71918172ce2baab98eebc096221428f2691878586c2c4a-89c7dd2f-scorpio-e1-mt-eba-borehole-6038187.las Header: WELL = Scorpio E1 · UWI 6038-187 · LOC = Mt Eba · DATE 15/03/2015 · STRT 0.050 · STOP 136.600 · STEP 0.050 · NULL −99999 · 2,732 rows. Depth range 0.05 m to 136.60 m (DEPT, unit M), regularly sampled at 0.05 m — roughly 136.6 m of section in 2,732 rows. Curves with units MNEMONIC UNIT MIN MAX VALID ROWS DEPT M 0.05 136.6 2732 CALI MM −56.28 103.38 2732 DFAR G/CM3 0.725 5.989 2701 DNEAR G/CM3 0.657 3.382 2701 GAMN GAPI −2324.28 169.67 2691 NEUT CPS 81.00 1666.0 2492 PR OHM/M 115.51 50499.9 2692 SP MV −3.049 102.90 2692 COND MS/M −117.00 4978.16 2697 Data-quality issues (these are genuine, from the values themselves) Extensive null runs at both ends of the log. NEUT, PR, SP, COND, GAMN, DFAR and DNEAR all carry nulls over roughly the first ~5 m and the last ~2.5 m. The logging suite effectively starts near 5 m and ends near 134.3 m, even though the header claims 0.05–136.60 m. NEUT"
+    },
+    {
+      "id": "artifact-2",
+      "file": "/playbooks/inspect-and-crossplot-a-borehole-well-log/inspect-and-crossplot-a-borehole-well-log-05-artifact-2.webp",
+      "evidence": "Well-log crossplot",
+      "evidenceFound": true,
+      "width": 1280,
+      "height": 800,
+      "bytes": 42858,
+      "visibleText": "LO Use your i Search sessions / ＋ New session DA DeepSeek V4.1 Flash ⌄ YOU Use your inspectWellLog tool on the attached LAS file and report the depth range, the curves with units, and any data-quality issues. Then use crossplotWellLog with x=DFAR and y=NEUT. PAPYRUS I'll inspect the LAS file first, then run the crossplot. ◫ Well-log tracks ↗ PAPYRUS Now the crossplot with the requested curves. ◫ Well-log crossplot ↗ PAPYRUS Well log inspection — Scorpio E1 Source: …/Library/Uploads/73b321fbcc56d844bc71918172ce2baab98eebc096221428f2691878586c2c4a-89c7dd2f-scorpio-e1-mt-eba-borehole-6038187.las Header: WELL = Scorpio E1 · UWI 6038-187 · LOC = Mt Eba · DATE 15/03/2015 · STRT 0.050 · STOP 136.600 · STEP 0.050 · NULL −99999 · 2,732 rows. Depth range 0.05 m to 136.60 m (DEPT, unit M), regularly sampled at 0.05 m — roughly 136.6 m of section in 2,732 rows. Curves with units MNEMONIC UNIT MIN MAX VALID ROWS DEPT M 0.05 136.6 2732 CALI MM −56.28 103.38 2732 DFAR G/CM3 0.725 5.989 2701 DNEAR G/CM3 0.657 3.382 2701 GAMN GAPI −2324.28 169.67 2691 NEUT CPS 81.00 1666.0 2492 PR OHM/M 115.51 50499.9 2692 SP MV −3.049 102.90 2692 COND MS/M −117.00 4978.16 2697 Data-quality issues (these are genuine, from the values themselves) Extensive null runs at both ends of the log. NEUT, PR, SP, COND, GAMN, DFAR and DNEAR all carry nulls over roughly the first ~5 m and the last ~2.5 m. The logging suite effectively starts near 5 m and ends near 134.3 m, even though the header claims 0.05–136.60 m. NEUT"
+    }
+  ]
+}

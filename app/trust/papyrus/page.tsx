@@ -255,13 +255,13 @@ export default function PapyrusTrustCenter() {
     <main className="min-h-screen bg-[#FAFAF9] text-[#111]">
 
 
-      <section className="site-hero border-b-[3px] border-[#111] pt-16">
+      <section className="site-hero border-b-[3px] border-[#111]">
         <div className="mx-auto max-w-[1440px] px-6 py-8 lg:px-9 lg:py-10">
           <div className="overflow-hidden border-[3px] border-[#111] bg-white">
             <div className="grid min-h-[440px] lg:grid-cols-[.92fr_1.08fr]">
               <div className="flex flex-col justify-center px-7 py-14 lg:px-14">
                 <span className="nb-label mb-6 w-fit">Papyrus / Trust Center</span>
-                <h1 className="max-w-[700px] text-[46px] font-extrabold leading-[1.02] tracking-[-0.055em] sm:text-[58px]">
+                <h1 className="max-w-[700px] text-[length:min(46px,9vw)] font-extrabold leading-[1.02] tracking-[-0.055em] sm:text-[58px]">
                   Security evidence, published in the open.
                 </h1>
                 <p className="mt-6 max-w-[650px] text-[17px] font-medium leading-[1.65] text-[#404040]">
@@ -373,7 +373,7 @@ export default function PapyrusTrustCenter() {
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
                 Machine-readable controls
               </p>
-              <h2 className="mt-4 text-4xl font-extrabold leading-[1.02] tracking-[-0.05em] lg:text-6xl">
+              <h2 className="mt-4 text-[length:min(2.25rem,9vw)] font-extrabold leading-[1.02] tracking-[-0.05em] lg:text-6xl">
                 The model is explicit about ownership.
               </h2>
               <p className="mt-6 text-base font-medium leading-7 text-[#555]">
@@ -471,7 +471,7 @@ export default function PapyrusTrustCenter() {
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
                 Software bill of materials
               </p>
-              <h2 className="mt-4 text-4xl font-extrabold tracking-[-0.05em] lg:text-6xl">
+              <h2 className="mt-4 text-[length:min(2.25rem,9vw)] leading-[1.1] font-extrabold tracking-[-0.05em] lg:text-6xl">
                 {components.length} inspectable components.
               </h2>
             </div>
@@ -607,7 +607,7 @@ export default function PapyrusTrustCenter() {
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
               Need deployment evidence?
             </p>
-            <h2 className="mt-4 max-w-4xl text-4xl font-extrabold leading-[1.04] tracking-[-0.05em] lg:text-6xl">
+            <h2 className="mt-4 max-w-4xl text-[length:min(2.25rem,9vw)] font-extrabold leading-[1.04] tracking-[-0.05em] lg:text-6xl">
               Map the component into your actual authorization boundary.
             </h2>
           </div>

@@ -1,14 +1,11 @@
 # Copy to .dev.vars for local development only. Never commit real values.
 TURSO_DATABASE_URL="libsql://YOUR-DATABASE.turso.io"
 TURSO_AUTH_TOKEN=""
-BETTER_AUTH_SECRET=""
 MICROSOFT_CLIENT_ID=""
 MICROSOFT_CLIENT_SECRET=""
 MICROSOFT_TENANT_ID=""
-# Comma-separated Microsoft Entra object IDs (oid), not email addresses.
-ADMIN_MICROSOFT_OIDS=""
 
-# Production license signing uses a version-pinned Azure Key Vault key.
+# Offline license signing (npm run license:issue) uses a version-pinned Azure Key Vault key.
 # Use a dedicated service principal that can sign with this key and nothing else.
 AZURE_KEY_VAULT_TENANT_ID=""
 AZURE_KEY_VAULT_CLIENT_ID=""
@@ -16,7 +13,7 @@ AZURE_KEY_VAULT_CLIENT_SECRET=""
 # Full VERSIONED key URI, e.g. https://beag-license.vault.azure.net/keys/papyrus-license/<version>
 AZURE_KEY_VAULT_KEY_ID=""
 
-# Resend API key used for Marketplace lead threads and legacy partner email flows.
+# Resend API key used for Marketplace lead threads and usage-sync alerts.
 RESEND_API_KEY=""
 
 # Signed Teams workflow webhook for homepage trial-click notifications.
@@ -35,21 +32,33 @@ MARKETPLACE_ANALYTICS_CLIENT_SECRET=""
 
 # These are non-secret production vars in wrangler.jsonc; override locally if useful.
 BASE_URL="http://localhost:8787"
-PARTNERS_EMAIL="partnerships@beaglabs.com"
-PARTNER_FROM_EMAIL="Beag Labs Partners <partners@mail.beaglabs.com>"
 MARKETPLACE_FROM_EMAIL="Beag Labs Marketplace <sales@mail.beaglabs.com>"
-LOGO_DEV_TOKEN="pk_PJhuwvcfSPKKCJJxJcElsQ"
 
-
-# Customer provisioning portal. Commercial can fall back to MICROSOFT_CLIENT_ID /
-# MICROSOFT_CLIENT_SECRET if that app registration is configured as multitenant.
-PROVISION_COMMERCIAL_CLIENT_ID=""
-PROVISION_COMMERCIAL_CLIENT_SECRET=""
-
-# Azure Government is a separate national cloud and requires a separate app registration.
-PROVISION_GOVERNMENT_CLIENT_ID=""
-PROVISION_GOVERNMENT_CLIENT_SECRET=""
-
-# Papyrus Marketplace software rate used for portal estimates only. Microsoft
-# Marketplace remains the billing system of record.
-PAPYRUS_VCPU_HOURLY_USD="0.50"
+# --- Papyrus admin app, customer chat, event pipe -------------------------------
+# Admin app API app registration (staff tokens). Production value is in wrangler.jsonc.
+ADMIN_API_CLIENT_ID="76fd8c28-6c8d-4b41-ae10-a99da42880a1"
+# HMAC secret for 1-hour customer chat session JWTs. Generate: openssl rand -base64 48
+CHAT_SESSION_SECRET=""
+# Optional Marketplace plan pin for /api/provision/bootstrap (unset = plan check skipped).
+PAPYRUS_MARKETPLACE_PUBLISHER=""
+PAPYRUS_MARKETPLACE_PRODUCT=""
+# Customer.io Track API (forwarding skipped when unset). CUSTOMERIO_REGION = us | eu.
+CUSTOMERIO_SITE_ID=""
+CUSTOMERIO_API_KEY=""
+CUSTOMERIO_REGION="us"
+# Cloudflare RealtimeKit (huddles). API token needs the Realtime / Realtime Admin permission.
+CF_ACCOUNT_ID=""
+REALTIMEKIT_APP_ID=""
+REALTIMEKIT_API_TOKEN=""
+REALTIMEKIT_PRESET_NAME="group_call_participant"
+# Sentry internal integration client secret (verifies Sentry-Hook-Signature).
+SENTRY_CLIENT_SECRET=""
+# Push: FCM HTTP v1 (Android). FCM_SERVICE_ACCOUNT_JSON is the full service-account JSON key.
+FCM_PROJECT_ID=""
+FCM_SERVICE_ACCOUNT_JSON=""
+# Push: APNs token auth (macOS). APNS_PRIVATE_KEY is the .p8 PEM contents. APNS_ENVIRONMENT = production | sandbox.
+APNS_KEY_ID=""
+APNS_TEAM_ID=""
+APNS_BUNDLE_ID="com.beaglabs.papyrus.admin"
+APNS_PRIVATE_KEY=""
+APNS_ENVIRONMENT="production"

@@ -54,7 +54,7 @@ export default function SelfHostedPlatformsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }} />
 
-      <section className="site-hero px-6 pb-16 pt-32 lg:px-9 lg:pb-20 lg:pt-36">
+      <section className="site-hero px-6 pb-16 pt-16 lg:px-9 lg:pb-20 lg:pt-20">
         <div className="mx-auto max-w-[1440px]">
           <Breadcrumbs items={[
             { name: 'Home', url: '/' },
@@ -66,7 +66,7 @@ export default function SelfHostedPlatformsPage() {
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">{citedCount} cited claims</span>
           </div>
-          <h1 className="max-w-[1040px] text-[40px] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[56px] lg:text-[72px]">
+          <h1 className="max-w-[1040px] text-[length:min(40px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[56px] lg:text-[72px]">
             Self-hosted AI agent platforms, compared<span className="text-[#ff5f1f]">.</span>
           </h1>
           <p className="mt-6 max-w-[820px] text-[18px] font-medium leading-[1.7] text-[#333]">
@@ -78,7 +78,7 @@ export default function SelfHostedPlatformsPage() {
         </div>
       </section>
 
-      <section id="matrix" className="scroll-mt-28 border-y-[3px] border-[#111] bg-[#f3f1ec] px-6 py-14 lg:px-9">
+      <section id="matrix" className="scroll-mt-12 border-y-[3px] border-[#111] bg-[#f3f1ec] px-6 py-14 lg:px-9">
         <div className="mx-auto max-w-[1440px]">
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Comparison table</p>
           <h2 className="mt-3 max-w-[760px] text-[30px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[40px]">Filter by how you need to deploy and buy.</h2>
@@ -101,7 +101,7 @@ export default function SelfHostedPlatformsPage() {
           </p>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {platforms.map((platform) => (
-              <article key={platform.slug} id={platform.slug} className="scroll-mt-28 border-[3px] border-[#111] bg-white p-6 shadow-[5px_5px_0_#111]">
+              <article key={platform.slug} id={platform.slug} className="scroll-mt-12 border-[3px] border-[#111] bg-white p-6 shadow-[5px_5px_0_#111]">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Link href={productHref(platform)} className="flex items-center gap-3 hover:text-[#b33d0d]">
                     <ProductLogo name={platform.name} src={logoUrl(platform)} />

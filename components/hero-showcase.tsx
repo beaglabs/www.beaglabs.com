@@ -20,7 +20,7 @@ const stages: Stage[] = [
   { kind: "product", label: "Papyrus workspace", ms: 7000 },
 ]
 
-const WIPE_MS = 800
+export const WIPE_MS = 800
 
 // 8x8 Bayer matrix, normalized to 0..1
 const BAYER = (() => {
@@ -150,7 +150,7 @@ function DitherImage({ src, animate }: { src: string; animate: boolean }) {
 }
 
 /** Orange dither dissolve that covers (0 -> 1) then reveals (1 -> 0) whenever `run` changes. */
-function DitherWipe({ run }: { run: number }) {
+export function DitherWipe({ run }: { run: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const { cols, rows } = useCanvasSize(canvasRef)
 
@@ -261,7 +261,7 @@ export function HeroShowcase() {
 
   return (
     <div>
-      <div className="relative aspect-[4/3.4] w-full overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[8px_8px_0_#111] sm:aspect-[16/12] lg:aspect-[4/3.6]">
+      <div className="relative aspect-[4/3.4] w-full overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[8px_8px_0_#111] sm:aspect-[16/10] lg:aspect-[16/9]">
         {stage.kind === "dither" && <DitherImage src="/hero/brunel.jpg" animate={!reduce} />}
         {stage.kind === "video" && (
           <>

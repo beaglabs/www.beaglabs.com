@@ -20,11 +20,11 @@ export function LegalPageShell({
 
       <section className="px-6 py-14 lg:px-9 lg:py-16">
         <div className="mx-auto max-w-[1440px]">
-          <div className="site-hero px-6 pt-16 mb-14 border-b-[3px] border-[#111] pb-10">
+          <div className="site-hero px-6 mb-14 border-b-[3px] border-[#111] pb-10">
             <span className="nb-label mb-5 inline-block">
               {eyebrow}
             </span>
-            <h1 className="mb-3 text-[42px] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
+            <h1 className="mb-3 text-[length:min(42px,9vw)] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
               {title}
             </h1>
             <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#555]">

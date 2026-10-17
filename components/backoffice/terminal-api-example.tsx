@@ -54,7 +54,7 @@ export function TerminalApiExample() {
   return <section className="border-y-[3px] border-[#111] bg-[#fafaf9] px-6 py-20 lg:px-9">
     <div className="mx-auto max-w-[1440px]">
       <p className="font-mono text-xs font-bold uppercase tracking-widest text-[#a43d11]">One transaction. A defined API.</p>
-      <h2 className="display-black mt-4 text-4xl sm:text-5xl">Wrap a terminal workflow with OpenAPI.</h2>
+      <h2 className="display-black mt-4 text-[length:min(2.25rem,9vw)] leading-[1.1] sm:text-5xl">Wrap a terminal workflow with OpenAPI.</h2>
       <p className="mt-6 max-w-[850px] text-base leading-8 text-[#444]">Select a terminal field to see how it maps into an API contract. Then try a lookup to see the structured response. The adapter performs the screen navigation; OpenAPI describes the operation clients can call.</p>
       <div className="mt-10 grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_48px_minmax(0,1.2fr)] lg:items-start">
         <div className="min-w-0 border-[3px] border-[#111] bg-white">

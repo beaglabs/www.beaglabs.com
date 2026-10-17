@@ -55,7 +55,7 @@ export function CapabilitiesSection() {
         <div className="mb-14 grid grid-cols-1 gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
             <span className="nb-label mb-5 inline-block !bg-white">Capabilities</span>
-            <h2 className="display-black max-w-[620px] text-[48px] leading-[0.95] text-[#111] sm:text-[58px] lg:text-[72px]">
+            <h2 className="display-black max-w-[620px] text-[length:min(48px,9vw)] leading-[0.95] text-[#111] sm:text-[58px] lg:text-[72px]">
               Five ways we ship AI you actually own.
             </h2>
           </div>

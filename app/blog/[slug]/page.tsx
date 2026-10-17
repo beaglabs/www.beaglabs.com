@@ -199,7 +199,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <span className="mb-5 inline-block border-[2px] border-[#111] bg-[#111] px-3 py-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ff5f1f]">
               {post.category}
             </span>
-            <h1 className="text-[36px] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[46px] lg:text-[58px]">
+            <h1 className="text-[length:min(36px,9vw)] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[46px] lg:text-[58px]">
               {post.title}
             </h1>
             <p className="mt-5 max-w-[720px] text-[18px] font-medium leading-[1.6] text-[#111]">

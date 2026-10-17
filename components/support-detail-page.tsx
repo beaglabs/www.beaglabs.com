@@ -59,11 +59,11 @@ export function SupportDetailPage({
     <main className="bg-[#FAFAF9] text-[#111]">
 
 
-      <section className="site-hero overflow-hidden border-b-[3px] border-[#111] pt-16">
+      <section className="site-hero overflow-hidden border-b-[3px] border-[#111]">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
           <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
             <p className="nb-label mb-5 inline-block">{eyebrow}</p>
-            <h1 className="max-w-[760px] text-[52px] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
+            <h1 className="max-w-[760px] text-[length:min(52px,9vw)] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
               {title}
             </h1>
             <p className="mt-7 max-w-[680px] text-[18px] font-medium leading-[1.7] text-[#444]">
@@ -105,7 +105,7 @@ export function SupportDetailPage({
           <div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Support terms</p>
-              <h2 className="mt-2 text-[38px] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
+              <h2 className="mt-2 text-[length:min(38px,9vw)] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
                 How support works
               </h2>
             </div>
@@ -177,7 +177,7 @@ export function SupportDetailPage({
           <div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
               <span className="nb-label mb-5 inline-block">Diagnostics</span>
-              <h2 className="max-w-[760px] text-[38px] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
+              <h2 className="max-w-[760px] text-[length:min(38px,9vw)] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
                 What to include
               </h2>
             </div>
@@ -200,7 +200,7 @@ export function SupportDetailPage({
       <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-28">
           <span className="nb-label mb-5 inline-block">Scope</span>
-          <h2 className="max-w-[760px] text-[38px] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
+          <h2 className="max-w-[760px] text-[length:min(38px,9vw)] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
             What is covered
           </h2>
 
@@ -234,7 +234,7 @@ export function SupportDetailPage({
       <section className="border-b-[3px] border-[#111] bg-white">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-28">
           <span className="nb-label mb-5 inline-block">Self-service</span>
-          <h2 className="max-w-[760px] text-[38px] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
+          <h2 className="max-w-[760px] text-[length:min(38px,9vw)] font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-[52px]">
             Before you write
           </h2>
 

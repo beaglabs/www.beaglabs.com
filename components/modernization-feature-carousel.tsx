@@ -59,7 +59,7 @@ export function ModernizationFeatureCarousel() {
       <div className="mb-14 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-end lg:gap-16">
         <div>
           <span className="nb-label mb-5 inline-block !bg-[#ff5f1f]">What we modernize</span>
-          <h2 className="display-black text-[45px] leading-[.95] sm:text-[64px] lg:text-[76px]">Backoffice automation for public works</h2>
+          <h2 className="display-black text-[length:min(45px,9vw)] leading-[.95] sm:text-[64px] lg:text-[76px]">Backoffice automation for public works</h2>
         </div>
         <p className="text-base font-medium leading-relaxed text-[#111]">We connect your documents, applications, and legacy systems—then build practical ways for your team to use them.</p>
       </div>
@@ -78,7 +78,7 @@ export function ModernizationFeatureCarousel() {
           </aside>
 
           <StickySection.Content className="w-full min-w-0 md:border-l md:border-[#111]/30">
-            {FEATURES.map((f, i) => <StickySection.Panel key={f.number} index={i} className={`scroll-mt-28 px-0 py-10 md:px-12 md:py-12 ${i < FEATURES.length - 1 ? 'border-b border-[#111]/30' : ''}`}>
+            {FEATURES.map((f, i) => <StickySection.Panel key={f.number} index={i} className={`scroll-mt-12 px-0 py-10 md:px-12 md:py-12 ${i < FEATURES.length - 1 ? 'border-b border-[#111]/30' : ''}`}>
               <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:gap-16">
                 <div className="flex flex-col">
                   <div className="mb-6 flex items-center gap-3 font-mono text-[11px] font-semibold uppercase tracking-wider text-[#222]">
