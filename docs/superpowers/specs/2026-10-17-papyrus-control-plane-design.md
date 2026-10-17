@@ -150,6 +150,7 @@ retry. Done when all are green.
 - `verifyDeploymentKey(deploymentId: string, deploymentKey: string) → boolean`
 - `signStatus({ deploymentId, state: 'active' | 'suspended' }) → SignedStatus` with `issuedAt` now and `expiresAt` now + 7 days.
 - `registrationState(deploymentId: string) → 'pending' | 'registered'`
+- `chatSession({ accountId, userId, email, name, deploymentId?, tenantId? }) → { token, expiresAt, tenantId, user }` (same shape as `POST /api/papyrus/session`). Scoped to the tenant of the account's deployment once a Papyrus user has bound it, otherwise to `cp:<accountId>`; pre-tenant conversations move into the tenant when it resolves.
 
 `SignedStatus = { payload: { deploymentId: string, state: 'active' | 'suspended', issuedAt: string, expiresAt: string }, keyId: string, signature: string }`,
 signed exactly like licenses (canonical JSON, Key Vault RS256, same `keyId` scheme), so Papyrus verifies it with the keys it already trusts.

@@ -5,6 +5,8 @@ export interface Bindings {
   /** Service binding to workers/license, entrypoint `LicenseRpc`. */
   LICENSE: LicenseRpcApi
   BASE_URL: string
+  /** Origin of the Beag Labs chat API (the license Worker); the bubble calls it directly and the CSP allows it. */
+  CHAT_API_ORIGIN: string
   /** ghcr.io/beaglabs/papyrus/papyrus */
   PAPYRUS_IMAGE: string
   /** sha256:… of the signed hardened image every recipe runs. */

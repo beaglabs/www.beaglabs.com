@@ -7,11 +7,12 @@ import { Hono, type Context as HonoContext } from 'hono'
 import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
 import { handleWebhook, portalUrl, startCheckout } from './billing'
+import { CHAT_BUBBLE_JS, CHAT_SCRIPT_PATH, CHAT_SESSION_PATH } from './chat-bubble'
 import { encryptJson, randomToken } from './crypto'
 import type { Bindings } from './env'
 import { connectTemplate } from './providers/aws'
 import { credentialsFromForm, missingFields, providerById } from './providers/registry'
-import { checkCredentials, isHostname, loadCredentials, runStep } from './runner'
+import { checkCredentials, isHostname, license, loadCredentials, runStep } from './runner'
 import { Env, UserError, getOwnedDeployment, listDeployments, newId, nowIso, run, saveProgress, type Account, type Deployment } from './services'
 import { initialSteps, isStepId, record, resetFrom } from './setup'
 import { deploymentStatus } from './status'
@@ -24,6 +25,22 @@ export interface AppDeps {
 
 type Ctx = HonoContext<{ Bindings: Bindings }>
 type Program<A> = Effect.Effect<A, unknown, Env | HttpClient.HttpClient>
+
+/** Scripts only from this site; the chat bubble talks to the chat API over HTTPS and WebSocket and shows its avatars and images. */
+export const contentSecurityPolicy = (env: Pick<Bindings, 'CHAT_API_ORIGIN'>) => {
+  const chat = new URL(env.CHAT_API_ORIGIN)
+  const socket = `${chat.protocol === 'http:' ? 'ws:' : 'wss:'}//${chat.host}`
+  return [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    'font-src https://fonts.gstatic.com',
+    `img-src 'self' data: blob: ${chat.origin}`,
+    `connect-src 'self' ${chat.origin} ${socket}`,
+    "base-uri 'none'",
+    "frame-ancestors 'none'",
+  ].join('; ')
+}
 
 export function createApp(deps: AppDeps = {}) {
   const app = new Hono<{ Bindings: Bindings }>()
@@ -71,6 +88,7 @@ export function createApp(deps: AppDeps = {}) {
       if (origin && origin !== new URL(c.env.BASE_URL).origin) return c.text('Forbidden', 403)
     }
     await next()
+    c.header('content-security-policy', contentSecurityPolicy(c.env))
     c.header('x-frame-options', 'DENY')
     c.header('referrer-policy', 'same-origin')
     c.header('x-content-type-options', 'nosniff')
@@ -292,6 +310,36 @@ export function createApp(deps: AppDeps = {}) {
       }),
     ),
   )
+
+  // Beag Labs chat -----------------------------------------------------------------------------------------------
+
+  app.get(CHAT_SCRIPT_PATH, (c) => c.body(CHAT_BUBBLE_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
+
+  /** A customer chat session for the signed-in user, scoped by the license Worker to their deployment's tenant or to this account. */
+  app.post(CHAT_SESSION_PATH, async (c) => {
+    if (c.req.header('origin') !== new URL(c.env.BASE_URL).origin) return c.json({ error: 'Cross-origin request refused' }, 403)
+    const exit = await exec(
+      c,
+      Effect.gen(function* () {
+        const account = yield* currentAccount(c)
+        if (!account) return null
+        const deployment = (yield* listDeployments(account.id)).find((d) => d.license_deployment_id)
+        const session = yield* license('chat session', (rpc) =>
+          rpc.chatSession({
+            accountId: account.id,
+            userId: account.id,
+            email: account.email,
+            name: account.name ?? account.email,
+            ...(deployment?.license_deployment_id ? { deploymentId: deployment.license_deployment_id } : {}),
+          }),
+        )
+        return { ...session, apiOrigin: c.env.CHAT_API_ORIGIN }
+      }),
+    )
+    if (Exit.isSuccess(exit)) return exit.value ? c.json(exit.value, 200, { 'cache-control': 'no-store' }) : c.json({ error: 'Sign in first' }, 401)
+    const failure = userError(exit)!
+    return c.json({ error: failure.message }, failure.status as 500)
+  })
 
   // Papyrus check-in ----------------------------------------------------------------------------------------------
 

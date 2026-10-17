@@ -1,4 +1,5 @@
 import { PLAN } from './billing'
+import { CHAT_STYLES, chatBubbleMarkup } from './chat-bubble'
 import type { DnsRecord } from './dns'
 import { quickCreateUrl } from './providers/aws'
 import { LOGOS } from './providers/logos'
@@ -81,10 +82,10 @@ export const layout = (title: string, body: string, account?: Account | null) =>
 <title>${esc(title)} · Papyrus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Roboto+Condensed:wght@700;800&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
-<style>${STYLES}</style></head>
+<style>${STYLES}${account ? CHAT_STYLES : ''}</style></head>
 <body><header class="chrome"><div class="in"><a class="brand" href="/">Beag Labs <span>/</span> Papyrus</a>
 <nav>${account ? `<a href="/deploy">Deployments</a><a href="/provision">Provision</a><a href="/billing">Billing</a><a href="/logout">Sign out</a>` : `<a href="/login">Sign in</a><a href="/signup">Sign up</a>`}</nav></div></header>
-<main>${body}</main></body></html>`
+<main>${body}</main>${account ? chatBubbleMarkup() : ''}</body></html>`
 
 const notice = (message?: string | null, kind: 'error' | 'ok' = 'error') => (message ? `<div class="notice ${kind}" role="${kind === 'error' ? 'alert' : 'status'}">${esc(message)}</div>` : '')
 

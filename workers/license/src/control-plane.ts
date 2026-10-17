@@ -3,12 +3,12 @@
  * `LicenseRpc` service binding; Papyrus calls the bootstrap exchange route. Spec:
  * docs/superpowers/specs/2026-10-17-papyrus-control-plane-design.md ("Contract between the three pieces").
  */
-import { deploymentKeyHash, newDeploymentKey } from './auth'
+import { deploymentKeyHash, issueChatSession, newDeploymentKey } from './auth'
 import { signCanonicalWithAzureKeyVault, signLicenseWithAzureKeyVault } from './azure-key-vault-signer'
-import { first, getDb } from './db'
+import { first, getDb, rows } from './db'
 import type { Bindings } from './env'
 import type { SignedLicense } from './license'
-import { ApiError, id, now, randomToken, readJsonObject, requireStr, sha256Hex } from './util'
+import { ApiError, id, now, randomToken, readJsonObject, requireStr, sha256Hex, str } from './util'
 
 type Row = Record<string, unknown>
 
@@ -18,6 +18,9 @@ export type CreateDeploymentInput = { accountId: string; hostname: string; provi
 export type CreateDeploymentResult = { deploymentId: string; bootstrapToken: string; license: SignedLicense }
 export type StatusPayload = { deploymentId: string; state: DeploymentState; issuedAt: string; expiresAt: string }
 export type SignedStatus = { payload: StatusPayload; keyId: string; signature: string }
+export type ChatSessionInput = { accountId: string; userId: string; email: string; name: string; deploymentId?: string; tenantId?: string }
+/** Same shape as `POST /api/papyrus/session`. */
+export type ChatSessionResult = { token: string; expiresAt: string; tenantId: string; user: { oid: string; name: string } }
 
 /** Every licensable feature for the commercial profile (classification banners are a government add-on). */
 export const CONTROL_PLANE_FEATURES = ['core', 'teams', 'email', 'security-connectors', 'action-executors', 'agent-peers']
@@ -128,4 +131,82 @@ export async function handleControlPlaneExchange(request: Request, env: Bindings
       known.exchanged_at ? 'This bootstrap token was already exchanged.' : 'This bootstrap token has expired.')
   }
   return Response.json({ deploymentId, deploymentKey }, { headers: { 'Cache-Control': 'no-store' } })
+}
+
+// ---------------------------------------------------------------------------
+// Chat sessions for control-plane users (papyrus.beaglabs.com)
+
+/** Chat scope for a control-plane account whose deployments have no Entra tenant yet. Shows in the admin app as its own customer. */
+export const accountChatScope = (accountId: string) => `cp:${accountId.toLowerCase()}`
+
+/**
+ * Mints a customer chat session for a signed-in control-plane user. Once one of the account's deployments is bound to
+ * an Entra tenant (a Papyrus user signed in), the session joins that tenant's team thread; until then it is scoped to
+ * the account. The account's earlier conversations move into the tenant the first time it resolves.
+ */
+export async function chatSession(env: Bindings, input: ChatSessionInput): Promise<ChatSessionResult> {
+  const accountId = requireStr(input?.accountId, 'accountId', 128)
+  const userId = requireStr(input?.userId, 'userId', 128)
+  const email = str(input.email, 320)
+  const name = str(input.name, 256) ?? email ?? 'Papyrus user'
+  const requestedDeployment = str(input.deploymentId, 128)
+  const requestedTenant = str(input.tenantId, 64)?.toLowerCase() ?? null
+  const db = getDb(env)
+  const owned = rows<Row>(await db.execute({
+    sql: `SELECT c.deployment_id, d.tenant_id FROM control_plane_deployments c JOIN papyrus_deployments d ON d.id = c.deployment_id
+          WHERE c.account_id=? ORDER BY d.tenant_id IS NULL, c.created_at`,
+    args: [accountId],
+  }))
+  const deployment = requestedDeployment ? owned.find((row) => row.deployment_id === requestedDeployment) : owned[0]
+  if (requestedDeployment && !deployment) throw new ApiError(403, 'deployment_not_owned', 'This deployment belongs to another account.')
+  const boundTenant = deployment?.tenant_id ? String(deployment.tenant_id) : null
+  if (requestedTenant && requestedTenant !== boundTenant) throw new ApiError(403, 'tenant_mismatch', 'This account is not bound to that tenant.')
+
+  const scope = accountChatScope(accountId)
+  const tenantId = boundTenant ?? scope
+  const timestamp = now()
+  await db.execute({
+    sql: `INSERT INTO tenants (tenant_id, first_seen_at, last_seen_at) VALUES (?,?,?)
+          ON CONFLICT(tenant_id) DO UPDATE SET last_seen_at=excluded.last_seen_at`,
+    args: [tenantId, timestamp, timestamp],
+  })
+  if (boundTenant) await adoptAccountConversations(env, scope, boundTenant)
+  await db.execute({
+    sql: `INSERT INTO tenant_users (tenant_id, oid, name, email, first_seen_at, last_seen_at) VALUES (?,?,?,?,?,?)
+          ON CONFLICT(tenant_id, oid) DO UPDATE SET name=excluded.name, email=COALESCE(excluded.email, tenant_users.email), last_seen_at=excluded.last_seen_at`,
+    args: [tenantId, userId, name, email, timestamp, timestamp],
+  })
+  const session = await issueChatSession(env, { oid: userId, tid: tenantId, dep: deployment ? String(deployment.deployment_id) : '', name })
+  return { token: session.token, expiresAt: session.expiresAt, tenantId, user: { oid: userId, name } }
+}
+
+/** Moves an account's pre-tenant conversations into the tenant: private threads as they are, team messages appended to the tenant's team thread. */
+async function adoptAccountConversations(env: Bindings, scope: string, tenantId: string): Promise<void> {
+  const db = getDb(env)
+  if (!first<Row>(await db.execute({ sql: 'SELECT 1 AS ok FROM tenants WHERE tenant_id=?', args: [scope] }))) return
+  const oldTeam = first<Row>(await db.execute({ sql: "SELECT id FROM conversations WHERE tenant_id=? AND kind='team'", args: [scope] }))
+  const target = first<Row>(await db.execute({ sql: "SELECT id FROM conversations WHERE tenant_id=? AND kind='team'", args: [tenantId] }))
+  const statements: { sql: string; args: unknown[] }[] = []
+  if (oldTeam && target) {
+    const from = String(oldTeam.id)
+    const to = String(target.id)
+    const top = first<Row>(await db.execute({ sql: 'SELECT COALESCE(MAX(seq), 0) AS seq FROM messages WHERE conversation_id=?', args: [to] }))
+    statements.push(
+      { sql: 'UPDATE messages SET conversation_id=?, seq=seq+? WHERE conversation_id=?', args: [to, Number(top?.seq ?? 0), from] },
+      { sql: 'UPDATE chat_attachments SET conversation_id=? WHERE conversation_id=?', args: [to, from] },
+      { sql: 'UPDATE huddles SET conversation_id=? WHERE conversation_id=?', args: [to, from] },
+      { sql: 'UPDATE inbox_items SET conversation_id=? WHERE conversation_id=?', args: [to, from] },
+      { sql: 'DELETE FROM conversation_reads WHERE conversation_id=?', args: [from] },
+      { sql: 'UPDATE conversations SET last_message_at=(SELECT MAX(created_at) FROM messages WHERE conversation_id=?) WHERE id=?', args: [to, to] },
+      { sql: 'DELETE FROM conversations WHERE id=?', args: [from] },
+    )
+  }
+  statements.push(
+    { sql: 'UPDATE conversations SET tenant_id=? WHERE tenant_id=?', args: [tenantId, scope] },
+    { sql: 'UPDATE inbox_items SET tenant_id=? WHERE tenant_id=?', args: [tenantId, scope] },
+    { sql: 'UPDATE tenant_events SET tenant_id=? WHERE tenant_id=?', args: [tenantId, scope] },
+    { sql: 'DELETE FROM tenant_users WHERE tenant_id=?', args: [scope] },
+    { sql: 'DELETE FROM tenants WHERE tenant_id=?', args: [scope] },
+  )
+  await db.batch(statements)
 }

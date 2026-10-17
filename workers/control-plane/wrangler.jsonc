@@ -16,6 +16,7 @@
   "services": [{ "binding": "LICENSE", "service": "beaglabs-license", "entrypoint": "LicenseRpc" }],
   "vars": {
     "BASE_URL": "https://papyrus.beaglabs.com",
+    "CHAT_API_ORIGIN": "https://license.beaglabs.com",
     "PAPYRUS_IMAGE": "ghcr.io/beaglabs/papyrus/papyrus",
     "PAPYRUS_IMAGE_DIGEST": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
     "MAGIC_LINK_FROM_EMAIL": "Papyrus <papyrus@mail.beaglabs.com>",

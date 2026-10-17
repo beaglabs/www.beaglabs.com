@@ -248,7 +248,8 @@ app.post('/api/admin/leads/:id/assign', async (c) => {
 // Customers
 
 const CUSTOMER_SELECT = `SELECT t.tenant_id, t.organization_id, t.first_seen_at, t.last_seen_at,
-    COALESCE(o.display_name, o.legal_name) AS org_name,
+    COALESCE(o.display_name, o.legal_name, CASE WHEN t.tenant_id LIKE 'cp:%' THEN (SELECT COALESCE(u.name || ' · ' || u.email, u.email, u.name)
+      FROM tenant_users u WHERE u.tenant_id = t.tenant_id ORDER BY u.first_seen_at LIMIT 1) END) AS org_name,
     ${PRIMARY_MANAGER('t.organization_id')} AS account_manager_id,
     (SELECT COUNT(*) FROM papyrus_deployments d WHERE d.tenant_id = t.tenant_id) AS deployments,
     (SELECT d.version FROM papyrus_deployments d WHERE d.tenant_id = t.tenant_id AND d.version IS NOT NULL ORDER BY d.last_seen_at DESC LIMIT 1) AS version,
