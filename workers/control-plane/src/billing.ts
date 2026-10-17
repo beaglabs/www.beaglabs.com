@@ -1,15 +1,24 @@
 import * as Stripe from '@distilled.cloud/stripe'
-import { CreateBillingPortalSession, CreateCheckoutSession } from '@distilled.cloud/stripe/stripe'
+import { CreateBillingPortalSession, CreateCheckoutSession, GetSubscription } from '@distilled.cloud/stripe/stripe'
 import { constructEvent, type StripeEvent } from '@distilled.cloud/stripe/Webhooks'
 import * as Effect from 'effect/Effect'
 import * as FetchHttpClient from 'effect/http/FetchHttpClient'
 import * as Layer from 'effect/Layer'
 import * as Redacted from 'effect/Redacted'
 import { logEvent } from './events'
+import { PLATFORM_MONTHLY_USD, TRIAL_DAYS } from './pricing'
 import { Env, UserError, first, nowIso, run, type Account, type BillingState, type Deployment } from './services'
 
-/** One plan: $13,000/month flat per deployment, unlimited users, 14-day free trial, card collected at signup. */
-export const PLAN = { amountCents: 1_300_000, currency: 'usd', interval: 'month', trialDays: 14, name: 'Papyrus deployment' } as const
+/**
+ * One subscription per deployment, three items on one Stripe product: the $250/month platform price (licensed) and two
+ * metered prices (VM hours, agent-seconds) fed by Billing Meter events (src/metering.ts). 14-day trial, card at signup.
+ */
+export const checkoutLineItems = (env: { STRIPE_PRICE_PLATFORM: string; STRIPE_PRICE_COMPUTE: string; STRIPE_PRICE_EXECUTION: string }) => [
+  { price: env.STRIPE_PRICE_PLATFORM, quantity: 1 },
+  // Metered prices take no quantity: usage comes from meter events.
+  { price: env.STRIPE_PRICE_COMPUTE },
+  { price: env.STRIPE_PRICE_EXECUTION },
+]
 
 /** Stripe subscription status → the deployment's billing state. */
 export const billingStateFor = (status: string | null | undefined): Exclude<BillingState, 'none'> =>
@@ -24,19 +33,13 @@ const stripeFailure = (cause: unknown) => new UserError({ message: `Stripe: ${ca
 export const startCheckout = (account: Account, deployment: Deployment) =>
   Effect.gen(function* () {
     const env = yield* Env
-    const lineItem = env.STRIPE_PRICE_ID
-      ? { price: env.STRIPE_PRICE_ID, quantity: 1 }
-      : {
-          quantity: 1,
-          price_data: { currency: PLAN.currency, unit_amount: PLAN.amountCents, recurring: { interval: PLAN.interval }, product_data: { name: PLAN.name } },
-        }
     const session = yield* CreateCheckoutSession({
       mode: 'subscription',
       client_reference_id: deployment.id,
       ...(deployment.stripe_customer_id ? { customer: deployment.stripe_customer_id } : { customer_email: account.email }),
       payment_method_collection: 'always',
-      line_items: [lineItem],
-      subscription_data: { trial_period_days: PLAN.trialDays, metadata: { deployment_id: deployment.id, account_id: account.id } },
+      line_items: checkoutLineItems(env),
+      subscription_data: { trial_period_days: TRIAL_DAYS, metadata: { deployment_id: deployment.id, account_id: account.id } },
       metadata: { deployment_id: deployment.id },
       success_url: `${env.BASE_URL}/deploy/${deployment.id}`,
       cancel_url: `${env.BASE_URL}/billing`,
@@ -122,11 +125,64 @@ export const billingUpdateFor = (event: StripeEvent): BillingUpdate => {
   }
 }
 
-const price = `$${(PLAN.amountCents / 100).toLocaleString('en-US')}/mo`
+const price = `$${PLATFORM_MONTHLY_USD}/month platform + usage`
 
 /** "Oct 31" (UTC). */
 export const shortDate = (iso: string | null | undefined) =>
   iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''
+
+const DAY_MS = 86_400_000
+
+/** Whole days until the trial ends, rounded up; 0 once it has ended. Null when the end is unknown. */
+export const trialDaysLeft = (trialEnd: string | null | undefined, now = Date.now()) => {
+  const end = Date.parse(trialEnd ?? '')
+  return Number.isNaN(end) ? null : Math.max(0, Math.ceil((end - now) / DAY_MS))
+}
+
+/** "Trial · 12 days left · ends Oct 31" (or "Trial" while Stripe has not said when it ends). */
+export const trialStatus = (trialEnd: string | null | undefined, now = Date.now()) => {
+  const days = trialDaysLeft(trialEnd, now)
+  if (days === null) return 'Trial'
+  if (days === 0) return `Trial · ends today`
+  return `Trial · ${days} day${days === 1 ? '' : 's'} left · ends ${shortDate(trialEnd)}`
+}
+
+/** A deployment whose subscription is in its free trial. */
+export const isTrialing = (deployment: Pick<Deployment, 'billing_state' | 'stripe_status'>) => deployment.billing_state === 'active' && deployment.stripe_status === 'trialing'
+
+const saveTrialEnd = (deploymentId: string, trialEnd: string) =>
+  run(
+    'INSERT INTO billing_periods (deployment_id, trial_end, updated_at) VALUES (?, ?, ?) ON CONFLICT(deployment_id) DO UPDATE SET trial_end = excluded.trial_end, updated_at = excluded.updated_at',
+    deploymentId,
+    trialEnd,
+    nowIso(),
+  )
+
+/**
+ * Trial ends normally arrive with customer.subscription.* webhooks. For a trialing deployment that has none stored
+ * (e.g. subscribed before trial_end was recorded), read the subscription from Stripe once and store it. Best effort.
+ */
+export const backfillTrialEnds = (deployments: Deployment[]) =>
+  Effect.gen(function* () {
+    const missing = deployments.filter((d) => isTrialing(d) && !d.trial_end && d.stripe_subscription_id)
+    if (!missing.length) return
+    const env = yield* Env
+    for (const deployment of missing) {
+      const subscription = yield* GetSubscription({ subscription_exposed_id: deployment.stripe_subscription_id! }).pipe(Effect.provide(stripeLayer(env)), Effect.orElseSucceed(() => null))
+      const trialEnd = (subscription as { trial_end?: number | null } | null)?.trial_end
+      if (typeof trialEnd !== 'number') continue
+      deployment.trial_end = new Date(trialEnd * 1000).toISOString()
+      yield* saveTrialEnd(deployment.id, deployment.trial_end).pipe(Effect.ignore)
+    }
+  })
+
+/** The earliest trial end among an account's trialing deployments, for the trial banner; null when none is trialing. */
+export const accountTrial = (deployments: Deployment[]) => {
+  const trialing = deployments.filter(isTrialing)
+  if (!trialing.length) return null
+  const ends = trialing.map((d) => d.trial_end).filter((end): end is string => Boolean(end)).sort()
+  return { trialEnd: ends[0] ?? null }
+}
 
 /** The Activity line for a subscription change. Never includes Stripe ids beyond what the customer already sees. */
 export const billingEventFor = (update: Extract<BillingUpdate, { kind: 'status' }>) => {
@@ -167,14 +223,7 @@ export const applyBillingUpdate = (update: BillingUpdate) =>
       nowIso(),
       deploymentId,
     )
-    if (update.trialEnd) {
-      yield* run(
-        'INSERT INTO billing_periods (deployment_id, trial_end, updated_at) VALUES (?, ?, ?) ON CONFLICT(deployment_id) DO UPDATE SET trial_end = excluded.trial_end, updated_at = excluded.updated_at',
-        deploymentId,
-        update.trialEnd,
-        nowIso(),
-      )
-    }
+    if (update.trialEnd) yield* saveTrialEnd(deploymentId, update.trialEnd)
     const accountId = yield* accountOf(deploymentId)
     if (accountId) yield* logEvent({ accountId, deploymentId, source: 'billing', ...billingEventFor(update) })
   })

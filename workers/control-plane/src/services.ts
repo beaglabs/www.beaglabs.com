@@ -22,6 +22,8 @@ const d1 = <A>(run: (db: D1Database) => Promise<A>) =>
 export const all = <T>(sql: string, ...args: unknown[]) => d1(async (db) => (await db.prepare(sql).bind(...args).all<T>()).results ?? [])
 export const first = <T>(sql: string, ...args: unknown[]) => d1(async (db) => (await db.prepare(sql).bind(...args).first<T>()) ?? null)
 export const run = (sql: string, ...args: unknown[]) => d1(async (db) => (await db.prepare(sql).bind(...args).run()).meta?.changes ?? 0)
+/** INSERT one row; returns its rowid. */
+export const insert = (sql: string, ...args: unknown[]) => d1(async (db) => Number((await db.prepare(sql).bind(...args).run()).meta?.last_row_id ?? 0))
 
 export const nowIso = () => new Date().toISOString()
 export const newId = (prefix: string) => `${prefix}_${crypto.randomUUID().replace(/-/g, '').slice(0, 20)}`
@@ -32,6 +34,8 @@ export interface Account {
   name: string | null
   organization: string | null
   created_at: string
+  /** Set per request on signed-in pages: the earliest end of a running trial, for the trial banner. */
+  trial?: { trialEnd: string | null } | null
 }
 
 export type BillingState = 'none' | 'active' | 'suspended'

@@ -16,7 +16,8 @@ every deployment and whether it is paid removes them.
 ## Goals
 
 - `papyrus.beaglabs.com` with `/signup`, `/login`, `/billing`, `/provision`, `/deploy` (and the setup page they lead to).
-- One plan: **$13,000/month flat per deployment, unlimited users, after a 14-day free trial**, billed through Stripe.
+- One plan per deployment, unlimited users, after a 14-day free trial, billed through Stripe: **$250/month platform +
+  $0.50 per VM hour + $0.00194444 per agent-second (≈ $7/agent-hour)**.
 - A provider dropdown, with logos, of every Distilled provider that can run the hardened container, and a credential form
   generated from a per-provider description.
 - AWS: a one-click **Connect AWS** button (AWS logo) that creates a role only the control plane can assume.
@@ -84,8 +85,28 @@ retry. Done when all are green.
 
 ### Billing
 
-- One Stripe subscription per deployment: $13,000/month flat, 14-day free trial, card collected at signup.
-  Stripe Checkout to start it; the Stripe customer portal for cards and invoices.
+- One Stripe subscription per deployment on product `prod_VSbVkLF1STkdjO` (`STRIPE_PRODUCT`), with three items:
+  - Platform: **$250/month**, licensed price `STRIPE_PRICE_PLATFORM` (quantity 1).
+  - VM compute: **$0.50 per VM hour**, metered price `STRIPE_PRICE_COMPUTE`.
+  - Agent execution: **$0.00194444 per agent-second** (≈ $7/agent-hour), metered price `STRIPE_PRICE_EXECUTION`.
+  Price ids are wrangler vars. Checkout creates the subscription with all three items (metered items without a quantity),
+  a 14-day trial and the card collected at signup; the Stripe customer portal handles cards and invoices.
+- Metered prices are tied to Stripe Billing Meters. The control plane resolves each one at runtime
+  (`price.recurring.meter` → `GET /v1/billing/meters/{id}` → `event_name`) and caches it in D1 (`stripe_meters`). No event
+  names are hardcoded and the control plane creates no Stripe objects.
+- Compute: an hourly cron (`5 * * * *`) sends one meter event, value 1, per deployment that was running during the hour
+  that just ended (provider set, deploy step passed before the hour ended, billing active). Identifier and Idempotency-Key
+  `<deploymentId>:<hourStart ISO>`. Failed sends are retried by later runs for 24 hours.
+- Execution: Papyrus reports agent-seconds to `POST /api/deployments/usage` (contract below); each report becomes one meter
+  event, value `executionSeconds`, identifier `<deploymentId>:<reportId>`.
+- While a subscription is trialing no meter events are sent: the usage is recorded as dropped and logged as INFO.
+  Every meter push (sent, dropped, failed) is one `billing` line in Activity, never with customer ids or keys.
+- The trial end comes from Stripe's `trial_end` on `customer.subscription.*` webhooks (`billing_periods`); a trialing
+  deployment without one is backfilled from `GET /v1/subscriptions/{id}`. The Plan card and Billing page show
+  "Trial · N days left · ends Oct 31", and a slim trial banner sits at the top of every console page while trialing.
+- The Plan card and Billing page show the three prices and "This month so far: N VM hours · M agent minutes · $X estimated"
+  from local meter records. The plan step before payment shows the three charges and an estimate by organization size,
+  both rendered from constants (`src/pricing.ts`).
 - The trial starts when the customer subscribes; deploying is allowed during the trial.
 - Stripe webhooks set each deployment's billing state: `trialing`/`active` → active; `past_due`/`unpaid`/`canceled` → `suspended`.
 - Nothing is ever deleted from the customer's cloud. A cancelled or unpaid deployment stays suspended; the customer removes
@@ -161,6 +182,23 @@ signed exactly like licenses (canonical JSON, Key Vault RS256, same `keyId` sche
   `200 { deploymentId, deploymentKey }`; second use or expired → `410`; unknown → `404`. Marks the deployment registered.
 - `GET https://papyrus.beaglabs.com/api/deployments/status` with `Authorization: Bearer <deploymentKey>` and
   `X-Papyrus-Deployment-Id: <id>` → `200 SignedStatus`; bad key → `401`.
+- `POST https://papyrus.beaglabs.com/api/deployments/usage` with the same `Authorization: Bearer <deploymentKey>` and
+  `X-Papyrus-Deployment-Id: <id>` (verified with `LICENSE.verifyDeploymentKey`), JSON body
+  `{ periodStart: string, periodEnd: string, executionSeconds: number, reportId: string }`:
+  - `periodStart`/`periodEnd` ISO 8601; `periodEnd` after `periodStart`, at most 1 hour later, not in the future (60s skew allowed).
+  - `executionSeconds` a non-negative integer: agent execution seconds in the period.
+  - `reportId` 1–128 of `A–Z a–z 0–9 . _ : -`, unique per deployment; Papyrus reuses it when retrying the same report.
+  - `200 { accepted: true, duplicate: boolean, billed: boolean }`. A repeated `reportId` answers `duplicate: true` and sends
+    nothing. `billed: false` while trialing (dropped) or with no subscription. `400 { error }` invalid body; `401` bad key;
+    `404` not a control-plane deployment; `502` Stripe refused the event (retry later with the same `reportId`).
+  - Forwarded as one Stripe meter event: value `executionSeconds`, identifier `<deploymentId>:<reportId>`.
+
+### Live Activity (control plane only)
+
+- `GET https://papyrus.beaglabs.com/api/events/live`: WebSocket upgrade, signed-in session cookie, same origin only.
+  One Durable Object (`ActivityHub`) per account holds that account's hibernatable sockets; every event insert notifies it
+  and it broadcasts `{ type: 'event', event }` (the `GET /api/events` row shape) to that account only. Clients send
+  `ping` (answered `pong`); the page falls back to polling `GET /api/events` with backoff reconnects.
 
 ### Container environment set by the deploy step
 

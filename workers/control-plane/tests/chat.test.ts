@@ -59,7 +59,7 @@ describe('chat bubble markup', () => {
       expect(html).toContain('<script src="/assets/chat-bubble.js" defer></script>')
       const csp = response.headers.get('content-security-policy')!
       expect(csp).toContain("script-src 'self'")
-      expect(csp).toContain("connect-src 'self' https://license.beaglabs.test wss://license.beaglabs.test")
+      expect(csp).toContain("connect-src 'self' https://license.beaglabs.test wss://papyrus.beaglabs.test wss://license.beaglabs.test")
     }
     for (const path of ['/login', '/signup']) {
       const html = await (await h.call(path)).text()

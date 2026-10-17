@@ -1,5 +1,6 @@
 import { ACTIVITY_SCRIPT_PATH, activityCard } from './activity'
-import { PLAN, shortDate } from './billing'
+import { isTrialing, trialStatus } from './billing'
+import { PLATFORM_MONTHLY_USD, PRICE_ROWS, PRICE_SUMMARY, SIZE_TABLE_CAPTION, TRIAL_DAYS, sizeRows, type SizeRow, usageLine, type MonthUsage, type PriceRow } from './pricing'
 import { CHAT_STYLES, chatBubbleMarkup } from './chat-bubble'
 import type { DnsRecord } from './dns'
 import type { EventRow } from './events'
@@ -65,14 +66,21 @@ a{color:inherit}
 .log .filters button{font:600 10px var(--mono);text-transform:uppercase;border:1.5px solid #111;padding:1px 7px;background:#fff;color:#111;cursor:pointer}
 .log .filters button.on{background:#111;color:#fff}
 .log .filters .live{font-size:10px;color:var(--ink)}
-.log .scroll{max-height:440px;overflow:auto}
+.log .scroll{max-height:440px;overflow-y:auto;overflow-x:hidden}
 .log table{width:100%;border-collapse:collapse;font:12.5px var(--mono)}
 .log td{padding:8px 16px;border-bottom:1px dashed #ddd;vertical-align:top}
 .log tr:last-child td{border-bottom:0}
 .log td.t{color:#999;white-space:nowrap;width:1%}
 .log td.s{width:1%;white-space:nowrap}
 .log td.src{color:#555;white-space:nowrap;width:1%}
-.log td.msg{word-break:break-word}
+.log td.msg{overflow-wrap:anywhere;word-break:normal;min-width:0}
+.log .txt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.log .open .txt{display:block;-webkit-line-clamp:unset;line-clamp:none}
+.log .xp{display:inline-block;margin-top:3px;font:600 10px var(--mono);text-transform:uppercase;letter-spacing:.3px;border:0;background:none;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
+.log .xp[hidden]{display:none}
+.log .xp:hover{color:var(--ink)}
+.log .xp:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.log .live.off{color:var(--soft)}
 .log tr.empty td{color:var(--muted);padding:18px 16px}
 .log .more{padding:12px 16px;border-top:2px solid var(--ink)}
 .log .more[hidden]{display:none}
@@ -104,25 +112,52 @@ details.dropdown .menu{position:absolute;z-index:5;left:0;right:0;top:calc(100% 
 .dns th,.dns td{text-align:left;border:2px solid var(--ink);padding:8px;vertical-align:top;word-break:break-all}
 .dns th{background:#111;color:#fff;text-transform:uppercase;font-size:11px}
 
-/* Console shell */
-.console{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
-.side{background:#111;color:#bbb;padding:20px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.side .brand{color:#fff;padding:0 20px 22px;font-size:18px;display:flex;align-items:center;gap:10px;text-decoration:none}
-.side .brand img{width:30px;height:30px;border:2px solid #fff;display:block}
+/* Console shell: the page never scrolls; the sidebar is fixed to the viewport height and main scrolls on its own. */
+html:has(body.console-body),body.console-body{height:100%;overflow:hidden}
+.console{display:grid;grid-template-columns:232px minmax(0,1fr);height:100vh;height:100dvh;overflow:hidden}
+.side{background:#111;color:#bbb;padding:20px 0;display:flex;flex-direction:column;height:100%;min-height:0;min-width:0;overflow:hidden}
+.side .brand{flex:none;color:#fff;padding:0 20px 22px;font-size:18px;display:flex;align-items:center;gap:10px;text-decoration:none;min-width:0}
+.side .brand img{width:30px;height:30px;border:2px solid #fff;display:block;flex:none}
+.side .brand span,.side nav a,.side .acct .who,.side .acct .email{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side nav{flex:0 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}
 .side nav a{display:block;padding:10px 20px;font-size:14px;border-left:4px solid transparent;text-decoration:none;color:#bbb}
 .side nav a:hover{color:#fff}
 .side nav a.on{color:#fff;border-left-color:var(--accent);background:#1d1d1d}
-.side .sp{flex:1}
-.side .acct{padding:14px 20px 0;border-top:1px solid #2a2a2a;font-size:13px;color:#ddd;word-break:break-word}
-.side .acct span{color:#777}
+.side .sp{flex:1 1 0;min-height:12px}
+.side .acct{flex:none;padding:14px 20px 0;border-top:1px solid #2a2a2a;font-size:13px;min-width:0}
+.side .acct .who{display:block;color:#ddd}
+.side .acct .email{display:block;color:#777}
 .side .acct a{display:inline-block;margin-top:10px;color:#777;font:11px var(--mono);text-transform:uppercase;text-decoration:none}
 .side .acct a:hover{color:#fff}
-main.page{padding:28px 32px 110px;min-width:0}
+main.page{height:100%;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;background-attachment:local;padding:28px 32px 110px}
+.trialbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:2px solid var(--ink);border-left:6px solid var(--accent);padding:7px 12px;margin:-8px 0 20px;font-size:13px}
+.trialbar strong{font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.5px;background:var(--accent);color:#111;padding:2px 7px}
+.trialbar .then{color:var(--muted)}
+.trialbar a{margin-left:auto;font:600 11px var(--mono);text-transform:uppercase;text-decoration:none;white-space:nowrap}
+.trialbar a:hover{color:var(--accent)}
+.price-summary{font-size:13px;color:var(--muted);margin-top:10px}
+.usage{font:12px var(--mono);margin-top:8px;padding:8px 10px;background:var(--bg);border:1.5px dashed #bbb}
+table.pricing{width:100%;border-collapse:collapse;border:2px solid var(--ink);background:#fff}
+table.pricing th,table.pricing td{padding:12px 14px;border-bottom:1px dashed #ccc;text-align:left;vertical-align:top}
+table.pricing tr:last-child th,table.pricing tr:last-child td{border-bottom:0}
+table.pricing th{font-weight:600;font-size:14px}
+table.pricing th small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:2px}
+table.pricing td{text-align:right;white-space:nowrap}
+table.pricing .amt{display:block;font:700 18px var(--mono)}
+table.pricing .unit{display:block;font:11px var(--mono);text-transform:uppercase;color:var(--muted)}
+table.pricing tr[data-price=platform] .amt{color:var(--accent)}
+div.sizes{overflow-x:auto}
+table.pricing.sizes thead th{font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.4px;color:var(--muted);border-bottom:2px solid var(--ink);white-space:normal}
+table.pricing.sizes thead th+th{text-align:right}
+table.pricing.sizes td{text-align:right;font-family:var(--mono);font-size:13px}
+table.pricing.sizes tbody th{white-space:nowrap}
+table.pricing caption{caption-side:bottom;text-align:left;font-size:12.5px;color:var(--muted);padding-top:8px}
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px;flex-wrap:wrap}
 .top h1{font-size:30px;line-height:1.05;word-break:break-word}
 .top .right{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .top .why{flex-basis:100%;text-align:right;font-size:12px;color:var(--muted)}
-.cols{display:grid;grid-template-columns:1fr 330px;gap:22px;align-items:start}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+.cols>*{min-width:0}
 .stack{display:flex;flex-direction:column;gap:18px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;align-items:start}
 a.dep{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:16px 18px;border-bottom:2px solid var(--ink);text-decoration:none;background:#fff}
@@ -147,16 +182,17 @@ a.dep small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .full{width:100%;justify-content:center}
 
 @media (max-width:900px){
-.console{grid-template-columns:1fr}
-.side{position:sticky;top:0;z-index:20;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px 16px 0;gap:4px 12px}
+.console{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+.side{z-index:20;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px 16px 0;gap:4px 12px}
 .side .brand{padding:0 0 8px}
-.side nav{order:3;width:calc(100% + 32px);margin:0 -16px;display:flex;overflow-x:auto;border-top:1px solid #2a2a2a}
-.side nav a{border-left:0;border-bottom:4px solid transparent;padding:10px 14px;white-space:nowrap}
+.side nav{order:3;flex:none;width:calc(100% + 32px);margin:0 -16px;display:flex;overflow-x:auto;overflow-y:hidden;border-top:1px solid #2a2a2a}
+.side nav a{flex:none;border-left:0;border-bottom:4px solid transparent;padding:10px 14px;overflow:visible}
 .side nav a.on{border-bottom-color:var(--accent)}
 .side .sp{display:none}
-.side .acct{margin-left:auto;border:0;padding:0 0 8px;text-align:right;display:flex;gap:10px;align-items:baseline}
-.side .acct .who,.side .acct br{display:none}
-.side .acct a{margin:0}
+.side .acct{flex:1 1 0;margin-left:auto;border:0;padding:0 0 8px;display:flex;gap:10px;align-items:baseline;justify-content:flex-end}
+.side .acct .who{display:none}
+.side .acct .email{min-width:0}
+.side .acct a{margin:0;flex:none}
 main.page{padding:22px 16px 110px}
 .cols{grid-template-columns:1fr}
 .top .right{justify-content:flex-start}
@@ -164,6 +200,12 @@ main.page{padding:22px 16px 110px}
 }
 @media (max-width:560px){
 .top h1{font-size:24px}
+.side .acct .email{display:none}
+.trialbar .then{display:none}
+table.pricing th,table.pricing td{padding:10px}
+table.pricing.sizes th,table.pricing.sizes td{padding:8px 5px;font-size:11.5px}
+table.pricing.sizes thead th{font-size:9px;letter-spacing:.2px}
+table.pricing.sizes tbody th{white-space:normal}
 .step{grid-template-columns:30px 1fr;gap:12px;padding:14px}
 .step>.tag{grid-column:2;justify-self:start;grid-row:2}
 .num{width:30px;height:30px}
@@ -210,14 +252,14 @@ const accountLabel = (account: Account) => account.organization || account.name 
 
 /** Signed-in pages: black sidebar, grid main area, the chat bubble. */
 export const consoleLayout = (input: { title: string; account: Account; active: NavItem | null; body: string; scripts?: string[] }) => `${head(input.title, CHAT_STYLES)}
-<body><div class="console">
+<body class="console-body"><div class="console">
 <aside class="side" aria-label="Papyrus control plane">
 <a class="brand disp" href="/deploy">${logoImg()}<span>Papyrus</span></a>
 <nav>${NAV.map((item) => `<a href="${item.href}"${item.id === input.active ? ' class="on" aria-current="page"' : ''}>${item.label}</a>`).join('')}</nav>
 <div class="sp"></div>
-<div class="acct"><span class="who" style="color:#ddd">${esc(accountLabel(input.account))}</span><br><span>${esc(input.account.email)}</span><br><a href="/logout">Sign out</a></div>
+<div class="acct"><span class="who" title="${esc(accountLabel(input.account))}">${esc(accountLabel(input.account))}</span><span class="email" title="${esc(input.account.email)}">${esc(input.account.email)}</span><a href="/logout">Sign out</a></div>
 </aside>
-<main class="page grid-bg">${input.body}</main>
+<main class="page grid-bg">${input.account.trial ? trialBanner(input.account.trial.trialEnd) : ''}${input.body}</main>
 </div>${chatBubbleMarkup()}${(input.scripts ?? []).map((src) => `<script src="${esc(src)}" defer></script>`).join('')}</body></html>`
 
 /** Signed-out pages and the org-name claim screen: one centred card on the grid, no sidebar. */
@@ -232,7 +274,26 @@ const notice = (message?: string | null, kind: 'error' | 'ok' = 'error') => (mes
 const pageTop = (kicker: string, title: string, right = '') =>
   `<div class="top"><div><div class="kicker">${kicker}</div><h1 class="disp">${esc(title)}</h1></div>${right ? `<div class="right">${right}</div>` : ''}</div>`
 
-const price = () => `$${(PLAN.amountCents / 100).toLocaleString('en-US')} / mo`
+/** Slim banner at the top of the main area while a deployment is in its free trial. */
+export const trialBanner = (trialEnd: string | null, now = Date.now()) => {
+  const [, ...rest] = trialStatus(trialEnd, now).split(' · ')
+  return `<div class="trialbar" role="status" data-trial-banner><strong>Trial</strong><span>${esc(rest.join(' · ') || 'Free trial')}</span><span class="then">Then $${PLATFORM_MONTHLY_USD}/month platform + usage</span><a href="/billing">Billing →</a></div>`
+}
+
+/** The pricing table: one row per charge, from PRICE_ROWS (or another list of rows, e.g. per organization size). */
+export const pricingTable = (rows: readonly PriceRow[] = PRICE_ROWS, caption?: string) =>
+  `<table class="pricing">${caption ? `<caption>${esc(caption)}</caption>` : ''}<tbody>${rows
+    .map((row) => `<tr data-price="${esc(row.id)}"><th scope="row">${esc(row.label)}<small>${esc(row.detail)}</small></th><td><strong class="amt">${esc(row.amount)}</strong><span class="unit">${esc(row.unit)}</span></td></tr>`)
+    .join('')}</tbody></table>`
+
+/** Estimated monthly total by organization size, computed from the pricing constants. */
+export const sizeTable = (rows: readonly SizeRow[] = sizeRows()) => {
+  const n = (value: number) => value.toLocaleString('en-US')
+  const cents = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return `<div class="sizes"><table class="pricing sizes" data-size-table><caption>${esc(SIZE_TABLE_CAPTION)}</caption><thead><tr><th scope="col">Organization size</th><th scope="col">Agent-hours / month</th><th scope="col">Estimated monthly total</th><th scope="col">Effective cost per user/month</th></tr></thead><tbody>${rows
+    .map((row) => `<tr><th scope="row">${n(row.users)} users</th><td>${n(row.agentHours)}</td><td>$${n(row.monthlyTotal)}</td><td>$${cents(row.perUser)}</td></tr>`)
+    .join('')}</tbody></table></div>`
+}
 
 // Signed out -----------------------------------------------------------------------------------------------------------
 
@@ -243,7 +304,7 @@ export const signupPage = (error?: string | null) =>
   soloLayout({
     title: 'Sign up',
     body: `<div class="body"><div class="kicker">Hosted by Beag Labs</div><h1 class="disp">Start your Papyrus</h1>
-<p class="lede">${esc(`$${(PLAN.amountCents / 100).toLocaleString('en-US')}/month per deployment, unlimited users, after a ${PLAN.trialDays}-day free trial.`)} Pick your organization name and Papyrus goes live at <span class="mono">your-org.${esc(HOSTED_DOMAIN)}</span>.</p>
+<p class="lede">${esc(`$250/month platform plus usage, unlimited users, after a ${TRIAL_DAYS}-day free trial.`)} Pick your organization name and Papyrus goes live at <span class="mono">your-org.${esc(HOSTED_DOMAIN)}</span>.</p>
 ${notice(error)}<form method="post" action="/signup">
 <label for="email">Work email</label><input id="email" name="email" type="email" required autocomplete="email">
 <label for="name">Your name</label><input id="name" name="name" autocomplete="name">
@@ -295,18 +356,22 @@ const planLabel = (deployment: Deployment) =>
 const billingButton = (deployment: Deployment, label = 'Manage billing') =>
   deployment.stripe_customer_id
     ? `<form method="post" action="/billing/portal"><input type="hidden" name="deployment" value="${esc(deployment.id)}"><button class="btn" type="submit">${esc(label)}</button></form>`
-    : `<form method="post" action="/billing/checkout"><input type="hidden" name="deployment" value="${esc(deployment.id)}"><button class="btn primary" type="submit">Start ${PLAN.trialDays}-day trial</button></form>`
+    : `<form method="post" action="/billing/checkout"><input type="hidden" name="deployment" value="${esc(deployment.id)}"><button class="btn primary" type="submit">Start ${TRIAL_DAYS}-day trial</button></form>`
 
-const planRows = (deployment: Deployment) => {
-  const trialing = deployment.billing_state === 'active' && deployment.stripe_status === 'trialing'
+const NO_USAGE: MonthUsage = { vmHours: 0, executionSeconds: 0 }
+
+const planRows = (deployment: Deployment, usage: MonthUsage | undefined, now = Date.now()) => {
+  const trialing = isTrialing(deployment)
   return `<div class="kv"><span>Plan</span><span>Papyrus</span></div>
-${trialing ? `<div class="kv"><span>Trial ends</span><span>${esc(shortDate(deployment.trial_end) || 'In trial')}</span></div><div class="kv"><span>Then</span><span>${price()}</span></div>` : `<div class="kv"><span>Price</span><span>${price()}</span></div>`}
+${trialing ? `<div class="kv"><span>Status</span><span data-trial>${esc(trialStatus(deployment.trial_end, now))}</span></div>` : ''}
 ${deployment.billing_state === 'suspended' ? `<div class="kv"><span>Status</span><span>Suspended${deployment.stripe_status ? ` · ${esc(deployment.stripe_status.replace(/_/g, ' '))}` : ''}</span></div>` : ''}
-${deployment.billing_state === 'none' ? `<div class="kv"><span>Trial</span><span>${PLAN.trialDays} days free</span></div>` : ''}`
+${deployment.billing_state === 'none' ? `<div class="kv"><span>Trial</span><span>${TRIAL_DAYS} days free</span></div>` : ''}
+<p class="price-summary">${esc(PRICE_SUMMARY)}</p>
+${deployment.billing_state === 'none' ? '' : `<p class="usage">${esc(usageLine(usage ?? NO_USAGE, { platform: deployment.billing_state === 'active' && !trialing }))}</p>`}`
 }
 
-const planCard = (deployment: Deployment) =>
-  `<div class="card"><h4>Plan <span class="accent">${planLabel(deployment)}</span></h4><div class="body">${planRows(deployment)}<div class="actions">${billingButton(deployment)}</div></div></div>`
+const planCard = (deployment: Deployment, usage?: MonthUsage) =>
+  `<div class="card plan-card"><h4>Plan <span class="accent">${planLabel(deployment)}</span></h4><div class="body">${planRows(deployment, usage)}<div class="actions">${billingButton(deployment)}</div></div></div>`
 
 const helpCard = () =>
   `<div class="card"><h4>Need a hand?</h4><div class="body" style="font-size:14px;color:var(--muted)">Your Beag Labs engineer is watching this setup. Message us any time.<div class="actions"><button type="button" class="btn dark" data-open-chat>Message Beag Labs</button></div></div></div>`
@@ -461,6 +526,8 @@ export interface DeploymentPageInput {
   /** The account has more than one deployment: link back to the list. */
   multiple: boolean
   message?: string | null
+  /** Billed usage this month, from local meter records. */
+  usage?: MonthUsage
 }
 
 const dnsTable = (records: DnsRecord[]) =>
@@ -488,8 +555,8 @@ export const deploymentPage = (input: DeploymentPageInput) => {
 ${pageTop(kicker, deploymentName(deployment), `${statusTag(deployment, rows)}${openPapyrusButton(deployment)}`)}
 ${notice(input.message)}
 <div class="cols"><div>${checklistCard(rows)}${hosted ? '' : `${hostnameCard(deployment)}${dnsTable(deployment.dnsRecords)}`}</div>
-<div class="stack">${planCard(deployment)}${helpCard()}</div></div>
-${activityCard({ endpoint: `/api/events?deployment=${encodeURIComponent(deployment.id)}`, events: input.events.events, next: input.events.next, fast: !isDone(deployment.steps) })}`
+<div class="stack">${planCard(deployment, input.usage)}${helpCard()}</div></div>
+${activityCard({ endpoint: `/api/events?deployment=${encodeURIComponent(deployment.id)}`, deploymentId: deployment.id, events: input.events.events, next: input.events.next, fast: !isDone(deployment.steps) })}`
   return consoleLayout({ title: deploymentName(deployment), account, active: 'deployment', body, scripts: [ACTIVITY_SCRIPT_PATH] })
 }
 
@@ -514,10 +581,12 @@ export const deployListPage = (account: Account, deployments: Deployment[]) => {
   const tagFor = (d: Deployment) => statusTag(d, checklist(d, account, { mode: !d.provider || d.provider === HOSTED_PROVIDER ? 'hosted' : 'byoc', region: '' }))
   const body =
     deployments.length === 0
-      ? `${pageTop('Deployment', 'No deployment yet')}<div class="tiles"><div class="card"><h4>Papyrus <span class="accent">${PLAN.trialDays}-day trial</span></h4><div class="body">
-<p style="font-size:14px;color:var(--muted)">Start a trial to create your deployment. Your card is collected now and first charged when the trial ends.</p>
-<div class="kv" style="margin-top:10px"><span>Plan</span><span>Papyrus</span></div><div class="kv"><span>Then</span><span>${price()}</span></div>
-<form method="post" action="/billing/checkout" class="actions"><button class="btn primary" type="submit">Start ${PLAN.trialDays}-day trial</button></form></div></div>${helpCard()}</div>`
+      ? `${pageTop('Deployment', 'No deployment yet')}<div class="cols"><div class="card" data-plan-step><h4>Choose your plan <span class="accent">${TRIAL_DAYS}-day free trial</span></h4><div class="body">
+<p style="font-size:14px;color:var(--muted);margin-bottom:14px">One plan, three charges. Your card is collected now; nothing is charged until the trial ends, and usage during the trial is free.</p>
+${pricingTable(PRICE_ROWS, 'Billed monthly by Stripe. Cancel any time from the billing portal.')}
+<h5 class="kicker" style="margin:18px 0 8px">What it costs by organization size</h5>
+${sizeTable()}
+<form method="post" action="/billing/checkout" class="actions" style="margin-top:16px"><button class="btn primary lg" type="submit">Start ${TRIAL_DAYS}-day trial</button></form></div></div><div class="stack">${helpCard()}</div></div>`
       : `${pageTop('Deployments', `${deployments.length} deployments`)}<div class="card">${deployments
           .map(
             (d) =>
@@ -585,15 +654,15 @@ ${credentialForm(provider, input.saved)}
 
 // Billing, Team, Support, Settings ------------------------------------------------------------------------------------
 
-export const billingPage = (account: Account, deployments: Deployment[], message?: string | null) => {
+export const billingPage = (account: Account, deployments: Deployment[], message?: string | null, usage: Record<string, MonthUsage> = {}) => {
   const cards = deployments.map(
-    (d) => `<div class="card"><h4><span class="mono" style="text-transform:none;word-break:break-all">${esc(deploymentName(d))}</span><span class="accent">${planLabel(d)}</span></h4><div class="body">${planRows(d)}<div class="actions">${billingButton(d)}</div></div></div>`,
+    (d) => `<div class="card"><h4><span class="mono" style="text-transform:none;word-break:break-all">${esc(deploymentName(d))}</span><span class="accent">${planLabel(d)}</span></h4><div class="body">${planRows(d, usage[d.id])}<div class="actions">${billingButton(d)}</div></div></div>`,
   )
   const body = `${pageTop('Billing', 'Plan and invoices')}${notice(message)}
-<div class="tiles">${cards.join('')}<div class="card"><h4>Papyrus <span class="accent">${price()}</span></h4><div class="body" style="font-size:14px;color:var(--muted)">
-<p>One subscription per deployment. Unlimited users. ${PLAN.trialDays}-day free trial; your card is collected now and first charged when the trial ends.</p>
-<p>Cards and invoices live in the Stripe customer portal.</p>
-<form method="post" action="/billing/checkout" class="actions"><button class="btn${deployments.length ? '' : ' primary'}" type="submit">${deployments.length ? 'Add a deployment' : `Start ${PLAN.trialDays}-day trial`}</button></form></div></div></div>`
+<div class="tiles">${cards.join('')}<div class="card"><h4>Pricing <span class="accent">${TRIAL_DAYS}-day trial</span></h4><div class="body">
+${pricingTable()}
+<p style="font-size:14px;color:var(--muted);margin-top:12px">One subscription per deployment. Unlimited users. Your card is collected at signup and first charged when the trial ends; usage during the trial is free. Cards and invoices live in the Stripe customer portal.</p>
+<form method="post" action="/billing/checkout" class="actions"><button class="btn${deployments.length ? '' : ' primary'}" type="submit">${deployments.length ? 'Add a deployment' : `Start ${TRIAL_DAYS}-day trial`}</button></form></div></div></div>`
   return consoleLayout({ title: 'Billing', account, active: 'billing', body })
 }
 

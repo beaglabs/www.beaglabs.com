@@ -24,7 +24,8 @@ export function fakeD1() {
         return sql.prepare(query).get(...(args as never[])) ?? null
       },
       async run() {
-        return { meta: { changes: Number(sql.prepare(query).run(...(args as never[])).changes) } }
+        const result = sql.prepare(query).run(...(args as never[]))
+        return { meta: { changes: Number(result.changes), last_row_id: Number(result.lastInsertRowid) } }
       },
     }
     return statement
@@ -86,6 +87,10 @@ export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi
     HOSTED_AWS_REGION: 'us-east-2',
     HOSTED_AWS_EXTERNAL_ID: 'hosted-external-id',
     ADMIN_TOKEN: 'admin-token',
+    STRIPE_PRODUCT: 'prod_test',
+    STRIPE_PRICE_PLATFORM: 'price_platform',
+    STRIPE_PRICE_COMPUTE: 'price_compute',
+    STRIPE_PRICE_EXECUTION: 'price_execution',
     ...options.env,
   } satisfies Bindings
   const app = createApp({ fetch: options.fetch ?? (async () => new Response('unexpected fetch', { status: 599 })) })

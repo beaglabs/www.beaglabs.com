@@ -6,7 +6,7 @@ import type * as HttpClient from 'effect/http/HttpClient'
 import { Hono, type Context as HonoContext } from 'hono'
 import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
-import { handleWebhook, portalUrl, startCheckout } from './billing'
+import { accountTrial, backfillTrialEnds, handleWebhook, portalUrl, startCheckout } from './billing'
 import { ACTIVITY_JS, ACTIVITY_SCRIPT_PATH } from './activity'
 import { CHAT_BUBBLE_JS, CHAT_SCRIPT_PATH, CHAT_SESSION_PATH } from './chat-bubble'
 import { encryptJson, randomToken, timingSafeEqual } from './crypto'
@@ -21,6 +21,8 @@ import { checkCredentials, isHostname, license, loadCredentials, runStep } from 
 import { Env, UserError, getOwnedDeployment, listDeployments, newId, nowIso, run, saveProgress, type Account, type Deployment } from './services'
 import { initialSteps, isStepId, record, resetFrom } from './setup'
 import { deploymentStatus } from './status'
+import { meterComputeHour, monthUsage, reportUsage } from './metering'
+import { LIVE_PATH } from './activity-hub'
 import * as Views from './views'
 
 export interface AppDeps {
@@ -34,10 +36,14 @@ type Program<A> = Effect.Effect<A, unknown, Env | HttpClient.HttpClient>
 const fromBase64 = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
 const LOGOS_PNG: Record<string, Uint8Array<ArrayBuffer>> = { [LOGO_PATHS.small]: fromBase64(LOGO_64_BASE64), [LOGO_PATHS.large]: fromBase64(LOGO_128_BASE64) }
 
-/** Scripts only from this site; the chat bubble talks to the chat API over HTTPS and WebSocket and shows its avatars and images. */
-export const contentSecurityPolicy = (env: Pick<Bindings, 'CHAT_API_ORIGIN'>) => {
+/**
+ * Scripts only from this site; the chat bubble talks to the chat API over HTTPS and WebSocket and shows its avatars and
+ * images; live Activity opens a WebSocket to this site (wss: spelled out for browsers whose 'self' omits it).
+ */
+export const contentSecurityPolicy = (env: Pick<Bindings, 'CHAT_API_ORIGIN' | 'BASE_URL'>) => {
   const chat = new URL(env.CHAT_API_ORIGIN)
-  const socket = `${chat.protocol === 'http:' ? 'ws:' : 'wss:'}//${chat.host}`
+  const wss = (url: URL) => `${url.protocol === 'http:' ? 'ws:' : 'wss:'}//${url.host}`
+  const socket = `${wss(new URL(env.BASE_URL))} ${wss(chat)}`
   return [
     "default-src 'self'",
     "script-src 'self'",
@@ -50,14 +56,24 @@ export const contentSecurityPolicy = (env: Pick<Bindings, 'CHAT_API_ORIGIN'>) =>
   ].join('; ')
 }
 
+/** Run an Effect program with these bindings and an HTTP client (requests, the cron). */
+export const runProgram = <A>(env: Bindings, program: Program<A>, deps: AppDeps = {}) => {
+  const withFetch = deps.fetch ? program.pipe(Effect.provideService(FetchHttpClient.Fetch, deps.fetch)) : program
+  return Effect.runPromiseExit(withFetch.pipe(Effect.provide(FetchHttpClient.layer), Effect.provideService(Env, env)) as Effect.Effect<A, unknown, never>)
+}
+
+/** The hourly cron: compute meter events for the hour that just ended (src/metering.ts). */
+export const scheduled = async (env: Bindings, now = Date.now(), deps: AppDeps = {}) => {
+  const exit = await runProgram(env, meterComputeHour(now), deps)
+  if (Exit.isFailure(exit)) console.error('compute metering failed', (Cause.squash(exit.cause) as { _tag?: string })?._tag ?? 'defect')
+  return Exit.isSuccess(exit) ? exit.value : null
+}
+
 export function createApp(deps: AppDeps = {}) {
   const app = new Hono<{ Bindings: Bindings }>()
 
   /** Run an Effect program with this request's bindings and an HTTP client. */
-  const exec = <A>(c: Ctx, program: Program<A>) => {
-    const withFetch = deps.fetch ? program.pipe(Effect.provideService(FetchHttpClient.Fetch, deps.fetch)) : program
-    return Effect.runPromiseExit(withFetch.pipe(Effect.provide(FetchHttpClient.layer), Effect.provideService(Env, c.env)) as Effect.Effect<A, unknown, never>)
-  }
+  const exec = <A>(c: Ctx, program: Program<A>) => runProgram(c.env, program, deps)
 
   const userError = (exit: Exit.Exit<unknown, unknown>) => {
     if (Exit.isSuccess(exit)) return null
@@ -85,12 +101,18 @@ export function createApp(deps: AppDeps = {}) {
       Effect.gen(function* () {
         const account = yield* currentAccount(c)
         if (!account) return c.redirect(`/login`, 303)
+        // The trial banner: trial ends come from webhooks; backfill from Stripe once if one is missing.
+        const deployments = yield* listDeployments(account.id)
+        yield* backfillTrialEnds(deployments).pipe(Effect.ignore)
+        account.trial = accountTrial(deployments)
         return yield* body(account)
       }),
     )
 
   // Form posts must come from this site (SameSite=Lax cookies already block cross-site posts; this is belt and braces).
   app.use('*', async (c, next) => {
+    // A 101 WebSocket response has immutable headers; the upgrade route checks its own origin.
+    if (c.req.path === LIVE_PATH) return next()
     if (c.req.method === 'POST' && !c.req.path.startsWith('/api/')) {
       const origin = c.req.header('origin')
       if (origin && origin !== new URL(c.env.BASE_URL).origin) return c.text('Forbidden', 403)
@@ -174,7 +196,8 @@ export function createApp(deps: AppDeps = {}) {
     signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployments = yield* listDeployments(account.id)
-        return c.html(Views.billingPage(account, deployments, c.req.query('error')))
+        const usage = yield* monthUsage(account.id)
+        return c.html(Views.billingPage(account, deployments, c.req.query('error'), usage))
       }),
     ),
   )
@@ -323,7 +346,8 @@ export function createApp(deps: AppDeps = {}) {
       if (!deployment.provider) return c.html(Views.claimPage(account, deployment, message, byoc), status as 200)
       const events = yield* listEvents(account.id, { deploymentId: deployment.id })
       const multiple = (yield* listDeployments(account.id)).length > 1
-      return c.html(Views.deploymentPage({ account, deployment, events, byoc, region: c.env.HOSTED_AWS_REGION || 'us-east-2', multiple, message }), status as 200)
+      const usage = (yield* monthUsage(account.id))[deployment.id]
+      return c.html(Views.deploymentPage({ account, deployment, events, byoc, region: c.env.HOSTED_AWS_REGION || 'us-east-2', multiple, message, usage }), status as 200)
     })
 
   app.get('/deploy', (c) =>
@@ -474,6 +498,21 @@ export function createApp(deps: AppDeps = {}) {
     return c.json({ error: failure.message }, failure.status as 404)
   })
 
+  /**
+   * Live Activity: a WebSocket to the account's ActivityHub, which pushes each new event as it is written.
+   * Signed-in session cookie, same origin only. The page falls back to polling GET /api/events when it drops.
+   */
+  app.get(LIVE_PATH, async (c) => {
+    if (c.req.header('upgrade')?.toLowerCase() !== 'websocket') return c.json({ error: 'Expected a WebSocket upgrade' }, 426)
+    if (c.req.header('origin') !== new URL(c.env.BASE_URL).origin) return c.json({ error: 'Cross-origin request refused' }, 403)
+    const exit = await exec(c, currentAccount(c))
+    const account = Exit.isSuccess(exit) ? exit.value : null
+    if (!account) return c.json({ error: 'Sign in first' }, 401)
+    if (!c.env.ACTIVITY) return c.json({ error: 'Live Activity is not available' }, 503)
+    const stub = c.env.ACTIVITY.get(c.env.ACTIVITY.idFromName(account.id))
+    return stub.fetch('https://activity-hub/connect', { headers: { upgrade: 'websocket', 'x-account-id': account.id } })
+  })
+
   app.get(ACTIVITY_SCRIPT_PATH, (c) => c.body(ACTIVITY_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
 
   for (const path of Object.keys(LOGOS_PNG)) {
@@ -541,6 +580,15 @@ export function createApp(deps: AppDeps = {}) {
     if (Exit.isSuccess(exit)) return c.json(exit.value, 200, { 'cache-control': 'no-store' })
     const failure = userError(exit)!
     return c.json({ error: failure.message }, failure.status as 401)
+  })
+
+  /** Papyrus's agent-execution usage: one report per period (≤ 1 hour), forwarded as a Stripe meter event. */
+  app.post('/api/deployments/usage', async (c) => {
+    const body = await c.req.json().catch(() => null)
+    const exit = await exec(c, reportUsage(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'), body))
+    if (Exit.isSuccess(exit)) return c.json(exit.value, 200, { 'cache-control': 'no-store' })
+    const failure = userError(exit)!
+    return c.json({ error: failure.message }, failure.status as 400)
   })
 
   return app

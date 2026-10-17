@@ -12,7 +12,8 @@ keys and signing.
 ## Routes
 
 - `/signup`, `/login` — email magic link (Resend), Sign in with Microsoft / Google (OIDC code + PKCE)
-- `/billing` — Stripe Checkout per deployment ($13,000/month, 14-day trial, card up front), customer portal
+- `/billing` — Stripe Checkout per deployment ($250/month platform + $0.50 per VM hour + $0.00194444 per agent-second;
+  one subscription with three items, 14-day trial, card up front), customer portal
 - `POST /api/stripe/webhook` — `trialing`/`active` → active; `past_due`/`unpaid`/`canceled` (and anything else) → suspended
 - `/deploy/:id` (hosted, the default) — org-name form (live check at `GET /api/org-names/check?name=`; lowercase DNS
   label, 3–40 chars, unique, reserved list in `src/hosted.ts`); `POST /deploy/:id/org` claims it and deploys
@@ -24,7 +25,10 @@ keys and signing.
 - `GET /api/events` — Activity for the signed-in account: `deployment`, `filter` (all/deploy/billing/team/errors), `source`,
   `level` (comma lists), `before`/`after` ids, `limit` (≤ 100). Rows are written by setup steps, Stripe webhooks, sign-ins,
   org-name claims and BYOC credential checks (`src/events.ts`); never secrets
+- `GET /api/events/live` — WebSocket to the account's `ActivityHub` Durable Object; pushes each new event (session cookie, same origin)
 - `GET /api/deployments/status` — Papyrus check-in: Bearer deployment key + `X-Papyrus-Deployment-Id` → signed status
+- `POST /api/deployments/usage` — Papyrus agent-execution usage (same auth) → Stripe meter event (`src/metering.ts`)
+- Cron `5 * * * *` — one VM-hour meter event per running deployment; nothing is sent while trialing
 
 ## Hosted by Beag Labs
 
@@ -69,7 +73,8 @@ adding an entry to the registry.
 Vars (`wrangler.jsonc`): `PAPYRUS_IMAGE_DIGEST`, `AWS_PRINCIPAL_ARN`, `AWS_CONNECT_TEMPLATE_URL` (S3 copy of
 `/aws/connect-template.yaml`; **re-upload it to S3 whenever the template changes** — it last gained
 `elasticloadbalancing:CreateRule` and `acm:ListCertificates` for hosted host rules and the wildcard-certificate lookup),
-`BYOC_ENABLED`, `HOSTED_AWS_ROLE_ARN`, `HOSTED_AWS_REGION`, D1 `database_id`. Secrets: see `secrets.required`. `CREDENTIALS_KEY` is base64 of 32
+`BYOC_ENABLED`, `HOSTED_AWS_ROLE_ARN`, `HOSTED_AWS_REGION`, `STRIPE_PRODUCT`, `STRIPE_PRICE_PLATFORM`, `STRIPE_PRICE_COMPUTE`,
+`STRIPE_PRICE_EXECUTION` (metered prices' meters are looked up at runtime), D1 `database_id`. Secrets: see `secrets.required`. `CREDENTIALS_KEY` is base64 of 32
 random bytes (`openssl rand -base64 32`); rotating it makes saved credentials unreadable.
 
 ```bash

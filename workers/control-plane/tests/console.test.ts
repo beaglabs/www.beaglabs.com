@@ -120,8 +120,9 @@ describe('Deployment page', () => {
     h.sql.prepare("INSERT INTO billing_periods (deployment_id, trial_end, updated_at) VALUES ('dep_abc', '2026-10-31T12:00:00.000Z', 'now')").run()
     event({ deployment: 'dep_abc', level: 'wait', source: 'health', message: 'GET https://acme.papyrus.beaglabs.com/api/health → 503' })
     const html = await (await get('/deploy/dep_abc')).text()
-    expect(html).toContain('Trial ends</span><span>Oct 31')
-    expect(html).toContain('$13,000 / mo')
+    expect(html).toMatch(/data-trial>Trial · \d+ days? left · ends Oct 31|data-trial>Trial · ends today/)
+    expect(html).toContain('$250/month platform · $0.50 per VM hour · $0.00194444 per agent-second (≈ $7/agent-hour)')
+    expect(html).toContain('This month so far: 0 VM hours · 0 agent minutes · $0.00 estimated')
     expect(html).toContain('action="/billing/portal"')
     expect(html).toContain('data-open-chat>Message Beag Labs')
     expect(html).toContain('<span class="lv warn">WAIT</span>')
@@ -185,7 +186,7 @@ describe('events are written', () => {
     // A replay writes nothing.
     await h.stripeEvent({ id: 'evt_2', type: 'customer.subscription.updated', data: { object: { id: 'sub_1', status: 'past_due', customer: 'cus_1', metadata: {} } } })
     expect(events()).toEqual([
-      expect.objectContaining({ account_id: 'acct_1', deployment_id: 'dep_1', level: 'ok', source: 'billing', message: 'Trial started · Papyrus · $13,000/mo after Oct 31' }),
+      expect.objectContaining({ account_id: 'acct_1', deployment_id: 'dep_1', level: 'ok', source: 'billing', message: 'Trial started · Papyrus · $250/month platform + usage after Oct 31' }),
       expect.objectContaining({ account_id: 'acct_1', deployment_id: 'dep_1', level: 'error', source: 'billing', message: expect.stringContaining('past due') }),
     ])
     expect(h.sql.prepare('SELECT trial_end FROM billing_periods WHERE deployment_id = ?').get('dep_1')).toEqual({ trial_end: '2026-10-31T00:00:00.000Z' })

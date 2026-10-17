@@ -1,5 +1,6 @@
 import * as Effect from 'effect/Effect'
-import { all, nowIso, run } from './services'
+import { notifyHub } from './activity-hub'
+import { Env, all, insert, nowIso } from './services'
 
 /**
  * The Activity log: an append-only list of what happened to an account and its deployments (setup steps, billing,
@@ -45,17 +46,32 @@ export const redact = (message: string) =>
     .replace(/([?&](?:token|code|key|secret|password)=)[^&\s]+/gi, '$1[redacted]')
     .slice(0, 500)
 
-/** Append one event. Never fails the caller: losing a log line is better than failing a deploy or a webhook. */
+/**
+ * Append one event and push it to the account's ActivityHub (live Activity). Never fails the caller: losing a log line
+ * is better than failing a deploy or a webhook.
+ */
 export const logEvent = (event: { accountId: string; deploymentId?: string | null; level: EventLevel; source: EventSource; message: string }) =>
-  run(
-    'INSERT INTO events (account_id, deployment_id, at, level, source, message) VALUES (?, ?, ?, ?, ?, ?)',
-    event.accountId,
-    event.deploymentId ?? null,
-    nowIso(),
-    event.level,
-    event.source,
-    redact(event.message),
-  ).pipe(Effect.ignore)
+  Effect.gen(function* () {
+    const row: Omit<EventRow, 'id'> = {
+      account_id: event.accountId,
+      deployment_id: event.deploymentId ?? null,
+      at: nowIso(),
+      level: event.level,
+      source: event.source,
+      message: redact(event.message),
+    }
+    const id = yield* insert(
+      'INSERT INTO events (account_id, deployment_id, at, level, source, message) VALUES (?, ?, ?, ?, ?, ?)',
+      row.account_id,
+      row.deployment_id,
+      row.at,
+      row.level,
+      row.source,
+      row.message,
+    )
+    const env = yield* Env
+    yield* Effect.promise(() => notifyHub(env.ACTIVITY, { accountId: row.account_id, event: eventJson({ id, ...row }) }))
+  }).pipe(Effect.ignore)
 
 export interface EventQuery {
   /** Only this deployment's events plus account-wide ones (sign-ins, settings). */

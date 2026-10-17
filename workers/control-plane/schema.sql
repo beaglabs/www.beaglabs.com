@@ -102,3 +102,26 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 CREATE INDEX IF NOT EXISTS events_account ON events(account_id, id);
+
+-- Billing Meter behind each metered Stripe price (price.recurring.meter → meter.event_name), resolved at runtime.
+CREATE TABLE IF NOT EXISTS stripe_meters (
+  price_id TEXT PRIMARY KEY,
+  meter_id TEXT NOT NULL,
+  event_name TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+-- One row per usage report (compute: <deploymentId>:<hourStart>; execution: <deploymentId>:<reportId>).
+-- status: sending | sent | failed (retried by the hourly cron) | trial (dropped while trialing) | unbilled (no subscription).
+CREATE TABLE IF NOT EXISTS meter_pushes (
+  identifier TEXT PRIMARY KEY,
+  deployment_id TEXT NOT NULL REFERENCES deployments(id),
+  kind TEXT NOT NULL,
+  value INTEGER NOT NULL,
+  period_start TEXT NOT NULL,
+  period_end TEXT NOT NULL,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS meter_pushes_deployment ON meter_pushes(deployment_id, period_start);

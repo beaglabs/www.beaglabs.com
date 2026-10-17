@@ -1,3 +1,4 @@
+import type { HubNamespace } from './activity-hub'
 import type { LicenseRpcApi } from './license-rpc'
 
 export interface Bindings {
@@ -16,8 +17,16 @@ export interface Bindings {
   AWS_PRINCIPAL_ARN: string
   /** S3 URL of the CloudFormation template served at /aws/connect-template.yaml (quick-create needs S3). */
   AWS_CONNECT_TEMPLATE_URL: string
-  /** Optional: a Stripe Price id to bill with; otherwise Checkout uses inline price_data ($13,000/month). */
-  STRIPE_PRICE_ID?: string
+  /** One ActivityHub Durable Object per account: live Activity over hibernatable WebSockets. */
+  ACTIVITY?: HubNamespace
+  /** Stripe product every Papyrus price belongs to. */
+  STRIPE_PRODUCT: string
+  /** $250/month platform subscription (licensed). */
+  STRIPE_PRICE_PLATFORM: string
+  /** $0.50 per VM hour (metered; its Billing Meter is resolved at runtime). */
+  STRIPE_PRICE_COMPUTE: string
+  /** $0.00194444 per agent-second (metered; its Billing Meter is resolved at runtime). */
+  STRIPE_PRICE_EXECUTION: string
   /** "true" turns bring-your-own-cloud on for every account; otherwise only accounts flagged in account_flags. */
   BYOC_ENABLED: string
   /** Hosted by Beag Labs: the Connect AWS role deployed once into Beag Labs' own account. */
