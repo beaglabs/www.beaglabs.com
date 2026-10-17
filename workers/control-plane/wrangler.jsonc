@@ -10,7 +10,7 @@
   // Accounts, sessions, deployments, encrypted provider credentials, setup progress.
   // Create once: wrangler d1 create papyrus-control-plane, then paste the id here.
   "d1_databases": [
-    { "binding": "DB", "database_name": "papyrus-control-plane", "database_id": "00000000-0000-0000-0000-000000000000" }
+    { "binding": "DB", "database_name": "papyrus-control-plane", "database_id": "d92c7f96-60a2-41e0-bd4b-373510d14ac1" }
   ],
   // Deployment rows, deployment keys and the Key Vault signer stay in the license Worker.
   "services": [{ "binding": "LICENSE", "service": "beaglabs-license", "entrypoint": "LicenseRpc" }],
