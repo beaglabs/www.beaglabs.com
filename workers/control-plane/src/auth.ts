@@ -3,6 +3,7 @@ import * as HttpClient from 'effect/http/HttpClient'
 import * as HttpClientRequest from 'effect/http/HttpClientRequest'
 import { fromBase64, hmac, randomToken, sha256Hex, timingSafeEqual, toBase64Url } from './crypto'
 import type { Bindings } from './env'
+import { logEvent } from './events'
 import { Env, UserError, first, newId, nowIso, run, type Account } from './services'
 
 /**
@@ -25,7 +26,7 @@ export const isEmail = (email: string) => EMAIL.test(email) && email.length <= 2
 export const accountForEmail = (email: string, profile: { name?: string | null; organization?: string | null } = {}) =>
   Effect.gen(function* () {
     const normalized = normalizeEmail(email)
-    yield* run(
+    const created = yield* run(
       'INSERT OR IGNORE INTO accounts (id, email, name, organization, created_at) VALUES (?, ?, ?, ?, ?)',
       newId('acct'),
       normalized,
@@ -38,6 +39,7 @@ export const accountForEmail = (email: string, profile: { name?: string | null; 
     }
     const account = yield* first<Account>('SELECT * FROM accounts WHERE email = ?', normalized)
     if (!account) return yield* new UserError({ message: 'Could not create the account', status: 500 })
+    if (created > 0) yield* logEvent({ accountId: account.id, level: 'ok', source: 'account', message: `Account created for ${normalized}` })
     return account
   })
 

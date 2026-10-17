@@ -118,7 +118,7 @@ describe('hosted setup steps', () => {
     const html = await (await get('/deploy/dep_abc')).text()
     expect(html).toContain('Hosted by Beag Labs')
     expect(html).toContain('acme.papyrus.beaglabs.com')
-    for (const label of ['Deploy Papyrus', 'Address', 'Container health', 'Connect Microsoft', 'Registration']) expect(html).toContain(label)
+    for (const label of ['Create workspace', 'Address', 'Starting Papyrus', 'Connect Microsoft', 'Register with Beag Labs', 'Open Papyrus']) expect(html).toContain(label)
     expect(html).not.toContain('Connect cloud account')
     expect(html).not.toContain('DNS records to create')
     expect(html).not.toContain('name="hostname"')

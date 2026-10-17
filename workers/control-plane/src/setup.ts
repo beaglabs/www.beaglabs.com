@@ -36,6 +36,8 @@ export interface StepState {
   status: StepStatus
   reason?: string
   at?: string
+  /** How many times in a row this step has run without passing (shown as "attempt N" in Activity). */
+  attempts?: number
 }
 
 export type Steps = Record<StepId, StepState>

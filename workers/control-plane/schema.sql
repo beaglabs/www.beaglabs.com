@@ -81,3 +81,24 @@ CREATE TABLE IF NOT EXISTS hosted_infra (
   data TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+
+-- Trial end from Stripe (customer.subscription.* webhooks), for the Plan card.
+CREATE TABLE IF NOT EXISTS billing_periods (
+  deployment_id TEXT PRIMARY KEY REFERENCES deployments(id),
+  trial_end TEXT,
+  updated_at TEXT NOT NULL
+);
+
+-- Activity log: append-only, scoped to an account (deployment_id NULL = account-wide, e.g. sign-ins).
+-- level: ok | info | wait | error. Messages are shown to the customer and never contain secrets.
+CREATE TABLE IF NOT EXISTS events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  account_id TEXT NOT NULL REFERENCES accounts(id),
+  deployment_id TEXT,
+  at TEXT NOT NULL,
+  level TEXT NOT NULL,
+  source TEXT NOT NULL,
+  message TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS events_account ON events(account_id, id);

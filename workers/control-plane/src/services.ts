@@ -54,6 +54,8 @@ export interface DeploymentRow {
   steps: string
   created_at: string
   updated_at: string
+  /** From billing_periods (Stripe's trial_end), when known. */
+  trial_end?: string | null
 }
 
 export interface Deployment extends Omit<DeploymentRow, 'resources' | 'dns_records' | 'steps'> {
@@ -75,7 +77,9 @@ export const toDeployment = (row: DeploymentRow): Deployment => {
   return { ...rest, resources: parseJson(resources, {}), dnsRecords: parseJson(dns_records, []), steps: parseSteps(steps) }
 }
 
-export const getDeployment = (id: string) => first<DeploymentRow>('SELECT * FROM deployments WHERE id = ?', id).pipe(Effect.map((row) => (row ? toDeployment(row) : null)))
+const SELECT_DEPLOYMENT = 'SELECT d.*, b.trial_end FROM deployments d LEFT JOIN billing_periods b ON b.deployment_id = d.id'
+
+export const getDeployment = (id: string) => first<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.id = ?`, id).pipe(Effect.map((row) => (row ? toDeployment(row) : null)))
 
 /** The deployment, only if it belongs to the account. */
 export const getOwnedDeployment = (accountId: string, id: string) =>
@@ -86,7 +90,7 @@ export const getOwnedDeployment = (accountId: string, id: string) =>
   )
 
 export const listDeployments = (accountId: string) =>
-  all<DeploymentRow>('SELECT * FROM deployments WHERE account_id = ? ORDER BY created_at', accountId).pipe(Effect.map((rows) => rows.map(toDeployment)))
+  all<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.account_id = ? ORDER BY d.created_at`, accountId).pipe(Effect.map((rows) => rows.map(toDeployment)))
 
 /** Write the mutable progress columns of a deployment. */
 export const saveProgress = (deployment: Pick<Deployment, 'id' | 'resources' | 'dnsRecords' | 'steps'>) =>

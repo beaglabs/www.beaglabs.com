@@ -5,6 +5,7 @@ import * as Effect from 'effect/Effect'
 import * as FetchHttpClient from 'effect/http/FetchHttpClient'
 import * as Layer from 'effect/Layer'
 import * as Redacted from 'effect/Redacted'
+import { logEvent } from './events'
 import { Env, UserError, first, nowIso, run, type Account, type BillingState, type Deployment } from './services'
 
 /** One plan: $13,000/month flat per deployment, unlimited users, 14-day free trial, card collected at signup. */
@@ -61,6 +62,7 @@ interface SubscriptionObject {
   status: string
   customer: string | { id: string }
   metadata?: Record<string, string>
+  trial_end?: number | null
 }
 
 interface CheckoutObject {
@@ -75,7 +77,17 @@ const idOf = (value: string | { id: string } | null | undefined) => (typeof valu
 /** What a webhook event changes, if anything. Pure, so the mapping is testable without a database. */
 export type BillingUpdate =
   | { kind: 'link'; deploymentId: string; customerId: string | null; subscriptionId: string | null }
-  | { kind: 'status'; deploymentId: string | null; subscriptionId: string; customerId: string | null; stripeStatus: string; billingState: 'active' | 'suspended' }
+  | {
+      kind: 'status'
+      eventType: string
+      deploymentId: string | null
+      subscriptionId: string
+      customerId: string | null
+      stripeStatus: string
+      billingState: 'active' | 'suspended'
+      /** ISO time the trial ends, when Stripe says. */
+      trialEnd: string | null
+    }
   | { kind: 'ignore' }
 
 export const billingUpdateFor = (event: StripeEvent): BillingUpdate => {
@@ -96,6 +108,8 @@ export const billingUpdateFor = (event: StripeEvent): BillingUpdate => {
       const stripeStatus = event.type === 'customer.subscription.deleted' ? 'canceled' : subscription.status
       return {
         kind: 'status',
+        eventType: event.type,
+        trialEnd: typeof subscription.trial_end === 'number' ? new Date(subscription.trial_end * 1000).toISOString() : null,
         deploymentId: subscription.metadata?.deployment_id ?? null,
         subscriptionId: subscription.id,
         customerId: idOf(subscription.customer),
@@ -108,10 +122,30 @@ export const billingUpdateFor = (event: StripeEvent): BillingUpdate => {
   }
 }
 
+const price = `$${(PLAN.amountCents / 100).toLocaleString('en-US')}/mo`
+
+/** "Oct 31" (UTC). */
+export const shortDate = (iso: string | null | undefined) =>
+  iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''
+
+/** The Activity line for a subscription change. Never includes Stripe ids beyond what the customer already sees. */
+export const billingEventFor = (update: Extract<BillingUpdate, { kind: 'status' }>) => {
+  const level = update.billingState === 'active' ? ('ok' as const) : ('error' as const)
+  if (update.stripeStatus === 'trialing')
+    return { level, message: update.eventType === 'customer.subscription.created' ? `Trial started · Papyrus · ${price} after ${shortDate(update.trialEnd) || 'the trial'}` : `Trial · ends ${shortDate(update.trialEnd) || 'soon'}` }
+  if (update.stripeStatus === 'active') return { level, message: `Subscription active · Papyrus · ${price}` }
+  if (update.stripeStatus === 'canceled') return { level, message: 'Subscription canceled · deployment suspended' }
+  return { level, message: `Subscription ${update.stripeStatus.replace(/_/g, ' ')} · deployment suspended until payment is fixed` }
+}
+
+const accountOf = (deploymentId: string) => first<{ account_id: string }>('SELECT account_id FROM deployments WHERE id = ?', deploymentId).pipe(Effect.map((row) => row?.account_id ?? null))
+
 export const applyBillingUpdate = (update: BillingUpdate) =>
   Effect.gen(function* () {
     if (update.kind === 'ignore') return
     if (update.kind === 'link') {
+      const accountId = yield* accountOf(update.deploymentId)
+      if (accountId) yield* logEvent({ accountId, deploymentId: update.deploymentId, level: 'info', source: 'billing', message: 'Checkout completed · card on file' })
       yield* run(
         'UPDATE deployments SET stripe_customer_id = COALESCE(?, stripe_customer_id), stripe_subscription_id = COALESCE(?, stripe_subscription_id), updated_at = ? WHERE id = ?',
         update.customerId,
@@ -133,6 +167,16 @@ export const applyBillingUpdate = (update: BillingUpdate) =>
       nowIso(),
       deploymentId,
     )
+    if (update.trialEnd) {
+      yield* run(
+        'INSERT INTO billing_periods (deployment_id, trial_end, updated_at) VALUES (?, ?, ?) ON CONFLICT(deployment_id) DO UPDATE SET trial_end = excluded.trial_end, updated_at = excluded.updated_at',
+        deploymentId,
+        update.trialEnd,
+        nowIso(),
+      )
+    }
+    const accountId = yield* accountOf(deploymentId)
+    if (accountId) yield* logEvent({ accountId, deploymentId, source: 'billing', ...billingEventFor(update) })
   })
 
 /** POST /api/stripe/webhook: verify the signature over the raw body, apply each event once. */

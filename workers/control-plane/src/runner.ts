@@ -10,6 +10,7 @@ import type { Bindings } from './env'
 import type { SignedLicense } from './license-rpc'
 import { providerById } from './providers/registry'
 import { ProviderError, type DeployContext, type ProviderContext } from './providers/types'
+import { logEvent, type EventLevel, type EventSource } from './events'
 import { canRun, record, type StepId, type StepOutcome } from './setup'
 import { Env, UserError, nowIso, run, saveProgress, type Account, type Deployment } from './services'
 
@@ -156,14 +157,18 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
       case 'health': {
         const url = `https://${deployment.hostname}/api/health`
         const result = yield* getJson(url).pipe(Effect.result)
-        if (result._tag === 'Failure') return outcome('fail', `${url} did not answer over valid TLS yet. The container can take a few minutes to start.`)
-        if (result.success.status !== 200 || result.success.body?.status !== 'ok') return outcome('fail', `${url} answered ${result.success.status}.`)
-        return outcome('pass', `${url} is healthy.`)
+        // Papyrus usually answers within two minutes of a deploy; until STARTUP_GRACE_MS has passed, not yet is "still starting".
+        const starting = Date.now() - Date.parse(deployment.steps.deploy.at ?? '') < STARTUP_GRACE_MS
+        if (result._tag === 'Failure')
+          return outcome(starting ? 'pending' : 'fail', `GET ${url} → no answer over valid TLS${starting ? '; Papyrus is still starting.' : '. Retry, or message Beag Labs if it keeps failing.'}`)
+        if (result.success.status !== 200 || result.success.body?.status !== 'ok')
+          return outcome(starting ? 'pending' : 'fail', `GET ${url} → ${result.success.status}${starting ? '; Papyrus is still starting.' : '. Retry, or message Beag Labs if it keeps failing.'}`)
+        return outcome('pass', `GET ${url} → 200 · healthy.`)
       }
       case 'microsoft': {
         const result = yield* getJson(`https://${deployment.hostname}/api/config/public`).pipe(Effect.result)
         if (result._tag === 'Success' && result.success.body?.entraConfigured === true) return outcome('pass', 'Microsoft Entra sign-in is connected.')
-        return outcome('fail', `A system owner needs to open https://${deployment.hostname}/ and complete Connect Microsoft.`)
+        return outcome('pending', `A system owner needs to open https://${deployment.hostname}/ and complete Connect Microsoft.`)
       }
       case 'registration': {
         if (!deployment.license_deployment_id) return outcome('fail', 'Deploy first.')
@@ -181,12 +186,29 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
   )
 }
 
+/** How long after a deploy a health check that doesn't answer yet counts as "starting" rather than failed. */
+export const STARTUP_GRACE_MS = 15 * 60_000
+
+/** Which Activity source a step logs under. */
+export const stepSource = (deployment: Pick<Deployment, 'provider'>, step: StepId): EventSource =>
+  step === 'dns' ? (deployment.provider === HOSTED_PROVIDER ? 'address' : 'dns') : step
+
+const levelFor = (status: StepOutcome['status']): EventLevel => (status === 'pass' ? 'ok' : status === 'pending' ? 'wait' : 'error')
+
 /** Run a step if allowed, record the outcome, and save progress (resources are saved whatever happened). */
 export const runStep = (deployment: Deployment, account: Account, step: StepId) =>
   Effect.gen(function* () {
     if (!canRun(deployment.steps, step)) return yield* new UserError({ message: 'Finish the earlier steps first', status: 409 })
+    const previous = deployment.steps[step]
+    // Repeated runs of a step that hasn't passed yet (e.g. health checks while Papyrus starts) are numbered.
+    const attempt = previous.status !== 'pass' && previous.at ? (previous.attempts ?? 1) + 1 : 1
+    const source = stepSource(deployment, step)
+    if (step === 'deploy') yield* logEvent({ accountId: account.id, deploymentId: deployment.id, level: 'info', source, message: `Deploying ${deployment.hostname ?? 'Papyrus'}` })
     const result = yield* stepOutcome(deployment, account, step)
     deployment.steps = record(deployment.steps, step, result)
+    if (result.status !== 'pass') deployment.steps[step] = { ...deployment.steps[step], attempts: attempt }
     yield* saveProgress(deployment)
+    const message = result.reason ?? (result.status === 'pass' ? 'Done.' : 'Not ready yet.')
+    yield* logEvent({ accountId: account.id, deploymentId: deployment.id, level: levelFor(result.status), source, message: attempt > 1 ? `${message} (attempt ${attempt})` : message })
     return result
   })

@@ -7,11 +7,14 @@ import { Hono, type Context as HonoContext } from 'hono'
 import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
 import { handleWebhook, portalUrl, startCheckout } from './billing'
+import { ACTIVITY_JS, ACTIVITY_SCRIPT_PATH } from './activity'
 import { CHAT_BUBBLE_JS, CHAT_SCRIPT_PATH, CHAT_SESSION_PATH } from './chat-bubble'
 import { encryptJson, randomToken, timingSafeEqual } from './crypto'
+import { EVENT_FILTERS, eventJson, isEventFilter, listEvents, logEvent } from './events'
 import { HOSTED_PROVIDER, byocEnabled, claimOrgName, hostedHostname, hostedProviderContext, loadHostedInfra, orgNameAvailability, saveHostedInfra } from './hosted'
 import { bootstrapHosted } from './providers/aws-hosted'
 import type { Bindings } from './env'
+import { LOGO_128_BASE64, LOGO_64_BASE64, LOGO_PATHS } from './logo'
 import { connectTemplate } from './providers/aws'
 import { credentialsFromForm, missingFields, providerById } from './providers/registry'
 import { checkCredentials, isHostname, license, loadCredentials, runStep } from './runner'
@@ -28,6 +31,9 @@ export interface AppDeps {
 type Ctx = HonoContext<{ Bindings: Bindings }>
 type Program<A> = Effect.Effect<A, unknown, Env | HttpClient.HttpClient>
 
+const fromBase64 = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+const LOGOS_PNG: Record<string, Uint8Array<ArrayBuffer>> = { [LOGO_PATHS.small]: fromBase64(LOGO_64_BASE64), [LOGO_PATHS.large]: fromBase64(LOGO_128_BASE64) }
+
 /** Scripts only from this site; the chat bubble talks to the chat API over HTTPS and WebSocket and shows its avatars and images. */
 export const contentSecurityPolicy = (env: Pick<Bindings, 'CHAT_API_ORIGIN'>) => {
   const chat = new URL(env.CHAT_API_ORIGIN)
@@ -36,7 +42,7 @@ export const contentSecurityPolicy = (env: Pick<Bindings, 'CHAT_API_ORIGIN'>) =>
     "default-src 'self'",
     "script-src 'self'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    'font-src https://fonts.gstatic.com',
+    "font-src 'self' https://fonts.gstatic.com",
     `img-src 'self' data: blob: ${chat.origin}`,
     `connect-src 'self' ${chat.origin} ${socket}`,
     "base-uri 'none'",
@@ -123,6 +129,7 @@ export function createApp(deps: AppDeps = {}) {
       c,
       Effect.gen(function* () {
         const account = yield* Auth.redeemMagicLink(c.req.query('token') ?? '')
+        yield* logEvent({ accountId: account.id, level: 'info', source: 'account', message: `${account.email} signed in with an email link` })
         return yield* Auth.createSession(account.id)
       }),
     )
@@ -144,6 +151,7 @@ export function createApp(deps: AppDeps = {}) {
         Effect.gen(function* () {
           const result = yield* Auth.finishOidc(provider, { code: c.req.query('code'), state: c.req.query('state'), error: c.req.query('error') }, getCookie(c, Auth.STATE_COOKIE))
           const session = yield* Auth.createSession(result.account.id)
+          yield* logEvent({ accountId: result.account.id, level: 'info', source: 'account', message: `${result.account.email} signed in with ${provider === 'microsoft' ? 'Microsoft' : 'Google'}` })
           return { ...result, session }
         }),
       )
@@ -166,7 +174,7 @@ export function createApp(deps: AppDeps = {}) {
     signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployments = yield* listDeployments(account.id)
-        return c.html(Views.billingPage(account, deployments, null, yield* byocEnabled(account)))
+        return c.html(Views.billingPage(account, deployments, c.req.query('error')))
       }),
     ),
   )
@@ -278,6 +286,13 @@ export function createApp(deps: AppDeps = {}) {
         const check = yield* checkCredentials(deployment, credentials).pipe(Effect.result)
         deployment.steps = record(resetFrom(deployment.steps, 'connect'), 'connect', check._tag === 'Success' ? { status: 'pass', reason: check.success } : { status: 'fail', reason: check.failure.message })
         yield* saveProgress(deployment)
+        // Only the provider's summary or error: never the credentials themselves.
+        yield* logEvent({
+          accountId: account.id,
+          deploymentId: deployment.id,
+          source: 'connect',
+          ...(check._tag === 'Success' ? { level: 'ok' as const, message: `${provider.name} credentials checked: ${check.success}` } : { level: 'error' as const, message: `${provider.name} credential check failed: ${check.failure.message}` }),
+        })
         return yield* renderProvision(
           c,
           account,
@@ -301,11 +316,23 @@ export function createApp(deps: AppDeps = {}) {
 
   // Deploy and setup ----------------------------------------------------------------------------------------------
 
+  /** The org-name claim screen until the deployment has an address; then the Deployment page. */
+  const renderDeployment = (c: Ctx, account: Account, deployment: Deployment, message?: string | null, status = 200) =>
+    Effect.gen(function* () {
+      const byoc = yield* byocEnabled(account)
+      if (!deployment.provider) return c.html(Views.claimPage(account, deployment, message, byoc), status as 200)
+      const events = yield* listEvents(account.id, { deploymentId: deployment.id })
+      const multiple = (yield* listDeployments(account.id)).length > 1
+      return c.html(Views.deploymentPage({ account, deployment, events, byoc, region: c.env.HOSTED_AWS_REGION || 'us-east-2', multiple, message }), status as 200)
+    })
+
   app.get('/deploy', (c) =>
     signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployments = yield* listDeployments(account.id)
-        return c.html(Views.deployListPage(account, deployments, yield* byocEnabled(account)))
+        // One deployment (the usual case) is the page itself; several get a list to click into.
+        if (deployments.length === 1) return yield* renderDeployment(c, account, deployments[0]!, c.req.query('error'))
+        return c.html(Views.deployListPage(account, deployments))
       }),
     ),
   )
@@ -314,7 +341,7 @@ export function createApp(deps: AppDeps = {}) {
     signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
-        return c.html(Views.setupPage(account, deployment, c.req.query('error'), { byoc: yield* byocEnabled(account) }))
+        return yield* renderDeployment(c, account, deployment, c.req.query('error'))
       }),
     ),
   )
@@ -341,11 +368,11 @@ export function createApp(deps: AppDeps = {}) {
     return signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
-        const byoc = yield* byocEnabled(account)
-        if (deployment.provider || deployment.license_deployment_id) return c.html(Views.setupPage(account, deployment, 'This deployment already has its address.', { byoc }), 409)
+        if (deployment.provider || deployment.license_deployment_id) return yield* renderDeployment(c, account, deployment, 'This deployment already has its address.', 409)
         const claimed = yield* claimOrgName(account.id, deployment.id, org).pipe(Effect.result)
-        if (claimed._tag === 'Failure') return c.html(Views.setupPage(account, deployment, claimed.failure.message, { byoc }), (claimed.failure.status ?? 400) as 400)
+        if (claimed._tag === 'Failure') return yield* renderDeployment(c, account, deployment, claimed.failure.message, claimed.failure.status ?? 400)
         const hostname = hostedHostname(claimed.success)
+        yield* logEvent({ accountId: account.id, deploymentId: deployment.id, level: 'ok', source: 'address', message: `Claimed "${claimed.success}" · ${hostname}` })
         yield* run('UPDATE deployments SET provider = ?, hostname = ?, updated_at = ? WHERE id = ?', HOSTED_PROVIDER, hostname, nowIso(), deployment.id)
         deployment.provider = HOSTED_PROVIDER
         deployment.hostname = hostname
@@ -365,8 +392,8 @@ export function createApp(deps: AppDeps = {}) {
         const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
         const byoc = yield* byocEnabled(account)
         if (!byoc || !deployment.provider || deployment.provider === HOSTED_PROVIDER) return yield* new UserError({ message: 'Hosted deployments use their organization name as the address.', status: 409 })
-        if (deployment.license_deployment_id) return c.html(Views.setupPage(account, deployment, 'The hostname is bound to the license issued at deploy.', { byoc }), 409)
-        if (!isHostname(hostname)) return c.html(Views.setupPage(account, deployment, 'Enter a hostname you control, like papyrus.example.com', { byoc }), 400)
+        if (deployment.license_deployment_id) return yield* renderDeployment(c, account, deployment, 'The hostname is bound to the license issued at deploy.', 409)
+        if (!isHostname(hostname)) return yield* renderDeployment(c, account, deployment, 'Enter a hostname you control, like papyrus.example.com', 400)
         yield* run('UPDATE deployments SET hostname = ?, updated_at = ? WHERE id = ?', hostname, nowIso(), deployment.id)
         deployment.hostname = hostname
         deployment.steps = deployment.steps.connect.status === 'pass' ? resetFrom(deployment.steps, 'deploy') : deployment.steps
@@ -387,6 +414,71 @@ export function createApp(deps: AppDeps = {}) {
       }),
     ),
   )
+
+  // Team, Support, Settings --------------------------------------------------------------------------------------
+
+  app.get('/team', (c) => signedIn(c, (account) => Effect.succeed(c.html(Views.teamPage(account, [account])))))
+
+  app.get('/support', (c) => signedIn(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.html(Views.supportPage(account, deployments)))))
+
+  app.get('/settings', (c) => signedIn(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.html(Views.settingsPage(account, deployments)))))
+
+  app.post('/settings', async (c) => {
+    const form = await c.req.parseBody()
+    const field = (name: string) => String(form[name] ?? '').trim().slice(0, 200)
+    return signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployments = yield* listDeployments(account.id)
+        // The organization is on the license once a deployment registers, so it stays as it is from then on.
+        const locked = deployments.some((d) => d.license_deployment_id)
+        const name = field('name') || null
+        const organization = locked ? account.organization : field('organization') || null
+        yield* run('UPDATE accounts SET name = ?, organization = ? WHERE id = ?', name, organization, account.id)
+        yield* logEvent({ accountId: account.id, level: 'info', source: 'account', message: 'Account settings updated' })
+        return c.html(Views.settingsPage({ ...account, name, organization }, deployments, { text: 'Saved.', kind: 'ok' }))
+      }),
+    )
+  })
+
+  // Activity ------------------------------------------------------------------------------------------------------
+
+  /** The signed-in account's events, newest first. `deployment`, `filter`, `source`, `level` (comma lists), `before`/`after` ids, `limit`. */
+  app.get('/api/events', async (c) => {
+    const list = (value: string | undefined) => (value ? value.split(',').map((part) => part.trim()).filter(Boolean) : undefined)
+    const cursor = (value: string | undefined) => {
+      const n = Number(value)
+      return Number.isSafeInteger(n) && n > 0 ? n : null
+    }
+    const exit = await exec(
+      c,
+      Effect.gen(function* () {
+        const account = yield* currentAccount(c)
+        if (!account) return null
+        const deploymentId = c.req.query('deployment') || null
+        if (deploymentId) yield* getOwnedDeployment(account.id, deploymentId)
+        const filter = c.req.query('filter')
+        const preset: { sources?: readonly string[]; levels?: readonly string[] } = isEventFilter(filter) ? EVENT_FILTERS[filter] : {}
+        const result = yield* listEvents(account.id, {
+          deploymentId,
+          sources: list(c.req.query('source')) ?? preset.sources,
+          levels: list(c.req.query('level')) ?? preset.levels,
+          before: cursor(c.req.query('before')),
+          after: cursor(c.req.query('after')),
+          limit: Number(c.req.query('limit')) || 50,
+        })
+        return { events: result.events.map(eventJson), next: result.next }
+      }),
+    )
+    if (Exit.isSuccess(exit)) return exit.value ? c.json(exit.value, 200, { 'cache-control': 'no-store' }) : c.json({ error: 'Sign in first' }, 401)
+    const failure = userError(exit)!
+    return c.json({ error: failure.message }, failure.status as 404)
+  })
+
+  app.get(ACTIVITY_SCRIPT_PATH, (c) => c.body(ACTIVITY_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
+
+  for (const path of Object.keys(LOGOS_PNG)) {
+    app.get(path, (c) => c.body(LOGOS_PNG[path]!, 200, { 'content-type': 'image/png', 'cache-control': 'public, max-age=86400' }))
+  }
 
   // Admin: one-time hosted bootstrap ------------------------------------------------------------------------------
 
