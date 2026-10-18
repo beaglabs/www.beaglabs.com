@@ -38,3 +38,10 @@ export async function subscribeToNewsletter(email: string) {
     return false
   }
 }
+
+/** A requested service credit email, delivered by the Customer.io credit automation. */
+export async function sendComputeCreditEmail(email: string, code: string, redeemUrl: string) {
+  const client = getTrackClient()
+  await client.identify(email, { email, compute_credit_requested: true, source: 'beaglabs.com/hero' })
+  await client.track(email, { name: 'papyrus_compute_credit_requested', data: { credit_code: code, redeem_url: redeemUrl, amount_usd: 1000 } })
+}

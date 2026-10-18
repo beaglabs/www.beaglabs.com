@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { TrialCtaLink } from "@/components/trial-cta-link"
 import { ArrowRight } from "lucide-react"
 
 export function FinalCTASection() {
@@ -16,10 +15,10 @@ export function FinalCTASection() {
       <div className="max-w-[790px]">
         <span className="mb-5 inline-block border-2 border-[#111] bg-[#ff5f1f] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-wider">Get started with Papyrus</span>
         <h2 className="display-black text-[length:min(48px,9vw)] leading-[.95] sm:text-[64px]">Put your workflows to work.</h2>
-        <p className="mt-6 max-w-[680px] text-base font-semibold leading-7 text-[#444]">Start a one-month trial in your Azure environment. Explore document automation, internal apps, and modernization with your team.</p>
+        <p className="mt-6 max-w-[680px] text-base font-semibold leading-7 text-[#444]">Get a $1,000 Papyrus compute credit and redeem it for one deployment. Explore document automation, internal apps, and modernization with your team.</p>
       </div>
       <div className="flex shrink-0 flex-col items-start gap-3">
-        <TrialCtaLink placement="final" className="inline-flex items-center gap-3 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-xs font-black uppercase tracking-wide shadow-[5px_5px_0_#111] hover:bg-[#ffdfcf]">Start a one-month trial <ArrowRight className="h-4 w-4" /></TrialCtaLink>
+        <a href="/#compute-credit" className="inline-flex items-center gap-3 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-xs font-black uppercase tracking-wide shadow-[5px_5px_0_#111] hover:bg-[#ffdfcf]">Get your compute credit <ArrowRight className="h-4 w-4" /></a>
         <Link href="/contact" className="text-xs font-bold underline underline-offset-4">Need a government or offline deployment?</Link>
       </div>
     </div>

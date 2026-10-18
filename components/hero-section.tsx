@@ -27,7 +27,7 @@ export function HeroSection() {
       const res = await fetch("/api/newsletter/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: address }),
+        body: JSON.stringify({ email: address, offer: "papyrus-compute-credit" }),
       })
       if (!res.ok) throw new Error("signup failed")
       setState("done")
@@ -46,7 +46,7 @@ export function HeroSection() {
       : "One email with your credit code · No card required"
 
   return (
-    <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#000000] text-[#111]">
+    <section id="compute-credit" className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#000000] text-[#111]">
       <HeroBackdrop />
 
       {/* Copy sits in a solid card, so the dots stay crisp everywhere else */}

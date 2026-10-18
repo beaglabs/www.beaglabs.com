@@ -10,6 +10,8 @@ export default defineConfig({
     previewUrls: true,
     domains: ['beaglabs.com'],
     env: {
+      CUSTOMERIO_SITE_ID: bindings.secret(),
+      CUSTOMERIO_TRACK_API_KEY: bindings.secret(),
       HYGRAPH_ENDPOINT: bindings.text('https://us-west-2.cdn.hygraph.com/content/cmq44llwh02u708w6rc1atyy7/master'),
     },
     observability: { enabled: true, logs: { enabled: true } },

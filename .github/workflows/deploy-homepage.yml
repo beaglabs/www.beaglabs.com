@@ -1,0 +1,48 @@
+name: Deploy Homepage
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'pages/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'public/**'
+      - 'styles/**'
+      - 'cloudflare.config.ts'
+      - 'vite.config.mts'
+      - 'package*.json'
+      - '.github/workflows/deploy-homepage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deploy-homepage
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Check email service configuration
+        run: |
+          node --input-type=module <<'JS'
+          const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/workers/scripts/beaglabs-homepage/settings`, {headers:{authorization:`Bearer ${process.env.CLOUDFLARE_API_TOKEN}`}})
+          const data = await response.json()
+          if (!data.success) throw new Error('Could not inspect homepage runtime bindings')
+          const names = new Set((data.result.bindings ?? []).map(binding => binding.name))
+          for (const name of ['CUSTOMERIO_SITE_ID','CUSTOMERIO_TRACK_API_KEY']) {
+            if (!names.has(name)) throw new Error(`Missing homepage runtime binding: ${name}`)
+          }
+          console.log('Customer.io runtime bindings are configured')
+          JS
+      - run: npm run build:vinext
+      - run: npm run deploy:cloudflare -- --skip-build
