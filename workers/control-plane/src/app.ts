@@ -25,6 +25,7 @@ import { deleteDeployment, resumeTeardowns, runTeardown, startDeployment, stopDe
 import { LIVE_PATH } from './activity-hub'
 import * as Views from './views'
 import { autoAdvance, dueCheck } from './advance'
+import { acceptTerms, bindingInfo, createPortalTransaction, microsoftCallback, pruneTransactions, redeemHandle, startConsent, startPortal, termsFor } from './microsoft'
 import { availableActions, buildDeploymentView, buildSummary, currentStep, type ViewContext } from './deployment-view'
 import { browserCapture, captureAndStore, loadCapture, previewObject, requestCapture, screenshotsEnabled, type CaptureFn } from './preview'
 import type { ActionId, ActionResult, DetailPayload, ListPayload } from './ui/types'
@@ -73,6 +74,7 @@ export const scheduled = async (env: Bindings, now = Date.now(), deps: AppDeps =
   if (Exit.isFailure(exit)) console.error('compute metering failed', (Cause.squash(exit.cause) as { _tag?: string })?._tag ?? 'defect')
   const teardowns = await runProgram(env, resumeTeardowns(), deps)
   if (Exit.isFailure(teardowns)) console.error('resuming teardowns failed', (Cause.squash(teardowns.cause) as { _tag?: string })?._tag ?? 'defect')
+  await runProgram(env, pruneTransactions(), deps)
   return Exit.isSuccess(exit) ? exit.value : null
 }
 
@@ -356,6 +358,7 @@ export function createApp(deps: AppDeps = {}) {
       const capture = yield* loadCapture(deployment.id)
       return {
         account,
+        termsAccepted: Boolean(yield* termsFor(deployment.id)),
         region: c.env.HOSTED_AWS_REGION || 'us-east-2',
         now: Date.now(),
         screenshots: screenshotsEnabled(c.env),
@@ -423,15 +426,24 @@ export function createApp(deps: AppDeps = {}) {
     return c.json({ error: failure.message }, failure.status as 500)
   })
 
-  /** Hosted (the default): claim <org>.papyrus.beaglabs.com and deploy straight away when billing is active. */
+  /** Who accepted the terms from this request: the address and browser, for the record. */
+  const acceptanceContext = (c: Ctx) => ({ ip: c.req.header('cf-connecting-ip') ?? null, userAgent: c.req.header('user-agent') ?? null })
+
+  /**
+   * Hosted (the default): accept the terms, claim <org>.papyrus.beaglabs.com, deploy straight away when billing is
+   * active, then Connect Microsoft.
+   */
   app.post('/deploy/:id/org', async (c) => {
-    const org = String((await c.req.parseBody()).org ?? '')
+    const form = await c.req.parseBody()
+    const org = String(form.org ?? '')
     return signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
         if (deployment.provider || deployment.license_deployment_id) return yield* renderDeployment(c, account, deployment, 'This deployment already has its address.', 409)
+        if (form.terms !== 'accept') return yield* renderDeployment(c, account, deployment, 'Accept the Terms of Service and Privacy Policy to continue.', 400)
         const claimed = yield* claimOrgName(account.id, deployment.id, org).pipe(Effect.result)
         if (claimed._tag === 'Failure') return yield* renderDeployment(c, account, deployment, claimed.failure.message, claimed.failure.status ?? 400)
+        yield* acceptTerms(deployment, account, acceptanceContext(c))
         const hostname = hostedHostname(claimed.success)
         yield* logEvent({ accountId: account.id, deploymentId: deployment.id, level: 'ok', source: 'address', message: `Claimed "${claimed.success}" · ${hostname}` })
         yield* run('UPDATE deployments SET provider = ?, hostname = ?, updated_at = ? WHERE id = ?', HOSTED_PROVIDER, hostname, nowIso(), deployment.id)
@@ -440,10 +452,65 @@ export function createApp(deps: AppDeps = {}) {
         deployment.steps = record(resetFrom(deployment.steps, 'connect'), 'connect', { status: 'pass', reason: 'Hosted by Beag Labs.' })
         yield* saveProgress(deployment)
         if (deployment.billing_state === 'active') yield* runStep(deployment, account, 'deploy')
-        return c.redirect(`/deploy/${deployment.id}`, 303)
+        // Registered with the license Worker by the deploy: straight on to Microsoft.
+        return c.redirect(deployment.license_deployment_id ? `/deploy/${deployment.id}/microsoft/connect` : `/deploy/${deployment.id}`, 303)
       }),
     )
   })
+
+  // Connect Microsoft (src/microsoft.ts) ----------------------------------------------------------------------------
+
+  /** Off to Microsoft: an administrator approves Papyrus for the organization, then signs in as System Owner. */
+  app.get('/deploy/:id/microsoft/connect', (c) =>
+    signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+        const started = yield* startConsent(deployment, account).pipe(Effect.result)
+        if (started._tag === 'Failure') {
+          const failure = started.failure as { _tag?: string; message?: string; status?: number }
+          if (failure?._tag !== 'UserError') return yield* Effect.fail(started.failure)
+          return yield* renderDeployment(c, account, deployment, failure.message, failure.status ?? 400)
+        }
+        return c.redirect(started.success, 302)
+      }),
+    ),
+  )
+
+  /** The Connect Microsoft dialog on the deployment page: accept the terms, then connect. */
+  app.post('/deploy/:id/microsoft/connect', async (c) => {
+    const form = await c.req.parseBody()
+    return signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+        if (form.terms !== 'accept') return yield* renderDeployment(c, account, deployment, 'Accept the Terms of Service and Privacy Policy to connect Microsoft.', 400)
+        yield* acceptTerms(deployment, account, acceptanceContext(c))
+        return c.redirect(`/deploy/${deployment.id}/microsoft/connect`, 303)
+      }),
+    )
+  })
+
+  /** Microsoft's redirect for both Connect (adminconsent, then sign-in) and sign-in to Papyrus. */
+  app.get('/microsoft/callback', (c) =>
+    page(
+      c,
+      Effect.gen(function* () {
+        const account = yield* currentAccount(c)
+        const query = c.req.query()
+        const result = yield* microsoftCallback(
+          { state: query.state, code: query.code, error: query.error, error_description: query.error_description, tenant: query.tenant, admin_consent: query.admin_consent },
+          account,
+        )
+        if (result.kind === 'admin') return c.html(Views.adminApprovalPage(result, account), 403)
+        return c.redirect(result.url, 302)
+      }),
+    ),
+  )
+
+  app.get('/microsoft/start', (c) => page(c, Effect.map(startPortal(c.req.query('txn')), (url) => c.redirect(url, 302))))
+
+  app.get('/microsoft/consented', (c) => c.html(Views.consentedPage()))
+
+  app.get(Views.COPY_SCRIPT_PATH, (c) => c.body(Views.COPY_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
   app.get('/setup/:id', (c) => c.redirect(`/deploy/${encodeURIComponent(c.req.param('id'))}`, 301))
 
   app.post('/deploy/:id/hostname', async (c) => {
@@ -630,6 +697,30 @@ export function createApp(deps: AppDeps = {}) {
     const failure = userError(exit)!
     return c.json({ error: failure.message }, failure.status as 401)
   })
+
+  /** Deployment-key JSON routes: errors as `{ code, error }`. */
+  const deploymentApi = async (c: Ctx, program: Program<unknown>) => {
+    const exit = await exec(c, program)
+    if (Exit.isSuccess(exit)) return c.json(exit.value as object, 200, { 'cache-control': 'no-store' })
+    const failure = userError(exit)!
+    const code = (Cause.squash((exit as Exit.Failure<unknown, unknown>).cause) as { code?: string })?.code
+    return c.json({ ...(code ? { code } : {}), error: failure.message }, failure.status as 400, { 'cache-control': 'no-store' })
+  }
+
+  /** Papyrus's sign-in through the broker: `{ state, nonce }` → `{ url }` to send the browser to. */
+  app.post('/api/microsoft/transactions', async (c) => {
+    const body = await c.req.json().catch(() => null)
+    return deploymentApi(c, createPortalTransaction(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'), body))
+  })
+
+  /** One-time handle → the signed identity assertion. */
+  app.post('/api/microsoft/redeem', async (c) => {
+    const body = await c.req.json().catch(() => null)
+    return deploymentApi(c, redeemHandle(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'), body))
+  })
+
+  /** The tenant, app and System Owner, once Connect Microsoft is done (404 not_bound until then). */
+  app.get('/api/microsoft/binding', (c) => deploymentApi(c, bindingInfo(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'))))
 
   /** Papyrus's agent-execution usage: one report per period (≤ 1 hour), forwarded as a Stripe meter event. */
   app.post('/api/deployments/usage', async (c) => {

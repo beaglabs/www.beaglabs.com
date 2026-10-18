@@ -151,3 +151,51 @@ CREATE TABLE IF NOT EXISTS auto_checks (
   deployment_id TEXT PRIMARY KEY REFERENCES deployments(id),
   claimed_at TEXT NOT NULL
 );
+
+-- Terms of Service and Privacy Policy accepted for the organization before Connect Microsoft (a side table, so this
+-- file stays idempotent). acceptance: JSON { accepted_by_account_email, organization, termsVersion, privacyVersion,
+-- acceptedAt, ip, userAgent }.
+CREATE TABLE IF NOT EXISTS terms_acceptances (
+  deployment_id TEXT PRIMARY KEY REFERENCES deployments(id),
+  acceptance TEXT NOT NULL,
+  accepted_at TEXT NOT NULL
+);
+
+-- Connect Microsoft (src/microsoft.ts): the customer's Entra tenant and the admin who consented (System Owner).
+-- One tenant per deployment; only Beag Labs support changes it.
+CREATE TABLE IF NOT EXISTS microsoft_bindings (
+  deployment_id TEXT PRIMARY KEY REFERENCES deployments(id),
+  license_deployment_id TEXT NOT NULL UNIQUE,
+  tenant_id TEXT NOT NULL,
+  owner_oid TEXT NOT NULL,
+  owner_name TEXT,
+  owner_email TEXT,
+  bound_at TEXT NOT NULL
+);
+
+-- Brokered Microsoft sign-ins. kind: consent (Connect Microsoft, from here) | portal (sign-in to Papyrus).
+-- phase: consent → signin → redeeming → done (consent); start → redeeming → handle (portal). Never holds a Microsoft
+-- token: identity_json is the signed assertion waiting for one redemption by its deployment, and only the SHA-256 of
+-- the handle is stored. Transactions expire after 10 minutes, handles after 60 seconds; expired rows are pruned.
+CREATE TABLE IF NOT EXISTS microsoft_transactions (
+  id TEXT PRIMARY KEY,
+  kind TEXT NOT NULL,
+  deployment_id TEXT NOT NULL,
+  account_id TEXT,
+  phase TEXT NOT NULL,
+  tenant_id TEXT,
+  -- Our OIDC nonce; client_state / client_nonce are Papyrus's (portal only).
+  nonce TEXT NOT NULL,
+  verifier TEXT,
+  client_state TEXT,
+  client_nonce TEXT,
+  return_origin TEXT,
+  handle_sha256 TEXT,
+  identity_json TEXT,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS microsoft_transactions_handle ON microsoft_transactions(handle_sha256);
+CREATE INDEX IF NOT EXISTS microsoft_transactions_expires ON microsoft_transactions(expires_at);

@@ -2,6 +2,7 @@ import { isTrialing, trialStatus } from './billing'
 import { HOSTED_DOMAIN, HOSTED_PROVIDER } from './hosted'
 import { TEARDOWN_LABELS, byocCleanupList, canStop, isHosted, teardownSteps } from './lifecycle-model'
 import { PRICE_ROWS, TRIAL_DAYS, usageLine, type MonthUsage } from './pricing'
+import { LEGAL } from './legal'
 import { PROVIDERS } from './providers/registry'
 import type { Account, Deployment } from './services'
 import { canRun, visibleSteps, type StepId } from './setup'
@@ -15,6 +16,7 @@ import type {
   DetailRow,
   FailureView,
   HealthState,
+  MicrosoftConnectView,
   Milestone,
   NextStepView,
   PlanView,
@@ -38,6 +40,8 @@ export interface ViewContext {
   usage?: MonthUsage
   /** The account's other deployments, for the switcher. */
   siblings?: Deployment[]
+  /** The owner accepted the Papyrus terms for this deployment (asked before Connect Microsoft). */
+  termsAccepted?: boolean
 }
 
 /** Hosted tasks run on Graviton with the size registerTask gives every Papyrus task. */
@@ -95,7 +99,7 @@ const stepCopy = (deployment: Deployment, mode: 'hosted' | 'byoc', hostedRegion:
         ? { label: 'Address', completed: `${host} resolves with a valid certificate.`, active: `Waiting for ${host} to resolve.`, pending: `${host} with a valid certificate.` }
         : { label: 'DNS', completed: 'All records found (checked with 1.1.1.1).', active: 'Create the DNS records, then we check them with 1.1.1.1.', pending: `Records that point ${host} at Papyrus.` },
     health: { label: 'Health check', completed: 'Papyrus answered over TLS. Healthy.', active: 'Waiting for Papyrus to answer. Usually under two minutes.', pending: 'Runs once the address resolves.' },
-    microsoft: { label: 'Microsoft', completed: 'Microsoft Entra sign-in is connected.', active: 'A Microsoft 365 admin opens Papyrus and connects Microsoft.', pending: 'Sign-in for your team.' },
+    microsoft: { label: 'Microsoft', completed: 'Microsoft connected. Your team signs in with Microsoft.', active: 'Connect Microsoft so your team can sign in.', pending: 'Sign-in for your team.' },
     registration: { label: 'Registration', completed: 'Registered with Beag Labs. Updates are on.', active: 'Papyrus registers itself on first start.', pending: 'Links Papyrus to your account.' },
   }
 }
@@ -202,8 +206,11 @@ const action = (id: Exclude<ActionId, 'stop'>, label?: string): Action => ({ id,
 /** The setup step the "retry" and "check" actions run: the first one that has not passed. */
 export const currentStep = (deployment: Deployment): StepId | null => visibleSteps(isHosted(deployment) ? 'hosted' : 'byoc').find((id) => deployment.steps[id].status !== 'pass') ?? null
 
-/** Steps whose "check" re-runs a read-only check (the others need the customer or start real work). */
-const CHECKABLE: readonly StepId[] = ['deploy', 'dns', 'health', 'microsoft', 'registration']
+/**
+ * Steps whose "check" re-runs a read-only check (the others need the customer or start real work). Microsoft has its
+ * own Connect Microsoft button and passes from it (or from the automatic check).
+ */
+const CHECKABLE: readonly StepId[] = ['deploy', 'dns', 'health', 'registration']
 
 export const availableActions = (deployment: Deployment): Action[] => {
   const actions: Action[] = []
@@ -304,11 +311,16 @@ export const buildDeploymentView = (deployment: Deployment, ctx: ViewContext): D
     failure = { stage: failedMilestone.label, message: failedMilestone.detail, recovery: recovery.filter((id) => summary.actions.some((a) => a.id === id)) }
   }
 
+  // Offered from the first deploy (Papyrus registered) until the step passes; the step itself passes once it can run.
+  const microsoft: MicrosoftConnectView | null =
+    !deleting && deployment.license_deployment_id && deployment.steps.microsoft.status !== 'pass'
+      ? { href: `/deploy/${encodeURIComponent(deployment.id)}/microsoft/connect`, termsAccepted: Boolean(ctx.termsAccepted), termsUrl: LEGAL.termsUrl, privacyUrl: LEGAL.privacyUrl }
+      : null
+
   let next: NextStepView | null = null
   if (!deleting && deployment.lifecycle === 'running') {
     if (deployment.billing_state === 'none') next = { title: 'Start your subscription', body: `Papyrus deploys as soon as the ${TRIAL_DAYS}-day trial starts. Nothing is charged until it ends.`, link: null }
-    else if (active?.id === 'microsoft' && summary.url)
-      next = { title: 'Connect Microsoft', body: 'Papyrus is up. A Microsoft 365 admin signs in and connects Entra so the rest of your team can sign in.', link: { label: 'Open Papyrus', href: summary.url } }
+    else if (microsoft) next = { title: 'Connect Microsoft', body: 'Connect Microsoft so your team can sign in.', link: null }
     else if (active?.id === 'connect') next = { title: 'Connect your cloud account', body: 'Credentials are checked with a read-only call and stored encrypted.', link: { label: 'Connect', href: `/provision?deployment=${encodeURIComponent(deployment.id)}` } }
   }
 
@@ -358,6 +370,7 @@ export const buildDeploymentView = (deployment: Deployment, ctx: ViewContext): D
     operation,
     failure,
     next,
+    microsoft,
     preview,
     plan: deleting ? null : planView(deployment, ctx.usage, ctx.now),
     details,

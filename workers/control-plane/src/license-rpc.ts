@@ -16,6 +16,37 @@ export interface SignedStatus {
   signature: string
 }
 
+/**
+ * A Microsoft sign-in brokered by this Worker (src/microsoft.ts), for one deployment. Papyrus verifies the signature
+ * over canonical JSON of `payload` with PAPYRUS_LICENSE_AUTHORITIES. Absent optional fields are omitted, never null.
+ */
+export interface IdentityPayload {
+  type: 'papyrus-identity'
+  /** License deployment id (PAPYRUS_DEPLOYMENT_ID on the container). */
+  aud: string
+  tid: string
+  oid: string
+  name?: string
+  preferredUsername?: string
+  email?: string
+  companyName?: string
+  department?: string
+  jobTitle?: string
+  officeLocation?: string
+  /** data:image/...;base64,... */
+  pictureUrl?: string
+  /** Papyrus's own nonce for this sign-in. */
+  nonce: string
+  issuedAt: string
+  expiresAt: string
+}
+
+export interface SignedIdentity {
+  payload: IdentityPayload
+  keyId: string
+  signature: string
+}
+
 export interface LicenseRpcApi {
   createDeployment(input: { accountId: string; hostname: string; provider: string; organization: string }): Promise<{
     deploymentId: string
@@ -24,6 +55,8 @@ export interface LicenseRpcApi {
   }>
   verifyDeploymentKey(deploymentId: string, deploymentKey: string): Promise<boolean>
   signStatus(input: { deploymentId: string; state: StatusState }): Promise<SignedStatus>
+  /** Sign an identity assertion unchanged. Rejects other `type`s and revoked deployments. */
+  signIdentity(payload: IdentityPayload): Promise<SignedIdentity>
   registrationState(deploymentId: string): Promise<'pending' | 'registered'>
   /** Deleted: from now on signStatus says suspended and the deployment key no longer verifies. True if it was a control-plane deployment. */
   revokeDeployment(deploymentId: string): Promise<boolean>

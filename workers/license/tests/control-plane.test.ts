@@ -176,6 +176,35 @@ describe('LicenseRpc.revokeDeployment', () => {
   })
 })
 
+describe('LicenseRpc.signIdentity', () => {
+  const identity = (aud: string, extra: Record<string, unknown> = {}) => ({
+    type: 'papyrus-identity' as const, aud, tid: 'tenant-1', oid: 'oid-1', name: 'Jane Doe', email: 'jane@contoso.com', nonce: 'n-1',
+    issuedAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 5 * 60_000).toISOString(), ...extra,
+  })
+
+  it('signs the payload unchanged with the license key', async () => {
+    const { deploymentId } = await create()
+    const payload = identity(deploymentId)
+    const signed = await rpc.signIdentity(payload)
+    expect(Object.keys(signed).sort()).toEqual(['keyId', 'payload', 'signature'])
+    expect(signed.payload).toEqual(payload)
+    expect(signed.keyId).toBe(KEY_ID)
+    expect(verifies(payload, signed.signature)).toBe(true)
+    expect(verifies({ ...payload, oid: 'oid-2' }, signed.signature)).toBe(false)
+  })
+
+  it('refuses anything that is not a papyrus-identity, odd fields, unknown and revoked deployments', async () => {
+    const { deploymentId } = await create()
+    await expect(rpc.signIdentity({ ...identity(deploymentId), type: 'deployment' } as never)).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity(deploymentId, { state: 'active' }) as never)).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity(deploymentId, { name: undefined }) as never)).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity(deploymentId, { expiresAt: new Date(Date.now() - 1000).toISOString() }))).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity('dep_missing'))).rejects.toMatchObject({ status: 404 })
+    await rpc.revokeDeployment(deploymentId)
+    await expect(rpc.signIdentity(identity(deploymentId))).rejects.toMatchObject({ status: 410 })
+  })
+})
+
 describe('LicenseRpc.registrationState', () => {
   it('treats unknown ids as pending', async () => {
     expect(await rpc.registrationState('dep_missing')).toBe('pending')

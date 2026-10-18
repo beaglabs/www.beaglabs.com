@@ -316,7 +316,7 @@ describe('Delete (hosted teardown)', () => {
     // The org name can be claimed again.
     expect((await (await get('/api/org-names/check?name=acme')).json()) as any).toMatchObject({ available: true })
     h.insertDeployment({ id: 'dep_new', billing_state: 'none' })
-    expect((await post('/deploy/dep_new/org', { org: 'acme' })).status).toBe(303)
+    expect((await post('/deploy/dep_new/org', { org: 'acme', terms: 'accept' })).status).toBe(303)
     expect(h.deployment('dep_new')).toMatchObject({ provider: 'hosted', hostname: 'acme.papyrus.beaglabs.com' })
   })
 

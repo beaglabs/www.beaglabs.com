@@ -16,7 +16,17 @@ keys and signing.
   one subscription with three items, 14-day trial, card up front), customer portal
 - `POST /api/stripe/webhook` — `trialing`/`active` → active; `past_due`/`unpaid`/`canceled` (and anything else) → suspended
 - `/deploy/:id` (hosted, the default) — org-name form (live check at `GET /api/org-names/check?name=`; lowercase DNS
-  label, 3–40 chars, unique, reserved list in `src/hosted.ts`); `POST /deploy/:id/org` claims it and deploys
+  label, 3–40 chars, unique, reserved list in `src/hosted.ts`) with the required terms checkbox; `POST /deploy/:id/org`
+  records the terms, claims the name, deploys and goes on to Connect Microsoft
+- Connect Microsoft (`src/microsoft.ts`, spec `docs/superpowers/specs/2026-10-18-one-click-microsoft-connect-design.md`):
+  `GET /deploy/:id/microsoft/connect` (signed-in owner; `POST` with `terms=accept` records the terms first) → admin
+  consent → `GET /microsoft/callback` → sign-in at the tenant → binding (tenant + System Owner) in `microsoft_bindings`.
+  `GET /microsoft/consented` is where the shareable admin-approval link lands. Papyrus sign-in through the broker:
+  `POST /api/microsoft/transactions` → `GET /microsoft/start` → callback → one-time handle → `POST /api/microsoft/redeem`
+  (60 s, once, that deployment only) → identity assertion signed by `LicenseRpc.signIdentity`. `GET /api/microsoft/binding`
+  tells Papyrus the tenant, app and owner. All three `/api/microsoft/*` routes use the deployment key, like the status
+  check-in. Microsoft tokens are never stored. App: `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` (the same app as
+  Sign in with Microsoft) with redirect URIs `/microsoft/callback` and `/microsoft/consented` added
 - `POST /admin/hosted/bootstrap` — one-time shared hosted infrastructure (`Authorization: Bearer $ADMIN_TOKEN`)
 - BYOC only: `/provision` — provider dropdown + credential form generated from `src/providers/registry.ts`; read-only check on save;
   Connect AWS (CloudFormation quick-create, per-deployment ExternalId; template at `/aws/connect-template.yaml`)
@@ -32,7 +42,8 @@ keys and signing.
 - `POST /deploy/:id/delete` (Settings → Delete deployment; body `confirm` = the org name, or the hostname for BYOC),
   `POST /deploy/:id/teardown` — retry or continue a teardown
 - Cron `5 * * * *` — one VM-hour meter event per running deployment (none for hours that start while stopped; nothing is
-  sent while trialing), then continues teardowns that are waiting (not failed ones: those wait for Retry)
+  sent while trialing), then continues teardowns that are waiting (not failed ones: those wait for Retry), then prunes
+  expired Microsoft sign-in transactions
 
 ## Hosted by Beag Labs
 

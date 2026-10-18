@@ -2,7 +2,7 @@
 import { WorkerEntrypoint } from 'cloudflare:workers'
 import { licenseAuthorities } from './azure-key-vault-signer'
 import * as controlPlane from './control-plane'
-import type { CreateDeploymentInput, CreateDeploymentResult, DeploymentState, RegistrationState, SignedStatus } from './control-plane'
+import type { CreateDeploymentInput, CreateDeploymentResult, DeploymentState, IdentityPayload, RegistrationState, SignedIdentity, SignedStatus } from './control-plane'
 import type { Bindings } from './env'
 
 export class LicenseRpc extends WorkerEntrypoint<Bindings> {
@@ -16,6 +16,11 @@ export class LicenseRpc extends WorkerEntrypoint<Bindings> {
 
   signStatus(input: { deploymentId: string; state: DeploymentState }): Promise<SignedStatus> {
     return controlPlane.signStatus(this.env, input)
+  }
+
+  /** A brokered Microsoft sign-in for Papyrus, signed with the license key. Refused for revoked deployments. */
+  signIdentity(payload: IdentityPayload): Promise<SignedIdentity> {
+    return controlPlane.signIdentity(this.env, payload)
   }
 
   registrationState(deploymentId: string): Promise<RegistrationState> {

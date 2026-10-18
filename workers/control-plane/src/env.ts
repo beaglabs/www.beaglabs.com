@@ -42,7 +42,12 @@ export interface Bindings {
   SESSION_SECRET: string
   STRIPE_SECRET_KEY: string
   STRIPE_WEBHOOK_SECRET: string
+  /**
+   * Beag Labs' multi-tenant Entra app: "Sign in with Microsoft" here, and one-click Connect Microsoft (src/microsoft.ts,
+   * redirect ${BASE_URL}/microsoft/callback). Empty = Connect Microsoft shows "not set up yet".
+   */
   MICROSOFT_CLIENT_ID: string
+  /** That app's client secret (secret). Redeems sign-in codes; never leaves this Worker. */
   MICROSOFT_CLIENT_SECRET: string
   GOOGLE_CLIENT_ID: string
   GOOGLE_CLIENT_SECRET: string

@@ -12,7 +12,7 @@ import { providerById } from './providers/registry'
 import { ProviderError, type DeployContext, type ProviderContext } from './providers/types'
 import { logEvent, type EventLevel, type EventSource } from './events'
 import { canRun, record, type StepId, type StepOutcome } from './setup'
-import { Env, UserError, nowIso, run, saveProgress, type Account, type Deployment } from './services'
+import { Env, UserError, first, nowIso, run, saveProgress, type Account, type Deployment } from './services'
 
 /** The license Worker (service binding) failed. */
 export class LicenseRpcError extends Data.TaggedError('LicenseRpcError')<{ message: string }> {}
@@ -175,9 +175,10 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
         return outcome('pass', `GET ${url} → 200 · healthy.`)
       }
       case 'microsoft': {
-        const result = yield* getJson(`https://${deployment.hostname}/api/config/public`).pipe(Effect.result)
-        if (result._tag === 'Success' && result.success.body?.entraConfigured === true) return outcome('pass', 'Microsoft Entra sign-in is connected.')
-        return outcome('pending', `A system owner needs to open https://${deployment.hostname}/ and complete Connect Microsoft.`)
+        // Connect Microsoft happens here (src/microsoft.ts); Papyrus picks the binding up on its own.
+        const binding = yield* first<{ owner_name: string | null; owner_email: string | null }>('SELECT owner_name, owner_email FROM microsoft_bindings WHERE deployment_id = ?', deployment.id)
+        if (binding) return outcome('pass', `Microsoft connected · ${binding.owner_name ?? binding.owner_email ?? 'The administrator'} is System Owner`)
+        return outcome('pending', 'Connect Microsoft so your team can sign in.')
       }
       case 'registration': {
         if (!deployment.license_deployment_id) return outcome('fail', 'Deploy first.')

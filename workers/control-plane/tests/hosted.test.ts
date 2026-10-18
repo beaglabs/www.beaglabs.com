@@ -48,7 +48,7 @@ describe('org names', () => {
     expect(await (await get('/api/org-names/check?name=a')).json()).toMatchObject({ available: false })
     expect((await h.call('/api/org-names/check?name=acme')).status).toBe(401)
 
-    expect((await post('/deploy/dep_abc/org', { org: 'acme' })).status).toBe(303)
+    expect((await post('/deploy/dep_abc/org', { org: 'acme', terms: 'accept' })).status).toBe(303)
     const row = h.deployment('dep_abc')
     expect(row).toMatchObject({ provider: 'hosted', hostname: 'acme.papyrus.beaglabs.com' })
     expect(JSON.parse(row.steps as string).connect).toMatchObject({ status: 'pass' })
@@ -60,15 +60,15 @@ describe('org names', () => {
     h.insertAccount('acct_2', 'other@example.com')
     h.insertDeployment({ id: 'dep_two', account_id: 'acct_2' })
     h.sql.prepare('INSERT INTO sessions (id_hash, account_id, expires_at) VALUES (?, ?, ?)').run(createHash('sha256').update('two').digest('hex'), 'acct_2', '2999-01-01T00:00:00.000Z')
-    const taken = await h.call('/deploy/dep_two/org', { method: 'POST', headers: { cookie: 'cp_session=two', origin: h.env.BASE_URL, 'content-type': 'application/x-www-form-urlencoded' }, body: 'org=acme' })
+    const taken = await h.call('/deploy/dep_two/org', { method: 'POST', headers: { cookie: 'cp_session=two', origin: h.env.BASE_URL, 'content-type': 'application/x-www-form-urlencoded' }, body: 'org=acme&terms=accept' })
     expect(taken.status).toBe(409)
     expect(await taken.text()).toContain('acme is taken')
     expect(h.deployment('dep_two').provider).toBeNull()
-    expect((await h.call('/deploy/dep_two/org', { method: 'POST', headers: { cookie: 'cp_session=two', origin: h.env.BASE_URL, 'content-type': 'application/x-www-form-urlencoded' }, body: 'org=www' })).status).toBe(400)
+    expect((await h.call('/deploy/dep_two/org', { method: 'POST', headers: { cookie: 'cp_session=two', origin: h.env.BASE_URL, 'content-type': 'application/x-www-form-urlencoded' }, body: 'org=www&terms=accept' })).status).toBe(400)
     const slots = h.sql.prepare('SELECT org_name, slot FROM hosted_orgs').all()
     expect(slots).toEqual([{ org_name: 'acme', slot: 1 }])
     // The first deployment can't claim a second name.
-    expect((await post('/deploy/dep_abc/org', { org: 'other' })).status).toBe(409)
+    expect((await post('/deploy/dep_abc/org', { org: 'other', terms: 'accept' })).status).toBe(409)
   })
 })
 
@@ -113,7 +113,7 @@ describe('hosted setup steps', () => {
     expect(visibleSteps('byoc')).toEqual(STEP_IDS)
 
     const { h, get, post } = signedIn()
-    await post('/deploy/dep_abc/org', { org: 'acme' })
+    await post('/deploy/dep_abc/org', { org: 'acme', terms: 'accept' })
     h.sql.prepare('UPDATE deployments SET dns_records = ? WHERE id = ?').run(JSON.stringify([{ type: 'CNAME', name: 'x', value: 'y' }]), 'dep_abc')
     const html = await (await get('/deploy/dep_abc')).text()
     expect(html).toContain('Hosted by Beag Labs')

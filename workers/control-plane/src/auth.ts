@@ -134,7 +134,7 @@ const OIDC = {
 const clientFor = (env: Bindings, provider: OidcProvider) =>
   provider === 'microsoft' ? { id: env.MICROSOFT_CLIENT_ID, secret: env.MICROSOFT_CLIENT_SECRET } : { id: env.GOOGLE_CLIENT_ID, secret: env.GOOGLE_CLIENT_SECRET }
 
-const challengeFor = (verifier: string) =>
+export const challengeFor = (verifier: string) =>
   Effect.promise(async () => toBase64Url(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)))))
 
 /** Start sign-in: the redirect URL plus a signed, short-lived cookie holding state, nonce and the PKCE verifier. */
