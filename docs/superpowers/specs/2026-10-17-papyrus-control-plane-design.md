@@ -235,6 +235,9 @@ was removed on 2026-10-17 in favour of email.
 - `revokeDeployment(deploymentId: string) → boolean` — marks a control-plane deployment revoked (deleted): from then on
   `signStatus` signs `suspended` whatever state is asked for, `verifyDeploymentKey` is false, and its bootstrap token
   can't be exchanged (`410`). Idempotent; `false` for a deployment the control plane doesn't own.
+- `authorities() → { [keyId: string]: string }` — the current signing key's public key as an SPKI PEM, keyed by its full
+  versioned Key Vault key URI (the `keyId` on every license and status). Read from Key Vault (`GET {keyId}?api-version=7.4`,
+  JWK `n`/`e`) and cached in memory.
 
 `SignedStatus = { payload: { deploymentId: string, state: 'active' | 'suspended', issuedAt: string, expiresAt: string }, keyId: string, signature: string }`,
 signed exactly like licenses (canonical JSON, Key Vault RS256, same `keyId` scheme), so Papyrus verifies it with the keys it already trusts.
@@ -267,7 +270,10 @@ signed exactly like licenses (canonical JSON, Key Vault RS256, same `keyId` sche
 
 `PAPYRUS_CONTROL_PLANE_URL=https://papyrus.beaglabs.com`, `PAPYRUS_DEPLOYMENT_ID`, `PAPYRUS_BOOTSTRAP_TOKEN` (secret),
 `PAPYRUS_LICENSE` (the signed license JSON; secret), `PAPYRUS_PUBLIC_ORIGIN=https://<hostname>`,
-`PAPYRUS_SECRET_KEY_FILE` (path of the read-only mounted 32-byte key), data volume at `/var/lib/papyrus`.
+`PAPYRUS_SECRET_KEY_FILE` (path of the read-only mounted 32-byte key),
+`PAPYRUS_LICENSE_AUTHORITIES` (`JSON.stringify(await LICENSE.authorities())`; plain, it is a public key; without it Papyrus
+trusts no key and rejects both the license and the signed status), data volume at `/var/lib/papyrus`. Every recipe (hosted
+and BYOC) gets these from the shared deploy context, and every deploy re-reads the authorities, so Redeploy refreshes them.
 
 ### Suspension in Papyrus
 

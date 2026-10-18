@@ -33,6 +33,9 @@ export function fakeD1() {
   return { sql, db: { prepare } as unknown as D1Database }
 }
 
+export const TEST_KEY_ID = 'https://beag-test.vault.azure.net/keys/papyrus-license/v1'
+export const TEST_AUTHORITY_PEM = '-----BEGIN PUBLIC KEY-----\nTEST\n-----END PUBLIC KEY-----\n'
+
 /** A mocked LicenseRpc: signs statuses with a fake signature, one valid key. */
 export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'good-key' }) {
   const license = {
@@ -49,6 +52,7 @@ export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'goo
     })),
     registrationState: vi.fn(async () => 'pending' as const),
     revokeDeployment: vi.fn(async () => true),
+    authorities: vi.fn(async () => ({ [TEST_KEY_ID]: TEST_AUTHORITY_PEM })),
   } satisfies LicenseRpcApi
   return license
 }

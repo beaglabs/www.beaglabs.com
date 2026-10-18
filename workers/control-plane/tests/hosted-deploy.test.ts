@@ -7,7 +7,7 @@ import { hostedProviderContext } from '../src/hosted'
 import { awsRecipe } from '../src/providers/aws'
 import { bootstrapHosted, hostedDeploy } from '../src/providers/aws-hosted'
 import type { DeployContext } from '../src/providers/types'
-import { harness } from './helpers/harness'
+import { harness, TEST_AUTHORITY_PEM, TEST_KEY_ID } from './helpers/harness'
 
 /** Mocked Distilled AWS calls: each returns a canned response and records its input. */
 const aws = vi.hoisted(() => {
@@ -197,6 +197,8 @@ describe('hosted deploy (shared AWS infrastructure)', () => {
     expect(JSON.parse(row.steps as string).deploy).toMatchObject({ status: 'pass' })
     expect(JSON.parse(row.resources as string)).toMatchObject({ accessPointId: 'fsap-1', listenerRuleArn: 'arn:rule/acme', serviceArn: 'arn:service/acme' })
     expect(aws.createRule).toHaveBeenCalledWith(expect.objectContaining({ Priority: 1 }))
+    const papyrus = aws.registerTaskDefinition.mock.calls[0]![0].containerDefinitions.find((c: any) => c.name === 'papyrus')
+    expect(papyrus.environment).toContainEqual({ name: 'PAPYRUS_LICENSE_AUTHORITIES', value: JSON.stringify({ [TEST_KEY_ID]: TEST_AUTHORITY_PEM }) })
   })
 })
 

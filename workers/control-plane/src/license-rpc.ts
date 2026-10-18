@@ -27,4 +27,6 @@ export interface LicenseRpcApi {
   registrationState(deploymentId: string): Promise<'pending' | 'registered'>
   /** Deleted: from now on signStatus says suspended and the deployment key no longer verifies. True if it was a control-plane deployment. */
   revokeDeployment(deploymentId: string): Promise<boolean>
+  /** `{ [keyId]: pem }` for the current signing key (keyId = versioned Key Vault key URI). Goes in PAPYRUS_LICENSE_AUTHORITIES. */
+  authorities(): Promise<Record<string, string>>
 }
