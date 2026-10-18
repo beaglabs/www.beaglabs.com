@@ -1,18 +1,18 @@
-import { ACTIVITY_SCRIPT_PATH, activityCard } from './activity'
 import { isTrialing, trialStatus } from './billing'
 import { PLATFORM_MONTHLY_USD, PRICE_ROWS, PRICE_SUMMARY, SIZE_TABLE_CAPTION, TRIAL_DAYS, sizeRows, type SizeRow, usageLine, type MonthUsage, type PriceRow } from './pricing'
-import type { DnsRecord } from './dns'
-import type { EventRow } from './events'
+import { eventJson, type EventRow } from './events'
 import { HOSTED_DOMAIN, HOSTED_PROVIDER } from './hosted'
 import { LOGO_PATHS } from './logo'
 import { quickCreateUrl } from './providers/aws'
 import { LOGOS } from './providers/logos'
 import { PROVIDERS } from './providers/registry'
 import type { CredentialField, ProviderEntry } from './providers/types'
-import { STEP_IDS, STEP_LABELS, canRun, isDone, visibleSteps, type StepId, type Steps } from './setup'
-import { TEARDOWN_LABELS, canStop, confirmNameFor, type CleanupItem, type TeardownStep } from './lifecycle-model'
+import { confirmNameFor } from './lifecycle-model'
 import type { Account, Deployment } from './services'
 import { SUPPORT_STYLES, supportCardMarkup, supportPageCard } from './support'
+import { DEPLOY_SCRIPT_PATH, renderDetail, renderList } from './ui/ssr'
+import { DEPLOY_STYLES } from './ui/styles'
+import type { DeploymentView, ListPayload } from './ui/types'
 
 export const esc = (value: unknown) =>
   String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
@@ -260,7 +260,7 @@ export const NAV: readonly { id: NavItem; label: string; href: string }[] = [
 const accountLabel = (account: Account) => account.organization || account.name || account.email.split('@')[0]
 
 /** Signed-in pages: black sidebar, grid main area, the support card. */
-export const consoleLayout = (input: { title: string; account: Account; active: NavItem | null; body: string; scripts?: string[] }) => `${head(input.title, SUPPORT_STYLES)}
+export const consoleLayout = (input: { title: string; account: Account; active: NavItem | null; body: string; scripts?: string[]; styles?: string }) => `${head(input.title, SUPPORT_STYLES + (input.styles ?? ''))}
 <body class="console-body"><div class="console">
 <aside class="side" aria-label="Papyrus control plane">
 <a class="brand disp" href="/deploy">${logoImg()}<span>Papyrus</span></a>
@@ -379,263 +379,33 @@ ${deployment.billing_state === 'none' ? `<div class="kv"><span>Trial</span><span
 ${deployment.billing_state === 'none' ? '' : `<p class="usage">${esc(usageLine(usage ?? NO_USAGE, { platform: deployment.billing_state === 'active' && !trialing }))}</p>`}`
 }
 
-const planCard = (deployment: Deployment, usage?: MonthUsage) =>
-  `<div class="card plan-card"><h4>Plan <span class="accent">${planLabel(deployment)}</span></h4><div class="body">${planRows(deployment, usage)}<div class="actions">${billingButton(deployment)}</div></div></div>`
-
 /** Email support, the same card as /support. */
 const helpCard = (account: Account) => supportPageCard(account)
 
-// Setup checklist ------------------------------------------------------------------------------------------------------
-
-type RowState = 'done' | 'running' | 'next' | 'waiting' | 'failed'
-type RowId = StepId | 'open'
-
-interface ChecklistRow {
-  id: RowId
-  title: string
-  description: string
-  state: RowState
-  reason?: string
-  /** 0–100 for running steps that finish on their own. */
-  progress?: number
-  actions: string
-}
-
-const TAGS: Record<RowState, string> = {
-  done: '<span class="tag ok">Done</span>',
-  running: '<span class="tag run">Running</span>',
-  next: '<span class="tag wait">Next</span>',
-  waiting: '<span class="tag wait">Waiting</span>',
-  failed: '<span class="tag err">Failed</span>',
-}
-
-/** Typical time for a step that finishes on its own, for the progress bar. */
-const EXPECTED_MS: Partial<Record<StepId, number>> = { deploy: 120_000, dns: 120_000, health: 120_000, registration: 120_000 }
-
-const progressFor = (steps: Steps, id: StepId, now: number) => {
-  const expected = EXPECTED_MS[id]
-  if (!expected) return undefined
-  const index = STEP_IDS.indexOf(id)
-  const started = Date.parse(steps[STEP_IDS[index - 1] ?? id]?.at ?? steps[id].at ?? '')
-  if (Number.isNaN(started)) return 10
-  return Math.round(Math.min(92, Math.max(8, ((now - started) / expected) * 100)))
-}
-
-interface StepCopy {
-  title: (done: boolean) => string
-  description: string
-}
-
-const hostedCopy = (deployment: Deployment, account: Account, region: string): Record<RowId, StepCopy> => {
-  const host = deployment.hostname ?? `your-org.${HOSTED_DOMAIN}`
-  const org = account.organization || host.split('.')[0]
-  return {
-    connect: { title: () => STEP_LABELS.connect, description: '' },
-    deploy: { title: (done) => (done ? 'Workspace created' : 'Create workspace'), description: `Isolated container and storage for ${org} in ${region}.` },
-    dns: { title: (done) => (done ? 'Address ready' : 'Address'), description: `${host} resolves with a valid certificate.` },
-    health: { title: (done) => (done ? 'Papyrus started' : 'Starting Papyrus'), description: 'Waiting for the health check. Usually under two minutes.' },
-    microsoft: { title: () => 'Connect Microsoft', description: 'Sign in as a Microsoft 365 admin so your team can use Papyrus.' },
-    registration: { title: () => 'Register with Beag Labs', description: 'Turns on updates and links this deployment to your account.' },
-    open: { title: () => 'Open Papyrus', description: 'Invite your team and build your first workflow.' },
-  }
-}
-
-const byocCopy = (deployment: Deployment): Record<RowId, StepCopy> => ({
-  connect: { title: () => STEP_LABELS.connect, description: 'Credentials for your cloud account, checked with a read-only call.' },
-  deploy: { title: () => STEP_LABELS.deploy, description: 'Runs the signed Papyrus image in your account.' },
-  dns: { title: () => STEP_LABELS.dns, description: 'Create the records below at your DNS provider; we check them with 1.1.1.1.' },
-  health: { title: () => STEP_LABELS.health, description: `Waiting for https://${deployment.hostname ?? 'your-host'} to answer.` },
-  microsoft: { title: () => STEP_LABELS.microsoft, description: 'Sign in as a Microsoft 365 admin so your team can use Papyrus.' },
-  registration: { title: () => STEP_LABELS.registration, description: 'Papyrus exchanges its bootstrap token with Beag Labs on first start.' },
-  open: { title: () => 'Open Papyrus', description: 'Invite your team and build your first workflow.' },
-})
-
-const stepButton = (deployment: Deployment, id: StepId, label: string, primary = false) =>
-  `<form method="post" action="/deploy/${esc(deployment.id)}/steps/${id}"><button class="btn sm${primary ? ' primary' : ''}" type="submit">${esc(label)}</button></form>`
-
-/** Turn stored step states into checklist rows: done / running (with progress) / next / waiting / failed. */
-export const checklist = (deployment: Deployment, account: Account, options: { mode: 'hosted' | 'byoc'; region: string; now?: number }): ChecklistRow[] => {
-  const steps = deployment.steps
-  const now = options.now ?? Date.now()
-  const copy = options.mode === 'hosted' ? hostedCopy(deployment, account, options.region) : byocCopy(deployment)
-  const ids: RowId[] = [...visibleSteps(options.mode), 'open']
-  const current = ids.findIndex((id) => id !== 'open' && steps[id].status !== 'pass')
-  const currentRunning = current >= 0 && steps[ids[current] as StepId].status === 'pending' && Boolean(steps[ids[current] as StepId].at)
-  return ids.map((id, index) => {
-    if (id === 'open') {
-      const done = current === -1
-      return { id, title: copy.open.title(done), description: copy.open.description, state: done ? 'done' : index === current + 1 && currentRunning ? 'next' : 'waiting', actions: '' }
-    }
-    const step = steps[id]
-    const done = step.status === 'pass'
-    let state: RowState
-    if (done) state = 'done'
-    else if (index === current) state = step.status === 'fail' ? 'failed' : step.at ? 'running' : 'next'
-    else state = index === current + 1 && currentRunning ? 'next' : 'waiting'
-    let actions = ''
-    if (id === 'connect') {
-      if (state !== 'waiting') actions = `<a class="btn sm${done ? '' : ' primary'}" href="/provision?deployment=${esc(deployment.id)}${deployment.provider ? `&provider=${esc(deployment.provider)}` : ''}">${done ? 'Change' : 'Connect'}</a>`
-    } else if (canRun(steps, id) && index === current) {
-      actions = state === 'failed' ? stepButton(deployment, id, 'Retry', true) : state === 'running' ? stepButton(deployment, id, 'Check now') : stepButton(deployment, id, 'Run', true)
-      // A health check that keeps failing usually needs a fresh rollout (e.g. a new image), not another check.
-      if (id === 'health' && state === 'failed') actions += stepButton(deployment, 'deploy', 'Redeploy')
-    } else if (done && id === 'deploy') {
-      actions = stepButton(deployment, id, 'Redeploy')
-    } else if (done && options.mode === 'byoc') {
-      actions = stepButton(deployment, id, 'Recheck')
-    }
-    // Stopped: nothing runs, so the health row offers Start instead of a check.
-    if (deployment.lifecycle === 'stopped') actions = id === 'health' ? startButton(deployment) : id === 'connect' ? actions : ''
-    else if (id === 'microsoft' && deployment.hostname && canRun(steps, 'microsoft') && !done)
-      actions = `<a class="btn sm" href="https://${esc(deployment.hostname)}/" target="_blank" rel="noopener">Open Papyrus and Connect Microsoft ↗</a>${actions}`
-    const progress = state === 'running' && id !== 'microsoft' ? progressFor(steps, id, now) : undefined
-    return {
-      id,
-      title: copy[id].title(done),
-      description: copy[id].description,
-      state,
-      ...(step.reason && (state === 'failed' || state === 'running' || (done && options.mode === 'byoc')) ? { reason: step.reason } : {}),
-      ...(progress !== undefined ? { progress } : {}),
-      actions,
-    }
-  })
-}
-
-const startButton = (deployment: Deployment, primary = true) =>
-  `<form method="post" action="/deploy/${esc(deployment.id)}/start"><button class="btn sm${primary ? ' primary' : ''}" type="submit">Start</button></form>`
-
-/** Stop asks first (no script: a disclosure with the confirm button inside). */
-const stopButton = (deployment: Deployment) =>
-  `<details class="confirm"><summary class="btn">Stop</summary><div class="pop" role="dialog" aria-label="Stop this deployment"><p><strong>Stop ${esc(deploymentName(deployment))}?</strong></p>
-<p style="margin-top:8px">Papyrus shuts down and nobody can use it until you start it again. Data, address and registration are kept. VM hours stop; the $${PLATFORM_MONTHLY_USD}/month platform fee continues while stopped.</p>
-<div class="actions"><form method="post" action="/deploy/${esc(deployment.id)}/stop"><button class="btn primary sm" type="submit">Stop deployment</button></form></div></div></details>`
-
-const checklistCard = (rows: ChecklistRow[], deployment?: Deployment) =>
-  `<div class="card checklist">${deployment?.lifecycle === 'stopped' ? `<div class="banner" data-stopped><span>Stopped</span>${startButton(deployment)}</div>` : ''}${rows
-    .map((row, index) => {
-      const num = row.state === 'done' ? '<div class="num ok">✓</div>' : row.state === 'running' ? `<div class="num run">${index + 1}</div>` : row.state === 'failed' ? '<div class="num err">!</div>' : `<div class="num">${index + 1}</div>`
-      return `<div class="step" id="${row.id}" data-state="${row.state}">${num}<div><h5>${esc(row.title)}</h5>${row.description ? `<p>${esc(row.description)}</p>` : ''}${
-        row.reason ? `<p class="reason${row.state === 'failed' ? ' err' : ''}">${esc(row.reason)}</p>` : ''
-      }${row.progress !== undefined ? `<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${row.progress}"><div style="width:${row.progress}%"></div></div>` : ''}${
-        row.actions ? `<div class="actions">${row.actions}</div>` : ''
-      }</div>${TAGS[row.state]}</div>`
-    })
-    .join('')}</div>`
-
-const statusTag = (deployment: Deployment, rows: ChecklistRow[]) => {
-  if (deployment.lifecycle === 'stopped') return '<span class="tag wait">Stopped</span>'
-  if (deployment.lifecycle === 'deleting') return '<span class="tag run">Deleting</span>'
-  if (deployment.lifecycle === 'deleted') return '<span class="tag">Deleted</span>'
-  if (deployment.billing_state === 'suspended') return '<span class="tag err">Suspended</span>'
-  const index = rows.findIndex((row) => row.state !== 'done')
-  if (index === -1) return '<span class="tag ok">Live</span>'
-  if (deployment.billing_state === 'none') return '<span class="tag wait">No subscription</span>'
-  const where = `${index + 1} of ${rows.length}`
-  return rows[index]!.state === 'failed' ? `<span class="tag err">Needs attention · ${where}</span>` : `<span class="tag run">Setting up · ${where}</span>`
-}
-
-/** "Open Papyrus →": a link to the host once the health step has passed, disabled with the reason before. */
-export const openPapyrusButton = (deployment: Deployment) =>
-  deployment.lifecycle !== 'running'
-    ? `<span class="btn primary lg" data-open-papyrus role="link" aria-disabled="true" aria-describedby="open-why">Open Papyrus →</span><span class="why" id="open-why">${deployment.lifecycle === 'stopped' ? 'Stopped' : 'Deleted'}</span>`
-    : deployment.hostname && deployment.steps.health.status === 'pass'
-    ? `<a class="btn primary lg" data-open-papyrus href="https://${esc(deployment.hostname)}/" target="_blank" rel="noopener">Open Papyrus →</a>`
-    : `<span class="btn primary lg" data-open-papyrus role="link" aria-disabled="true" aria-describedby="open-why">Open Papyrus →</span><span class="why" id="open-why">${
-        deployment.hostname ? 'Opens once the health check passes.' : 'Opens once your organization name is chosen.'
-      }</span>`
-
 // Deployment pages -----------------------------------------------------------------------------------------------------
 
-export interface DeploymentPageInput {
-  account: Account
-  deployment: Deployment
-  events: { events: EventRow[]; next: number | null }
-  byoc: boolean
-  region: string
-  /** The account has more than one deployment: link back to the list. */
-  multiple: boolean
-  message?: string | null
-  /** Billed usage this month, from local meter records. */
-  usage?: MonthUsage
-}
-
-const dnsTable = (records: DnsRecord[]) =>
-  records.length === 0
-    ? ''
-    : `<div class="card" style="margin-top:22px"><h4>DNS records to create</h4><div class="body"><div style="overflow-x:auto"><table class="dns"><thead><tr><th>Type</th><th>Name</th><th>Value</th><th>Why</th></tr></thead><tbody>${records
-        .map((r) => `<tr><td>${esc(r.type)}</td><td>${esc(r.name)}</td><td>${esc(r.value)}</td><td style="word-break:normal">${esc(r.purpose ?? '')}</td></tr>`)
-        .join('')}</tbody></table></div><p class="help">If your DNS is on Cloudflare, set these to "DNS only" (grey cloud).</p></div></div>`
-
-const hostnameCard = (deployment: Deployment) => {
+/** BYOC only, before the license is issued: the hostname Papyrus will answer on. */
+export const hostnameCard = (deployment: Deployment) => {
   const locked = Boolean(deployment.license_deployment_id)
-  return `<div class="card" style="margin-top:22px"><h4>Hostname</h4><div class="body">
+  return `<div class="card" style="margin-bottom:22px"><h4>Hostname</h4><div class="body">
 <form method="post" action="/deploy/${esc(deployment.id)}/hostname" class="row"><input name="hostname" required placeholder="papyrus.example.com" value="${esc(deployment.hostname ?? '')}" ${locked ? 'readonly' : ''} style="max-width:420px;flex:1">
 ${locked ? '<span class="help">Bound to the license issued at deploy.</span>' : '<button class="btn" type="submit">Save</button>'}</form></div></div>`
 }
 
-/** Redeploy and Stop while running; Start while stopped. */
-const headerActions = (deployment: Deployment) => {
-  if (deployment.lifecycle === 'stopped') return startButton(deployment).replace('btn sm primary', 'btn primary')
-  return `${deployment.steps.deploy.status === 'pass' ? stepButton(deployment, 'deploy', 'Redeploy') : ''}${canStop(deployment) ? stopButton(deployment) : ''}`
-}
-
-/** The Deployment page: header, setup checklist, plan and help cards, Activity. */
-export const deploymentPage = (input: DeploymentPageInput) => {
-  const { account, deployment } = input
-  const hosted = !deployment.provider || deployment.provider === HOSTED_PROVIDER
-  const rows = checklist(deployment, account, { mode: hosted ? 'hosted' : 'byoc', region: input.region })
-  const provider = hosted ? null : PROVIDERS.find((p) => p.id === deployment.provider)
-  const kicker = `Deployment · ${hosted ? 'Hosted by Beag Labs' : esc(provider?.name ?? deployment.provider ?? '')}`
-  const body = `${input.multiple ? '<p class="kicker" style="margin-bottom:10px"><a href="/deploy">← All deployments</a></p>' : ''}
-${pageTop(kicker, deploymentName(deployment), `${statusTag(deployment, rows)}${headerActions(deployment)}${openPapyrusButton(deployment)}`)}
-${notice(input.message)}
-<div class="cols"><div>${checklistCard(rows, deployment)}${hosted ? '' : `${hostnameCard(deployment)}${dnsTable(deployment.dnsRecords)}`}</div>
-<div class="stack">${planCard(deployment, input.usage)}${helpCard(account)}</div></div>
-${activityCard({ endpoint: `/api/events?deployment=${encodeURIComponent(deployment.id)}`, deploymentId: deployment.id, events: input.events.events, next: input.events.next, fast: !isDone(deployment.steps) })}`
-  return consoleLayout({ title: deploymentName(deployment), account, active: 'deployment', body, scripts: [ACTIVITY_SCRIPT_PATH] })
-}
-
-export interface TeardownPageInput {
+export interface DeploymentPageInput {
   account: Account
-  deployment: Deployment
+  view: DeploymentView
   events: { events: EventRow[]; next: number | null }
-  steps: TeardownStep[]
-  /** BYOC: what the customer removes from their own cloud. */
-  cleanup: CleanupItem[]
+  serverTime: string
   message?: string | null
+  /** Server-rendered extras above the app (the BYOC hostname form). */
+  before?: string
 }
 
-/** A deployment being deleted (teardown progress, Retry) or deleted (what was done; BYOC: what to remove). */
-export const teardownPage = (input: TeardownPageInput) => {
-  const { account, deployment } = input
-  const hosted = !deployment.provider || deployment.provider === HOSTED_PROVIDER
-  const current = input.steps.findIndex((step) => deployment.teardown[step]?.status !== 'pass')
-  const rows = input.steps
-    .map((step, index) => {
-      const state = deployment.teardown[step]
-      const status: RowState = state?.status === 'pass' ? 'done' : state?.status === 'fail' ? 'failed' : index === current && state ? 'running' : index === current ? 'next' : 'waiting'
-      const num = status === 'done' ? '<div class="num ok">✓</div>' : status === 'failed' ? '<div class="num err">!</div>' : `<div class="num${status === 'running' ? ' run' : ''}">${index + 1}</div>`
-      const action =
-        deployment.lifecycle === 'deleting' && index === current
-          ? `<div class="actions"><form method="post" action="/deploy/${esc(deployment.id)}/teardown"><button class="btn sm${status === 'failed' ? ' primary' : ''}" type="submit">${status === 'failed' ? 'Retry' : status === 'running' ? 'Check now' : 'Continue'}</button></form></div>`
-          : ''
-      return `<div class="step" id="teardown-${step}" data-state="${status}">${num}<div><h5>${esc(TEARDOWN_LABELS[step])}</h5>${state?.reason ? `<p class="reason${status === 'failed' ? ' err' : ''}">${esc(state.reason)}</p>` : ''}${action}</div>${TAGS[status]}</div>`
-    })
-    .join('')
-  const cleanup =
-    !hosted && input.cleanup.length
-      ? `<div class="card" style="margin-top:22px" data-cleanup><h4>Remove from your cloud account</h4><div class="body"><p style="font-size:14px;margin-bottom:12px">Beag Labs did not delete anything in your account. Papyrus no longer runs with a license, but these resources still exist (and still cost you) until you remove them, roughly in this order:</p><div style="overflow-x:auto"><table class="dns cleanup"><thead><tr><th>Resource</th><th>Name or id</th><th>Note</th></tr></thead><tbody>${input.cleanup
-          .map((item) => `<tr><td>${esc(item.what)}</td><td class="mono">${esc(item.name)}</td><td style="word-break:normal">${esc(item.note ?? '')}</td></tr>`)
-          .join('')}</tbody></table></div></div></div>`
-      : ''
-  const title = deployment.lifecycle === 'deleted' ? 'Deleted' : 'Deleting'
-  const body = `<p class="kicker" style="margin-bottom:10px"><a href="/deploy">← All deployments</a></p>
-${pageTop(`Deployment · ${hosted ? 'Hosted by Beag Labs' : esc(PROVIDERS.find((p) => p.id === deployment.provider)?.name ?? deployment.provider ?? '')}`, deploymentName(deployment), statusTag(deployment, []))}
-${notice(input.message)}
-<div class="cols"><div><div class="card checklist" data-teardown><div class="banner"><span>${title}</span></div>${rows}</div>${cleanup}</div>
-<div class="stack">${helpCard(account)}</div></div>
-${activityCard({ endpoint: `/api/events?deployment=${encodeURIComponent(deployment.id)}`, deploymentId: deployment.id, events: input.events.events, next: input.events.next, fast: deployment.lifecycle === 'deleting' })}`
-  return consoleLayout({ title: `${title} · ${deploymentName(deployment)}`, account, active: 'deployment', body, scripts: [ACTIVITY_SCRIPT_PATH] })
+/** /deploy/{id}: server-rendered first paint of the Preact app, hydrated by DEPLOY_SCRIPT_PATH. */
+export const deploymentPage = (input: DeploymentPageInput) => {
+  const body = `${notice(input.message)}${input.before ?? ''}${renderDetail({ payload: { deployment: input.view, serverTime: input.serverTime }, events: { events: input.events.events.map(eventJson), next: input.events.next } })}`
+  return consoleLayout({ title: input.view.name, account: input.account, active: 'deployment', body, scripts: [DEPLOY_SCRIPT_PATH], styles: DEPLOY_STYLES })
 }
 
 /** Pick an org name (hosted, the default): a centred card, no sidebar. Live validation from ORG_NAME_SCRIPT_PATH. */
@@ -655,24 +425,18 @@ ${notice(message)}<form method="post" action="/deploy/${esc(deployment.id)}/org"
 <div class="foot">${byoc ? `<a href="/provision?deployment=${esc(deployment.id)}">Deploy in your own cloud instead</a> · ` : ''}Signed in as ${esc(account.email)} · <a href="/logout">Sign out</a></div>`,
   })
 
-export const deployListPage = (account: Account, deployments: Deployment[]) => {
-  const tagFor = (d: Deployment) => statusTag(d, checklist(d, account, { mode: !d.provider || d.provider === HOSTED_PROVIDER ? 'hosted' : 'byoc', region: '' }))
-  const body =
-    deployments.length === 0
-      ? `${pageTop('Deployment', 'No deployment yet')}<div class="cols"><div class="card" data-plan-step><h4>Choose your plan <span class="accent">${TRIAL_DAYS}-day free trial</span></h4><div class="body">
+/** /deploy with no deployment: the plan step. With several: the deployments table (server-rendered, hydrated). */
+export const deployListPage = (account: Account, list: ListPayload) => {
+  if (list.deployments.length === 0) {
+    const body = `${pageTop('Deployment', 'No deployment yet')}<div class="cols"><div class="card" data-plan-step><h4>Choose your plan <span class="accent">${TRIAL_DAYS}-day free trial</span></h4><div class="body">
 <p style="font-size:14px;color:var(--muted);margin-bottom:14px">One plan, three charges. Your card is collected now; nothing is charged until the trial ends, and usage during the trial is free.</p>
 ${pricingTable(PRICE_ROWS, 'Billed monthly by Stripe. Cancel any time from the billing portal.')}
 <h5 class="kicker" style="margin:18px 0 8px">What it costs by organization size</h5>
 ${sizeTable()}
 <form method="post" action="/billing/checkout" class="actions" style="margin-top:16px"><button class="btn primary lg" type="submit">Start ${TRIAL_DAYS}-day trial</button></form></div></div><div class="stack">${helpCard(account)}</div></div>`
-      : `${pageTop('Deployments', `${deployments.length} deployments`)}<div class="card">${deployments
-          .map(
-            (d) =>
-              `<a class="dep" href="/deploy/${esc(d.id)}"><div><strong>${esc(deploymentName(d))}</strong><small>${esc(providerName(d))} · Plan ${esc(planLabel(d))}</small></div>${tagFor(d)}<span class="go" aria-hidden="true">→</span></a>`,
-          )
-          .join('')}</div>
-<form method="post" action="/billing/checkout" class="actions" style="margin-top:18px"><button class="btn" type="submit">Add a deployment</button></form>`
-  return consoleLayout({ title: 'Deployments', account, active: 'deployment', body })
+    return consoleLayout({ title: 'Deployments', account, active: 'deployment', body })
+  }
+  return consoleLayout({ title: 'Deployments', account, active: 'deployment', body: renderList({ payload: list }), scripts: [DEPLOY_SCRIPT_PATH], styles: DEPLOY_STYLES })
 }
 
 // Provision (BYOC) -----------------------------------------------------------------------------------------------------

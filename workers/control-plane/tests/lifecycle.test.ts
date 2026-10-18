@@ -7,6 +7,8 @@ import { hostedProviderContext, type HostedInfra } from '../src/hosted'
 import { connectTemplate } from '../src/providers/aws'
 import { hostedTeardownStep } from '../src/providers/aws-hosted'
 import { signedIn } from './helpers/session'
+import { confirmedBy } from '../src/ui/actions'
+import type { ActionResult } from '../src/ui/types'
 import { fakeStripe } from './helpers/stripe'
 
 /** Mocked Distilled AWS calls. Every call is recorded in order in `log` as `name` (with its input in the mock). */
@@ -140,7 +142,7 @@ describe('Stop / Start', () => {
   it('stop scales the hosted service to 0; the page shows Stopped, a Start banner and a disabled Open Papyrus', async () => {
     const { h, post, get, hosted, lifecycle } = setup()
     hosted()
-    expect(await (await get('/deploy/dep_abc')).text()).toContain('Stop deployment')
+    expect(await (await get('/deploy/dep_abc')).text()).toContain('"confirmLabel":"Stop deployment"')
 
     const response = await post('/deploy/dep_abc/stop')
     expect(response.status).toBe(303)
@@ -151,12 +153,42 @@ describe('Stop / Start', () => {
     expect(JSON.parse(h.deployment('dep_abc').resources as string)).toMatchObject({ targetGroupArn: 'arn:tg/acme', accessPointId: 'fsap-1' })
 
     const html = await (await get('/deploy/dep_abc')).text()
-    expect(html).toContain('<span class="tag wait">Stopped</span>')
-    expect(html).toMatch(/data-stopped>.*Stopped.*action="\/deploy\/dep_abc\/start"/s)
-    expect(html).toMatch(/aria-disabled="true"[^>]*>Open Papyrus →<\/span><span class="why" id="open-why">Stopped</)
-    expect(html).not.toContain('/steps/deploy"')
+    expect(html).toContain('data-tone="off"><span class="pill-dot" aria-hidden="true"></span>Stopped</span>')
+    expect(html).toContain('data-action="start"')
+    expect(html).not.toContain('data-action="stop"')
+    expect(html).not.toContain('data-action="redeploy"')
+    expect(html).toMatch(/role="link" aria-disabled="true"[^>]*>Open environment/)
+    expect(html).toContain('<div class="bf-off bf-off-stopped">')
     // Steps can't run while stopped.
     expect((await post('/deploy/dep_abc/steps/health')).status).toBe(409)
+  })
+
+  it('JSON stop/start: pending until the backend confirms, refusals and provider errors are actionable', async () => {
+    const { h, hosted, cookie, lifecycle } = setup()
+    hosted()
+    const post = async (action: string) => {
+      const response = await h.call(`/api/deployments/dep_abc/actions/${action}`, { method: 'POST', headers: { cookie, origin: h.env.BASE_URL, 'content-type': 'application/json' }, body: '{}' })
+      return { status: response.status, body: (await response.json()) as ActionResult }
+    }
+    const stopped = await post('stop')
+    expect(stopped.status).toBe(200)
+    expect(stopped.body).toMatchObject({ ok: true, deployment: { status: 'stopped', health: 'stopped' } })
+    expect(confirmedBy.stop(stopped.body.deployment!)).toBe(true)
+    expect(stopped.body.deployment!.actions.map((a) => a.id)).toEqual(['start'])
+    expect(lifecycle('dep_abc')?.state).toBe('stopped')
+    // A second stop is refused by the backend, whatever the page shows.
+    expect((await post('stop')).status).toBe(409)
+
+    const started = await post('start')
+    expect(started.body).toMatchObject({ ok: true, deployment: { status: 'starting', health: 'starting' } })
+    expect(confirmedBy.start(started.body.deployment!)).toBe(true)
+
+    // The provider says no: the state is unchanged and the message is shown.
+    aws.updateService.mockRejectedValueOnce(new Error('ECS: service papyrus-abc is draining'))
+    const failed = await post('stop')
+    expect(failed.status).toBe(502)
+    expect(failed.body).toMatchObject({ ok: false, message: expect.stringContaining('draining'), deployment: { status: 'starting' } })
+    expect(lifecycle('dep_abc')?.state).toBe('running')
   })
 
   it('the Stop confirm says the platform fee continues', async () => {
@@ -237,8 +269,9 @@ describe('Delete (hosted teardown)', () => {
     expect(lifecycle('dep_abc')?.state).toBe('deleting')
     expect(JSON.parse(lifecycle('dep_abc')!.teardown)).toMatchObject({ billing: { status: 'pass' }, license: { status: 'pass' }, service: { status: 'pass' }, routing: { status: 'fail' } })
     const page = await (await get('/deploy/dep_abc')).text()
-    expect(page).toContain('<span class="tag run">Deleting</span>')
-    expect(page).toMatch(/action="\/deploy\/dep_abc\/teardown"><button class="btn sm primary" type="submit">Retry/)
+    expect(page).toContain('data-tone="err"><span class="pill-dot" aria-hidden="true"></span>Failed</span>')
+    expect(page).toContain('Failed at Remove the listener rule and target group')
+    expect(page).toMatch(/data-action="teardown">.*Retry teardown/)
     // Still deleting: the org name is not free yet.
     expect((await (await get('/api/org-names/check?name=acme')).json()) as any).toMatchObject({ available: false })
 

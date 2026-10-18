@@ -96,8 +96,9 @@ describe('deploy step (Fly.io recipe)', () => {
     // The rollout is new, so its health is checked again.
     expect(JSON.parse(h.deployment('dep_abc').steps as string).health.status).toBe('pending')
     const page = await (await h.call('/deploy/dep_abc', { headers: { cookie: 'cp_session=session-token' } })).text()
-    expect(page).toContain('action="/deploy/dep_abc/steps/deploy"')
-    expect(page).toContain('>Redeploy</button>')
+    // Mid-setup the next step is offered (DNS), not another Redeploy.
+    expect(page).toMatch(/data-action="check">.*Check dns<\/button>/)
+    expect(page).not.toContain('data-action="redeploy"')
   })
 
   it('renders the setup and provision pages', async () => {
@@ -106,7 +107,7 @@ describe('deploy step (Fly.io recipe)', () => {
     const setup = await get('/deploy/dep_abc')
     expect(setup.status).toBe(200)
     const html = await setup.text()
-    for (const label of ['Connect cloud account', 'Deploy Papyrus', 'DNS', 'Container health', 'Connect Microsoft', 'Registration']) expect(html).toContain(label)
+    for (const label of ['Cloud account', 'Deploy', 'DNS', 'Health check', 'Microsoft', 'Registration']) expect(html).toContain(`<span class="ms-label">${label}</span>`)
     const aws = await (await get('/provision?deployment=dep_abc&provider=aws')).text()
     expect(aws).toContain('Connect AWS')
     const externalId = h.deployment('dep_abc').aws_external_id as string

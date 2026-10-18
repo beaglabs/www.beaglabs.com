@@ -198,8 +198,11 @@ export const stepSource = (deployment: Pick<Deployment, 'provider'>, step: StepI
 
 const levelFor = (status: StepOutcome['status']): EventLevel => (status === 'pass' ? 'ok' : status === 'pending' ? 'wait' : 'error')
 
-/** Run a step if allowed, record the outcome, and save progress (resources are saved whatever happened). */
-export const runStep = (deployment: Deployment, account: Account, step: StepId) =>
+/**
+ * Run a step if allowed, record the outcome, and save progress (resources are saved whatever happened).
+ * `quiet` (automatic checks while a page is open): log only when the outcome changed, so a slow start is one line.
+ */
+export const runStep = (deployment: Deployment, account: Account, step: StepId, options: { quiet?: boolean } = {}) =>
   Effect.gen(function* () {
     if (deployment.lifecycle !== 'running')
       return yield* new UserError({ message: deployment.lifecycle === 'stopped' ? 'This deployment is stopped. Start it first.' : 'This deployment is being deleted.', status: 409 })
@@ -216,6 +219,7 @@ export const runStep = (deployment: Deployment, account: Account, step: StepId) 
     if (result.status !== 'pass') deployment.steps[step] = { ...deployment.steps[step], attempts: attempt }
     yield* saveProgress(deployment)
     const message = result.reason ?? (result.status === 'pass' ? 'Done.' : 'Not ready yet.')
+    if (options.quiet && previous.at && previous.status === result.status && previous.reason === result.reason) return result
     yield* logEvent({ accountId: account.id, deploymentId: deployment.id, level: levelFor(result.status), source, message: attempt > 1 ? `${message} (attempt ${attempt})` : message })
     return result
   })

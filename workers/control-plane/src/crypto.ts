@@ -13,11 +13,11 @@ export const toBase64 = (bytes: Uint8Array): string => {
   return btoa(binary)
 }
 
-export const fromBase64 = (text: string): Uint8Array => Uint8Array.from(atob(text), (c) => c.charCodeAt(0))
+export const fromBase64 = (text: string): Uint8Array<ArrayBuffer> => Uint8Array.from(atob(text), (c) => c.charCodeAt(0))
 
 export const toBase64Url = (bytes: Uint8Array): string => toBase64(bytes).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 
-export const randomBytes = (length: number): Uint8Array => crypto.getRandomValues(new Uint8Array(length))
+export const randomBytes = (length: number): Uint8Array<ArrayBuffer> => crypto.getRandomValues(new Uint8Array(length))
 
 /** URL-safe random token (default 32 bytes). */
 export const randomToken = (length = 32): string => toBase64Url(randomBytes(length))

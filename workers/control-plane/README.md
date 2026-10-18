@@ -115,6 +115,22 @@ Deploy recipes: AWS (ECS Fargate + EFS + ALB/ACM, default VPC) and Fly.io (Machi
 Every other provider has credentials and a check; its deploy step fails with "not available yet". Adding a provider is
 adding an entry to the registry.
 
+## Deployment pages
+
+`/deploy` (table) and `/deploy/{id}` (detail) are Preact components in `src/ui/`, server-rendered for first paint and
+hydrated by `public/assets/deploy-ui.js` (built by `scripts/build-client.mjs`, wrangler's custom build; not committed).
+They poll `GET /api/deployments` and `GET /api/deployments/:id` (single flight, backoff, slower in hidden tabs) and run
+lifecycle actions as JSON `POST /api/deployments/:id/actions/{stop|start|redeploy|retry|check|teardown}`. While a
+detail page is open, the due read-only check (address, health, Microsoft, registration, a waiting teardown) runs on its
+own (`src/advance.ts`).
+
+Browser preview: Papyrus sends `frame-ancestors 'self'`, so it is never framed. Once health passes, Cloudflare Browser
+Rendering (`BROWSER`) screenshots the public page into R2 (`PREVIEWS`), at most once a minute per deployment. Without
+either binding the page shows an "Open environment" card. One-time setup: Workers Paid (Browser Rendering) and
+`wrangler r2 bucket create papyrus-control-plane-previews`; `schema.sql` adds `preview_captures` and `auto_checks`.
+
+Local design preview with fixtures in every state: `npm run preview:ui` → http://localhost:8790/deploy.
+
 ## Configuration
 
 Vars (`wrangler.jsonc`): `PAPYRUS_IMAGE_DIGEST`, `AWS_PRINCIPAL_ARN`, `AWS_CONNECT_TEMPLATE_URL` (S3 copy of
