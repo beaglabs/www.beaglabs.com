@@ -3,7 +3,7 @@ import * as Effect from 'effect/Effect'
 import { describe, expect, it } from 'vitest'
 import { encryptJson } from '../src/crypto'
 import { initialSteps, record } from '../src/setup'
-import { harness } from './helpers/harness'
+import { harness, TEST_AUTHORITY_PEM, TEST_KEY_ID } from './helpers/harness'
 
 interface Call { method: string; url: string; body: any }
 
@@ -77,6 +77,7 @@ describe('deploy step (Fly.io recipe)', () => {
       PAPYRUS_DEPLOYMENT_ID: 'pd_new',
       PAPYRUS_PUBLIC_ORIGIN: 'https://papyrus.example.com',
       PAPYRUS_SECRET_KEY_FILE: '/run/secrets/papyrus/master.key',
+      PAPYRUS_LICENSE_AUTHORITIES: JSON.stringify({ [TEST_KEY_ID]: TEST_AUTHORITY_PEM }),
     })
     expect(machine.config.env).not.toHaveProperty('PAPYRUS_BOOTSTRAP_TOKEN')
     expect(machine.config.files).toEqual([{ guest_path: '/run/secrets/papyrus/master.key', secret_name: 'PAPYRUS_MASTER_KEY_B64', mode: 0o444 }])
@@ -92,6 +93,9 @@ describe('deploy step (Fly.io recipe)', () => {
     expect(calls.find((c) => c.url.endsWith('/secrets'))!.body.values).not.toHaveProperty('PAPYRUS_MASTER_KEY_B64')
     expect(calls.some((c) => c.method === 'POST' && c.url.endsWith('/v1/apps'))).toBe(false)
     expect(calls.some((c) => c.url.endsWith('/machines/m_1'))).toBe(true)
+    // The signing key is read again on every deploy, so Redeploy refreshes PAPYRUS_LICENSE_AUTHORITIES.
+    expect(h.license.authorities).toHaveBeenCalledTimes(2)
+    expect(JSON.parse(calls.find((c) => c.url.endsWith('/machines/m_1'))!.body.config.env.PAPYRUS_LICENSE_AUTHORITIES)).toEqual({ [TEST_KEY_ID]: TEST_AUTHORITY_PEM })
     expect(JSON.parse(h.deployment('dep_abc').steps as string).deploy.status).toBe('pass')
     // The rollout is new, so its health is checked again.
     expect(JSON.parse(h.deployment('dep_abc').steps as string).health.status).toBe('pending')

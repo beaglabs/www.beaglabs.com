@@ -26,12 +26,16 @@ export const license = <A>(what: string, call: (rpc: Bindings['LICENSE']) => Pro
 /** Where the master key is mounted read-only inside the container. */
 export const SECRET_KEY_PATH = '/run/secrets/papyrus/master.key'
 
-/** Container environment from the contract (plain values; the bootstrap token and license go in as secrets). */
-export const containerEnv = (input: { controlPlaneUrl: string; deploymentId: string; hostname: string }) => ({
+/**
+ * Container environment from the contract (plain values; the bootstrap token and license go in as secrets).
+ * PAPYRUS_LICENSE_AUTHORITIES is the public key Papyrus verifies the license and signed statuses with, so it is plain.
+ */
+export const containerEnv = (input: { controlPlaneUrl: string; deploymentId: string; hostname: string; authorities: Record<string, string> }) => ({
   PAPYRUS_CONTROL_PLANE_URL: input.controlPlaneUrl,
   PAPYRUS_DEPLOYMENT_ID: input.deploymentId,
   PAPYRUS_PUBLIC_ORIGIN: `https://${input.hostname}`,
   PAPYRUS_SECRET_KEY_FILE: SECRET_KEY_PATH,
+  PAPYRUS_LICENSE_AUTHORITIES: JSON.stringify(input.authorities),
 })
 
 const HOSTNAME = /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/
@@ -87,13 +91,15 @@ const deployContext = (deployment: Deployment, account: Account) =>
     const hosted = deployment.provider === HOSTED_PROVIDER
     const base = hosted ? hostedProviderContext(env) : providerContext(env, deployment, yield* loadCredentials(deployment))
     const registered = yield* ensureRegistered(deployment, account)
+    // Read on every deploy, so a Redeploy picks up a rotated signing key.
+    const authorities = yield* license('Reading the license signing key failed', (rpc) => rpc.authorities())
     return {
       ...base,
       deploymentId: deployment.id,
       licenseDeploymentId: registered.deploymentId,
       hostname: deployment.hostname!,
       image: `${env.PAPYRUS_IMAGE}@${env.PAPYRUS_IMAGE_DIGEST}`,
-      env: containerEnv({ controlPlaneUrl: env.BASE_URL, deploymentId: registered.deploymentId, hostname: deployment.hostname! }),
+      env: containerEnv({ controlPlaneUrl: env.BASE_URL, deploymentId: registered.deploymentId, hostname: deployment.hostname!, authorities }),
       secretEnv: { PAPYRUS_BOOTSTRAP_TOKEN: registered.bootstrapToken, PAPYRUS_LICENSE: JSON.stringify(registered.license) },
       secretKeyPath: SECRET_KEY_PATH,
       resources: deployment.resources,

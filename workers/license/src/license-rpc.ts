@@ -1,5 +1,6 @@
 /** Named entrypoint for the control plane's `LICENSE` service binding. Deployment rows, keys and signing stay owned here. */
 import { WorkerEntrypoint } from 'cloudflare:workers'
+import { licenseAuthorities } from './azure-key-vault-signer'
 import * as controlPlane from './control-plane'
 import type { CreateDeploymentInput, CreateDeploymentResult, DeploymentState, RegistrationState, SignedStatus } from './control-plane'
 import type { Bindings } from './env'
@@ -23,6 +24,11 @@ export class LicenseRpc extends WorkerEntrypoint<Bindings> {
 
   revokeDeployment(deploymentId: string): Promise<boolean> {
     return controlPlane.revokeDeployment(this.env, deploymentId)
+  }
+
+  /** `{ [keyId]: pem }` for the current signing key: what deployments put in PAPYRUS_LICENSE_AUTHORITIES. */
+  authorities(): Promise<Record<string, string>> {
+    return licenseAuthorities(this.env)
   }
 
 }
