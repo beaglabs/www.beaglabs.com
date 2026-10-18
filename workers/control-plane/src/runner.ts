@@ -155,13 +155,14 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
         return outcome('pass', 'All records found (checked with 1.1.1.1).')
       }
       case 'health': {
-        const url = `https://${deployment.hostname}/api/health`
+        // /api/config/public answers in both of Papyrus's modes: setup (before Connect Microsoft) and running. /api/health is running-only.
+        const url = `https://${deployment.hostname}/api/config/public`
         const result = yield* getJson(url).pipe(Effect.result)
         // Papyrus usually answers within two minutes of a deploy; until STARTUP_GRACE_MS has passed, not yet is "still starting".
         const starting = Date.now() - Date.parse(deployment.steps.deploy.at ?? '') < STARTUP_GRACE_MS
         if (result._tag === 'Failure')
           return outcome(starting ? 'pending' : 'fail', `GET ${url} → no answer over valid TLS${starting ? '; Papyrus is still starting.' : '. Retry, or email james@beaglabs.com if it keeps failing.'}`)
-        if (result.success.status !== 200 || result.success.body?.status !== 'ok')
+        if (result.success.status !== 200 || typeof result.success.body !== 'object' || result.success.body === null)
           return outcome(starting ? 'pending' : 'fail', `GET ${url} → ${result.success.status}${starting ? '; Papyrus is still starting.' : '. Retry, or email james@beaglabs.com if it keeps failing.'}`)
         return outcome('pass', `GET ${url} → 200 · healthy.`)
       }

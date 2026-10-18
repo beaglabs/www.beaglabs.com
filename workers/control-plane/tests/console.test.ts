@@ -202,7 +202,7 @@ describe('events are written', () => {
     await post('/deploy/dep_abc/steps/health')
     await post('/deploy/dep_abc/steps/health')
     expect(events()).toEqual([
-      expect.objectContaining({ level: 'wait', source: 'health', deployment_id: 'dep_abc', message: expect.stringContaining('GET https://acme.papyrus.beaglabs.com/api/health → 503') }),
+      expect.objectContaining({ level: 'wait', source: 'health', deployment_id: 'dep_abc', message: expect.stringContaining('GET https://acme.papyrus.beaglabs.com/api/config/public → 503') }),
       expect.objectContaining({ level: 'wait', source: 'health', message: expect.stringContaining('(attempt 2)') }),
     ])
     expect(JSON.parse(h.deployment('dep_abc').steps as string).health).toMatchObject({ status: 'pending', attempts: 2 })

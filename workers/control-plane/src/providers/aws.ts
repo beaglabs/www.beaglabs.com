@@ -402,7 +402,7 @@ const deploy = (options: AwsRecipeOptions) => (ctx: DeployContext) =>
           Port: PORT,
           VpcId: vpcId,
           TargetType: 'ip',
-          HealthCheckPath: '/api/health',
+          HealthCheckPath: '/api/config/public',
           Matcher: { HttpCode: '200' },
         }).pipe(Effect.mapError(fail('Creating the target group failed'))),
         (out) => out.TargetGroups?.[0]?.TargetGroupArn,

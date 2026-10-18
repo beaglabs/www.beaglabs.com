@@ -119,7 +119,7 @@ describe('hosted deploy (shared AWS infrastructure)', () => {
         RootDirectory: { Path: '/tenants/dep_abc', CreationInfo: { OwnerUid: 100007, OwnerGid: 100007, Permissions: '700' } },
       }),
     )
-    expect(aws.createTargetGroup).toHaveBeenCalledWith(expect.objectContaining({ VpcId: 'vpc-1', TargetType: 'ip', Port: 3210, HealthCheckPath: '/api/health' }))
+    expect(aws.createTargetGroup).toHaveBeenCalledWith(expect.objectContaining({ VpcId: 'vpc-1', TargetType: 'ip', Port: 3210, HealthCheckPath: '/api/config/public' }))
     expect(aws.createRule).toHaveBeenCalledWith(
       expect.objectContaining({
         ListenerArn: 'arn:listener/443',

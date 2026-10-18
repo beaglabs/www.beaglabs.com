@@ -435,7 +435,7 @@ const byocCopy = (deployment: Deployment): Record<RowId, StepCopy> => ({
   connect: { title: () => STEP_LABELS.connect, description: 'Credentials for your cloud account, checked with a read-only call.' },
   deploy: { title: () => STEP_LABELS.deploy, description: 'Runs the signed Papyrus image in your account.' },
   dns: { title: () => STEP_LABELS.dns, description: 'Create the records below at your DNS provider; we check them with 1.1.1.1.' },
-  health: { title: () => STEP_LABELS.health, description: `Waiting for https://${deployment.hostname ?? 'your-host'}/api/health to answer.` },
+  health: { title: () => STEP_LABELS.health, description: `Waiting for https://${deployment.hostname ?? 'your-host'} to answer.` },
   microsoft: { title: () => STEP_LABELS.microsoft, description: 'Sign in as a Microsoft 365 admin so your team can use Papyrus.' },
   registration: { title: () => STEP_LABELS.registration, description: 'Papyrus exchanges its bootstrap token with Beag Labs on first start.' },
   open: { title: () => 'Open Papyrus', description: 'Invite your team and build your first workflow.' },
