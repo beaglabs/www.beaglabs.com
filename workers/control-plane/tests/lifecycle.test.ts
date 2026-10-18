@@ -158,7 +158,7 @@ describe('Stop / Start', () => {
     expect(html).not.toContain('data-action="stop"')
     expect(html).not.toContain('data-action="redeploy"')
     expect(html).toMatch(/role="link" aria-disabled="true"[^>]*>Open environment/)
-    expect(html).toContain('<div class="bf-off bf-off-stopped">')
+    expect(html).toContain('Scaled to zero. Start brings it back.')
     // Steps can't run while stopped.
     expect((await post('/deploy/dep_abc/steps/health')).status).toBe(409)
   })

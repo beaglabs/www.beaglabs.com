@@ -87,14 +87,17 @@ describe('Deployment page', () => {
     const { h, get, hosted } = signedIn()
     hosted('dep_abc', passed('connect', 'deploy', 'dns'))
     const before = await (await get('/deploy/dep_abc')).text()
-    expect(before).toMatch(/<span class="btn primary lg" role="link" aria-disabled="true" title="Opens once Papyrus answers its health check">Open environment/)
-    expect(before).not.toContain('<a class="btn primary lg" href="https://acme.papyrus.beaglabs.com/"')
+    expect(before).toMatch(/<span class="btn primary" role="link" aria-disabled="true" title="Opens once Papyrus answers its health check">Open environment/)
+    expect(before).not.toContain('<a class="btn primary" href="https://acme.papyrus.beaglabs.com/"')
     expect(before).toContain('2 of 5 complete')
 
     h.sql.prepare('UPDATE deployments SET steps = ? WHERE id = ?').run(JSON.stringify(passed('connect', 'deploy', 'dns', 'health')), 'dep_abc')
     const after = await (await get('/deploy/dep_abc')).text()
-    expect(after).toContain('<a class="btn primary lg" href="https://acme.papyrus.beaglabs.com/" target="_blank" rel="noopener noreferrer">Open environment')
+    expect(after).toContain('<a class="btn primary" href="https://acme.papyrus.beaglabs.com/" target="_blank" rel="noopener noreferrer">Open environment')
     expect(after).not.toContain('title="Opens once Papyrus answers its health check"')
+    expect(after).not.toContain('class="bf"')
+    expect(after.split('<script type="application/json"')[0]).not.toContain('Papyrus does not allow being framed')
+    expect(after).not.toContain('<iframe')
   })
 
   it('shows real step states: done, running with progress, next, waiting, failed with Retry', async () => {

@@ -2,7 +2,6 @@ import type { ComponentChildren } from 'preact'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { ActivityPanel } from './activity'
 import { createActionRunner, type ActionRunner, type PendingAction } from './actions'
-import { BrowserFrame } from './browser'
 import { day, relative, stamp } from './format'
 import { IconAlert, IconCheck, IconExternal, IconMicrosoft, IconPlay, IconPower, IconRedeploy, IconSliders } from './icons'
 import { createPoller, isNewer, type Poller, type PollStatus } from './polling'
@@ -10,7 +9,7 @@ import { ActionButton, Halo, Host, MilestoneList, Overlay, StatusPill, Switcher,
 import { useMounted, useNow, useRuntime } from './runtime'
 import type { Action, ActionId, ActionResult, ActivityEvent, DeploymentView, DetailPayload } from './types'
 
-/** /deploy/{id}: header, overview, progress, activity, preview. Hydrates from the server's first paint. */
+/** /deploy/{id}: compact header, progress and activity, overview and plan. Hydrates from the server's first paint. */
 
 export interface DeploymentAppProps {
   payload: DetailPayload
@@ -43,12 +42,10 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
   const [confirm, setConfirm] = useState<Action | null>(null)
   const [sheet, setSheet] = useState(false)
   const [terms, setTerms] = useState(false)
-  const [capturing, setCapturing] = useState(false)
   const { toasts, push, dismiss } = useToasts()
   const viewRef = useRef(view)
   const poller = useRef<Poller | null>(null)
   const runner = useRef<ActionRunner | null>(null)
-  const captureAsked = useRef(0)
   const base = `/api/deployments/${encodeURIComponent(view.id)}`
 
   /** Show a snapshot only if it is not older than the one on screen. */
@@ -70,7 +67,7 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
       load: () => runtime.getJson<DetailPayload>(base),
       onData: (data) => accept(data.deployment),
       isStale: (data) => !isNewer(viewRef.current, data.deployment),
-      isBusy: () => viewRef.current.busy || viewRef.current.preview.state === 'loading' || Boolean(runner.current?.pending()),
+      isBusy: () => viewRef.current.busy || Boolean(runner.current?.pending()),
       isHidden: runtime.isHidden,
       onStatus: setSync,
     })
@@ -82,27 +79,6 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
       off()
     }
   }, [])
-
-  // Health passed and no current screenshot: ask for one (the server rate-limits; this only avoids asking twice).
-  useEffect(() => {
-    if (!view.preview.captureDue || Date.now() - captureAsked.current < 60_000) return
-    captureAsked.current = Date.now()
-    void capture(false)
-  }, [view.preview.captureDue, view.version])
-
-  const capture = async (manual: boolean) => {
-    setCapturing(true)
-    try {
-      const { status, body } = await runtime.postJson<ActionResult>(`${base}/preview`)
-      if (body.deployment) accept(body.deployment)
-      if (status >= 400 && manual) push({ tone: status === 429 ? 'info' : 'err', title: body.message || 'Could not take a screenshot' })
-      setTimeout(() => void poller.current?.refresh(), 4000)
-    } catch {
-      if (manual) push({ tone: 'err', title: 'Could not reach the control plane' })
-    } finally {
-      setCapturing(false)
-    }
-  }
 
   const run = (action: Action) => {
     if (action.confirm) setConfirm(action)
@@ -144,7 +120,14 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
               {view.region ? <span class="mono">{view.region}</span> : null}
             </div>
             <h1 class="disp">
-              <Host name={view.name} />
+              {view.url ? (
+                <a class="dp-url" href={view.url} target="_blank" rel="noopener noreferrer">
+                  <Host name={view.name} />
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
+              ) : (
+                <Host name={view.name} />
+              )}
             </h1>
             <div class="dp-meta">
               <StatusPill tone={view.tone} label={view.statusLabel} />
@@ -153,13 +136,6 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
                 <span class="health-dot" aria-hidden="true" />
                 {view.healthLabel}
               </span>
-              {view.url ? (
-                <a class="dp-url mono" href={view.url} target="_blank" rel="noopener noreferrer">
-                  {view.url.replace(/^https:\/\//, '').replace(/\/$/, '')}
-                  <IconExternal />
-                  <span class="sr-only"> (opens in a new tab)</span>
-                </a>
-              ) : null}
             </div>
           </div>
           <div class="dp-actions">
@@ -167,11 +143,11 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
               <ActionButton key={a.id} action={a} pendingId={pending?.id ?? null} blocked={blocked} onRun={run} icon={ACTION_ICON[a.id]} />
             ))}
             {live ? (
-              <a class="btn primary lg" href={view.url!} target="_blank" rel="noopener noreferrer">
+              <a class="btn primary" href={view.url!} target="_blank" rel="noopener noreferrer">
                 Open environment <IconExternal />
               </a>
             ) : view.status !== 'deleted' && view.status !== 'deleting' ? (
-              <span class="btn primary lg" role="link" aria-disabled="true" title="Opens once Papyrus answers its health check">
+              <span class="btn primary" role="link" aria-disabled="true" title="Opens once Papyrus answers its health check">
                 Open environment <IconExternal />
               </span>
             ) : null}
@@ -181,11 +157,6 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
 
       <div class="dp-grid">
         <div class="dp-col dp-main">
-          <BrowserFrame preview={view.preview} statusLabel={view.statusLabel} operation={view.operation?.label ?? null} now={now} mounted={mounted} refreshing={capturing} onRefresh={() => void capture(true)} />
-          <ActivityPanel deploymentId={view.id} initial={events.events} next={events.next} now={now} mounted={mounted} onRelevant={onRelevant} />
-        </div>
-
-        <div class="dp-col dp-side">
           <section class="card dp-progress" aria-labelledby="progress-h">
             <h2 id="progress-h" class="card-h">
               <span>Progress</span>
@@ -193,6 +164,7 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
             </h2>
             <div class="pg-top">
               <Halo
+                size={72}
                 milestones={view.milestones}
                 progress={view.progress}
                 center={
@@ -284,6 +256,10 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
             ) : null}
           </section>
 
+          <ActivityPanel deploymentId={view.id} initial={events.events} next={events.next} now={now} mounted={mounted} onRelevant={onRelevant} />
+        </div>
+
+        <div class="dp-col dp-side">
           <section class="card dp-overview" aria-labelledby="overview-h">
             <h2 id="overview-h" class="card-h">
               <span>Overview</span>

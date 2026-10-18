@@ -34,7 +34,7 @@ describe('Console layout', () => {
     const styles = css(html)
     expect(styles).toContain('.tl-msg{color:#e7e7e7;overflow-wrap:anywhere;min-width:0}')
     expect(styles).toMatch(/\.term-body\{height:380px;overflow-y:auto;overscroll-behavior:contain/)
-    expect(styles).toContain('.dp-grid{display:grid;grid-template-columns:minmax(0,1fr) 390px')
+    expect(styles).toContain('.dp-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px')
     // Reduced motion: no animation anywhere on the deployment pages.
     expect(styles).toMatch(/@media \(prefers-reduced-motion:reduce\)\{\s*\.dp \*[^{]*\{animation:none!important;transition:none!important/)
   })
