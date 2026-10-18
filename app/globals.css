@@ -40,9 +40,11 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-sans), 'Work Sans', sans-serif;
-  --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
-  --font-display: var(--font-display), 'Roboto Condensed', 'Arial Narrow', sans-serif;
+  /* next/font's variables when it ran, else the Google Fonts stylesheet in app/layout.tsx. Never self-referencing:
+     a var that names itself is invalid, and every font falls back to the browser default. */
+  --font-sans: var(--font-work-sans, 'Work Sans'), 'Work Sans', sans-serif;
+  --font-mono: var(--font-jetbrains-mono, 'JetBrains Mono'), 'JetBrains Mono', monospace;
+  --font-display: var(--font-roboto-condensed, 'Roboto Condensed'), 'Roboto Condensed', 'Arial Narrow', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
