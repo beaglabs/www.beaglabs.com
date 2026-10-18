@@ -30,6 +30,8 @@
     "BASE_URL": "https://papyrus.beaglabs.com",
     "PAPYRUS_IMAGE": "ghcr.io/beaglabs/papyrus/papyrus",
     "PAPYRUS_IMAGE_DIGEST": "sha256:55a3a053367d35b0e27af52dd9099fc377a0bd6b8f37b2edddf9a7937b19fd87",
+    // Sentry for deployed Papyrus: optional PAPYRUS_SENTRY_DSN, PAPYRUS_WEB_SENTRY_DSN and PAPYRUS_SENTRY_ENVIRONMENT, set
+    // with `wrangler secret put` (not here, so a deploy never blanks them). Every deploy passes them to the container.
     "MAGIC_LINK_FROM_EMAIL": "Papyrus <papyrus@mail.beaglabs.com>",
     // Beag Labs' IAM principal that customer roles trust, and the S3 copy of /aws/connect-template.yaml.
     "AWS_PRINCIPAL_ARN": "arn:aws:iam::615583899145:user/papyrus-control-plane",
