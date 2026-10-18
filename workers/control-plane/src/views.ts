@@ -1,5 +1,5 @@
-import { isTrialing, trialStatus } from './billing'
-import { PLATFORM_MONTHLY_USD, PRICE_ROWS, PRICE_SUMMARY, SIZE_TABLE_CAPTION, TRIAL_DAYS, sizeRows, type SizeRow, usageLine, type MonthUsage, type PriceRow } from './pricing'
+import { COMPUTE_CREDIT_USD } from './credits'
+import { PLATFORM_MONTHLY_USD, PRICE_ROWS, PRICE_SUMMARY, SIZE_TABLE_CAPTION, sizeRows, type SizeRow, usageLine, type MonthUsage, type PriceRow } from './pricing'
 import { eventJson, type EventRow } from './events'
 import { HOSTED_DOMAIN, HOSTED_PROVIDER } from './hosted'
 import { LOGO_PATHS } from './logo'
@@ -143,11 +143,11 @@ html:has(body.console-body),body.console-body{height:100%;overflow:hidden}
 .side .acct a{display:inline-block;margin-top:10px;color:#777;font:11px var(--mono);text-transform:uppercase;text-decoration:none}
 .side .acct a:hover{color:#fff}
 main.page{height:100%;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;background-attachment:local;padding:28px 32px 110px}
-.trialbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:2px solid var(--ink);border-left:6px solid var(--accent);padding:7px 12px;margin:-8px 0 20px;font-size:13px}
-.trialbar strong{font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.5px;background:var(--accent);color:#111;padding:2px 7px}
-.trialbar .then{color:var(--muted)}
-.trialbar a{margin-left:auto;font:600 11px var(--mono);text-transform:uppercase;text-decoration:none;white-space:nowrap}
-.trialbar a:hover{color:var(--accent)}
+.creditbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:2px solid var(--ink);border-left:6px solid var(--accent);padding:7px 12px;margin:-8px 0 20px;font-size:13px}
+.creditbar strong{font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.5px;background:var(--accent);color:#111;padding:2px 7px}
+.creditbar .then{color:var(--muted)}
+.creditbar a{margin-left:auto;font:600 11px var(--mono);text-transform:uppercase;text-decoration:none;white-space:nowrap}
+.creditbar a:hover{color:var(--accent)}
 .price-summary{font-size:13px;color:var(--muted);margin-top:10px}
 .usage{font:12px var(--mono);margin-top:8px;padding:8px 10px;background:var(--bg);border:1.5px dashed #bbb}
 table.pricing{width:100%;border-collapse:collapse;border:2px solid var(--ink);background:#fff}
@@ -214,7 +214,7 @@ main.page{padding:22px 16px 110px}
 @media (max-width:560px){
 .top h1{font-size:24px}
 .side .acct .email{display:none}
-.trialbar .then{display:none}
+.creditbar .then{display:none}
 table.pricing th,table.pricing td{padding:10px}
 table.pricing.sizes th,table.pricing.sizes td{padding:8px 5px;font-size:11.5px}
 table.pricing.sizes thead th{font-size:9px;letter-spacing:.2px}
@@ -272,7 +272,7 @@ export const consoleLayout = (input: { title: string; account: Account; active: 
 <div class="sp"></div>
 <div class="acct"><span class="who" title="${esc(accountLabel(input.account))}">${esc(accountLabel(input.account))}</span><span class="email" title="${esc(input.account.email)}">${esc(input.account.email)}</span><a href="/logout">Sign out</a></div>
 </aside>
-<main class="page grid-bg">${input.account.trial ? trialBanner(input.account.trial.trialEnd) : ''}${input.body}</main>
+<main class="page grid-bg">${input.account.computeCredit && input.active !== 'billing' ? creditBanner(input.account) : ''}${input.body}</main>
 </div>${supportCardMarkup(input.account)}${(input.scripts ?? []).map((src) => `<script src="${esc(src)}" defer></script>`).join('')}</body></html>`
 
 /** Signed-out pages and the org-name claim screen: one centred card on the grid, no sidebar. */
@@ -287,11 +287,8 @@ const notice = (message?: string | null, kind: 'error' | 'ok' = 'error') => (mes
 const pageTop = (kicker: string, title: string, right = '') =>
   `<div class="top"><div><div class="kicker">${kicker}</div><h1 class="disp">${esc(title)}</h1></div>${right ? `<div class="right">${right}</div>` : ''}</div>`
 
-/** Slim banner at the top of the main area while a deployment is in its free trial. */
-export const trialBanner = (trialEnd: string | null, now = Date.now()) => {
-  const [, ...rest] = trialStatus(trialEnd, now).split(' · ')
-  return `<div class="trialbar" role="status" data-trial-banner><strong>Trial</strong><span>${esc(rest.join(' · ') || 'Free trial')}</span><span class="then">Then $${PLATFORM_MONTHLY_USD}/month platform + usage</span><a href="/billing">Billing →</a></div>`
-}
+/** The homepage credit is an amount, scoped to one deployment, with no time-based trial. */
+export const creditBanner = (account: Account) => `<div class="creditbar" role="status" data-credit-banner><strong>Compute credit</strong><span>$${COMPUTE_CREDIT_USD.toLocaleString('en-US')} ${account.computeCredit?.deploymentId ? 'redeemed for one deployment' : 'available for one deployment'}</span><a href="/billing">${account.computeCredit?.deploymentId ? 'View billing' : 'Redeem credit'} →</a></div>`
 
 /** The pricing table: one row per charge, from PRICE_ROWS (or another list of rows, e.g. per organization size). */
 export const pricingTable = (rows: readonly PriceRow[] = PRICE_ROWS, caption?: string) =>
@@ -318,7 +315,7 @@ export const signupPage = (error?: string | null, email?: string) =>
   soloLayout({
     title: 'Sign up',
     body: `<div class="body"><div class="kicker">Hosted by Beag Labs</div><h1 class="disp">Start your Papyrus</h1>
-<p class="lede">${esc(`$250/month platform plus usage, unlimited users, after a ${TRIAL_DAYS}-day free trial.`)} Pick your organization name and Papyrus goes live at <span class="mono">your-org.${esc(HOSTED_DOMAIN)}</span>.</p>
+<p class="lede">$250/month platform plus usage, unlimited users. Redeem your $1,000 compute credit for one deployment. Pick your organization name and Papyrus goes live at <span class="mono">your-org.${esc(HOSTED_DOMAIN)}</span>.</p>
 ${notice(error)}<form method="post" action="/signup">
 <label for="email">Work email</label><input id="email" name="email" type="email" required autocomplete="email"${email ? ` value="${esc(email)}"` : ''}>
 <label for="name">Your name</label><input id="name" name="name" autocomplete="name">
@@ -363,14 +360,12 @@ const planLabel = (deployment: Deployment) =>
     ? 'None'
     : deployment.billing_state === 'suspended'
       ? 'Suspended'
-      : deployment.stripe_status === 'trialing'
-        ? 'Trial'
-        : 'Active'
+      : 'Active'
 
 const billingButton = (deployment: Deployment, label = 'Manage billing') =>
   deployment.stripe_customer_id
     ? `<form method="post" action="/billing/portal"><input type="hidden" name="deployment" value="${esc(deployment.id)}"><button class="btn" type="submit">${esc(label)}</button></form>`
-    : `<form method="post" action="/billing/checkout"><input type="hidden" name="deployment" value="${esc(deployment.id)}"><button class="btn primary" type="submit">Start ${TRIAL_DAYS}-day trial</button></form>`
+    : `<form method="post" action="/billing/checkout"><input type="hidden" name="deployment" value="${esc(deployment.id)}"><button class="btn primary" type="submit">Set up billing</button></form>`
 
 const NO_USAGE: MonthUsage = { vmHours: 0, executionSeconds: 0 }
 
@@ -469,12 +464,12 @@ export const consentedPage = () =>
 /** /deploy with no deployment: the plan step. With several: the deployments table (server-rendered, hydrated). */
 export const deployListPage = (account: Account, list: ListPayload) => {
   if (list.deployments.length === 0) {
-    const body = `${pageTop('Deployment', 'No deployment yet')}<div class="cols"><div class="card" data-plan-step><h4>Choose your plan <span class="accent">${TRIAL_DAYS}-day free trial</span></h4><div class="body">
-<p style="font-size:14px;color:var(--muted);margin-bottom:14px">One plan, three charges. Your card is collected now; nothing is charged until the trial ends, and usage during the trial is free.</p>
+    const body = `${pageTop('Deployment', 'No deployment yet')}<div class="cols"><div class="card" data-plan-step><h4>Choose your plan <span class="accent">$1,000 compute credit</span></h4><div class="body">
+<p style="font-size:14px;color:var(--muted);margin-bottom:14px">Billing details are required before creating a deployment. The $1,000 credit covers metered VM and agent compute for one deployment; the $250/month platform fee is billed separately.</p>
 ${pricingTable(PRICE_ROWS, 'Billed monthly by Stripe. Cancel any time from the billing portal.')}
 <h5 class="kicker" style="margin:18px 0 8px">What it costs by organization size</h5>
 ${sizeTable()}
-<form method="post" action="/billing/checkout" class="actions" style="margin-top:16px"><button class="btn primary lg" type="submit">Start ${TRIAL_DAYS}-day trial</button></form></div></div><div class="stack">${helpCard(account)}</div></div>`
+<form method="post" action="/billing/checkout" class="actions" style="margin-top:16px">${account.computeCredit?.code ? `<input type="hidden" name="credit_code" value="${esc(account.computeCredit.code)}">` : ''}<button class="btn primary lg" type="submit">${account.computeCredit?.code ? 'Redeem credit and set up billing' : 'Set up billing'}</button></form></div></div><div class="stack">${helpCard(account)}</div></div>`
     return consoleLayout({ title: 'Deployments', account, active: 'deployment', body })
   }
   return consoleLayout({ title: 'Deployments', account, active: 'deployment', body: renderList({ payload: list }), scripts: [DEPLOY_SCRIPT_PATH], styles: DEPLOY_STYLES })
@@ -552,6 +547,8 @@ const BILLING_STYLES = `
 .billing-name a:hover{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
 .billing-name a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .billing-status{font-size:13px;color:var(--muted);margin-top:6px;overflow-wrap:anywhere}
+.credit-existing{display:grid;grid-template-columns:auto minmax(160px,1fr) auto;gap:12px;align-items:center}.credit-existing label{margin:0}.credit-existing select{min-width:0}.credit-existing .btn{white-space:nowrap}
+@media(max-width:700px){.credit-existing{grid-template-columns:minmax(0,1fr)}}
 .billing-usage{font:11.5px/1.6 var(--mono);margin-top:9px;overflow-wrap:anywhere}
 .billing-row form{margin:0}
 .billing .card h4{min-height:46px}
@@ -571,27 +568,28 @@ const BILLING_STYLES = `
 
 export const billingPage = (account: Account, deployments: Deployment[], message?: string | null, usage: Record<string, MonthUsage> = {}) => {
   const rows = deployments.map((d) => {
-    const trialing = isTrialing(d)
     const label = planLabel(d)
-    const status = trialing
-      ? trialStatus(d.trial_end)
-      : d.billing_state === 'none'
-        ? `${TRIAL_DAYS} days free · Start a trial to deploy Papyrus.`
+    const status = d.billing_state === 'none'
+        ? 'Complete billing setup to create your deployment.'
         : d.billing_state === 'suspended'
           ? `Suspended${d.stripe_status ? ` · ${d.stripe_status.replace(/_/g, ' ')}` : ''}`
           : 'Papyrus · Subscription active'
     return `<article class="billing-row" aria-labelledby="billing-${esc(d.id)}">
-<div class="billing-identity"><div class="billing-name"><h3 id="billing-${esc(d.id)}"><a href="/deploy/${esc(d.id)}">${esc(deploymentName(d))}</a></h3><span class="tag ${d.billing_state === 'suspended' ? 'err' : trialing ? 'run' : d.billing_state === 'active' ? 'ok' : 'wait'}">${esc(label === 'None' ? 'No plan' : label)}</span></div>
-<p class="billing-status"${trialing ? ' data-trial' : ''}>${esc(status)}</p>
-${d.billing_state === 'none' ? '' : `<p class="billing-usage">${esc(usageLine(usage[d.id] ?? NO_USAGE, { platform: d.billing_state === 'active' && !trialing }))}</p>`}</div>
+<div class="billing-identity"><div class="billing-name"><h3 id="billing-${esc(d.id)}"><a href="/deploy/${esc(d.id)}">${esc(deploymentName(d))}</a></h3><span class="tag ${d.billing_state === 'suspended' ? 'err' : d.billing_state === 'active' ? 'ok' : 'wait'}">${esc(label === 'None' ? 'No plan' : label)}</span></div>
+<p class="billing-status">${esc(status)}</p>
+${d.billing_state === 'none' ? '' : `<p class="billing-usage">${esc(usageLine(usage[d.id] ?? NO_USAGE, { platform: d.billing_state === 'active' }) + (account.computeCredit?.deploymentId === d.id ? ' before compute credits' : ''))}</p>`}</div>
 ${billingButton(d)}</article>`
   })
-  const add = `<form method="post" action="/billing/checkout"><button class="btn${deployments.length ? '' : ' primary'}" type="submit">${deployments.length ? 'Add a deployment' : `Start ${TRIAL_DAYS}-day trial`}</button></form>`
-  const body = `<div class="billing">${pageTop('Billing', 'Plan and invoices', add)}${notice(message)}
+  const add = `<form method="post" action="/billing/checkout"><button class="btn${deployments.length ? '' : ' primary'}" type="submit">${deployments.length ? 'Add a deployment' : 'Set up billing'}</button></form>`
+  const credit = account.computeCredit
+  const eligible = deployments.filter(d => d.billing_state === 'active' && d.stripe_customer_id && d.lifecycle !== 'deleting' && d.lifecycle !== 'deleted')
+  const existingCreditForm = credit?.code && !credit.deploymentId && eligible.length ? `<form method="post" action="/billing/credit" class="credit-existing" style="margin-top:12px"><input type="hidden" name="credit_code" value="${esc(credit.code)}"><label for="credit-deployment" class="small">Or apply to an existing deployment</label><select name="deployment" id="credit-deployment">${eligible.map(d => `<option value="${esc(d.id)}">${esc(deploymentName(d))}</option>`).join('')}</select><button class="btn" type="submit">Apply credit</button></form>` : ''
+  const creditCard = `<section class="card" style="margin-bottom:18px"><h4>$1,000 Papyrus compute credit <span class="accent">One deployment</span></h4><div class="body"><p class="small">Covers VM and agent compute. The $250/month platform fee is billed separately.</p>${credit?.deploymentId ? `<p class="help">Redeemed for <a href="/deploy/${esc(credit.deploymentId)}">your deployment</a>. Credit is applied by Stripe to eligible metered usage.</p>` : `<form method="post" action="/billing/checkout" class="actions"><label for="credit-code" class="sr-only">Credit code</label><input id="credit-code" name="credit_code" value="${esc(credit?.code ?? '')}" placeholder="PAPYRUS-…" required autocomplete="off" style="max-width:420px"><button class="btn primary" type="submit">Redeem for one deployment</button></form><p class="help">Use the code emailed from the <a href="https://beaglabs.com/#compute-credit">homepage credit offer</a>. Sign in with the same email.</p>${existingCreditForm}`}</div></section>`
+  const body = `<div class="billing">${pageTop('Billing', 'Plan and invoices', add)}${notice(message)}${creditCard}
 <div class="billing-grid"><section class="card" aria-labelledby="billing-deployments"><h4 id="billing-deployments">Deployments <span class="billing-count">${deployments.length} ${deployments.length === 1 ? 'deployment' : 'deployments'}</span></h4>
-${rows.length ? rows.join('') : '<p class="billing-empty">No deployments yet. Start a trial to create your Papyrus workspace.</p>'}</section>
-<section class="card billing-pricing" aria-labelledby="billing-pricing"><h4 id="billing-pricing">Pricing <span class="accent">${TRIAL_DAYS}-day trial</span></h4><div class="body">${pricingTable()}
-<p class="billing-note">One subscription per deployment. Unlimited users. Usage during the trial is free. Your card is collected at signup and first charged when the trial ends.</p>
+${rows.length ? rows.join('') : '<p class="billing-empty">No deployments yet. Set up billing or redeem your compute credit to create a workspace.</p>'}</section>
+<section class="card billing-pricing" aria-labelledby="billing-pricing"><h4 id="billing-pricing">Pricing <span class="accent">Metered monthly</span></h4><div class="body">${pricingTable()}
+<p class="billing-note">One subscription per deployment. Unlimited users. Compute credits cover metered VM and agent usage. Platform fees are billed separately; usage beyond your credit is billed at these rates.</p>
 <p class="billing-note">Use <strong>Manage billing</strong> for a deployment to view invoices, update your card, or manage its subscription in Stripe.</p></div></section></div></div>`
   return consoleLayout({ title: 'Billing', account, active: 'billing', body, styles: BILLING_STYLES })
 }

@@ -210,3 +210,17 @@ CREATE TABLE IF NOT EXISTS microsoft_transactions (
 
 CREATE INDEX IF NOT EXISTS microsoft_transactions_handle ON microsoft_transactions(handle_sha256);
 CREATE INDEX IF NOT EXISTS microsoft_transactions_expires ON microsoft_transactions(expires_at);
+
+-- One homepage compute-credit entitlement per email, redeemable for one exclusive deployment.
+CREATE TABLE IF NOT EXISTS compute_credit_offers (
+  email TEXT PRIMARY KEY,
+  code_hash TEXT NOT NULL UNIQUE,
+  code_ciphertext TEXT NOT NULL,
+  issued_at TEXT NOT NULL,
+  reserved_deployment_id TEXT UNIQUE,
+  redeemed_deployment_id TEXT UNIQUE,
+  stripe_customer_id TEXT UNIQUE,
+  stripe_session_id TEXT UNIQUE,
+  stripe_grant_id TEXT UNIQUE,
+  redeemed_at TEXT
+);

@@ -36,6 +36,7 @@ export interface Account {
   created_at: string
   /** Set per request on signed-in pages: the earliest end of a running trial, for the trial banner. */
   trial?: { trialEnd: string | null } | null
+  computeCredit?: { amount: number; code: string | null; deploymentId: string | null; grantId: string | null } | null
   /** Set per request on signed-in pages: this account's deployment hostnames, for the support email. */
   hostnames?: string[]
 }

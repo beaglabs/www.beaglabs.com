@@ -1,9 +1,7 @@
 /**
  * Papyrus pricing: one subscription per deployment with three items on Stripe product STRIPE_PRODUCT.
- * The amounts here are display copy and local estimates; Stripe's prices (wrangler vars) are what is charged.
+ * The amounts here define the canonical Stripe lookup-key catalog and local estimates.
  */
-
-export const TRIAL_DAYS = 14
 
 export const PLATFORM_MONTHLY_USD = 250
 export const VM_HOUR_USD = 0.5

@@ -14,12 +14,26 @@ describe('billing before deployment creation', () => {
     const form = stripe.calls.find(c => c.path === '/v1/checkout/sessions')!.form
     expect(form.get('payment_method_collection')).toBe('always')
     expect(form.get('billing_address_collection')).toBe('required')
+    expect(form.has('subscription_data[trial_period_days]')).toBe(false)
+    expect(form.get('line_items[0][price]')).toBe('price_platform')
     expect(form.get('success_url')).toBe(`${h.env.BASE_URL}/billing/complete?session_id={CHECKOUT_SESSION_ID}`)
     expect(h.sql.prepare('SELECT COUNT(*) AS n FROM deployments').get()!.n).toBe(0)
     await get('/billing')
     const response = await get('/billing/complete?session_id=cs_1')
     expect(response.headers.get('location')).toContain('/billing?error=')
     expect(h.sql.prepare('SELECT COUNT(*) AS n FROM deployments').get()!.n).toBe(0)
+  })
+
+  it('creates canonical prices by lookup key when old configured IDs are missing, then reuses them', async () => {
+    const {post,stripe} = setup({missingCatalog:true})
+    expect((await post('/billing/checkout')).status).toBe(303)
+    const prices = stripe.calls.filter(c => c.path === '/v1/prices' && c.method === 'POST')
+    expect(prices).toHaveLength(3)
+    expect(prices.map(c => c.form.get('lookup_key'))).toEqual(['papyrus_platform_v1','papyrus_vm_compute_v1','papyrus_agent_execution_v1'])
+    expect(prices.map(c => c.form.get('unit_amount_decimal'))).toEqual(['25000','50','0.194444'])
+    expect(prices.every(c => c.headers.get('idempotency-key'))).toBe(true)
+    expect((await post('/billing/checkout')).status).toBe(303)
+    expect(stripe.calls.filter(c => c.path === '/v1/prices' && c.method === 'POST')).toHaveLength(3)
   })
 
   it('a Stripe error leaves no deployment or checkout reference', async () => {
@@ -29,7 +43,7 @@ describe('billing before deployment creation', () => {
     expect(h.sql.prepare('SELECT COUNT(*) AS n FROM checkout_intents').get()!.n).toBe(0)
   })
 
-  it('creates exactly one active trial after completion, including when subscription events arrive first', async () => {
+  it('creates exactly one active subscription after completion, including when subscription events arrive first', async () => {
     const end = Math.floor((Date.now() + 14 * 86_400_000) / 1000)
     const { h, post, get, stripe } = setup({ trialEnd: end })
     await post('/billing/checkout')
@@ -40,7 +54,7 @@ describe('billing before deployment creation', () => {
     const completed = { id: 'evt_checkout', type: 'checkout.session.completed', data: { object: session } }
     expect((await h.stripeEvent(completed)).status).toBe(200)
     const id = String(session.client_reference_id)
-    expect(h.deployment(id)).toMatchObject({ billing_state: 'active', stripe_status: 'trialing', stripe_customer_id: session.customer, stripe_subscription_id: session.subscription })
+    expect(h.deployment(id)).toMatchObject({ billing_state: 'active', stripe_status: 'active', stripe_customer_id: session.customer, stripe_subscription_id: session.subscription })
     expect(h.sql.prepare('SELECT trial_end FROM billing_periods WHERE deployment_id = ?').get(id)!.trial_end).toBe(new Date(end * 1000).toISOString())
     expect((await get('/billing/complete?session_id=cs_1')).headers.get('location')).toBe(`/deploy/${id}`)
     await h.stripeEvent(completed)

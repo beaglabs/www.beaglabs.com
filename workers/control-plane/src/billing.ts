@@ -6,21 +6,16 @@ import * as FetchHttpClient from 'effect/http/FetchHttpClient'
 import * as Layer from 'effect/Layer'
 import * as Redacted from 'effect/Redacted'
 import { logEvent } from './events'
-import { PLATFORM_MONTHLY_USD, TRIAL_DAYS } from './pricing'
+import { PLATFORM_MONTHLY_USD } from './pricing'
 import { initialSteps } from './setup'
+import { catalogPrices } from './catalog'
+import { linkCreditCheckout, redeemComputeCredit, reserveComputeCredit } from './credits'
 import { Env, UserError, first, newId, nowIso, run, type Account, type BillingState, type Deployment } from './services'
 
 /**
  * One subscription per deployment, three items on one Stripe product: the $250/month platform price (licensed) and two
- * metered prices (VM hours, agent-seconds) fed by Billing Meter events (src/metering.ts). 14-day trial, card at signup.
+ * metered prices (VM hours, agent-seconds) fed by Billing Meter events (src/metering.ts). Billing details are required before creation.
  */
-export const checkoutLineItems = (env: { STRIPE_PRICE_PLATFORM: string; STRIPE_PRICE_COMPUTE: string; STRIPE_PRICE_EXECUTION: string }) => [
-  { price: env.STRIPE_PRICE_PLATFORM, quantity: 1 },
-  // Metered prices take no quantity: usage comes from meter events.
-  { price: env.STRIPE_PRICE_COMPUTE },
-  { price: env.STRIPE_PRICE_EXECUTION },
-]
-
 /** Stripe subscription status → the deployment's billing state. */
 export const billingStateFor = (status: string | null | undefined): Exclude<BillingState, 'none'> =>
   status === 'trialing' || status === 'active' ? 'active' : 'suspended'
@@ -31,25 +26,29 @@ export const stripeLayer = (env: { STRIPE_SECRET_KEY: string }) =>
 const stripeFailure = (cause: unknown) => new UserError({ message: `Stripe: ${cause instanceof Error ? cause.message : 'request failed'}`, status: 502 })
 
 /** Start (or restart) the subscription for one deployment through Stripe Checkout. Returns the Checkout URL. */
-export const startCheckout = (account: Account, existing?: Pick<Deployment, 'id' | 'stripe_customer_id'>) =>
+export const startCheckout = (account: Account, existing?: Pick<Deployment, 'id' | 'stripe_customer_id'>, creditCode?: string) =>
   Effect.gen(function* () {
     const env = yield* Env
-    const deployment = existing ?? { id: newId('dep'), stripe_customer_id: null }
+    const credit = creditCode ? yield* reserveComputeCredit(account, creditCode, existing?.id, existing?.stripe_customer_id) : null
+    if (credit?.checkoutUrl) return credit.checkoutUrl
+    const deployment = credit ?? existing ?? { id: newId('dep'), stripe_customer_id: null }
     yield* pruneCheckoutIntents()
+    const prices = yield* catalogPrices()
     const session = yield* CreateCheckoutSession({
       mode: 'subscription',
       client_reference_id: deployment.id,
       ...(deployment.stripe_customer_id ? { customer: deployment.stripe_customer_id } : { customer_email: account.email }),
       payment_method_collection: 'always',
       billing_address_collection: 'required',
-      line_items: checkoutLineItems(env),
-      subscription_data: { trial_period_days: TRIAL_DAYS, metadata: { deployment_id: deployment.id, account_id: account.id } },
+      line_items: [{ price: prices.platform, quantity: 1 }, { price: prices.compute }, { price: prices.execution }],
+      subscription_data: { metadata: { deployment_id: deployment.id, account_id: account.id } },
       metadata: { deployment_id: deployment.id, account_id: account.id },
       success_url: `${env.BASE_URL}/billing/complete?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${env.BASE_URL}/billing`,
-    }).pipe(Effect.provide(stripeLayer(env)), Effect.mapError(stripeFailure))
+    }).pipe(Stripe.withRequestOptions({ ...(credit?.key ? { idempotencyKey: credit.key } : {}) }), Effect.provide(stripeLayer(env)), Effect.mapError(stripeFailure))
     if (!session.url || !session.id) return yield* new UserError({ message: 'Stripe did not return a Checkout URL', status: 502 })
-    yield* run('INSERT INTO checkout_intents (stripe_session_id, deployment_id, account_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?)', session.id, deployment.id, account.id, nowIso(), new Date(Date.now() + 7 * 86_400_000).toISOString())
+    yield* run('INSERT OR IGNORE INTO checkout_intents (stripe_session_id, deployment_id, account_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?)', session.id, deployment.id, account.id, nowIso(), new Date(Date.now() + 7 * 86_400_000).toISOString())
+    if (credit) yield* linkCreditCheckout(credit.hash, session.id)
     return session.url
   })
 
@@ -180,6 +179,7 @@ const completeCheckoutSession = (session: CheckoutObject, intent: CheckoutIntent
       return intent.deployment_id
     }
     if (subscription.status !== 'trialing' && subscription.status !== 'active') return yield* new UserError({ message: 'Billing setup is not active yet. Finish checkout or try again shortly.', status: 409 })
+    yield* redeemComputeCredit(intent.account_id, intent.deployment_id, customerId)
     const created = yield* run('INSERT OR IGNORE INTO deployments (id, account_id, steps, stripe_customer_id, stripe_subscription_id, stripe_status, billing_state, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', intent.deployment_id, intent.account_id, JSON.stringify(initialSteps()), customerId, subscriptionId, subscription.status, 'active', nowIso(), nowIso())
     if (!created) yield* run("UPDATE deployments SET stripe_customer_id = ?, stripe_subscription_id = ?, stripe_status = ?, billing_state = 'active', updated_at = ? WHERE id = ? AND account_id = ?", customerId, subscriptionId, subscription.status, nowIso(), intent.deployment_id, intent.account_id)
     if (typeof subscription.trial_end === 'number') yield* saveTrialEnd(intent.deployment_id, new Date(subscription.trial_end * 1000).toISOString())
@@ -203,25 +203,6 @@ const price = `$${PLATFORM_MONTHLY_USD}/month platform + usage`
 export const shortDate = (iso: string | null | undefined) =>
   iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''
 
-const DAY_MS = 86_400_000
-
-/** Whole days until the trial ends, rounded up; 0 once it has ended. Null when the end is unknown. */
-export const trialDaysLeft = (trialEnd: string | null | undefined, now = Date.now()) => {
-  const end = Date.parse(trialEnd ?? '')
-  return Number.isNaN(end) ? null : Math.max(0, Math.ceil((end - now) / DAY_MS))
-}
-
-/** "Trial · 12 days left · ends Oct 31" (or "Trial" while Stripe has not said when it ends). */
-export const trialStatus = (trialEnd: string | null | undefined, now = Date.now()) => {
-  const days = trialDaysLeft(trialEnd, now)
-  if (days === null) return 'Trial'
-  if (days === 0) return `Trial · ends today`
-  return `Trial · ${days} day${days === 1 ? '' : 's'} left · ends ${shortDate(trialEnd)}`
-}
-
-/** A deployment whose subscription is in its free trial. */
-export const isTrialing = (deployment: Pick<Deployment, 'billing_state' | 'stripe_status'>) => deployment.billing_state === 'active' && deployment.stripe_status === 'trialing'
-
 const saveTrialEnd = (deploymentId: string, trialEnd: string) =>
   run(
     'INSERT INTO billing_periods (deployment_id, trial_end, updated_at) VALUES (?, ?, ?) ON CONFLICT(deployment_id) DO UPDATE SET trial_end = excluded.trial_end, updated_at = excluded.updated_at',
@@ -229,32 +210,6 @@ const saveTrialEnd = (deploymentId: string, trialEnd: string) =>
     trialEnd,
     nowIso(),
   )
-
-/**
- * Trial ends normally arrive with customer.subscription.* webhooks. For a trialing deployment that has none stored
- * (e.g. subscribed before trial_end was recorded), read the subscription from Stripe once and store it. Best effort.
- */
-export const backfillTrialEnds = (deployments: Deployment[]) =>
-  Effect.gen(function* () {
-    const missing = deployments.filter((d) => isTrialing(d) && !d.trial_end && d.stripe_subscription_id)
-    if (!missing.length) return
-    const env = yield* Env
-    for (const deployment of missing) {
-      const subscription = yield* GetSubscription({ subscription_exposed_id: deployment.stripe_subscription_id! }).pipe(Effect.provide(stripeLayer(env)), Effect.orElseSucceed(() => null))
-      const trialEnd = (subscription as { trial_end?: number | null } | null)?.trial_end
-      if (typeof trialEnd !== 'number') continue
-      deployment.trial_end = new Date(trialEnd * 1000).toISOString()
-      yield* saveTrialEnd(deployment.id, deployment.trial_end).pipe(Effect.ignore)
-    }
-  })
-
-/** The earliest trial end among an account's trialing deployments, for the trial banner; null when none is trialing. */
-export const accountTrial = (deployments: Deployment[]) => {
-  const trialing = deployments.filter(isTrialing)
-  if (!trialing.length) return null
-  const ends = trialing.map((d) => d.trial_end).filter((end): end is string => Boolean(end)).sort()
-  return { trialEnd: ends[0] ?? null }
-}
 
 /** The Activity line for a subscription change. Never includes Stripe ids beyond what the customer already sees. */
 export const billingEventFor = (update: Extract<BillingUpdate, { kind: 'status' }>) => {

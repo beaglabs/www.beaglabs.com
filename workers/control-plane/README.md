@@ -13,7 +13,7 @@ keys and signing.
 
 - `/signup`, `/login` — email magic link (Resend), Sign in with Microsoft / Google (OIDC code + PKCE)
 - `/billing` — Stripe Checkout per deployment ($250/month platform + $0.50 per VM hour + $0.00194444 per agent-second;
-  one subscription with three items, 14-day trial, card up front), customer portal
+  one subscription with three items, billing details up front; no trial), customer portal
 - `POST /api/stripe/webhook` — `trialing`/`active` → active; `past_due`/`unpaid`/`canceled` (and anything else) → suspended
 - `/deploy/:id` (hosted, the default) — org-name form (live check at `GET /api/org-names/check?name=`; lowercase DNS
   label, 3–40 chars, unique, reserved list in `src/hosted.ts`) with the required terms checkbox; `POST /deploy/:id/org`
@@ -44,7 +44,7 @@ keys and signing.
 - `POST /deploy/:id/delete` (deployment Settings → typed confirmation dialog; body `confirm` = the org name, or the hostname for BYOC),
   `POST /deploy/:id/teardown` — retry or continue a teardown
 - Cron `5 * * * *` — one VM-hour meter event per running deployment (none for hours that start while stopped; nothing is
-  sent while trialing), then continues teardowns that are waiting (not failed ones: those wait for Retry), then prunes
+  dropped for legacy trials locally; Stripe applies credit and subscription terms), then continues teardowns that are waiting (not failed ones: those wait for Retry), then prunes
   expired Microsoft sign-in transactions
 
 ## Hosted by Beag Labs
@@ -159,3 +159,11 @@ npm install
 npm run check      # typecheck, tests, wrangler dry run
 npm run deploy     # applies schema.sql to D1, deploys
 ```
+
+### Homepage compute credit
+
+`POST /api/credits/request` issues an encrypted, email-bound redemption code. The homepage sends `papyrus_compute_credit_requested` through Customer.io with `credit_code` and `redeem_url`. Customer.io campaign 3 / action 35 uses Design Studio email `cd427bf1-36fc-4622-8a4d-334497eddb65`; source is `emails/compute-credit.html`.
+
+New checkout resolves or creates the three monthly prices by stable lookup keys (`papyrus_platform_v1`, `papyrus_vm_compute_v1`, `papyrus_agent_execution_v1`) rather than relying on the old configured platform price ID. No Checkout trial is created.
+
+A code reserves one deployment and a dedicated Stripe customer. On verified Checkout completion, the Worker creates a $1,000 promotional Billing Credit Grant scoped to VM and agent metered prices, then persists the deployment. An existing billed deployment can receive the credit from Billing instead. Platform fees are excluded. Redemption checks verified email ownership, reserves once in D1, uses Stripe idempotency keys, and recovers previously created grants before retrying. Deletion never makes a redeemed offer available again. Historical Stripe trial records and Activity logs are retained.

@@ -1,7 +1,6 @@
-import { isTrialing, trialStatus } from './billing'
 import { HOSTED_DOMAIN, HOSTED_PROVIDER } from './hosted'
 import { TEARDOWN_LABELS, byocCleanupList, canStop, isHosted, teardownSteps } from './lifecycle-model'
-import { PRICE_ROWS, TRIAL_DAYS, usageLine, type MonthUsage } from './pricing'
+import { PRICE_ROWS, usageLine, type MonthUsage } from './pricing'
 import { LEGAL } from './legal'
 import { PROVIDERS } from './providers/registry'
 import type { Account, Deployment } from './services'
@@ -238,22 +237,15 @@ export const availableActions = (deployment: Deployment): Action[] => {
 
 // Plan -----------------------------------------------------------------------------------------------------------------
 
-const planView = (deployment: Deployment, usage: MonthUsage | undefined, now: number): PlanView => {
-  const trialing = isTrialing(deployment)
-  const label = deployment.billing_state === 'none' ? 'No plan' : deployment.billing_state === 'suspended' ? 'Suspended' : trialing ? 'Trial' : 'Active'
-  const status = trialing
-    ? trialStatus(deployment.trial_end, now)
-    : deployment.billing_state === 'suspended'
-      ? `Suspended${deployment.stripe_status ? ` · ${deployment.stripe_status.replace(/_/g, ' ')}` : ''}`
-      : deployment.billing_state === 'none'
-        ? `${TRIAL_DAYS}-day free trial available`
-        : null
+const planView = (deployment: Deployment, usage: MonthUsage | undefined, now: number, creditDeploymentId?: string | null): PlanView => {
+  const label = deployment.billing_state === 'none' ? 'No plan' : deployment.billing_state === 'suspended' ? 'Suspended' : 'Active'
+  const status = deployment.billing_state === 'suspended' ? 'Suspended' : deployment.billing_state === 'none' ? 'Complete billing setup before deployment.' : null
   return {
     label,
     status,
     pricing: PRICE_ROWS.map((row) => ({ label: row.label, amount: row.amount, unit: row.unit })),
-    usage: deployment.billing_state === 'none' ? null : usageLine(usage ?? { vmHours: 0, executionSeconds: 0 }, { platform: deployment.billing_state === 'active' && !trialing }),
-    billing: deployment.stripe_customer_id ? { action: '/billing/portal', label: 'Manage billing' } : { action: '/billing/checkout', label: `Start ${TRIAL_DAYS}-day trial` },
+    usage: deployment.billing_state === 'none' ? null : usageLine(usage ?? { vmHours: 0, executionSeconds: 0 }, { platform: deployment.billing_state === 'active' }) + (creditDeploymentId === deployment.id ? ' before compute credits' : ''),
+    billing: deployment.stripe_customer_id ? { action: '/billing/portal', label: 'Manage billing' } : { action: '/billing/checkout', label: 'Set up billing' },
   }
 }
 
@@ -319,7 +311,7 @@ export const buildDeploymentView = (deployment: Deployment, ctx: ViewContext): D
 
   let next: NextStepView | null = null
   if (!deleting && deployment.lifecycle === 'running') {
-    if (deployment.billing_state === 'none') next = { title: 'Start your subscription', body: `Papyrus deploys as soon as the ${TRIAL_DAYS}-day trial starts. Nothing is charged until it ends.`, link: null }
+    if (deployment.billing_state === 'none') next = { title: 'Start your subscription', body: 'Complete billing setup to deploy. Redeem a compute-credit code in Billing for one deployment.', link: null }
     else if (microsoft) next = { title: 'Connect Microsoft', body: 'Connect Microsoft so your team can sign in.', link: null }
     else if (active?.id === 'connect') next = { title: 'Connect your cloud account', body: 'Credentials are checked with a read-only call and stored encrypted.', link: { label: 'Connect', href: `/provision?deployment=${encodeURIComponent(deployment.id)}` } }
   }
@@ -372,7 +364,7 @@ export const buildDeploymentView = (deployment: Deployment, ctx: ViewContext): D
     next,
     microsoft,
     preview,
-    plan: deleting ? null : planView(deployment, ctx.usage, ctx.now),
+    plan: deleting ? null : planView(deployment, ctx.usage, ctx.now, ctx.account.computeCredit?.deploymentId),
     details,
     dnsRecords: mode === 'byoc' && !deleting ? deployment.dnsRecords : [],
     cleanup: mode === 'byoc' && deleting ? byocCleanupList(deployment) : [],

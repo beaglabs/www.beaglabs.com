@@ -314,7 +314,7 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
               </h2>
               <div class="card-b">
                 {view.plan.status ? (
-                  <p class="plan-status" data-trial={view.plan.label === 'Trial' ? '' : undefined}>
+                  <p class="plan-status">
                     {view.plan.status}
                   </p>
                 ) : null}

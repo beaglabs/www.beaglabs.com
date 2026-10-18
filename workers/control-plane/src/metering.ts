@@ -1,7 +1,8 @@
 import * as Stripe from '@distilled.cloud/stripe'
 import { CreateBillingMeterEvent, GetBillingMeter, GetPrice } from '@distilled.cloud/stripe/stripe'
 import * as Effect from 'effect/Effect'
-import { isTrialing, stripeLayer } from './billing'
+import { stripeLayer } from './billing'
+import { configuredMeterPrice } from './catalog'
 import { logEvent } from './events'
 import type { PriceKind } from './pricing'
 import { license } from './runner'
@@ -16,8 +17,7 @@ import { Env, SELECT_DEPLOYMENT, UserError, all, first, nowIso, run, toDeploymen
  *   executionSeconds), identifier `<deploymentId>:<reportId>`.
  *
  * Each metered price's meter is resolved at runtime (price.recurring.meter → GET /v1/billing/meters/{id} →
- * event_name) and cached in D1; no event names are hardcoded and nothing is created in Stripe. While a subscription
- * is trialing nothing is sent: the report is recorded as dropped and logged as INFO. Every outcome is one `billing`
+ * event_name) and cached in D1. Usage is sent to Stripe, where eligible compute credits are applied. Every outcome is one `billing`
  * line in Activity, without customer ids or keys. `meter_pushes` makes both paths idempotent.
  */
 
@@ -39,7 +39,6 @@ export const meterEventName = (priceId: string) =>
       recurring?: { meter?: string | null } | null
     }
     const product = typeof price.product === 'string' ? price.product : price.product?.id
-    if (env.STRIPE_PRODUCT && product && product !== env.STRIPE_PRODUCT) return yield* new UserError({ message: `Stripe price ${priceId} is not on ${env.STRIPE_PRODUCT}`, status: 500 })
     const meterId = price.recurring?.meter
     if (!meterId) return yield* new UserError({ message: `Stripe price ${priceId} has no billing meter`, status: 500 })
     const meter = (yield* GetBillingMeter({ id: meterId }).pipe(Effect.provide(stripeLayer(env)), Effect.mapError(stripeFailure))) as { event_name?: string }
@@ -61,7 +60,7 @@ const clock = (iso: string) => iso.slice(11, 16)
 const describe = (kind: MeteredKind, value: number, periodStart: string, periodEnd: string) =>
   `${kind === 'compute' ? `${value} VM hour${value === 1 ? '' : 's'}` : `${value.toLocaleString('en-US')} agent-second${value === 1 ? '' : 's'}`} · ${clock(periodStart)}–${clock(periodEnd)} UTC`
 
-export type MeterOutcome = 'sent' | 'trial' | 'unbilled' | 'duplicate'
+export type MeterOutcome = 'sent' | 'unbilled' | 'duplicate'
 
 export interface MeterInput {
   deployment: Deployment
@@ -81,7 +80,7 @@ export const meterUsage = (input: MeterInput) =>
     const { deployment, kind, value, identifier, periodStart, periodEnd } = input
     const existing = yield* first<{ status: string }>('SELECT status FROM meter_pushes WHERE identifier = ?', identifier)
     if (existing && existing.status !== 'failed') return 'duplicate' as MeterOutcome
-    const status: MeterOutcome = isTrialing(deployment) ? 'trial' : !deployment.stripe_customer_id || deployment.billing_state === 'none' ? 'unbilled' : 'sent'
+    const status: MeterOutcome = !deployment.stripe_customer_id || deployment.billing_state === 'none' ? 'unbilled' : 'sent'
     // Claim the identifier first so concurrent duplicates send once.
     const claimed = existing
       ? yield* run("UPDATE meter_pushes SET status = 'sending', created_at = ? WHERE identifier = ? AND status = 'failed'", nowIso(), identifier)
@@ -99,16 +98,16 @@ export const meterUsage = (input: MeterInput) =>
     const what = describe(kind, value, periodStart, periodEnd)
     const log = (level: 'ok' | 'info' | 'error', message: string) => logEvent({ accountId: deployment.account_id, deploymentId: deployment.id, level, source: 'billing', message })
 
-    if (status === 'trial' || status === 'unbilled') {
+    if (status === 'unbilled') {
       yield* run('UPDATE meter_pushes SET status = ? WHERE identifier = ?', status, identifier)
       yield* Effect.logInfo(`meter event dropped (${status})`, { kind, identifier })
-      yield* log('info', status === 'trial' ? `Usage not billed during trial · ${what}` : `Usage not billed · no active subscription · ${what}`)
+      yield* log('info', `Usage not billed · no active subscription · ${what}`)
       return status
     }
 
     const env = yield* Env
     const sent = yield* Effect.gen(function* () {
-      const eventName = yield* meterEventName(priceFor(env, kind))
+      const eventName = yield* meterEventName(yield* configuredMeterPrice(kind))
       yield* CreateBillingMeterEvent({
         event_name: eventName,
         identifier,

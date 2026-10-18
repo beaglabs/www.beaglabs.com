@@ -32,18 +32,18 @@ describe('meter event names', () => {
     const { h, stripe, running } = setup()
     running('dep_a', 'active', { license: 'pd_a' })
     await scheduled(h.env, NOW, { fetch: stripe.fetch })
-    expect(stripe.calls.filter((c) => c.method === 'GET').map((c) => c.path)).toEqual(['/v1/prices/price_compute', '/v1/billing/meters/mtr_compute'])
+    expect(stripe.calls.filter((c) => c.method === 'GET').map((c) => c.path)).toEqual(['/v1/prices/price_compute', '/v1/prices/price_compute', '/v1/billing/meters/mtr_compute'])
     expect(stripe.meterEvents()[0]!.form.get('event_name')).toBe('papyrus_vm_hours')
     expect(h.sql.prepare('SELECT price_id, meter_id, event_name FROM stripe_meters').all()).toEqual([{ price_id: 'price_compute', meter_id: 'mtr_compute', event_name: 'papyrus_vm_hours' }])
     // The next hour uses the cache.
     await scheduled(h.env, NOW + 3_600_000, { fetch: stripe.fetch })
-    expect(stripe.calls.filter((c) => c.method === 'GET')).toHaveLength(2)
+    expect(stripe.calls.filter((c) => c.method === 'GET')).toHaveLength(3)
     expect(stripe.meterEvents()).toHaveLength(2)
   })
 })
 
 describe('hourly compute cron', () => {
-  it('sends one idempotent event per running non-trial deployment-hour, none while trialing', async () => {
+  it('sends idempotent usage for each running subscription; Stripe applies credits and legacy subscription terms', async () => {
     const { h, stripe, running, billingEvents } = setup()
     running('dep_a', 'active', { license: 'pd_a' })
     running('dep_t', 'trialing', { license: 'pd_t' })
@@ -54,7 +54,7 @@ describe('hourly compute cron', () => {
     await scheduled(h.env, NOW + 60_000, { fetch: stripe.fetch }) // a cron retry in the same hour
 
     const events = stripe.meterEvents()
-    expect(events).toHaveLength(1)
+    expect(events).toHaveLength(2)
     const sent = events[0]!
     expect(sent.form.get('identifier')).toBe('pd_a:2026-10-17T14:00:00.000Z')
     expect(sent.headers.get('idempotency-key')).toBe('pd_a:2026-10-17T14:00:00.000Z')
@@ -63,7 +63,7 @@ describe('hourly compute cron', () => {
 
     expect(billingEvents()).toEqual([
       { level: 'ok', deployment_id: 'dep_a', message: 'Usage sent to Stripe · 1 VM hour · 14:00–15:00 UTC' },
-      { level: 'info', deployment_id: 'dep_t', message: 'Usage not billed during trial · 1 VM hour · 14:00–15:00 UTC' },
+      { level: 'ok', deployment_id: 'dep_t', message: 'Usage sent to Stripe · 1 VM hour · 14:00–15:00 UTC' },
     ])
     for (const row of billingEvents()) expect(row.message).not.toMatch(/cus_|sk_test|sub_/)
   })
@@ -139,14 +139,14 @@ describe('POST /api/deployments/usage', () => {
     expect(billingEvents()[0]!.message).toMatch(/^Usage sent to Stripe · 1,800 agent-seconds · /)
   })
 
-  it('drops reports while trialing and logs them as INFO', async () => {
+  it('forwards usage for legacy subscription statuses instead of dropping it locally', async () => {
     const { h, stripe, running, billingEvents } = setup()
     running('dep_1', 'trialing', { license: 'pd_123' })
     const response = await post(h, report())
     expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({ accepted: true, duplicate: false, billed: false })
-    expect(stripe.meterEvents()).toHaveLength(0)
-    expect(billingEvents()).toEqual([expect.objectContaining({ level: 'info', message: expect.stringMatching(/^Usage not billed during trial · 1,800 agent-seconds/) })])
+    expect(await response.json()).toEqual({ accepted: true, duplicate: false, billed: true })
+    expect(stripe.meterEvents()).toHaveLength(1)
+    expect(billingEvents()).toEqual([expect.objectContaining({ level: 'ok', message: expect.stringMatching(/^Usage sent to Stripe · 1,800 agent-seconds/) })])
   })
 
   it('counts billed usage this month on the Plan card and the Billing page', async () => {
@@ -162,7 +162,7 @@ describe('POST /api/deployments/usage', () => {
 })
 
 describe('Checkout', () => {
-  it('creates one subscription with all three prices, metered ones without quantity, and a 14-day trial', async () => {
+  it('creates one subscription with all three prices, metered ones without quantity, without a trial', async () => {
     const stripe = fakeStripe()
     const { post } = signedIn({ fetch: stripe.fetch })
     const response = await post('/billing/checkout')
@@ -171,7 +171,7 @@ describe('Checkout', () => {
     const form = stripe.calls.find((c) => c.path === '/v1/checkout/sessions')!.form
     expect(form.get('mode')).toBe('subscription')
     expect(form.get('payment_method_collection')).toBe('always')
-    expect(form.get('subscription_data[trial_period_days]')).toBe('14')
+    expect(form.has('subscription_data[trial_period_days]')).toBe(false)
     expect(form.get('line_items[0][price]')).toBe('price_platform')
     expect(form.get('line_items[0][quantity]')).toBe('1')
     expect(form.get('line_items[1][price]')).toBe('price_compute')

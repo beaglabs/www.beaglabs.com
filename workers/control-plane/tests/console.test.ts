@@ -134,12 +134,12 @@ describe('Deployment page', () => {
     h.sql.prepare("INSERT INTO billing_periods (deployment_id, trial_end, updated_at) VALUES ('dep_abc', '2026-10-31T12:00:00.000Z', 'now')").run()
     event({ deployment: 'dep_abc', level: 'wait', source: 'health', message: 'GET https://acme.papyrus.beaglabs.com/api/health → 503' })
     const html = await (await get('/deploy/dep_abc')).text()
-    expect(html).toMatch(/data-trial(?:="")?>Trial · \d+ days? left · ends Oct 31<|data-trial(?:="")?>Trial · ends today</)
+    expect(html).not.toContain('data-trial')
     // Pricing is a small table, not a run-on sentence.
     expect(html).toContain('<table class="mini-price">')
     expect(html).toMatch(/<th scope="row">VM compute<\/th><td><b>\$0\.50<\/b> <span>per VM hour<\/span>/)
     expect(html).not.toContain('$250/month platform · $0.50 per VM hour')
-    expect(html).toContain('This month so far: 0 VM hours · 0 agent minutes · $0.00 estimated')
+    expect(html).toContain('This month so far: 0 VM hours · 0 agent minutes · $250.00 estimated')
     expect(html).toContain('action="/billing/portal"')
     // Email support is the floating card on every console page.
     expect(html).toContain('id="support-card"')

@@ -6,7 +6,8 @@ import type * as HttpClient from 'effect/http/HttpClient'
 import { Hono, type Context as HonoContext } from 'hono'
 import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
-import { accountTrial, backfillTrialEnds, completeCheckoutForAccount, handleWebhook, portalUrl, pruneCheckoutIntents, startCheckout } from './billing'
+import { accountCredit, requestComputeCredit, reserveComputeCredit, redeemComputeCredit } from './credits'
+import { completeCheckoutForAccount, handleWebhook, portalUrl, pruneCheckoutIntents, startCheckout } from './billing'
 import { SUPPORT_JS, SUPPORT_SCRIPT_PATH } from './support'
 import { encryptJson, randomToken, timingSafeEqual } from './crypto'
 import { EVENT_FILTERS, eventJson, isEventFilter, listEvents, logEvent } from './events'
@@ -111,10 +112,8 @@ export function createApp(deps: AppDeps = {}) {
       Effect.gen(function* () {
         const account = yield* currentAccount(c)
         if (!account) return c.redirect(`/login`, 303)
-        // The trial banner: trial ends come from webhooks; backfill from Stripe once if one is missing.
         const deployments = yield* listDeployments(account.id)
-        yield* backfillTrialEnds(deployments).pipe(Effect.ignore)
-        account.trial = accountTrial(deployments)
+        account.computeCredit = yield* accountCredit(account)
         account.hostnames = deployments.flatMap((d) => (d.hostname ? [d.hostname] : []))
         return yield* body(account)
       }),
@@ -203,6 +202,18 @@ export function createApp(deps: AppDeps = {}) {
 
   // Billing -------------------------------------------------------------------------------------------------------
 
+  app.post('/api/credits/request', async (c) => {
+    let body: { email?: unknown }
+    try { body = await c.req.json() } catch { return c.json({ error: 'Invalid email' }, 400) }
+    const result = await exec(c, requestComputeCredit(typeof body.email === 'string' ? body.email : ''))
+    if (Exit.isFailure(result)) { const failure = userError(result)!; return c.json({ error: failure.message }, failure.status as 400) }
+    return c.json(result.value, 200, { 'cache-control': 'no-store' })
+  })
+
+  app.get('/credits/redeem', (c) => signedIn(c, (account) => Effect.gen(function* () {
+    return c.redirect('/billing', 303)
+  })))
+
   app.get('/billing', (c) =>
     signedIn(c, (account) =>
       Effect.gen(function* () {
@@ -212,6 +223,17 @@ export function createApp(deps: AppDeps = {}) {
       }),
     ),
   )
+
+  app.post('/billing/credit', async (c) => {
+    const form = await c.req.parseBody()
+    return signedIn(c, account => Effect.gen(function* () {
+      const deployment = yield* getOwnedDeployment(account.id, String(form.deployment ?? ''))
+      if (deployment.lifecycle === 'deleted' || deployment.lifecycle === 'deleting' || deployment.billing_state !== 'active' || !deployment.stripe_customer_id) return yield* new UserError({message:'Choose a deployment with completed billing setup.',status:409})
+      yield* reserveComputeCredit(account, String(form.credit_code ?? ''), deployment.id, deployment.stripe_customer_id)
+      yield* redeemComputeCredit(account.id, deployment.id, deployment.stripe_customer_id)
+      return c.redirect('/billing',303)
+    }))
+  })
 
   app.post('/billing/checkout', async (c) => {
     const form = await c.req.parseBody()
@@ -223,7 +245,7 @@ export function createApp(deps: AppDeps = {}) {
           if (deployment.lifecycle === 'deleting' || deployment.lifecycle === 'deleted') return yield* new UserError({ message: 'This deployment was deleted.', status: 409 })
           if (deployment.billing_state === 'active') return c.redirect(yield* portalUrl(deployment), 303)
         }
-        return c.redirect(yield* startCheckout(account, deployment), 303)
+        return c.redirect(yield* startCheckout(account, deployment, typeof form.credit_code === 'string' ? form.credit_code : undefined), 303)
       }),
     )
   })
@@ -401,8 +423,6 @@ export function createApp(deps: AppDeps = {}) {
     signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployments = yield* listDeployments(account.id)
-        // One deployment (the usual case) is the page itself; several get the table.
-        if (deployments.length === 1) return yield* renderDeployment(c, account, deployments[0]!, c.req.query('error'))
         return c.html(Views.deployListPage(account, listPayload(c, deployments)))
       }),
     ),

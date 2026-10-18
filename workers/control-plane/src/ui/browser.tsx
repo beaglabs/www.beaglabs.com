@@ -13,7 +13,7 @@ export const SETUP_TIPS: Tip[] = [
   { title: 'Your address is yours', body: 'The address in the bar above is permanent. Bookmark it and share it with your team once setup finishes.' },
   { title: 'Unlimited users', body: 'Invite everyone. Papyrus is priced per deployment, not per seat.' },
   { title: 'Start with one workflow', body: 'Describe a process you run every week. Papyrus agents draft the steps for you to review before anything runs.' },
-  { title: 'Free during the trial', body: 'VM hours and agent time are not billed until the trial ends. The usage line in Plan shows where you are.' },
+  { title: 'Compute credit', body: 'Redeem your $1,000 compute credit in Billing for one deployment. Platform fees are billed separately.' },
   { title: 'Stuck?', body: 'Email James at Beag Labs. Support answers within 48 hours, usually much sooner.' },
 ]
 
