@@ -27,24 +27,8 @@ export function HeroSection() {
   }
 
   return (
-    <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#111] text-[#111]">
-      {/* Papyrus showcase clip at full strength — no veil, no blur */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <video
-          className="h-full w-full object-cover motion-reduce:hidden"
-          src="/hero/clip-1.mp4"
-          poster="/hero/poster-1.jpg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="hidden h-full w-full object-cover motion-reduce:block" src="/hero/poster-1.jpg" alt="" />
-      </div>
-
-      {/* Dense dot field over the video — the pointer parts the dots and the clip shows through */}
+    <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#000000] text-[#111]">
+      {/* Static dot field over the yellow background */}
       <InteractiveDots
         className="absolute inset-0 z-10"
         colors={["#ff5f1f", "#ff8a5c", "#ffb894", "#ffffff", "#ffc9b0"]}
@@ -53,9 +37,10 @@ export function HeroSection() {
         repelForce={0.85}
         repelDistance={16000}
         returnSpeed={1.2}
+        interactive={false}
       />
 
-      {/* Copy sits in a solid card, so the video and dots stay crisp everywhere else */}
+      {/* Copy sits in a solid card, so the dots stay crisp everywhere else */}
       <div className="relative z-20 mx-auto flex min-h-[calc(100svh-67px)] max-w-[860px] flex-col items-center justify-center px-6 py-20">
         <div className="w-full border-[3px] border-[#111] bg-white px-6 py-10 text-center shadow-[10px_10px_0_#111] sm:px-12 sm:py-12">
           <span className="nb-label mb-6 inline-block !bg-[#ff5f1f]">Papyrus · Customer-hosted software</span>

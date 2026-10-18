@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control plane layouts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Roboto+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#FAFAF9;--ink:#111;--muted:#555;--soft:#999;--line:#111;--accent:#ff5f1f;--accent-soft:#FFF3E6;--ok:#16a34a;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#e9e8e4;font-family:'Work Sans',sans-serif;color:var(--ink);padding:32px 24px 80px}
+  .intro{max-width:1240px;margin:0 auto 28px}
+  .intro h1{font-family:'Roboto Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:28px;letter-spacing:.5px}
+  .intro p{color:var(--muted);margin-top:6px}
+  .variant{max-width:1240px;margin:0 auto 48px}
+  .vhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .vhead h2{font-family:'Roboto Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase}
+  .vhead h2 span{background:var(--ink);color:#fff;padding:2px 9px;margin-right:10px}
+  .vhead p{color:var(--muted);font-size:14px}
+  .pick{font:600 13px 'JetBrains Mono',monospace;border:2px solid var(--ink);background:#fff;padding:8px 14px;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+  .pick.selected,.variant.selected .pick{background:var(--accent);color:#111}
+  .frame{border:2px solid var(--ink);box-shadow:8px 8px 0 var(--ink);background:var(--bg);overflow:hidden}
+  .browser{background:#111;color:#999;font:12px 'JetBrains Mono',monospace;padding:8px 12px;display:flex;gap:8px;align-items:center}
+  .browser i{width:10px;height:10px;border-radius:50%;background:#333;display:inline-block}
+  .browser b{margin-left:12px;color:#ddd;font-weight:400;background:#222;padding:3px 10px}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .disp{font-family:'Roboto Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+  .grid-bg{background-image:linear-gradient(#11111110 1px,transparent 1px),linear-gradient(90deg,#11111110 1px,transparent 1px);background-size:24px 24px}
+  .btn{display:inline-block;font:600 13px 'Work Sans';border:2px solid var(--ink);padding:9px 14px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
+  .btn.primary{background:var(--accent)}
+  .btn.dark{background:#111;color:#fff;box-shadow:3px 3px 0 var(--accent)}
+  .tag{font:600 11px 'JetBrains Mono',monospace;border:1.5px solid var(--ink);padding:2px 7px;text-transform:uppercase;background:#fff}
+  .tag.ok{background:#dcfce7}.tag.run{background:var(--accent-soft);border-color:var(--accent);color:#b43c0c}.tag.wait{color:var(--soft);border-color:#bbb}
+  .card{background:#fff;border:2px solid var(--ink)}
+  .card h4{font:700 12px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.6px;padding:12px 16px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between}
+  .card .body{padding:16px}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #ccc;font-size:14px}.kv:last-child{border:0}
+  .kv span:first-child{color:var(--muted)}
+  .bubble{position:absolute;right:22px;bottom:22px;width:54px;height:54px;background:var(--accent);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);display:grid;place-items:center;font-size:22px}
+  .step{display:grid;grid-template-columns:36px 1fr auto;gap:14px;align-items:start;padding:16px 18px;border-bottom:2px solid var(--ink);background:#fff}
+  .step:last-child{border-bottom:0}
+  .num{width:36px;height:36px;border:2px solid var(--ink);display:grid;place-items:center;font:700 14px 'JetBrains Mono'}
+  .num.ok{background:var(--ink);color:#fff}.num.run{background:var(--accent)}
+  .step h5{font-size:15px;font-weight:600}.step p{font-size:13px;color:var(--muted);margin-top:3px}
+  .bar{height:10px;border:2px solid var(--ink);background:#fff}.bar div{height:100%;background:var(--accent);width:52%}
+
+  /* A: console */
+  .A{display:grid;grid-template-columns:232px 1fr;min-height:640px;position:relative}
+  .A nav{background:#111;color:#bbb;padding:20px 0;display:flex;flex-direction:column}
+  .A .logo{color:#fff;padding:0 20px 22px;font-size:18px}
+  .A .logo em{color:var(--accent);font-style:normal}
+  .A nav a{display:block;padding:10px 20px;font-size:14px;border-left:4px solid transparent}
+  .A nav a.on{color:#fff;border-left-color:var(--accent);background:#1d1d1d}
+  .A nav .sp{flex:1}
+  .A nav .acct{padding:14px 20px;border-top:1px solid #2a2a2a;font-size:13px}
+  .A main{padding:28px 32px}
+  .A .top{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}
+  .A .top h3{font-size:30px}
+  .A .cols{display:grid;grid-template-columns:1fr 330px;gap:22px}
+
+  /* B: top bar + dashboard */
+  .B{min-height:640px;position:relative}
+  .B header{background:#111;color:#ddd;display:flex;align-items:center;gap:26px;padding:0 24px;height:56px;font-size:14px}
+  .B header .logo{color:#fff;font-size:18px;margin-right:12px}.B header .logo em{color:var(--accent);font-style:normal}
+  .B header a.on{color:#fff;box-shadow:inset 0 -4px 0 var(--accent);padding:18px 0}
+  .B header .sp{flex:1}
+  .B .hero{padding:26px 28px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center;background:#fff}
+  .B .hero h3{font-size:32px}
+  .B .hero .url{font:600 15px 'JetBrains Mono';margin-top:6px}
+  .B .tiles{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid var(--ink)}
+  .B .tile{padding:18px 22px;border-right:2px solid var(--ink);background:#fff}.B .tile:last-child{border-right:0}
+  .B .tile small{font:600 11px 'JetBrains Mono';text-transform:uppercase;color:var(--muted)}
+  .B .tile div{font:800 24px 'Roboto Condensed';margin-top:6px;text-transform:uppercase}
+  .B .body2{display:grid;grid-template-columns:1fr 340px;gap:22px;padding:24px 28px}
+
+  /* C: guided */
+  .C{min-height:640px;position:relative;display:flex;flex-direction:column}
+  .C header{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:2px solid var(--ink);background:#fff}
+  .C header .logo{font-size:18px}.C header .logo em{color:var(--accent);font-style:normal}
+  .C .wrap{flex:1;display:grid;grid-template-columns:1fr 1.1fr}
+  .C .left{background:#111;color:#fff;padding:44px 40px;display:flex;flex-direction:column;gap:18px}
+  .C .left h3{font-size:44px;line-height:1}
+  .C .left h3 em{color:var(--accent);font-style:normal}
+  .C .left p{color:#bbb;font-size:15px;max-width:380px}
+  .C .left .url{font:600 16px 'JetBrains Mono';background:#1d1d1d;border:2px solid #333;padding:12px 14px}
+  .C .right{padding:40px}
+  .C .stepper{display:flex;gap:6px;margin-bottom:22px}.C .stepper div{flex:1;height:8px;border:2px solid var(--ink);background:#fff}.C .stepper .d{background:var(--ink)}.C .stepper .r{background:var(--accent)}
+</style>
+<style>
+.log{margin-top:22px}
+.log .card h4 .filters{display:flex;gap:6px}
+.log .card h4 .filters span{border:1.5px solid #111;padding:1px 7px;font-size:10px;background:#fff}
+.log .card h4 .filters span.on{background:#111;color:#fff}
+.log table{width:100%;border-collapse:collapse;font:12.5px 'JetBrains Mono',monospace}
+.log td{padding:8px 16px;border-bottom:1px dashed #ddd;vertical-align:top}
+.log tr:last-child td{border-bottom:0}
+.log td.t{color:#999;white-space:nowrap;width:1%}
+.log td.s{width:1%;white-space:nowrap}
+.log td.src{color:#555;white-space:nowrap;width:1%}
+.lv{font-weight:600;font-size:10.5px;padding:1px 6px;border:1.5px solid #111}
+.lv.info{background:#fff}.lv.ok{background:#dcfce7}.lv.warn{background:#FFF3E6;border-color:#ff5f1f;color:#b43c0c}.lv.err{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+.A{min-height:900px}
+</style></head>
+<body>
+<div class="intro"><h1>A · Console, with Activity</h1><p>Setup checklist and plan on top; a live Activity log below with filters for deploy, billing, team and errors.</p></div>
+<!-- A -->
+<section class="variant" data-choice="a">
+  <div class="vhead"><h2><span>A</span>Console</h2><p>Black sidebar like a cloud console; setup as a checklist with deployment details beside it.</p></div>
+  <div class="frame"><div class="browser"><i></i><i></i><i></i><b>papyrus.beaglabs.com/deployments/acme</b></div>
+    <div class="A">
+      <nav>
+        <div class="logo disp"><img src="/files/papyrus-logo.png" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:10px;border:2px solid #fff"><span style="vertical-align:middle">Papyrus</span></div>
+        <a class="on">Deployment</a><a>Billing</a><a>Team</a><a>Support</a><a>Settings</a>
+        <div class="sp"></div>
+        <div class="acct">Acme Corp<br><span style="color:#777">jordan@acme.com</span></div>
+      </nav>
+      <main class="grid-bg">
+        <div class="top"><div><div class="mono" style="color:var(--muted);font-size:12px">DEPLOYMENT</div><h3 class="disp">acme.papyrus.beaglabs.com</h3></div><div style="display:flex;gap:12px;align-items:center"><span class="tag run">Setting up · 3 of 6</span><span class="btn primary" style="font-size:15px;padding:11px 18px">Open Papyrus →</span></div></div>
+        <div class="cols">
+          <div class="card">
+            <div class="step"><div class="num ok">✓</div><div><h5>Workspace created</h5><p>Isolated container and storage for Acme in us-east-2.</p></div><span class="tag ok">Done</span></div>
+            <div class="step"><div class="num ok">✓</div><div><h5>Address ready</h5><p>acme.papyrus.beaglabs.com resolves with a valid certificate.</p></div><span class="tag ok">Done</span></div>
+            <div class="step"><div class="num run">3</div><div><h5>Starting Papyrus</h5><p>Waiting for the health check. Usually under two minutes.</p><div class="bar" style="margin-top:10px"><div></div></div></div><span class="tag run">Running</span></div>
+            <div class="step"><div class="num">4</div><div><h5>Connect Microsoft</h5><p>Sign in as a Microsoft 365 admin so your team can use Papyrus.</p></div><span class="tag wait">Next</span></div>
+            <div class="step"><div class="num">5</div><div><h5>Register with Beag Labs</h5><p>Turns on support chat and updates.</p></div><span class="tag wait">Waiting</span></div>
+            <div class="step"><div class="num">6</div><div><h5>Open Papyrus</h5><p>Invite your team and build your first workflow.</p></div><span class="tag wait">Waiting</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div class="card"><h4>Plan <span style="color:var(--accent)">Trial</span></h4><div class="body"><div class="kv"><span>Plan</span><span>Papyrus</span></div><div class="kv"><span>Trial ends</span><span>Oct 31</span></div><div class="kv"><span>Then</span><span>$13,000 / mo</span></div><div style="margin-top:12px"><span class="btn">Manage billing</span></div></div></div>
+            <div class="card"><h4>Need a hand?</h4><div class="body" style="font-size:14px;color:var(--muted)">Your Beag Labs engineer is watching this setup. Message us any time.<div style="margin-top:12px"><span class="btn dark">Message Beag Labs</span></div></div></div>
+          </div>
+        </div>
+
+        <div class="log">
+          <div class="card">
+            <h4><span>Activity</span><span class="filters"><span class="on">All</span><span>Deploy</span><span>Billing</span><span>Team</span><span>Errors</span><span style="border:0;background:none">● Live</span></span></h4>
+            <table>
+              <tr><td class="t">14:05:12</td><td class="s"><span class="lv warn">WAIT</span></td><td class="src">health</td><td>GET https://acme.papyrus.beaglabs.com/api/health → 503, retrying in 10s (attempt 4)</td></tr>
+              <tr><td class="t">14:04:31</td><td class="s"><span class="lv info">INFO</span></td><td class="src">deploy</td><td>Fargate task started · ARM64 · 2 vCPU / 8 GB · us-east-2b</td></tr>
+              <tr><td class="t">14:03:58</td><td class="s"><span class="lv ok">OK</span></td><td class="src">address</td><td>acme.papyrus.beaglabs.com → load balancer · certificate valid until Nov 2027</td></tr>
+              <tr><td class="t">14:03:40</td><td class="s"><span class="lv ok">OK</span></td><td class="src">deploy</td><td>Storage access point created · secrets stored under papyrus/dep_8f3k…</td></tr>
+              <tr><td class="t">14:02:17</td><td class="s"><span class="lv ok">OK</span></td><td class="src">billing</td><td>Trial started · Papyrus · $13,000/mo after Oct 31</td></tr>
+              <tr><td class="t">14:02:05</td><td class="s"><span class="lv info">INFO</span></td><td class="src">account</td><td>jordan@acme.com signed in with Microsoft · claimed "acme"</td></tr>
+            </table>
+          </div>
+        </div>
+      </main>
+      <div class="bubble">💬</div>
+    </div>
+  </div>
+</section>
+
+</body></html>

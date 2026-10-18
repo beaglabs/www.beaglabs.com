@@ -10,6 +10,8 @@ interface InteractiveDotsProps {
   repelForce?: number
   repelDistance?: number
   returnSpeed?: number
+  /** false draws the field once, with no animation or pointer tracking. */
+  interactive?: boolean
   className?: string
   style?: React.CSSProperties
 }
@@ -79,6 +81,7 @@ export function InteractiveDots({
   repelForce = 0.6,
   repelDistance = 10000,
   returnSpeed = 1,
+  interactive = true,
   className = "",
   style = {},
 }: InteractiveDotsProps) {
@@ -93,7 +96,7 @@ export function InteractiveDots({
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const isStatic = !interactive || window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     const buildDots = () => {
       const dots: Dot[] = []
@@ -116,6 +119,7 @@ export function InteractiveDots({
       canvas.style.height = `${rect.height}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       buildDots()
+      if (isStatic) drawFrame()
     }
 
     const drawFrame = () => {
@@ -151,10 +155,8 @@ export function InteractiveDots({
     const observer = new ResizeObserver(resize)
     if (canvas.parentElement) observer.observe(canvas.parentElement)
 
-    if (reducedMotion) {
-      // Static field: no loop, no pointer tracking.
-      drawFrame()
-    } else {
+    // Static field: no loop, no pointer tracking (resize redraws it).
+    if (!isStatic) {
       animate()
       window.addEventListener("mousemove", handlePointerMove, { passive: true })
       window.addEventListener("touchmove", handlePointerMove, { passive: true })
@@ -168,7 +170,7 @@ export function InteractiveDots({
       window.removeEventListener("touchmove", handlePointerMove)
       document.documentElement.removeEventListener("mouseleave", handlePointerLeave)
     }
-  }, [colors, spacing, dotRadius, repelForce, repelDistance, returnSpeed])
+  }, [colors, spacing, dotRadius, repelForce, repelDistance, returnSpeed, interactive])
 
   return (
     <canvas
