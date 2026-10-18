@@ -29,7 +29,7 @@
   "vars": {
     "BASE_URL": "https://papyrus.beaglabs.com",
     "PAPYRUS_IMAGE": "ghcr.io/beaglabs/papyrus/papyrus",
-    "PAPYRUS_IMAGE_DIGEST": "sha256:408b8d29a860efe3684cea3360ecb427ad027b1dbe0aa6a01b104719de74048b",
+    "PAPYRUS_IMAGE_DIGEST": "sha256:55a3a053367d35b0e27af52dd9099fc377a0bd6b8f37b2edddf9a7937b19fd87",
     "MAGIC_LINK_FROM_EMAIL": "Papyrus <papyrus@mail.beaglabs.com>",
     // Beag Labs' IAM principal that customer roles trust, and the S3 copy of /aws/connect-template.yaml.
     "AWS_PRINCIPAL_ARN": "arn:aws:iam::615583899145:user/papyrus-control-plane",
