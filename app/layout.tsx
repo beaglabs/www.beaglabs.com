@@ -9,18 +9,18 @@ import './globals.css'
 
 const workSans = Work_Sans({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-work-sans',
   weight: ['300', '400', '500', '600', '700', '800'],
 })
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-mono',
+  variable: '--font-jetbrains-mono',
 })
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ['latin'],
-  variable: '--font-display',
+  variable: '--font-roboto-condensed',
   weight: ['700', '800', '900'],
 })
 
@@ -107,6 +107,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* The same three families by plain stylesheet: the Cloudflare (vinext) build doesn't run next/font. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Roboto+Condensed:wght@700;800;900&family=Work+Sans:wght@300;400;500;600;700;800&display=swap" />
+      </head>
       <body
         className={`${workSans.variable} ${jetbrainsMono.variable} ${robotoCondensed.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
       >
