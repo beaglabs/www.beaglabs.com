@@ -10,6 +10,12 @@ export interface Bindings {
   PAPYRUS_IMAGE: string
   /** sha256:… of the signed hardened image every recipe runs. */
   PAPYRUS_IMAGE_DIGEST: string
+  /** Sentry for every deployed Papyrus (optional; unset = Sentry off in the containers): the server DSN, */
+  PAPYRUS_SENTRY_DSN?: string
+  /** the browser DSN (Papyrus falls back to the server DSN), */
+  PAPYRUS_WEB_SENTRY_DSN?: string
+  /** and the environment name (Papyrus defaults to "production"). */
+  PAPYRUS_SENTRY_ENVIRONMENT?: string
   MAGIC_LINK_FROM_EMAIL: string
   /** Beag Labs' IAM principal that customer "Connect AWS" roles trust. */
   AWS_PRINCIPAL_ARN: string

@@ -29,14 +29,22 @@ export const SECRET_KEY_PATH = '/run/secrets/papyrus/master.key'
 /**
  * Container environment from the contract (plain values; the bootstrap token and license go in as secrets).
  * PAPYRUS_LICENSE_AUTHORITIES is the public key Papyrus verifies the license and signed statuses with, so it is plain.
+ * Sentry DSNs are plain too: a DSN only allows sending events, and the browser one ships to the client anyway.
  */
-export const containerEnv = (input: { controlPlaneUrl: string; deploymentId: string; hostname: string; authorities: Record<string, string> }) => ({
+export const containerEnv = (input: { controlPlaneUrl: string; deploymentId: string; hostname: string; authorities: Record<string, string>; sentry?: SentryEnv }) => ({
   PAPYRUS_CONTROL_PLANE_URL: input.controlPlaneUrl,
   PAPYRUS_DEPLOYMENT_ID: input.deploymentId,
   PAPYRUS_PUBLIC_ORIGIN: `https://${input.hostname}`,
   PAPYRUS_SECRET_KEY_FILE: SECRET_KEY_PATH,
   PAPYRUS_LICENSE_AUTHORITIES: JSON.stringify(input.authorities),
+  ...sentryEnv(input.sentry ?? {}),
 })
+
+type SentryEnv = Partial<Pick<Bindings, 'PAPYRUS_SENTRY_DSN' | 'PAPYRUS_WEB_SENTRY_DSN' | 'PAPYRUS_SENTRY_ENVIRONMENT'>>
+
+/** The Sentry settings set on this Worker, passed to every container as is. Unset or blank ones are left out. */
+export const sentryEnv = (env: SentryEnv): Record<string, string> =>
+  Object.fromEntries((['PAPYRUS_SENTRY_DSN', 'PAPYRUS_WEB_SENTRY_DSN', 'PAPYRUS_SENTRY_ENVIRONMENT'] as const).flatMap((name) => (env[name]?.trim() ? [[name, env[name]!.trim()]] : [])))
 
 const HOSTNAME = /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/
 
@@ -99,7 +107,7 @@ const deployContext = (deployment: Deployment, account: Account) =>
       licenseDeploymentId: registered.deploymentId,
       hostname: deployment.hostname!,
       image: `${env.PAPYRUS_IMAGE}@${env.PAPYRUS_IMAGE_DIGEST}`,
-      env: containerEnv({ controlPlaneUrl: env.BASE_URL, deploymentId: registered.deploymentId, hostname: deployment.hostname!, authorities }),
+      env: containerEnv({ controlPlaneUrl: env.BASE_URL, deploymentId: registered.deploymentId, hostname: deployment.hostname!, authorities, sentry: env }),
       secretEnv: { PAPYRUS_BOOTSTRAP_TOKEN: registered.bootstrapToken, PAPYRUS_LICENSE: JSON.stringify(registered.license) },
       secretKeyPath: SECRET_KEY_PATH,
       resources: deployment.resources,
