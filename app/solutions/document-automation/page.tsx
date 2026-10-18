@@ -3,18 +3,18 @@ import { pageMetadata } from '@/lib/seo'
 import { SolutionPage } from '@/components/solution-page'
 
 export const metadata: Metadata = pageMetadata({
-  title: "Document Automation",
-  description: "Extract useful information from PDFs and office files, review results, and turn content into repeatable workflows.",
+  title: "Document Automation: Documents In, Ledger Out",
+  description: "Papyrus agents read invoices, contracts and forms and turn them into structured ERP records, with people approving what matters.",
   path: '/solutions/document-automation',
   label: "Document Automation",
 })
 
 export default function Page() {
   return <SolutionPage content={{
-    eyebrow: "Document Automation",
-    title: "Turn documents into structured work.",
-    description: "Extract useful information from PDFs and office files, review results, and turn content into repeatable workflows.",
-    result: "From PDFs to decisions",
-    steps: [{"title":"Document intake","description":"Bring PDFs, forms, policies, spreadsheets and office files into one workflow."},{"title":"Structured extraction","description":"Extract fields, requirements and action items into consistent structured outputs."},{"title":"Human review","description":"Review source evidence and approve results before downstream action."}],
+    eyebrow: "Papyrus · Document automation",
+    title: "Documents in, ledger out.",
+    description: "Papyrus agents read invoices, contracts, forms and spreadsheets and turn them into vendor, customer, invoice and payment records. No rekeying.",
+    result: "Every document becomes a record agents can act on.",
+    steps: [{"title":"Documents in","description":"Invoices, contracts, forms and spreadsheets arrive by upload or inbox."},{"title":"Records out","description":"Agents extract the fields and create or update the matching ERP records."},{"title":"People approve","description":"Exceptions and consequential steps wait for a person, with the source document attached."}],
   }} />
 }

@@ -6,7 +6,7 @@ import { StatusBadge } from '@/components/compare/evidence-cell'
 const principles = [
   {
     title: 'We disclose our interest',
-    body: 'Beag Labs makes Papyrus, one of the platforms compared here. Papyrus cells cite our own pages and are labelled first-party. Read every comparison with that in mind.',
+    body: 'Beag Labs makes Papyrus, the agentic ERP and one of the platforms compared here. Papyrus cells cite our own pages and are labelled first-party. Read every comparison with that in mind.',
   },
   {
     title: 'Every statement is cited',

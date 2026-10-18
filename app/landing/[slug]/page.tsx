@@ -3,8 +3,9 @@ import { notFound } from "next/navigation"
 
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { PhotoSlide } from "@/components/landing/photo-slide"
+import { PageHero } from "@/components/page-hero"
 import { SiteFooter } from "@/components/site-footer"
+import { TrialCtaLink } from "@/components/trial-cta-link"
 import { landingPages } from "@/data/landing/pages"
 import { BASE_URL, pageMetadata } from "@/lib/seo"
 
@@ -70,44 +71,19 @@ export default async function LandingDetailPage({ params }: LandingPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="site-hero nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
-          <div>
-            <Breadcrumbs
-              items={[
-                { name: "Home", url: "/" },
-                { name: page.label, url: `/landing/${page.slug}` },
-              ]}
-            />
-            <div className="mt-8 mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
-              {page.label}
-            </div>
-            <h1 className="mb-5 max-w-[760px] text-[length:min(42px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] text-[#111] lg:text-[56px]">
-              {page.title}
-            </h1>
-            <p className="max-w-[640px] text-[17px] font-medium leading-[1.72] text-[#404040]">
-              {page.heroDescription}
-            </p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <a
-                href="/contact"
-                className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
-              >
-                Talk to us <span className="text-lg">&rarr;</span>
-              </a>
-              <a
-                href="/products/papyrus"
-                className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-8 py-4 text-[12px] font-bold uppercase tracking-wider text-[#111]"
-              >
-                See Papyrus
-              </a>
-            </div>
-          </div>
-          <div className="min-w-0">
-            <PhotoSlide slides={page.heroSlides} />
-          </div>
-        </div>
-      </section>
+      <PageHero
+        label={page.label}
+        title={page.title}
+        description={page.heroDescription}
+        above={
+          <Breadcrumbs
+            items={[
+              { name: "Home", url: "/" },
+              { name: page.label, url: `/landing/${page.slug}` },
+            ]}
+          />
+        }
+      />
 
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
@@ -115,8 +91,7 @@ export default async function LandingDetailPage({ params }: LandingPageProps) {
             The challenge
           </div>
           <h2 className="mb-12 max-w-[700px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            Agencies need AI that fits how government actually buys and runs
-            software.
+            The back office runs on rekeying.
           </h2>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {page.problem.map((item) => (
@@ -139,7 +114,7 @@ export default async function LandingDetailPage({ params }: LandingPageProps) {
             What agents do
           </div>
           <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            Agents prepare the work. Staff decide.
+            Agents do the work. Staff approve.
           </h2>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {page.capabilities.map((item) => (
@@ -162,7 +137,7 @@ export default async function LandingDetailPage({ params }: LandingPageProps) {
             Deployment
           </div>
           <h2 className="mb-12 max-w-[700px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            Self-hosted means inside your boundary.
+            Your Papyrus, at your own address.
           </h2>
           <div className="grid border-l-[3px] border-t-[3px] border-[#111] md:grid-cols-3">
             {page.deployment.map((item, i) => (
@@ -286,7 +261,7 @@ export default async function LandingDetailPage({ params }: LandingPageProps) {
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#FFB074]">
-              Get started
+              Try Papyrus now
             </div>
             <h2 className="mb-4 max-w-[720px] text-[length:min(42px,9vw)] font-extrabold leading-[0.96] tracking-[-0.05em] text-white lg:text-[56px]">
               {page.ctaTitle}
@@ -296,12 +271,12 @@ export default async function LandingDetailPage({ params }: LandingPageProps) {
             </p>
           </div>
           <div className="flex flex-wrap items-end justify-start gap-4 lg:justify-end">
-            <a
-              href="/contact"
+            <TrialCtaLink
+              placement="final"
               className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
             >
-              Talk to us <span className="text-lg">&rarr;</span>
-            </a>
+              Try Papyrus now <span className="text-lg">&rarr;</span>
+            </TrialCtaLink>
           </div>
         </div>
       </section>

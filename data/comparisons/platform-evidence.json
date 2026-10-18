@@ -8,12 +8,12 @@
       "vendor": "Beag Labs",
       "officialUrl": "https://beaglabs.com/products/papyrus",
       "marketplaceUrl": null,
-      "summary": "Customer-hosted agentic workspace for document automation, internal app creation and legacy system enablement.",
+      "summary": "Agentic ERP: one data model of the business that agents understand and operate, with people approving what matters.",
       "isBeag": true,
       "cells": {
         "capabilities": {
           "status": "Verified",
-          "value": "Document automation, internal app creation and legacy system enablement with governed agent execution.",
+          "value": "Agentic ERP: one data model for customers, vendors, invoices, payments and records, with agents running back-office work such as AP, AR, intake, approvals and reconciliation.",
           "categories": [],
           "caveat": "Describes intended scope in Beag Labs' own words; it is not an independent test of output quality.",
           "checked": [
@@ -23,32 +23,34 @@
         },
         "deployment": {
           "status": "Verified",
-          "value": "Customer-hosted: a Papyrus VM in the customer's Azure subscription, or on-premises, restricted or disconnected environments.",
+          "value": "Each organization runs its own Papyrus at its own address, set up from papyrus.beaglabs.com; customer-hosted deployment is supported.",
           "categories": [
             "self-hosted",
             "customer-cloud-tenant"
           ],
           "caveat": "Supported environments and versions should be confirmed against the current agreement and documentation.",
           "checked": [
-            "https://beaglabs.com/products/papyrus#procurement"
+            "https://beaglabs.com/products/papyrus",
+            "https://papyrus.beaglabs.com"
           ],
           "claimId": "BL-CLM-19"
         },
         "marketplaceOffer": {
-          "status": "Verified",
-          "value": "Azure Marketplace private offer that deploys the Papyrus VM into the customer's subscription.",
+          "status": "Not supported",
+          "value": "No Azure Marketplace offer; teams sign up directly at papyrus.beaglabs.com.",
           "categories": [
-            "azure-vm"
+            "not-listed"
           ],
-          "caveat": "Private offer, not a public self-serve listing; the signed entitlement remains customer-specific.",
+          "caveat": "Purchasing goes through papyrus.beaglabs.com rather than a cloud marketplace.",
           "checked": [
-            "https://beaglabs.com/products/papyrus#procurement"
+            "https://beaglabs.com/products/papyrus",
+            "https://papyrus.beaglabs.com"
           ],
           "claimId": "BL-CLM-20"
         },
         "humanApproval": {
           "status": "Verified",
-          "value": "Governed execution: consequential actions are reviewed and work stays visible as it progresses.",
+          "value": "Agents do the back-office work; people approve what matters, and the work stays visible as it progresses.",
           "categories": [],
           "caveat": "The page does not enumerate which actions require approval or the approval workflow; confirm details before relying on it for a specific control.",
           "checked": [
@@ -58,13 +60,14 @@
         },
         "licensing": {
           "status": "Verified",
-          "value": "Commercial: a signed organization license (offline) or a customer-specific Azure private offer.",
+          "value": "Commercial subscription, started at papyrus.beaglabs.com.",
           "categories": [
             "commercial"
           ],
           "caveat": "Papyrus is not offered under an open-source license on this page. Third-party component licenses are listed separately in the Trust Center SBOM.",
           "checked": [
-            "https://beaglabs.com/products/papyrus#procurement"
+            "https://beaglabs.com/products/papyrus",
+            "https://papyrus.beaglabs.com"
           ],
           "claimId": "BL-CLM-22"
         },
@@ -80,7 +83,7 @@
         },
         "buyer": {
           "status": "Verified",
-          "value": "Organizations that need back office automation on their own infrastructure, in business and government settings.",
+          "value": "Businesses that want an agentic ERP: back-office work run by agents, with people approving what matters.",
           "categories": [],
           "caveat": "Positioning statement by the vendor.",
           "checked": [
@@ -90,20 +93,21 @@
         },
         "pricing": {
           "status": "Verified",
-          "value": "No public price card; commercial terms are scoped to the deployment.",
+          "value": "No price card published on beaglabs.com.",
           "categories": [],
           "caveat": "Establishes that no public price is published, not what a deployment costs.",
           "checked": [
-            "https://beaglabs.com/products/papyrus#procurement"
+            "https://beaglabs.com/products/papyrus"
           ],
           "claimId": "BL-CLM-25"
         }
       },
       "bestFor": [
         {
-          "text": "Teams that must keep agent execution inside their own Azure subscription or a disconnected environment.",
+          "text": "Teams that want agents running AP, AR, intake and approvals on one data model of the business.",
           "basis": [
-            "deployment"
+            "capabilities",
+            "humanApproval"
           ]
         },
         {
@@ -115,7 +119,13 @@
       ],
       "lessSuitedFor": [
         {
-          "text": "Teams that want a free, open-source licence or public per-seat pricing to evaluate without talking to sales.",
+          "text": "Teams looking for a general-purpose agent framework rather than an ERP.",
+          "basis": [
+            "capabilities"
+          ]
+        },
+        {
+          "text": "Teams that want a free, open-source licence.",
           "basis": [
             "licensing"
           ]

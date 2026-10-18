@@ -124,6 +124,9 @@ describe('deploy step (Fly.io recipe)', () => {
     expect((await get('/billing')).status).toBe(200)
     expect((await get('/deploy')).status).toBe(200)
     expect((await h.call('/signup')).status).toBe(200)
+    // Arriving from the beaglabs.com hero: the work email is already filled in, and escaped.
+    expect(await (await h.call('/signup?email=ada%40acme.example')).text()).toContain('value="ada@acme.example"')
+    expect(await (await h.call('/signup?email=%22%3E%3Cscript%3E')).text()).not.toContain('"><script>')
   })
 
   it('needs a session', async () => {

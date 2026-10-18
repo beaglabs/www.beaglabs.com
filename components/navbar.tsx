@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { TrialCtaLink } from '@/components/trial-cta-link'
 import {
   NavigationMenu, NavigationMenuContent, NavigationMenuItem,
   NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger,
@@ -10,25 +11,25 @@ import {
 
 const GROUPS = [
   { name: 'Solutions', links: [
-    { title: 'Agentic Back Office', href: '/solutions/agentic-back-office', description: 'Document work, decisions, and governed tools.' },
-    { title: 'Modernization Factory', href: '/solutions/agentic-modernization-factory', description: 'Follow the terminal-to-browser workflow.' },
-    { title: 'Document Automation', href: '/solutions/document-automation', description: 'Turn documents into structured, actionable workflows.' },
-    { title: 'Internal App Factory', href: '/solutions/internal-app-factory', description: 'Create governed internal applications.' },
-    { title: 'Agentic Modernization', href: '/solutions/agentic-modernization', description: 'Modernize existing processes and legacy interfaces.' },
-    { title: 'Use Cases', href: '/use-cases', description: 'Explore industry workflows.' },
+    { title: 'Agentic Back Office', href: '/solutions/agentic-back-office', description: 'Agents run AP, AR, intake and approvals.' },
+    { title: 'Modernization Factory', href: '/solutions/agentic-modernization-factory', description: 'Bring existing systems into the ERP.' },
+    { title: 'Document Automation', href: '/solutions/document-automation', description: 'Documents in, ledger out.' },
+    { title: 'Internal App Factory', href: '/solutions/internal-app-factory', description: 'Apps on the same data model.' },
+    { title: 'Agentic Modernization', href: '/solutions/agentic-modernization', description: 'Give agents tools for older systems.' },
+    { title: 'Use Cases', href: '/use-cases', description: 'Agentic ERP by industry.' },
   ] },
   { name: 'Explore', links: [
-    { title: 'Papyrus', href: '/products/papyrus', description: 'See the agentic modernization factory.' },
-    { title: 'Capabilities', href: '/capabilities', description: 'Explore technical capabilities.' },
-    { title: 'Trust & Security', href: '/trust/papyrus', description: 'Review the Papyrus trust model.' },
+    { title: 'Papyrus', href: '/products/papyrus', description: 'The agentic ERP.' },
+    { title: 'Capabilities', href: '/capabilities', description: 'What the agentic ERP can do.' },
+    { title: 'Trust & Security', href: '/trust/papyrus', description: 'Security evidence for Papyrus.' },
   ] },
   { name: 'Resources', links: [
-    { title: 'Blog', href: '/blog', description: 'Ideas, announcements, and engineering notes.' },
-    { title: 'Comparisons', href: '/compare', description: 'Compare approaches and technologies.' },
+    { title: 'Blog', href: '/blog', description: 'Notes on building the agentic ERP.' },
+    { title: 'Comparisons', href: '/compare', description: 'Papyrus against the alternatives.' },
   ] },
   { name: 'Company', links: [
-    { title: 'Support', href: '/support', description: 'Commercial and government support.' },
-    { title: 'Contact', href: '/contact', description: 'Speak with our team.' },
+    { title: 'Support', href: '/support', description: 'Get help with your deployment.' },
+    { title: 'Contact', href: '/contact', description: 'Talk with Beag Labs.' },
   ] },
 ] as const
 
@@ -69,10 +70,10 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
           </NavigationMenu>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Link href="/products/papyrus" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-3 py-2 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] shadow-[3px_3px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#111] sm:px-4">
+          <TrialCtaLink placement="nav" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-3 py-2 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] shadow-[3px_3px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#111] sm:px-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/papyrus-logo.svg" alt="" className="h-4 w-4" /> See Papyrus
-          </Link>
+            <img src="/papyrus-logo.svg" alt="" className="h-4 w-4" /> Try Papyrus
+          </TrialCtaLink>
           <button type="button" className="inline-flex h-10 w-10 items-center justify-center border-2 border-[#111] bg-white md:hidden" aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileOpen} aria-controls="mobile-site-navigation" onClick={() => setMobileOpen(v => !v)}>
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

@@ -4,10 +4,11 @@ import { GET_BLOG_POSTS } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
 import { BlogCategoryFilter } from '@/components/blog/blog-category-filter'
+import { PageHero } from '@/components/page-hero'
 import { pageMetadata } from '@/lib/seo'
 
 const blogDescription =
-  'Practical notes on back office automation, document workflows, and governed modernization.'
+  'Notes on building the agentic ERP: data models agents understand, back-office work agents run, and approvals where they matter.'
 
 export const metadata: Metadata = pageMetadata({
   title: 'Blog',
@@ -38,38 +39,12 @@ export default async function BlogPage({
 
   return (
     <main>
-      {/* ─── HERO BAND ─── */}
-      <section className="site-hero border-b-[3px] border-[#111] bg-white">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-20 lg:px-9 lg:py-20">
-          <span className="font-mono text-[13px] font-bold uppercase tracking-[0.24em] text-[#111]">
-            [ Blog ]
-          </span>
-          <div className="max-w-[720px] lg:justify-self-end">
-            <h1 className="mb-5 text-[length:min(44px,9vw)] font-extrabold leading-[1.0] tracking-[-0.05em] text-[#111] sm:text-[56px] lg:text-[68px]">
-              Making back office work better.
-            </h1>
-            <p className="mb-9 max-w-[600px] text-[17px] font-medium leading-[1.6] text-[#111]">
-              Practical notes on back office automation, document workflows, and
-              governed modernization.
-            </p>
-            <a
-              href="mailto:james@beaglabs.com?subject=Subscribe%20to%20the%20Beag%20Labs%20blog"
-              className="nb-btn inline-flex items-center gap-2.5 bg-[#111] px-7 py-4 text-[12px] font-extrabold uppercase tracking-[0.1em] text-[#ff5f1f]"
-            >
-              Sign up for updates
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M5 12h14M13 6l6 6-6 6"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="square"
-                  strokeLinejoin="miter"
-                />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        label="Blog"
+        title="Building the agentic ERP"
+        description={blogDescription}
+        below={<a href="mailto:james@beaglabs.com?subject=Subscribe%20to%20the%20Beag%20Labs%20blog" className="text-[12px] font-bold uppercase tracking-[0.08em] underline decoration-2 underline-offset-4">Sign up for updates by email</a>}
+      />
 
       {/* ─── CONTENT ─── */}
       <div className="mx-auto max-w-[1440px] px-6 py-14 lg:px-9 lg:py-16">

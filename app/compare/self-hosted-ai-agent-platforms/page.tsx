@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { Breadcrumbs } from '@/components/breadcrumbs'
+import { PageHero } from '@/components/page-hero'
 import { CompareFaq, faqJsonLd } from '@/components/compare/compare-faq'
 import { FitNotes } from '@/components/compare/fit-notes'
 import { Methodology } from '@/components/compare/methodology'
@@ -54,29 +55,22 @@ export default function SelfHostedPlatformsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }} />
 
-      <section className="site-hero px-6 pb-16 pt-16 lg:px-9 lg:pb-20 lg:pt-20">
-        <div className="mx-auto max-w-[1440px]">
-          <Breadcrumbs items={[
-            { name: 'Home', url: '/' },
-            { name: 'Comparisons', url: '/compare' },
-            { name: 'Self-hosted AI agent platforms', url: path },
-          ]} />
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <span className="nb-label">Comparison</span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">{citedCount} cited claims</span>
-          </div>
-          <h1 className="max-w-[1040px] text-[length:min(40px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[56px] lg:text-[72px]">
-            Self-hosted AI agent platforms, compared<span className="text-[#ff5f1f]">.</span>
-          </h1>
-          <p className="mt-6 max-w-[820px] text-[18px] font-medium leading-[1.7] text-[#333]">
-            {platforms.length} platforms for organizations that want to keep agents, data and credentials in their own environment, compared on how they deploy, how they are sold, whether people can approve agent actions, how they are licensed and which security controls they document.
+      <PageHero
+        label="Comparison"
+        title="Self-hosted AI agent platforms, compared"
+        description={`${platforms.length} platforms for organizations that want to keep agents, data and credentials in their own environment, compared on how they deploy, how they are sold, whether people can approve agent actions, how they are licensed and which security controls they document.`}
+        above={<Breadcrumbs items={[
+          { name: 'Home', url: '/' },
+          { name: 'Comparisons', url: '/compare' },
+          { name: 'Self-hosted AI agent platforms', url: path },
+        ]} />}
+        below={<div className="space-y-3 text-left">
+          <p className="flex flex-wrap justify-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]"><span>Verified {verifiedOn}</span><span>{citedCount} cited claims</span></p>
+          <p className="border-l-[4px] border-[#ff5f1f] pl-4 text-[13px] font-semibold leading-[1.7] text-[#333]">
+            Disclosure: Beag Labs makes Papyrus, the agentic ERP among the platforms below. Papyrus is cited from our own pages and labelled first-party, and the alternatives are given the same evidence rules and a fair account of where they may fit better. See the <a className="underline underline-offset-2" href="#methodology">methodology</a>.
           </p>
-          <p className="mt-4 max-w-[820px] border-l-[4px] border-[#ff5f1f] pl-4 text-[14px] font-semibold leading-[1.7] text-[#333]">
-            Disclosure: Beag Labs makes Papyrus, one of the platforms below. Papyrus is cited from our own pages and labelled first-party, and the alternatives are given the same evidence rules and a fair account of where they may fit better. See the <a className="underline underline-offset-2" href="#methodology">methodology</a>.
-          </p>
-        </div>
-      </section>
+        </div>}
+      />
 
       <section id="matrix" className="scroll-mt-12 border-y-[3px] border-[#111] bg-[#f3f1ec] px-6 py-14 lg:px-9">
         <div className="mx-auto max-w-[1440px]">

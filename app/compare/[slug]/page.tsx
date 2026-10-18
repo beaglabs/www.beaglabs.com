@@ -4,6 +4,8 @@ import Link from "next/link"
 import { SiteFooter } from "@/components/site-footer"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { PageHero } from "@/components/page-hero"
+import { TrialCtaLink } from "@/components/trial-cta-link"
 import { comparisons } from "@/data/comparisons/comparisons"
 import { HeadToHead } from "@/components/compare/head-to-head"
 import { getGuide, getPlatform, guides } from "@/lib/compare"
@@ -115,29 +117,19 @@ export default async function ComparisonDetailPage({
   return (
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PageHero
+        label="Comparison"
+        title={comparison.title}
+        description={comparison.metaDescription}
+        above={<Breadcrumbs items={breadcrumbItems} />}
+      />
 
-
-      <section className="site-hero px-6 pt-16 pb-20 lg:px-9 lg:pt-20 lg:pb-24">
+      <section className="px-6 pt-16 pb-20 lg:px-9 lg:pt-20 lg:pb-24">
         <div className="mx-auto max-w-[1440px]">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-          />
-
-          <Breadcrumbs items={breadcrumbItems} />
-
-          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
-            Comparison
-          </p>
-
-          <h1 className="mb-6 max-w-[820px] text-[length:min(42px,9vw)] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-            {comparison.title}
-          </h1>
-
-          <p className="mb-12 max-w-[640px] text-[17px] leading-[1.72] text-[#404040] font-medium">
-            {comparison.metaDescription}
-          </p>
-
           {/* Pros & Cons Grid */}
           <div className="mb-16 grid grid-cols-1 gap-6 lg:grid-cols-2">
             {[
@@ -262,20 +254,18 @@ export default async function ComparisonDetailPage({
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
-                  Get started
+                  Try it on Papyrus
                 </div>
                 <h2 className="max-w-[560px] text-[28px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#111] lg:text-[34px]">
-                  Choose an approach for your back office workflow.
+                  Put agents on your back office, on an agentic ERP.
                 </h2>
               </div>
-              <a
-                href="/contact"
-                target="_blank"
-                rel="noopener noreferrer"
+              <TrialCtaLink
+                placement="section"
                 className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
               >
-                Talk to us <span className="text-lg">&rarr;</span>
-              </a>
+                Try Papyrus now <span className="text-lg">&rarr;</span>
+              </TrialCtaLink>
             </div>
           </div>
 

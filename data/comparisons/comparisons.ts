@@ -12,10 +12,10 @@ export const comparisons: Comparison[] = [
   {
     "slug": "document-automation-vs-manual-processing",
     "title": "Document Automation vs Manual Processing",
-    "metaDescription": "Compare governed document automation and manual processing for back office workflows, including validation, ownership, and operational change.",
+    "metaDescription": "Compare agent-run document automation with manual entry for invoices, contracts and forms, including validation, ownership, and operational change.",
     "optionA": {
-      "name": "Governed document automation",
-      "description": "Extract and route information with validation, source context, and human review.",
+      "name": "Agent-run document automation",
+      "description": "Agents turn invoices, contracts and forms into ERP records with source context, and a person approves the exceptions.",
       "pros": [
         "Can build on existing workflow knowledge",
         "Supports incremental validation"
@@ -27,7 +27,7 @@ export const comparisons: Comparison[] = [
     },
     "optionB": {
       "name": "Manual processing",
-      "description": "Staff read, enter, and route each document using existing procedures.",
+      "description": "Staff read, rekey, and route each document using existing procedures.",
       "pros": [
         "Can fit established organizational practices",
         "Makes ownership and acceptance criteria explicit"

@@ -313,13 +313,14 @@ export const sizeTable = (rows: readonly SizeRow[] = sizeRows()) => {
 const ssoButtons = (verb: string) => `<a class="btn" href="/login/microsoft">${MICROSOFT}${esc(verb)} with Microsoft</a>
 <a class="btn" href="/login/google">${GOOGLE}${esc(verb)} with Google</a>`
 
-export const signupPage = (error?: string | null) =>
+/** `email` prefills the form, e.g. arriving from the beaglabs.com hero with a work email already given. */
+export const signupPage = (error?: string | null, email?: string) =>
   soloLayout({
     title: 'Sign up',
     body: `<div class="body"><div class="kicker">Hosted by Beag Labs</div><h1 class="disp">Start your Papyrus</h1>
 <p class="lede">${esc(`$250/month platform plus usage, unlimited users, after a ${TRIAL_DAYS}-day free trial.`)} Pick your organization name and Papyrus goes live at <span class="mono">your-org.${esc(HOSTED_DOMAIN)}</span>.</p>
 ${notice(error)}<form method="post" action="/signup">
-<label for="email">Work email</label><input id="email" name="email" type="email" required autocomplete="email">
+<label for="email">Work email</label><input id="email" name="email" type="email" required autocomplete="email"${email ? ` value="${esc(email)}"` : ''}>
 <label for="name">Your name</label><input id="name" name="name" autocomplete="name">
 <label for="organization">Organization</label><input id="organization" name="organization" autocomplete="organization">
 <p style="margin-top:20px"><button class="btn primary lg full" type="submit">Email me a sign-in link</button></p></form></div>

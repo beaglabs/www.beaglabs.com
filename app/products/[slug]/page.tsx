@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { Breadcrumbs } from '@/components/breadcrumbs'
+import { PageHero } from '@/components/page-hero'
 import { EvidenceCell } from '@/components/compare/evidence-cell'
 import { FitNotes } from '@/components/compare/fit-notes'
 import { Methodology } from '@/components/compare/methodology'
@@ -69,40 +70,41 @@ export default async function ProductProfilePage({ params }: ProductPageProps) {
       <AnnouncementBanner />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="site-hero px-6 pb-14 pt-16 lg:px-9 lg:pb-16 lg:pt-20">
-        <div className="mx-auto max-w-[1280px]">
-          <Breadcrumbs items={[
-            { name: 'Home', url: '/' },
-            { name: 'Comparisons', url: '/compare' },
-            { name: platform.name, url: path },
-          ]} />
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-            <ProductLogo name={platform.name} src={logoUrl(platform)} size="lg" />
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="nb-label">Sourced profile</span>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
-              </div>
-              <h1 className="mt-3 text-[length:min(44px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[60px]">{platform.name}<span className="text-[#ff5f1f]">.</span></h1>
-              <p className="mt-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#666]">by {platform.vendor}</p>
+      <PageHero
+        label={`Sourced profile · Verified ${verifiedOn}`}
+        title={platform.name}
+        description={platform.summary}
+        above={
+          <div>
+            <Breadcrumbs items={[
+              { name: 'Home', url: '/' },
+              { name: 'Comparisons', url: '/compare' },
+              { name: platform.name, url: path },
+            ]} />
+            <div className="flex items-center justify-center gap-4">
+              <ProductLogo name={platform.name} src={logoUrl(platform)} size="lg" />
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#666]">by {platform.vendor}</p>
             </div>
           </div>
-          <p className="mt-6 max-w-[780px] text-[18px] font-medium leading-[1.7] text-[#333]">{platform.summary}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href={platform.officialUrl} rel="noopener noreferrer" target="_blank" className="nb-btn-white px-5 py-3 text-[11px] uppercase">Official site ↗</a>
-            {platform.marketplaceUrl && <a href={platform.marketplaceUrl} rel="noopener noreferrer" target="_blank" className="nb-btn-white px-5 py-3 text-[11px] uppercase">Marketplace listing ↗</a>}
-            {platform.isBeag && <Link href="/products/papyrus" className="nb-btn-orange px-5 py-3 text-[11px] uppercase">Papyrus product page →</Link>}
-            {!platform.isBeag && comparedIn.filter((guide) => guide.kind === 'head-to-head').map((guide) => (
-              <Link key={guide.slug} href={`/compare/${guide.slug}`} className="nb-btn-orange px-5 py-3 text-[11px] uppercase">Compare with Papyrus →</Link>
-            ))}
+        }
+        below={
+          <div className="text-left">
+            <div className="flex flex-wrap justify-center gap-3">
+              <a href={platform.officialUrl} rel="noopener noreferrer" target="_blank" className="nb-btn-white px-5 py-3 text-[11px] uppercase">Official site ↗</a>
+              {!platform.isBeag && platform.marketplaceUrl && <a href={platform.marketplaceUrl} rel="noopener noreferrer" target="_blank" className="nb-btn-white px-5 py-3 text-[11px] uppercase">Marketplace listing ↗</a>}
+              {platform.isBeag && <Link href="/products/papyrus" className="nb-btn-white px-5 py-3 text-[11px] uppercase">Papyrus product page →</Link>}
+              {!platform.isBeag && comparedIn.filter((guide) => guide.kind === 'head-to-head').map((guide) => (
+                <Link key={guide.slug} href={`/compare/${guide.slug}`} className="nb-btn-white px-5 py-3 text-[11px] uppercase">Compare with Papyrus →</Link>
+              ))}
+            </div>
+            <p className="mt-6 border-l-[4px] border-[#ff5f1f] pl-4 text-[13px] font-semibold leading-[1.7] text-[#333]">
+              {platform.isBeag
+                ? 'Beag Labs makes Papyrus and compiled this profile. Every statement cites our own pages and is labelled first-party, not independently verified. For the full product story, see the Papyrus product page.'
+                : 'This profile was compiled by Beag Labs, which makes a competing product (Papyrus). It is built from public documentation, not hands-on testing, and every statement links to its source.'}
+            </p>
           </div>
-          <p className="mt-6 max-w-[780px] border-l-[4px] border-[#ff5f1f] pl-4 text-[13px] font-semibold leading-[1.7] text-[#333]">
-            {platform.isBeag
-              ? 'Beag Labs makes Papyrus and compiled this profile. Every statement cites our own pages and is labelled first-party, not independently verified. For the full product story, see the Papyrus product page.'
-              : 'This profile was compiled by Beag Labs, which makes a competing product (Papyrus). It is built from public documentation, not hands-on testing, and every statement links to its source.'}
-          </p>
-        </div>
-      </section>
+        }
+      />
 
       <section className="border-y-[3px] border-[#111] bg-[#f3f1ec] px-6 py-12 lg:px-9">
         <div className="mx-auto max-w-[1280px]">
