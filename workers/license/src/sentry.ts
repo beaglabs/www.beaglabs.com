@@ -1,10 +1,9 @@
 /** POST /api/sentry/webhook — Sentry integration webhooks (issue created, event alerts). */
 import { first, getDb } from './db'
 import type { Bindings } from './env'
-import { createInboxItem } from './inbox'
-import { ApiError, GUID_RE, constantTimeEqual, hmacSha256, id, isObject, now, readText, toHex, type WaitUntil, background } from './util'
+import { ApiError, GUID_RE, constantTimeEqual, hmacSha256, id, isObject, now, readText, toHex } from './util'
 
-/** Repeat alerts for one issue are collapsed to one error.spike per window. */
+/** Repeat alerts for one issue are collapsed to one error.spike per window (returned as `alert`; recorded in tenant_errors). */
 export const SPIKE_ALERT_WINDOW_MS = 6 * 60 * 60 * 1000
 const MAX_WEBHOOK_BYTES = 1024 * 1024
 
@@ -62,7 +61,7 @@ function parsePayload(resource: string, payload: Record<string, unknown>): Parse
   }
 }
 
-export async function handleSentryWebhook(request: Request, env: Bindings, ctx?: WaitUntil, nowMs = Date.now()): Promise<Response> {
+export async function handleSentryWebhook(request: Request, env: Bindings, _ctx?: unknown, nowMs = Date.now()): Promise<Response> {
   if (!env.SENTRY_CLIENT_SECRET) throw new ApiError(503, 'sentry_not_configured', 'Sentry webhook is not configured.')
   const raw = await readText(request, MAX_WEBHOOK_BYTES)
   if (!(await verifySentrySignature(env.SENTRY_CLIENT_SECRET, raw, request.headers.get('sentry-hook-signature')))) {
@@ -99,14 +98,6 @@ export async function handleSentryWebhook(request: Request, env: Bindings, ctx?:
       args: [timestamp, parsed.tenantId, parsed.url, resource === 'event_alert' ? 1 : 0, spike ? 1 : 0, timestamp, String(existing.id)],
     })
     if (spike) kind = 'error.spike'
-  }
-  if (kind) {
-    background(ctx, `${kind} inbox`, createInboxItem(env, {
-      kind,
-      title: kind === 'error.new' ? `New error: ${parsed.title}`.slice(0, 200) : `Error spike: ${parsed.title}`.slice(0, 200),
-      body: [parsed.culprit, parsed.source, tenantId ? `Tenant ${tenantId}` : 'No tenant tag'].filter(Boolean).join(' · '),
-      tenantId,
-    }, { audience: 'assigned' }))
   }
   return Response.json({ ok: true, alert: kind })
 }

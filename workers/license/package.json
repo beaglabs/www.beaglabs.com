@@ -8,9 +8,9 @@
     "deploy": "npm run db:apply && npm run deploy:worker",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check": "npm run typecheck && wrangler deploy --dry-run --outdir .wrangler-dry-run",
+    "check": "npm run typecheck && npm test && wrangler deploy --dry-run --config wrangler.jsonc --outdir .wrangler-dry-run",
     "db:apply": "node --env-file-if-exists=.dev.vars scripts/apply-schema.mjs",
-    "deploy:worker": "wrangler deploy",
+    "deploy:worker": "wrangler deploy --config wrangler.jsonc",
     "license:issue": "node --env-file-if-exists=.dev.vars scripts/issue-license.ts"
   },
   "dependencies": {

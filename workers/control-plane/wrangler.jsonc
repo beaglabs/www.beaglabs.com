@@ -1,0 +1,63 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "beaglabs-papyrus-control-plane",
+  "main": "src/entry.ts",
+  "compatibility_date": "2026-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [{ "pattern": "papyrus.beaglabs.com", "custom_domain": true }],
+  "observability": { "enabled": true },
+  // Static files (the support card photo). Anything not in public/ falls through to the Worker.
+  "assets": { "directory": "./public" },
+  // Accounts, sessions, deployments, encrypted provider credentials, setup progress.
+  // Create once: wrangler d1 create papyrus-control-plane, then paste the id here.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "papyrus-control-plane", "database_id": "d92c7f96-60a2-41e0-bd4b-373510d14ac1" }
+  ],
+  // Deployment rows, deployment keys and the Key Vault signer stay in the license Worker.
+  "services": [{ "binding": "LICENSE", "service": "beaglabs-license", "entrypoint": "LicenseRpc" }],
+  // Live Activity: one ActivityHub per account (idFromName(accountId)), hibernatable WebSockets at /api/events/live.
+  "durable_objects": { "bindings": [{ "name": "ACTIVITY", "class_name": "ActivityHub" }] },
+  "migrations": [{ "tag": "v1-activity-hub", "new_sqlite_classes": ["ActivityHub"] }],
+  // Hourly compute metering: one Stripe meter event per running deployment for the hour that just ended.
+  "triggers": { "crons": ["5 * * * *"] },
+  "vars": {
+    "BASE_URL": "https://papyrus.beaglabs.com",
+    "PAPYRUS_IMAGE": "ghcr.io/beaglabs/papyrus/papyrus",
+    "PAPYRUS_IMAGE_DIGEST": "sha256:408b8d29a860efe3684cea3360ecb427ad027b1dbe0aa6a01b104719de74048b",
+    "MAGIC_LINK_FROM_EMAIL": "Papyrus <papyrus@mail.beaglabs.com>",
+    // Beag Labs' IAM principal that customer roles trust, and the S3 copy of /aws/connect-template.yaml.
+    "AWS_PRINCIPAL_ARN": "arn:aws:iam::615583899145:user/papyrus-control-plane",
+    "AWS_CONNECT_TEMPLATE_URL": "https://beaglabs-public.s3.us-east-2.amazonaws.com/connect-aws.yaml",
+    // Bring-your-own-cloud is off: "true" turns it on for every account (else per account in D1 account_flags).
+    "BYOC_ENABLED": "false",
+    // Hosted by Beag Labs: the Connect AWS stack deployed once into Beag Labs' own account (README → Hosted setup).
+    "HOSTED_AWS_ROLE_ARN": "arn:aws:iam::615583899145:role/BeagLabsPapyrusControlPlane",
+    "HOSTED_AWS_REGION": "us-east-2",
+    // Pricing: one subscription, three items on one product. Metered prices' Billing Meters are resolved at runtime.
+    "STRIPE_PRODUCT": "prod_VSbVkLF1STkdjO",
+    // $250/month platform (licensed).
+    "STRIPE_PRICE_PLATFORM": "price_1URgYE8k0ubC0hdJVKePxXeQ",
+    // $0.50 per VM hour (metered).
+    "STRIPE_PRICE_COMPUTE": "price_1URgIR8k0ubC0hdJWW17SAZ9",
+    // $0.00194444 per agent-second (metered).
+    "STRIPE_PRICE_EXECUTION": "price_1URgYE8k0ubC0hdJBLw7EDBr"
+  },
+  "secrets": {
+    "required": [
+      "CREDENTIALS_KEY",
+      "SESSION_SECRET",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+      "MICROSOFT_CLIENT_ID",
+      "MICROSOFT_CLIENT_SECRET",
+      "GOOGLE_CLIENT_ID",
+      "GOOGLE_CLIENT_SECRET",
+      "RESEND_API_KEY",
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "HOSTED_AWS_EXTERNAL_ID",
+      "ADMIN_TOKEN"
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+import type { HubNamespace } from './activity-hub'
+import type { LicenseRpcApi } from './license-rpc'
+
+export interface Bindings {
+  DB: D1Database
+  /** Service binding to workers/license, entrypoint `LicenseRpc`. */
+  LICENSE: LicenseRpcApi
+  BASE_URL: string
+  /** ghcr.io/beaglabs/papyrus/papyrus */
+  PAPYRUS_IMAGE: string
+  /** sha256:… of the signed hardened image every recipe runs. */
+  PAPYRUS_IMAGE_DIGEST: string
+  MAGIC_LINK_FROM_EMAIL: string
+  /** Beag Labs' IAM principal that customer "Connect AWS" roles trust. */
+  AWS_PRINCIPAL_ARN: string
+  /** S3 URL of the CloudFormation template served at /aws/connect-template.yaml (quick-create needs S3). */
+  AWS_CONNECT_TEMPLATE_URL: string
+  /** One ActivityHub Durable Object per account: live Activity over hibernatable WebSockets. */
+  ACTIVITY?: HubNamespace
+  /** Stripe product every Papyrus price belongs to. */
+  STRIPE_PRODUCT: string
+  /** $250/month platform subscription (licensed). */
+  STRIPE_PRICE_PLATFORM: string
+  /** $0.50 per VM hour (metered; its Billing Meter is resolved at runtime). */
+  STRIPE_PRICE_COMPUTE: string
+  /** $0.00194444 per agent-second (metered; its Billing Meter is resolved at runtime). */
+  STRIPE_PRICE_EXECUTION: string
+  /** "true" turns bring-your-own-cloud on for every account; otherwise only accounts flagged in account_flags. */
+  BYOC_ENABLED: string
+  /** Hosted by Beag Labs: the Connect AWS role deployed once into Beag Labs' own account. */
+  HOSTED_AWS_ROLE_ARN: string
+  /** Region of the shared hosted infrastructure (us-east-2). */
+  HOSTED_AWS_REGION: string
+
+  /** base64 of 32 random bytes: AES-256-GCM key for provider credentials. */
+  CREDENTIALS_KEY: string
+  /** HMAC key for OAuth state cookies. */
+  SESSION_SECRET: string
+  STRIPE_SECRET_KEY: string
+  STRIPE_WEBHOOK_SECRET: string
+  MICROSOFT_CLIENT_ID: string
+  MICROSOFT_CLIENT_SECRET: string
+  GOOGLE_CLIENT_ID: string
+  GOOGLE_CLIENT_SECRET: string
+  RESEND_API_KEY: string
+  /** Access key of AWS_PRINCIPAL_ARN; used only to sts:AssumeRole into customer roles. */
+  AWS_ACCESS_KEY_ID: string
+  AWS_SECRET_ACCESS_KEY: string
+  /** ExternalId of the hosted role in Beag Labs' account (fixed; the stack was launched with it). */
+  HOSTED_AWS_EXTERNAL_ID: string
+  /** Bearer token for /admin/* (the one-time hosted bootstrap). */
+  ADMIN_TOKEN: string
+}

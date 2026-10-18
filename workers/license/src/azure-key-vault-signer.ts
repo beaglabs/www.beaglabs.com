@@ -80,15 +80,15 @@ function toBase64(value: string): string {
 }
 
 /**
- * Sign one canonical Papyrus license payload with a version-pinned Azure Key
- * Vault RSA key. The private key never enters the Worker. Key Vault signs the
+ * Sign the canonical JSON of `payload` with a version-pinned Azure Key Vault
+ * RSA key. The private key never enters the Worker. Key Vault signs the
  * SHA-256 digest with RS256 and returns the signature bytes.
  *
- * The full versioned Azure key URI is embedded as `keyId`, which makes key
- * rotation explicit: old licenses continue to point at the public key version
+ * The full versioned Azure key URI is returned as `keyId`, which makes key
+ * rotation explicit: old documents continue to point at the public key version
  * that actually signed them.
  */
-export async function signLicenseWithAzureKeyVault(env: Bindings, payload: LicensePayload): Promise<SignedLicense> {
+export async function signCanonicalWithAzureKeyVault(env: Bindings, payload: unknown): Promise<{ keyId: string; signature: string }> {
   const key = keyId(env)
   const digest = createHash('sha256').update(canonical(payload)).digest('base64url')
   const token = await accessToken(env)
@@ -114,10 +114,10 @@ export async function signLicenseWithAzureKeyVault(env: Bindings, payload: Licen
   if (returnedKeyId !== key.toString()) {
     throw new Error(`Azure Key Vault returned unexpected key id ${returnedKeyId}`)
   }
+  return { keyId: key.toString(), signature: toBase64(body.value) }
+}
 
-  return {
-    ...payload,
-    keyId: key.toString(),
-    signature: toBase64(body.value),
-  }
+/** Sign one Papyrus license payload; the signature fields sit beside the payload fields. */
+export async function signLicenseWithAzureKeyVault(env: Bindings, payload: LicensePayload): Promise<SignedLicense> {
+  return { ...payload, ...await signCanonicalWithAzureKeyVault(env, payload) }
 }

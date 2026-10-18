@@ -1,12 +1,9 @@
 /** POST /api/v1/track — Analytics.js-shaped batches keyed by Entra tenant id. */
-import { authenticateDeployment, authenticateStaffToken, authorizationParts, verifyChatSession } from './auth'
+import { authenticateDeployment, authorizationParts } from './auth'
 import { getDb } from './db'
 import type { Bindings } from './env'
 import { forwardToCustomerIo, storeEvents, type EventSource, type StoredEvent } from './events'
-import { createInboxItem } from './inbox'
-import { decodeJwt } from './jwt'
-import { staffCanSeeTenant } from './visibility'
-import { ApiError, GUID_RE, background, isObject, now, readText, type WaitUntil } from './util'
+import { ApiError, background, isObject, now, readText, type WaitUntil } from './util'
 
 export const MAX_BATCH_ITEMS = 100
 export const MAX_BATCH_BYTES = 256 * 1024
@@ -20,8 +17,6 @@ type Caller = {
   tenantId: string | null
   deploymentId: string | null
   anonymous: boolean
-  /** Staff may attribute events to a visible tenant via context.tenantId. */
-  resolveTenant?: (candidate: string) => Promise<boolean>
 }
 
 const anonymousHits = new Map<string, { windowStart: number; count: number }>()
@@ -53,14 +48,6 @@ async function identifyCaller(env: Bindings, request: Request): Promise<Caller> 
   if (parts.scheme === 'deployment') {
     const deployment = await authenticateDeployment(env, parts.credentials)
     return { source: 'papyrus', tenantId: deployment.tenantId, deploymentId: deployment.deploymentId, anonymous: false }
-  }
-  if (parts.scheme === 'bearer') {
-    if (decodeJwt(parts.credentials).header.alg === 'HS256') {
-      const customer = await verifyChatSession(env, parts.credentials)
-      return { source: 'papyrus', tenantId: customer.tenantId, deploymentId: customer.deploymentId, anonymous: false }
-    }
-    const staff = await authenticateStaffToken(env, parts.credentials)
-    return { source: 'admin', tenantId: null, deploymentId: null, anonymous: false, resolveTenant: (tenantId) => staffCanSeeTenant(env, staff, tenantId) }
   }
   throw new ApiError(401, 'unauthorized', 'Unsupported authorization scheme.')
 }
@@ -111,30 +98,13 @@ export async function handleTrack(request: Request, env: Bindings, ctx?: WaitUnt
   const events: StoredEvent[] = []
   for (const item of body.batch) {
     const event = normalizeItem(item, caller)
-    if (!event) continue
-    if (caller.resolveTenant) {
-      const candidate = isObject(event.context) && typeof event.context.tenantId === 'string' ? event.context.tenantId.toLowerCase() : null
-      event.tenantId = candidate && GUID_RE.test(candidate) && (await caller.resolveTenant(candidate)) ? candidate : null
-    }
-    events.push(event)
+    if (event) events.push(event)
   }
   if (!events.length) return Response.json({ accepted: 0 })
 
   await storeEvents(env, events)
   await touchSeen(env, caller, events)
 
-  for (const event of events) {
-    if (event.type === 'track' && event.event === 'support.requested' && event.tenantId) {
-      const conversationId = typeof event.properties?.conversationId === 'string' ? event.properties.conversationId : null
-      background(ctx, 'support.requested inbox', createInboxItem(env, {
-        kind: 'support.requested',
-        title: 'Support requested',
-        body: typeof event.properties?.message === 'string' ? event.properties.message.slice(0, 280) : 'A customer asked for help.',
-        tenantId: event.tenantId,
-        conversationId,
-      }, { audience: 'assigned', coalesceMinutes: 10 }))
-    }
-  }
   background(ctx, 'customer.io forward', forwardToCustomerIo(env, events))
   return Response.json({ accepted: events.length })
 }

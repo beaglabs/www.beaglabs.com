@@ -36,8 +36,7 @@ console.log('Applied workers/license/organization-license-schema.sql')
 const provisioningSchema = await readFile(new URL('../provisioning-schema.sql', import.meta.url), 'utf8')
 await client.executeMultiple(provisioningSchema)
 console.log('Applied workers/license/provisioning-schema.sql')
-// Admin app / chat / event pipe tables. Must follow schema.sql (organizations),
-// marketplace-schema.sql (marketplace_leads) and provisioning-schema.sql (account_managers).
+// Deployment registration / event pipe tables. Must follow schema.sql (organizations).
 const papyrusAdminSchema = await readFile(new URL('../papyrus-admin-schema.sql', import.meta.url), 'utf8')
 await client.executeMultiple(papyrusAdminSchema)
 console.log('Applied workers/license/papyrus-admin-schema.sql')

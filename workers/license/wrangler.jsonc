@@ -17,20 +17,16 @@
   "observability": {
     "enabled": true
   },
-  // Admin app + Papyrus customer chat: one ConversationRoom per conversation id.
-  "durable_objects": {
-    "bindings": [{ "name": "CONVERSATION_ROOM", "class_name": "ConversationRoom" }]
-  },
-  "migrations": [{ "tag": "v1-conversation-room", "new_sqlite_classes": ["ConversationRoom"] }],
-  // Chat attachments and account-manager photos. Create once: wrangler r2 bucket create beaglabs-chat-attachments
-  "r2_buckets": [{ "binding": "CHAT_ATTACHMENTS", "bucket_name": "beaglabs-chat-attachments" }],
+  // Chat was removed on 2026-10-17 (support is email now). The ConversationRoom Durable Object
+  // class is deleted by v2; keep both tags so already-deployed environments migrate cleanly.
+  "migrations": [
+    { "tag": "v1-conversation-room", "new_sqlite_classes": ["ConversationRoom"] },
+    { "tag": "v2-remove-conversation-room", "deleted_classes": ["ConversationRoom"] }
+  ],
   "vars": {
     "BASE_URL": "https://license.beaglabs.com",
     "MARKETPLACE_FROM_EMAIL": "Beag Labs Marketplace <sales@mail.beaglabs.com>",
-    "TRIAL_NOTIFICATIONS_EMAIL": "4661da0e.beaglabs.onmicrosoft.com@amer.teams.ms",
-    "ADMIN_API_CLIENT_ID": "76fd8c28-6c8d-4b41-ae10-a99da42880a1",
-    "APNS_BUNDLE_ID": "com.beaglabs.papyrus.admin",
-    "REALTIMEKIT_PRESET_NAME": "group_call_participant"
+    "TRIAL_NOTIFICATIONS_EMAIL": "4661da0e.beaglabs.onmicrosoft.com@amer.teams.ms"
   },
   "secrets": {
     "required": [
@@ -40,8 +36,7 @@
       "MICROSOFT_CLIENT_SECRET",
       "MICROSOFT_TENANT_ID",
       "RESEND_API_KEY",
-      "MARKETPLACE_LEAD_WEBHOOK_SECRET",
-      "CHAT_SESSION_SECRET"
+      "MARKETPLACE_LEAD_WEBHOOK_SECRET"
     ]
   }
 }

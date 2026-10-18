@@ -1,5 +1,3 @@
-import type { DurableObjectNamespaceLike, R2BucketLike } from './cf-types'
-
 export type Bindings = {
   BASE_URL: string
   TURSO_DATABASE_URL: string
@@ -8,7 +6,7 @@ export type Bindings = {
   MICROSOFT_CLIENT_ID: string
   MICROSOFT_CLIENT_SECRET: string
   MICROSOFT_TENANT_ID: string
-  /** Used by the offline license CLI (scripts/issue-license.ts), not by the Worker. */
+  /** Key Vault license/status signer: the offline CLI (scripts/issue-license.ts) and LicenseRpc (control plane). */
   AZURE_KEY_VAULT_TENANT_ID: string
   AZURE_KEY_VAULT_CLIENT_ID: string
   AZURE_KEY_VAULT_CLIENT_SECRET: string
@@ -25,15 +23,7 @@ export type Bindings = {
   MARKETPLACE_ANALYTICS_CLIENT_ID?: string
   MARKETPLACE_ANALYTICS_CLIENT_SECRET?: string
 
-  // --- Papyrus admin app, customer chat, event pipe -------------------------
-  /** Durable Object namespace: one ConversationRoom per conversation id. */
-  CONVERSATION_ROOM: DurableObjectNamespaceLike
-  /** R2 bucket for chat attachments and account-manager photos. */
-  CHAT_ATTACHMENTS: R2BucketLike
-  /** Entra app registration for the admin app API (staff tokens). Defaults to 76fd8c28-6c8d-4b41-ae10-a99da42880a1. */
-  ADMIN_API_CLIENT_ID?: string
-  /** HMAC secret for customer chat session JWTs (HS256). */
-  CHAT_SESSION_SECRET: string
+  // --- Deployment registration and event pipe --------------------------------
   /** Optional Marketplace plan pin for deployment registration. Unset = plan check skipped. */
   PAPYRUS_MARKETPLACE_PUBLISHER?: string
   PAPYRUS_MARKETPLACE_PRODUCT?: string
@@ -42,24 +32,8 @@ export type Bindings = {
   CUSTOMERIO_API_KEY?: string
   /** 'us' (default) or 'eu'. */
   CUSTOMERIO_REGION?: string
-  /** Cloudflare RealtimeKit (huddles). */
-  CF_ACCOUNT_ID?: string
-  REALTIMEKIT_APP_ID?: string
-  REALTIMEKIT_API_TOKEN?: string
-  /** RealtimeKit preset applied to every huddle participant (default 'group_call_participant'). */
-  REALTIMEKIT_PRESET_NAME?: string
   /** Sentry integration client secret used to verify Sentry-Hook-Signature. */
   SENTRY_CLIENT_SECRET?: string
-  /** Push: FCM HTTP v1. */
-  FCM_PROJECT_ID?: string
-  FCM_SERVICE_ACCOUNT_JSON?: string
-  /** Push: APNs token auth. */
-  APNS_KEY_ID?: string
-  APNS_TEAM_ID?: string
-  APNS_BUNDLE_ID?: string
-  APNS_PRIVATE_KEY?: string
-  /** 'production' (default) or 'sandbox'. */
-  APNS_ENVIRONMENT?: string
 }
 
 export const DEPLOYMENT_PROFILES = ['commercial', 'government', 'disconnected'] as const
