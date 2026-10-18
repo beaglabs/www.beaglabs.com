@@ -233,7 +233,7 @@ describe('events are written', () => {
     const { h, post, events } = signedIn({ env: { BYOC_ENABLED: 'true' }, fetch: denied })
     h.insertDeployment({ id: 'dep_abc' })
     h.insertDeployment({ id: 'dep_byoc' })
-    await post('/deploy/dep_abc/org', { org: 'acme' })
+    await post('/deploy/dep_abc/org', { org: 'acme', terms: 'accept' })
     expect(events().at(-1)).toMatchObject({ level: 'ok', source: 'address', message: 'Claimed "acme" · acme.papyrus.beaglabs.com' })
     await post('/provision', { deployment: 'dep_byoc', provider: 'fly-io', apiKey: 'fo1_supersecret', orgSlug: 'acme', region: 'iad' })
     const check = events().at(-1)!

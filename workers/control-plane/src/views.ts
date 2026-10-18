@@ -8,6 +8,8 @@ import { LOGOS } from './providers/logos'
 import { PROVIDERS } from './providers/registry'
 import type { CredentialField, ProviderEntry } from './providers/types'
 import { confirmNameFor } from './lifecycle-model'
+import { LEGAL } from './legal'
+import type { AdminApproval } from './microsoft'
 import type { Account, Deployment } from './services'
 import { SUPPORT_STYLES, supportCardMarkup, supportPageCard } from './support'
 import { DEPLOY_SCRIPT_PATH, renderDetail, renderList } from './ui/ssr'
@@ -104,6 +106,8 @@ input[readonly]{background:#f3f2ee;color:var(--muted)}
 textarea{min-height:120px;font-family:var(--mono);font-size:12px}
 input:focus,textarea:focus,select:focus{outline:3px solid var(--accent);outline-offset:0}
 .help{font-size:13px;color:var(--muted);margin-top:6px}
+label.check{display:flex;gap:10px;align-items:flex-start;margin:18px 0 0;font:14px/1.4 var(--sans);text-transform:none;letter-spacing:0}
+label.check input{width:18px;height:18px;flex:none;margin-top:1px;padding:0;accent-color:var(--accent)}
 .notice{border:2px solid var(--ink);padding:12px 14px;margin:0 0 20px;background:#fff;font-size:14px}
 .notice.error{border-color:#dc2626;background:#fee2e2;color:#991b1b;font-weight:600}
 .notice.ok{border-color:var(--ok);background:#dcfce7}
@@ -408,6 +412,10 @@ export const deploymentPage = (input: DeploymentPageInput) => {
   return consoleLayout({ title: input.view.name, account: input.account, active: 'deployment', body, scripts: [DEPLOY_SCRIPT_PATH], styles: DEPLOY_STYLES })
 }
 
+/** The required terms checkbox on the claim card (and the Connect Microsoft dialog, rendered by the client). */
+const termsCheckbox = (id: string) =>
+  `<label class="check" for="${id}"><input id="${id}" name="terms" type="checkbox" value="accept" required><span>I accept the Papyrus <a href="${LEGAL.termsUrl}" target="_blank" rel="noopener">Terms of Service</a> and <a href="${LEGAL.privacyUrl}" target="_blank" rel="noopener">Privacy Policy</a> for my organization and am authorized to do so</span></label>`
+
 /** Pick an org name (hosted, the default): a centred card, no sidebar. Live validation from ORG_NAME_SCRIPT_PATH. */
 export const claimPage = (account: Account, deployment: Deployment, message?: string | null, byoc = false) =>
   soloLayout({
@@ -421,8 +429,50 @@ ${notice(message)}<form method="post" action="/deploy/${esc(deployment.id)}/org"
 <label for="org">Organization name</label>
 <div class="row" style="flex-wrap:nowrap"><input id="org" name="org" required minlength="3" maxlength="40" pattern="[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="acme" aria-describedby="org-status"><span class="mono" style="white-space:nowrap;font-size:14px">.${esc(HOSTED_DOMAIN)}</span></div>
 <p id="org-status" class="help" aria-live="polite"></p>
-<p style="margin-top:18px"><button class="btn primary lg full" type="submit">Go live</button></p></form></div>
+${termsCheckbox('terms')}
+<p style="margin-top:18px"><button class="btn primary lg full" type="submit">${MICROSOFT}Connect Microsoft and go live</button></p></form></div>
 <div class="foot">${byoc ? `<a href="/provision?deployment=${esc(deployment.id)}">Deploy in your own cloud instead</a> · ` : ''}Signed in as ${esc(account.email)} · <a href="/logout">Sign out</a></div>`,
+  })
+
+/** Served at COPY_SCRIPT_PATH: buttons with data-copy="<input id>" copy that field. */
+export const COPY_SCRIPT_PATH = '/assets/copy.js'
+
+export const COPY_JS = `(function () {
+  document.querySelectorAll('[data-copy]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var input = document.getElementById(button.getAttribute('data-copy'))
+      if (!input) return
+      input.select()
+      var done = function () { button.textContent = 'Copied' }
+      if (navigator.clipboard) navigator.clipboard.writeText(input.value).then(done, function () { document.execCommand('copy'); done() })
+      else { document.execCommand('copy'); done() }
+    })
+  })
+})()
+`
+
+/** Connect Microsoft stopped at consent: an administrator has to approve Papyrus for the organization. */
+export const adminApprovalPage = (approval: AdminApproval, account?: Account | null) =>
+  soloLayout({
+    title: 'Ask an administrator',
+    wide: true,
+    account,
+    scripts: [COPY_SCRIPT_PATH],
+    body: `<div class="body"><div class="kicker">Connect Microsoft</div><h1 class="disp">An administrator needs to approve Papyrus</h1>
+<p class="lede">Your Microsoft organization only lets a Global Administrator or Privileged Role Administrator approve new apps. Send them this link. Once they approve, click Try again.</p>
+<label for="consent-link">Approval link</label>
+<div class="row" style="flex-wrap:nowrap"><input id="consent-link" class="mono" value="${esc(approval.consentUrl)}" readonly style="font-size:12px"><button class="btn" type="button" data-copy="consent-link">Copy</button></div>
+${approval.detail ? `<p class="help mono" style="font-size:11.5px;word-break:break-word">Microsoft said: ${esc(approval.detail)}</p>` : ''}
+<p style="margin-top:20px"><a class="btn primary lg full" href="/deploy/${esc(approval.deploymentId)}/microsoft/connect">${MICROSOFT}Try again</a></p></div>
+<div class="foot"><a href="/deploy/${esc(approval.deploymentId)}">Back to your deployment</a></div>`,
+  })
+
+/** Where the shareable approval link lands, for the administrator who approved. */
+export const consentedPage = () =>
+  soloLayout({
+    title: 'Papyrus approved',
+    body: `<div class="body"><div class="kicker">Connect Microsoft</div><h1 class="disp">Approved</h1>
+<p class="lede" style="margin-bottom:0">Papyrus is approved for your organization. The person setting up Papyrus can now click Connect Microsoft again.</p></div>`,
   })
 
 /** /deploy with no deployment: the plan step. With several: the deployments table (server-rendered, hydrated). */

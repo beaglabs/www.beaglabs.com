@@ -4,7 +4,7 @@ import { ActivityPanel } from './activity'
 import { createActionRunner, type ActionRunner, type PendingAction } from './actions'
 import { BrowserFrame } from './browser'
 import { day, relative, stamp } from './format'
-import { IconAlert, IconCheck, IconExternal, IconPlay, IconPower, IconRedeploy, IconSliders } from './icons'
+import { IconAlert, IconCheck, IconExternal, IconMicrosoft, IconPlay, IconPower, IconRedeploy, IconSliders } from './icons'
 import { createPoller, isNewer, type Poller, type PollStatus } from './polling'
 import { ActionButton, Halo, Host, MilestoneList, Overlay, StatusPill, Switcher, SyncBadge, Toasts, TransitionChip, useToasts } from './primitives'
 import { useMounted, useNow, useRuntime } from './runtime'
@@ -42,6 +42,7 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
   const [pending, setPending] = useState<PendingAction | null>(null)
   const [confirm, setConfirm] = useState<Action | null>(null)
   const [sheet, setSheet] = useState(false)
+  const [terms, setTerms] = useState(false)
   const [capturing, setCapturing] = useState(false)
   const { toasts, push, dismiss } = useToasts()
   const viewRef = useRef(view)
@@ -257,6 +258,17 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
                     {view.next.link.label} {view.next.link.href.startsWith('http') ? <IconExternal /> : null}
                   </a>
                 ) : null}
+                {view.microsoft ? (
+                  view.microsoft.termsAccepted ? (
+                    <a class="btn sm primary" href={view.microsoft.href} data-connect-microsoft>
+                      <IconMicrosoft /> Connect Microsoft
+                    </a>
+                  ) : (
+                    <button type="button" class="btn sm primary" data-connect-microsoft onClick={() => setTerms(true)}>
+                      <IconMicrosoft /> Connect Microsoft
+                    </button>
+                  )
+                ) : null}
               </div>
             ) : null}
 
@@ -445,6 +457,35 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
       >
         <p class="confirm-body">{confirm?.confirm?.body}</p>
       </Overlay>
+
+      {view.microsoft && !view.microsoft.termsAccepted ? (
+        <Overlay open={terms} onClose={() => setTerms(false)} title="Connect Microsoft" variant="dialog">
+          <form method="post" action={view.microsoft.href} class="terms-form">
+            <label class="terms-check">
+              <input type="checkbox" name="terms" value="accept" required />
+              <span>
+                I accept the Papyrus{' '}
+                <a href={view.microsoft.termsUrl} target="_blank" rel="noopener noreferrer">
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href={view.microsoft.privacyUrl} target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>{' '}
+                for my organization and am authorized to do so
+              </span>
+            </label>
+            <div class="terms-actions">
+              <button type="button" class="btn" onClick={() => setTerms(false)}>
+                Cancel
+              </button>
+              <button type="submit" class="btn primary" data-autofocus>
+                <IconMicrosoft /> Connect Microsoft
+              </button>
+            </div>
+          </form>
+        </Overlay>
+      ) : null}
 
       <Toasts toasts={toasts} dismiss={dismiss} />
     </div>

@@ -4,7 +4,7 @@ import { createHmac, randomBytes } from 'node:crypto'
 import { vi } from 'vitest'
 import { createApp } from '../../src/app'
 import type { Bindings } from '../../src/env'
-import type { LicenseRpcApi, SignedStatus } from '../../src/license-rpc'
+import type { IdentityPayload, LicenseRpcApi, SignedIdentity, SignedStatus } from '../../src/license-rpc'
 
 /** D1 over node:sqlite with the real schema. */
 export function fakeD1() {
@@ -33,6 +33,9 @@ export function fakeD1() {
   return { sql, db: { prepare } as unknown as D1Database }
 }
 
+export const TEST_KEY_ID = 'https://beag-test.vault.azure.net/keys/papyrus-license/v1'
+export const TEST_AUTHORITY_PEM = '-----BEGIN PUBLIC KEY-----\nTEST\n-----END PUBLIC KEY-----\n'
+
 /** A mocked LicenseRpc: signs statuses with a fake signature, one valid key. */
 export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'good-key' }) {
   const license = {
@@ -47,8 +50,10 @@ export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'goo
       keyId: 'beag-kv-1',
       signature: `signed:${input.deploymentId}:${input.state}`,
     })),
+    signIdentity: vi.fn(async (payload: IdentityPayload): Promise<SignedIdentity> => ({ payload, keyId: 'beag-kv-1', signature: `identity:${payload.aud}:${payload.oid}` })),
     registrationState: vi.fn(async () => 'pending' as const),
     revokeDeployment: vi.fn(async () => true),
+    authorities: vi.fn(async () => ({ [TEST_KEY_ID]: TEST_AUTHORITY_PEM })),
   } satisfies LicenseRpcApi
   return license
 }

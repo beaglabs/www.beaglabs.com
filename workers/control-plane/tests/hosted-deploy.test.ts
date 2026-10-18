@@ -7,7 +7,7 @@ import { hostedProviderContext } from '../src/hosted'
 import { awsRecipe } from '../src/providers/aws'
 import { bootstrapHosted, hostedDeploy } from '../src/providers/aws-hosted'
 import type { DeployContext } from '../src/providers/types'
-import { harness } from './helpers/harness'
+import { harness, TEST_AUTHORITY_PEM, TEST_KEY_ID } from './helpers/harness'
 
 /** Mocked Distilled AWS calls: each returns a canned response and records its input. */
 const aws = vi.hoisted(() => {
@@ -190,13 +190,19 @@ describe('hosted deploy (shared AWS infrastructure)', () => {
     h.sql.prepare('INSERT INTO sessions (id_hash, account_id, expires_at) VALUES (?, ?, ?)').run(createHash('sha256').update('tok').digest('hex'), 'acct_1', '2999-01-01T00:00:00.000Z')
     h.insertDeployment({ id: 'dep_abc', billing_state: 'active' })
     h.sql.prepare("INSERT INTO hosted_infra (id, data, updated_at) VALUES ('aws', ?, 'now')").run(JSON.stringify(READY))
-    const response = await h.call('/deploy/dep_abc/org', { method: 'POST', headers: { cookie: 'cp_session=tok', origin: h.env.BASE_URL, 'content-type': 'application/x-www-form-urlencoded' }, body: 'org=acme' })
+    const response = await h.call('/deploy/dep_abc/org', { method: 'POST', headers: { cookie: 'cp_session=tok', origin: h.env.BASE_URL, 'content-type': 'application/x-www-form-urlencoded' }, body: 'org=acme&terms=accept' })
     expect(response.status).toBe(303)
+    // Registered by the deploy, so straight on to Connect Microsoft, with the terms recorded.
+    expect(response.headers.get('location')).toBe('/deploy/dep_abc/microsoft/connect')
+    const accepted = JSON.parse((h.sql.prepare('SELECT acceptance FROM terms_acceptances WHERE deployment_id = ?').get('dep_abc') as { acceptance: string }).acceptance)
+    expect(accepted).toMatchObject({ accepted_by_account_email: 'owner@example.com', organization: 'acme', termsVersion: '2026-10-16', privacyVersion: '2026-10-16' })
     expect(h.license.createDeployment).toHaveBeenCalledWith({ accountId: 'acct_1', hostname: 'acme.papyrus.beaglabs.com', provider: 'hosted', organization: 'owner@example.com' })
     const row = h.deployment('dep_abc')
     expect(JSON.parse(row.steps as string).deploy).toMatchObject({ status: 'pass' })
     expect(JSON.parse(row.resources as string)).toMatchObject({ accessPointId: 'fsap-1', listenerRuleArn: 'arn:rule/acme', serviceArn: 'arn:service/acme' })
     expect(aws.createRule).toHaveBeenCalledWith(expect.objectContaining({ Priority: 1 }))
+    const papyrus = aws.registerTaskDefinition.mock.calls[0]![0].containerDefinitions.find((c: any) => c.name === 'papyrus')
+    expect(papyrus.environment).toContainEqual({ name: 'PAPYRUS_LICENSE_AUTHORITIES', value: JSON.stringify({ [TEST_KEY_ID]: TEST_AUTHORITY_PEM }) })
   })
 })
 

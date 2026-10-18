@@ -17,6 +17,11 @@ type TokenResponse = {
   error_description?: string
 }
 
+type KeyResponse = {
+  key?: { kid?: string; kty?: string; n?: string; e?: string }
+  error?: { code?: string; message?: string }
+}
+
 type SignResponse = {
   kid?: string
   value?: string
@@ -120,4 +125,48 @@ export async function signCanonicalWithAzureKeyVault(env: Bindings, payload: unk
 /** Sign one Papyrus license payload; the signature fields sit beside the payload fields. */
 export async function signLicenseWithAzureKeyVault(env: Bindings, payload: LicensePayload): Promise<SignedLicense> {
   return { ...payload, ...await signCanonicalWithAzureKeyVault(env, payload) }
+}
+
+const PUBLIC_KEY_API_VERSION = '7.4'
+const publicKeyCache = new Map<string, string>()
+
+/** Convert an RSA public JWK (Key Vault returns kty `RSA` or `RSA-HSM`) to an SPKI PEM. */
+export async function rsaJwkToPem(jwk: { n: string; e: string }): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    'jwk',
+    { kty: 'RSA', n: jwk.n, e: jwk.e, ext: true },
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    true,
+    ['verify'],
+  )
+  const der = Buffer.from(await crypto.subtle.exportKey('spki', key) as ArrayBuffer).toString('base64')
+  return `-----BEGIN PUBLIC KEY-----\n${der.match(/.{1,64}/g)!.join('\n')}\n-----END PUBLIC KEY-----\n`
+}
+
+/**
+ * The public key Papyrus trusts for the current signing key, as `{ [keyId]: pem }` (the `PAPYRUS_LICENSE_AUTHORITIES`
+ * shape). keyId is the versioned key URI that `signCanonicalWithAzureKeyVault` puts on every document. Cached per isolate.
+ */
+export async function licenseAuthorities(env: Bindings): Promise<Record<string, string>> {
+  const key = keyId(env).toString()
+  const cached = publicKeyCache.get(key)
+  if (cached) return { [key]: cached }
+
+  const endpoint = new URL(key)
+  endpoint.searchParams.set('api-version', PUBLIC_KEY_API_VERSION)
+  const response = await fetch(endpoint, {
+    headers: { authorization: `Bearer ${await accessToken(env)}`, accept: 'application/json' },
+    signal: AbortSignal.timeout(10_000),
+  })
+  const body = await response.json().catch(() => ({})) as KeyResponse
+  if (!response.ok || !body.key?.n || !body.key.e) {
+    throw new Error(`Azure Key Vault key read failed (${response.status}): ${body.error?.message ?? body.error?.code ?? 'no RSA public key'}`)
+  }
+  if (body.key.kty && !body.key.kty.startsWith('RSA')) throw new Error(`Azure Key Vault key is ${body.key.kty}, not RSA`)
+  if (body.key.kid && new URL(body.key.kid).toString() !== key) {
+    throw new Error(`Azure Key Vault returned unexpected key id ${body.key.kid}`)
+  }
+  const pem = await rsaJwkToPem({ n: body.key.n, e: body.key.e })
+  publicKeyCache.set(key, pem)
+  return { [key]: pem }
 }

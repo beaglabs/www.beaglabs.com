@@ -331,6 +331,9 @@ dialog.ov-dialog{margin:auto;width:min(500px,calc(100vw - 32px))}
 .ov-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 16px;border-top:2px solid var(--ink);background:#f6f5f2}
 .ov-sub{font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 8px;padding-top:14px;border-top:2px solid var(--ink)}
 .confirm-body{font-size:14.5px;line-height:1.55}
+.terms-check{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.5}
+.terms-check input{width:18px;height:18px;flex:none;margin-top:2px;accent-color:var(--accent)}
+.terms-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
 @keyframes sheet-in{from{transform:translateX(48px);opacity:0}}
 @keyframes pop-in{from{transform:translate(4px,4px);opacity:0}}
 @keyframes drawer-in{from{transform:translateY(48px);opacity:0}}

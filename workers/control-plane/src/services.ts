@@ -11,7 +11,7 @@ export class Env extends Context.Service<Env, Bindings>()('ControlPlane/Env') {}
 export class DbError extends Data.TaggedError('DbError')<{ message: string }> {}
 
 /** An error a customer should see verbatim (bad input, not allowed, provider said no). */
-export class UserError extends Data.TaggedError('UserError')<{ message: string; status?: number }> {}
+export class UserError extends Data.TaggedError('UserError')<{ message: string; status?: number; code?: string }> {}
 
 const d1 = <A>(run: (db: D1Database) => Promise<A>) =>
   Effect.gen(function* () {

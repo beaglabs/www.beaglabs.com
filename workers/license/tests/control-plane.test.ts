@@ -1,4 +1,4 @@
-import { constants, generateKeyPairSync, privateEncrypt, verify } from 'node:crypto'
+import { constants, createPublicKey, generateKeyPairSync, privateEncrypt, verify } from 'node:crypto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('../src/db', () => import('./helpers/fake-db'))
@@ -13,9 +13,16 @@ const KEY_ID = 'https://beag-test.vault.azure.net/keys/papyrus-license/012345678
 const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 })
 const SHA256_DIGEST_INFO = Buffer.from('3031300d060960864801650304020105000420', 'hex')
 
+let keyReads = 0
+
 /** Fake Entra token + Key Vault `sign` endpoints: RS256 over the digest Key Vault receives, like the real vault. */
 function keyVault(url: string, init?: RequestInit): Response | undefined {
   if (url.endsWith('/oauth2/v2.0/token')) return Response.json({ access_token: 'kv-token', expires_in: 3600 })
+  if (url === `${KEY_ID}?api-version=7.4`) {
+    keyReads++
+    const { n, e } = publicKey.export({ format: 'jwk' })
+    return Response.json({ key: { kid: KEY_ID, kty: 'RSA-HSM', key_ops: ['sign', 'verify'], n, e } })
+  }
   if (url.startsWith(`${KEY_ID}/sign`)) {
     const digest = Buffer.from(JSON.parse(String(init?.body)).value, 'base64url')
     const signature = privateEncrypt({ key: privateKey, padding: constants.RSA_PKCS1_PADDING }, Buffer.concat([SHA256_DIGEST_INFO, digest]))
@@ -169,6 +176,35 @@ describe('LicenseRpc.revokeDeployment', () => {
   })
 })
 
+describe('LicenseRpc.signIdentity', () => {
+  const identity = (aud: string, extra: Record<string, unknown> = {}) => ({
+    type: 'papyrus-identity' as const, aud, tid: 'tenant-1', oid: 'oid-1', name: 'Jane Doe', email: 'jane@contoso.com', nonce: 'n-1',
+    issuedAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 5 * 60_000).toISOString(), ...extra,
+  })
+
+  it('signs the payload unchanged with the license key', async () => {
+    const { deploymentId } = await create()
+    const payload = identity(deploymentId)
+    const signed = await rpc.signIdentity(payload)
+    expect(Object.keys(signed).sort()).toEqual(['keyId', 'payload', 'signature'])
+    expect(signed.payload).toEqual(payload)
+    expect(signed.keyId).toBe(KEY_ID)
+    expect(verifies(payload, signed.signature)).toBe(true)
+    expect(verifies({ ...payload, oid: 'oid-2' }, signed.signature)).toBe(false)
+  })
+
+  it('refuses anything that is not a papyrus-identity, odd fields, unknown and revoked deployments', async () => {
+    const { deploymentId } = await create()
+    await expect(rpc.signIdentity({ ...identity(deploymentId), type: 'deployment' } as never)).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity(deploymentId, { state: 'active' }) as never)).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity(deploymentId, { name: undefined }) as never)).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity(deploymentId, { expiresAt: new Date(Date.now() - 1000).toISOString() }))).rejects.toMatchObject({ status: 422 })
+    await expect(rpc.signIdentity(identity('dep_missing'))).rejects.toMatchObject({ status: 404 })
+    await rpc.revokeDeployment(deploymentId)
+    await expect(rpc.signIdentity(identity(deploymentId))).rejects.toMatchObject({ status: 410 })
+  })
+})
+
 describe('LicenseRpc.registrationState', () => {
   it('treats unknown ids as pending', async () => {
     expect(await rpc.registrationState('dep_missing')).toBe('pending')
@@ -178,5 +214,26 @@ describe('LicenseRpc.registrationState', () => {
 describe('LicenseRpc surface', () => {
   it('no longer exposes chat sessions', () => {
     expect('chatSession' in rpc).toBe(false)
+  })
+})
+
+describe('LicenseRpc.authorities', () => {
+  it('returns { keyId: SPKI PEM } for the signing key; a status it signs verifies with that PEM', async () => {
+    keyReads = 0
+    const authorities = await rpc.authorities()
+    expect(Object.keys(authorities)).toEqual([KEY_ID])
+    const pem = authorities[KEY_ID]!
+    expect(pem).toMatch(/^-----BEGIN PUBLIC KEY-----\n[A-Za-z0-9+/=\n]+-----END PUBLIC KEY-----\n$/)
+    expect(pem).toBe(publicKey.export({ type: 'spki', format: 'pem' }))
+
+    const status = await rpc.signStatus({ deploymentId: 'dep_1', state: 'active' })
+    expect(status.keyId in authorities).toBe(true)
+    const trusted = createPublicKey(authorities[status.keyId]!)
+    expect(verify('sha256', Buffer.from(canonical(status.payload)), trusted, Buffer.from(status.signature, 'base64'))).toBe(true)
+    expect(verify('sha256', Buffer.from(canonical({ ...status.payload, state: 'suspended' })), trusted, Buffer.from(status.signature, 'base64'))).toBe(false)
+
+    // Cached: a second call does not read the key again.
+    await rpc.authorities()
+    expect(keyReads).toBeLessThanOrEqual(1)
   })
 })

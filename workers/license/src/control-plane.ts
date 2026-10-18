@@ -18,6 +18,25 @@ export type CreateDeploymentInput = { accountId: string; hostname: string; provi
 export type CreateDeploymentResult = { deploymentId: string; bootstrapToken: string; license: SignedLicense }
 export type StatusPayload = { deploymentId: string; state: DeploymentState; issuedAt: string; expiresAt: string }
 export type SignedStatus = { payload: StatusPayload; keyId: string; signature: string }
+/** A Microsoft sign-in the control plane brokered, for one deployment (`aud`). Papyrus verifies it like a status. */
+export type IdentityPayload = {
+  type: 'papyrus-identity'
+  aud: string
+  tid: string
+  oid: string
+  name?: string
+  preferredUsername?: string
+  email?: string
+  companyName?: string
+  department?: string
+  jobTitle?: string
+  officeLocation?: string
+  pictureUrl?: string
+  nonce: string
+  issuedAt: string
+  expiresAt: string
+}
+export type SignedIdentity = { payload: IdentityPayload; keyId: string; signature: string }
 
 /** Every licensable feature for the commercial profile (classification banners are a government add-on). */
 export const CONTROL_PLANE_FEATURES = ['core', 'teams', 'email', 'security-connectors', 'action-executors', 'agent-peers']
@@ -107,6 +126,28 @@ export async function signStatus(env: Bindings, input: { deploymentId: string; s
     issuedAt: new Date(issued).toISOString(),
     expiresAt: new Date(issued + STATUS_TTL_MS).toISOString(),
   }
+  return { payload, ...await signCanonicalWithAzureKeyVault(env, payload) }
+}
+
+const IDENTITY_REQUIRED = ['type', 'aud', 'tid', 'oid', 'nonce', 'issuedAt', 'expiresAt'] as const
+const IDENTITY_OPTIONAL = ['name', 'preferredUsername', 'email', 'companyName', 'department', 'jobTitle', 'officeLocation', 'pictureUrl'] as const
+
+/**
+ * Sign an identity assertion exactly as given (no field is added, dropped or rewritten, so both sides' canonical JSON
+ * match). `type` keeps a license or status from being replayed as an assertion. Revoked deployments get none.
+ */
+export async function signIdentity(env: Bindings, payload: IdentityPayload): Promise<SignedIdentity> {
+  if (!payload || typeof payload !== 'object' || payload.type !== 'papyrus-identity') throw new ApiError(422, 'validation_error', "type must be 'papyrus-identity'.")
+  const allowed = new Set<string>([...IDENTITY_REQUIRED, ...IDENTITY_OPTIONAL])
+  for (const [key, value] of Object.entries(payload)) {
+    if (!allowed.has(key)) throw new ApiError(422, 'validation_error', `Unknown field ${key}.`)
+    if (typeof value !== 'string' || !value) throw new ApiError(422, 'validation_error', `${key} must be a non-empty string.`)
+  }
+  for (const key of IDENTITY_REQUIRED) if (typeof payload[key] !== 'string') throw new ApiError(422, 'validation_error', `${key} is required.`)
+  if (!(Date.parse(payload.expiresAt) > Date.now())) throw new ApiError(422, 'validation_error', 'expiresAt must be in the future.')
+  const known = first<Row>(await getDb(env).execute({ sql: 'SELECT deployment_id FROM control_plane_deployments WHERE deployment_id=?', args: [payload.aud] }))
+  if (!known) throw new ApiError(404, 'deployment_not_found', 'Unknown deployment.')
+  if (await isRevoked(env, payload.aud)) throw new ApiError(410, 'deployment_revoked', 'This deployment was deleted.')
   return { payload, ...await signCanonicalWithAzureKeyVault(env, payload) }
 }
 

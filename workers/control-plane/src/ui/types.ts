@@ -114,6 +114,15 @@ export interface NextStepView {
   link: LinkRef | null
 }
 
+/** Connect Microsoft, offered until the microsoft step passes. Without accepted terms the button asks for them first. */
+export interface MicrosoftConnectView {
+  /** GET starts Connect Microsoft; POST (with terms=accept) records the terms and then starts it. */
+  href: string
+  termsAccepted: boolean
+  termsUrl: string
+  privacyUrl: string
+}
+
 /** One row of the deployments table. */
 export interface DeploymentSummary {
   id: string
@@ -146,6 +155,7 @@ export interface DeploymentView extends DeploymentSummary {
   operation: { label: string; detail: string; startedAt: string | null } | null
   failure: FailureView | null
   next: NextStepView | null
+  microsoft: MicrosoftConnectView | null
   preview: PreviewView
   plan: PlanView | null
   details: DetailRow[]
