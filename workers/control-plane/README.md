@@ -162,7 +162,7 @@ npm run deploy     # applies schema.sql to D1, deploys
 
 ### Homepage compute credit
 
-`POST /api/credits/request` issues an encrypted, email-bound redemption code. The homepage sends `papyrus_compute_credit_requested` through Customer.io with `credit_code` and `redeem_url`. Customer.io campaign 3 / action 35 uses Design Studio email `cd427bf1-36fc-4622-8a4d-334497eddb65`; source is `emails/compute-credit.html`.
+`POST /api/credits/request` issues an encrypted, email-bound redemption code. The homepage submits the credit code to Customer.io's native form action (`01m58bc66mcrg961h9q49bv0tc`), which identifies the email and maps the code to `compute_credit_code`. The requested-credit automation sends one email when a person joins the form's automatically maintained segment (16). No Track API key is required for this credit form. The email escapes the code and uses a fixed Papyrus billing URL. Customer.io campaign 3 / action 35 uses Design Studio email `cd427bf1-36fc-4622-8a4d-334497eddb65`; source is `emails/compute-credit.html`.
 
 New checkout resolves or creates the three monthly prices by stable lookup keys (`papyrus_platform_v1`, `papyrus_vm_compute_v1`, `papyrus_agent_execution_v1`) rather than relying on the old configured platform price ID. No Checkout trial is created.
 

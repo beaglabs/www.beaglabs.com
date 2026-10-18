@@ -7,9 +7,9 @@
 <x-heading-1 :font-size="{small:36,medium:48}" :line-height="1.05" font-weight="900" margin="0px 0px 24px">Your $1,000<br />compute credit.</x-heading-1>
 <x-paragraph margin="0px 0px 24px">Put it toward VM and agent compute on one Papyrus deployment. Sign in with the email where you received this code.</x-paragraph>
 <x-box padding="16px" border-style="solid" border-width="2px" :border-color="{light:globalStyles.colors.neutral900_axvmgphc00v0,dark:globalStyles.colors.neutral100_in2i4lnfmyce}" :background="{light:globalStyles.colors.neutral100_in2i4lnfmyce,dark:globalStyles.colors.neutral900_axvmgphc00v0}" margin="0px 0px 24px" data-layer-label="Personal code">
-<x-paragraph :font-size="14" font-family="monospace" margin="0px">{{event.credit_code}}</x-paragraph>
+<x-paragraph :font-size="14" font-family="monospace" margin="0px">{{customer.compute_credit_code | escape}}</x-paragraph>
 </x-box>
-<x-cta href="{{event.redeem_url}}" :track-link="false" :width="{small:`100%`,medium:`250px`}" align="left" :background="{light:`#ff5f1f`,dark:`#ff5f1f`}" :color="{light:globalStyles.colors.neutral900_axvmgphc00v0,dark:globalStyles.colors.neutral900_axvmgphc00v0}" border-radius="0px" padding="16px 24px" font-weight="700" margin="0px 0px 24px">Redeem your credit →</x-cta>
+<x-cta href="https://papyrus.beaglabs.com/billing" :track-link="false" :width="{small:`100%`,medium:`250px`}" align="left" :background="{light:`#ff5f1f`,dark:`#ff5f1f`}" :color="{light:globalStyles.colors.neutral900_axvmgphc00v0,dark:globalStyles.colors.neutral900_axvmgphc00v0}" border-radius="0px" padding="16px 24px" font-weight="700" margin="0px 0px 24px">Redeem your credit →</x-cta>
 <x-paragraph :font-size="14" margin="0px">One credit per verified email, redeemable for one deployment. Billing details are required before creating a deployment. The $250/month platform fee is separate. Usage beyond the credit is billed at the published rates.</x-paragraph>
 </x-box>
 <x-box :padding="{small:`24px`,medium:`24px 40px`}" :background="{light:globalStyles.colors.neutral900_axvmgphc00v0,dark:globalStyles.colors.neutral900_axvmgphc00v0}" :color="{light:globalStyles.colors.neutral100_in2i4lnfmyce,dark:globalStyles.colors.neutral100_in2i4lnfmyce}" data-layer-label="Footer">

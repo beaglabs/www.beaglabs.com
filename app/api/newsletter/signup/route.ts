@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       const credit = await response.json() as { redeemed: boolean; code: string | null; redeemUrl: string }
       if (credit.redeemed) return NextResponse.json({ error: 'Your compute credit has already been redeemed. Sign in to Papyrus to manage it.' }, { status: 409 })
       if (!credit.code) return NextResponse.json({ error: 'Could not prepare your compute credit.' }, { status: 502 })
-      try { await sendComputeCreditEmail(email, credit.code, credit.redeemUrl) } catch { return NextResponse.json({ error: 'Could not send the credit email. Please try again.' }, { status: 502 }) }
+      try { await sendComputeCreditEmail(email, credit.code) } catch { return NextResponse.json({ error: 'Could not send the credit email. Please try again.' }, { status: 502 }) }
       return NextResponse.json({ ok: true })
     }
 
