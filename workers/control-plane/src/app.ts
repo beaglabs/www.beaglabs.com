@@ -6,7 +6,7 @@ import type * as HttpClient from 'effect/http/HttpClient'
 import { Hono, type Context as HonoContext } from 'hono'
 import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
-import { accountTrial, backfillTrialEnds, handleWebhook, portalUrl, startCheckout } from './billing'
+import { accountTrial, backfillTrialEnds, completeCheckoutForAccount, handleWebhook, portalUrl, pruneCheckoutIntents, startCheckout } from './billing'
 import { SUPPORT_JS, SUPPORT_SCRIPT_PATH } from './support'
 import { encryptJson, randomToken, timingSafeEqual } from './crypto'
 import { EVENT_FILTERS, eventJson, isEventFilter, listEvents, logEvent } from './events'
@@ -17,8 +17,8 @@ import { LOGO_128_BASE64, LOGO_64_BASE64, LOGO_PATHS } from './logo'
 import { connectTemplate } from './providers/aws'
 import { credentialsFromForm, missingFields, providerById } from './providers/registry'
 import { checkCredentials, isHostname, license, loadCredentials, runStep } from './runner'
-import { Env, UserError, getOwnedDeployment, listDeployments, newId, nowIso, run, saveProgress, type Account, type Deployment } from './services'
-import { initialSteps, isStepId, record, resetFrom } from './setup'
+import { Env, UserError, getOwnedDeployment, listDeployments, nowIso, run, saveProgress, type Account, type Deployment } from './services'
+import { isStepId, record, resetFrom } from './setup'
 import { deploymentStatus } from './status'
 import { meterComputeHour, monthUsage, reportUsage } from './metering'
 import { deleteDeployment, resumeTeardowns, runTeardown, startDeployment, stopDeployment } from './lifecycle'
@@ -70,6 +70,7 @@ export const runProgram = <A>(env: Bindings, program: Program<A>, deps: AppDeps 
 
 /** The hourly cron: compute meter events for the hour that just ended (src/metering.ts), then waiting teardowns. */
 export const scheduled = async (env: Bindings, now = Date.now(), deps: AppDeps = {}) => {
+  await runProgram(env, pruneCheckoutIntents(), deps)
   const exit = await runProgram(env, meterComputeHour(now), deps)
   if (Exit.isFailure(exit)) console.error('compute metering failed', (Cause.squash(exit.cause) as { _tag?: string })?._tag ?? 'defect')
   const teardowns = await runProgram(env, resumeTeardowns(), deps)
@@ -216,19 +217,25 @@ export function createApp(deps: AppDeps = {}) {
     const form = await c.req.parseBody()
     return signedIn(c, (account) =>
       Effect.gen(function* () {
-        let deployment: Deployment
+        let deployment: Deployment | undefined
         if (form.deployment) {
           deployment = yield* getOwnedDeployment(account.id, String(form.deployment))
           if (deployment.lifecycle === 'deleting' || deployment.lifecycle === 'deleted') return yield* new UserError({ message: 'This deployment was deleted.', status: 409 })
-        } else {
-          const id = newId('dep')
-          yield* run('INSERT INTO deployments (id, account_id, steps, created_at, updated_at) VALUES (?, ?, ?, ?, ?)', id, account.id, JSON.stringify(initialSteps()), nowIso(), nowIso())
-          deployment = yield* getOwnedDeployment(account.id, id)
+          if (deployment.billing_state === 'active') return c.redirect(yield* portalUrl(deployment), 303)
         }
         return c.redirect(yield* startCheckout(account, deployment), 303)
       }),
     )
   })
+
+  app.get('/billing/complete', (c) => signedIn(c, (account) => Effect.gen(function* () {
+    const result = yield* completeCheckoutForAccount(account, c.req.query('session_id') ?? '').pipe(Effect.result)
+    if (result._tag === 'Failure') {
+      const failure = result.failure as { message?: string }
+      return c.redirect(`/billing?error=${encodeURIComponent(failure.message ?? 'Billing setup is still processing. Please try again shortly.')}`, 303)
+    }
+    return c.redirect(`/deploy/${encodeURIComponent(result.success)}`, 303)
+  })))
 
   app.post('/billing/portal', async (c) => {
     const form = await c.req.parseBody()
@@ -565,7 +572,7 @@ export function createApp(deps: AppDeps = {}) {
   /** Retry (or check on) a teardown that failed or is waiting. */
   app.post('/deploy/:id/teardown', (c) => lifecycleAction(c, (deployment, account) => runTeardown(deployment, account.id)))
 
-  /** Settings → Delete deployment. The exact org name (hosted) or hostname (BYOC) confirms it. */
+  /** Deployment settings → Delete deployment. The exact org name (hosted) or hostname (BYOC) confirms it. */
   app.post('/deploy/:id/delete', async (c) => {
     const typed = String((await c.req.parseBody()).confirm ?? '')
     return signedIn(c, (account) =>
@@ -575,8 +582,7 @@ export function createApp(deps: AppDeps = {}) {
         if (result._tag === 'Failure') {
           const failure = result.failure as { _tag?: string; message?: string; status?: number }
           if (failure?._tag !== 'UserError') return yield* Effect.fail(result.failure)
-          const deployments = yield* listDeployments(account.id)
-          return c.html(Views.settingsPage(account, deployments, { text: failure.message ?? 'Delete failed', kind: 'error' }), (failure.status ?? 400) as 400)
+          return c.html(Views.deploymentSettingsPage(account, deployment, failure.message ?? 'Delete failed'), (failure.status ?? 400) as 400)
         }
         return c.redirect(`/deploy/${deployment.id}`, 303)
       }),
@@ -588,6 +594,10 @@ export function createApp(deps: AppDeps = {}) {
   app.get('/team', (c) => signedIn(c, (account) => Effect.succeed(c.html(Views.teamPage(account, [account])))))
 
   app.get('/support', (c) => signedIn(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.html(Views.supportPage(account, deployments)))))
+
+  app.get(Views.DEPLOYMENT_SETTINGS_SCRIPT_PATH, (c) => c.body(Views.DEPLOYMENT_SETTINGS_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
+
+  app.get('/deploy/:id/settings', (c) => signedIn(c, (account) => Effect.map(getOwnedDeployment(account.id, c.req.param('id')), (deployment) => c.html(Views.deploymentSettingsPage(account, deployment, c.req.query('error'))))))
 
   app.get('/settings', (c) => signedIn(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.html(Views.settingsPage(account, deployments)))))
 

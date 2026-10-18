@@ -52,6 +52,17 @@ CREATE TABLE IF NOT EXISTS deployments (
 
 CREATE INDEX IF NOT EXISTS deployments_account ON deployments(account_id);
 
+-- Checkout references are not deployments. A deployment is saved only after verified Checkout completion.
+CREATE TABLE IF NOT EXISTS checkout_intents (
+  stripe_session_id TEXT PRIMARY KEY,
+  deployment_id TEXT NOT NULL,
+  account_id TEXT NOT NULL REFERENCES accounts(id),
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS checkout_intents_expiry ON checkout_intents(expires_at);
+
+
 -- Stripe webhook idempotency.
 CREATE TABLE IF NOT EXISTS stripe_events (
   id TEXT PRIMARY KEY,

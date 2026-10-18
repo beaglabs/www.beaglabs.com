@@ -139,6 +139,7 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
             </div>
           </div>
           <div class="dp-actions">
+            <a class="btn" href={`/deploy/${encodeURIComponent(view.id)}/settings`}><IconSliders /> Settings</a>
             {headerActions.map((a) => (
               <ActionButton key={a.id} action={a} pendingId={pending?.id ?? null} blocked={blocked} onRun={run} icon={ACTION_ICON[a.id]} />
             ))}
@@ -400,7 +401,7 @@ export const DeploymentApp = ({ payload, events }: DeploymentAppProps) => {
         ) : null}
         <h3 class="ov-sub">Danger zone</h3>
         <p class="small">
-          Deleting is separate from Stop and can't be undone. It lives in <a href="/settings">Settings</a>, where you confirm it by typing the name.
+          Deleting is separate from Stop and can't be undone. It lives in <a href={`/deploy/${encodeURIComponent(view.id)}/settings`}>deployment settings</a>, where you confirm it by typing the name.
         </p>
       </Overlay>
 

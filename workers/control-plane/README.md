@@ -31,6 +31,8 @@ keys and signing.
 - BYOC only: `/provision` — provider dropdown + credential form generated from `src/providers/registry.ts`; read-only check on save;
   Connect AWS (CloudFormation quick-create, per-deployment ExternalId; template at `/aws/connect-template.yaml`)
 - `/deploy`, `/deploy/:id` (setup page) — connect → deploy → DNS (DoH 1.1.1.1) → health → Connect Microsoft → registration
+- `/deploy/:id/settings` — address and deletion controls for exactly that deployment. `/settings` contains only the account profile.
+- Checkout requires a payment method and billing address. Pending references live in `checkout_intents` for seven days; a deployment is created only after Stripe verifies a completed Checkout and an active/trialing subscription. The signed webhook and `/billing/complete` share an idempotent completion path, including out-of-order subscription events.
 - Console (signed in): `/deploy` (one deployment = its page; several = a list), `/billing`, `/team`, `/support`, `/settings`
 - `GET /api/events` — Activity for the signed-in account: `deployment`, `filter` (all/deploy/billing/team/errors), `source`,
   `level` (comma lists), `before`/`after` ids, `limit` (≤ 100). Rows are written by setup steps, Stripe webhooks, sign-ins,
@@ -39,7 +41,7 @@ keys and signing.
 - `GET /api/deployments/status` — Papyrus check-in: Bearer deployment key + `X-Papyrus-Deployment-Id` → signed status
 - `POST /api/deployments/usage` — Papyrus agent-execution usage (same auth) → Stripe meter event (`src/metering.ts`)
 - `POST /deploy/:id/stop`, `POST /deploy/:id/start` — scale the ECS service to 0 / 1 (hosted and AWS BYOC); see below
-- `POST /deploy/:id/delete` (Settings → Delete deployment; body `confirm` = the org name, or the hostname for BYOC),
+- `POST /deploy/:id/delete` (deployment Settings → typed confirmation dialog; body `confirm` = the org name, or the hostname for BYOC),
   `POST /deploy/:id/teardown` — retry or continue a teardown
 - Cron `5 * * * *` — one VM-hour meter event per running deployment (none for hours that start while stopped; nothing is
   sent while trialing), then continues teardowns that are waiting (not failed ones: those wait for Retry), then prunes

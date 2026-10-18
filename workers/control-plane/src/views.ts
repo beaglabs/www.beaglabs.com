@@ -258,7 +258,7 @@ export const NAV: readonly { id: NavItem; label: string; href: string }[] = [
   { id: 'billing', label: 'Billing', href: '/billing' },
   { id: 'team', label: 'Team', href: '/team' },
   { id: 'support', label: 'Support', href: '/support' },
-  { id: 'settings', label: 'Settings', href: '/settings' },
+  { id: 'settings', label: 'Account', href: '/settings' },
 ]
 
 const accountLabel = (account: Account) => account.organization || account.name || account.email.split('@')[0]
@@ -422,7 +422,7 @@ ${notice(message)}<form method="post" action="/deploy/${esc(deployment.id)}/org"
 <p id="org-status" class="help" aria-live="polite"></p>
 ${termsCheckbox('terms')}
 <p style="margin-top:18px"><button class="btn primary lg full" type="submit">${MICROSOFT}Connect Microsoft and go live</button></p></form></div>
-<div class="foot">${byoc ? `<a href="/provision?deployment=${esc(deployment.id)}">Deploy in your own cloud instead</a> · ` : ''}Signed in as ${esc(account.email)} · <a href="/logout">Sign out</a></div>`,
+<div class="foot">${byoc ? `<a href="/provision?deployment=${esc(deployment.id)}">Deploy in your own cloud instead</a> · ` : ''}Signed in as ${esc(account.email)} · <a href="/deploy/${esc(deployment.id)}/settings">Deployment settings</a> · <a href="/logout">Sign out</a></div>`,
   })
 
 /** Served at COPY_SCRIPT_PATH: buttons with data-copy="<input id>" copy that field. */
@@ -623,44 +623,59 @@ export const supportPage = (account: Account, deployments: Deployment[]) => {
   return consoleLayout({ title: 'Support', account, active: 'support', body })
 }
 
-/** Settings → Delete deployment: irreversible, confirmed by typing the org name (hosted) or hostname (BYOC). */
-const deleteCard = (deployment: Deployment) => {
+/** Deployment-specific settings; destructive actions are confirmed inside a modal. */
+export const DEPLOYMENT_SETTINGS_SCRIPT_PATH = '/assets/deployment-settings.js'
+export const DEPLOYMENT_SETTINGS_JS = `(function(){
+  var dialog = document.getElementById('delete-deployment');
+  var open = document.querySelector('[data-delete-open]');
+  if (!dialog || !open) return;
+  var input = dialog.querySelector('input[name="confirm"]');
+  var submit = dialog.querySelector('[data-delete-submit]');
+  open.addEventListener('click', function(){ input.value=''; submit.disabled=true; dialog.showModal(); dialog.querySelector('[data-delete-cancel]').focus(); });
+  dialog.querySelector('[data-delete-cancel]').addEventListener('click', function(){ dialog.close(); });
+  dialog.addEventListener('close', function(){ input.value=''; submit.disabled=true; open.focus(); });
+  input.addEventListener('input', function(){ submit.disabled=input.value.trim()!==input.getAttribute('data-confirm'); });
+  dialog.querySelector('form').addEventListener('submit', function(event){ if(input.value.trim()!==input.getAttribute('data-confirm')){event.preventDefault();input.focus();} });
+})()`
+
+const DEPLOYMENT_SETTINGS_STYLES = `
+.ds{max-width:1040px;margin:0 auto}.ds .top{margin-top:14px}.ds-name{font:13px var(--mono);overflow-wrap:anywhere}
+.ds-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}.ds-grid>.card{min-width:0;box-shadow:4px 4px 0 var(--ink)}
+.ds .kv{gap:16px}.ds .kv span:last-child{min-width:0;overflow-wrap:anywhere}.ds-danger{border-color:#991b1b}.ds-danger h4{color:#991b1b}
+.delete-dialog{position:fixed;inset:0;margin:auto;width:min(520px,calc(100vw - 32px));max-height:90dvh;overflow-y:auto;border:2px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:22px;background:#fff;color:var(--ink)}
+.delete-dialog::backdrop{background:#1119}.delete-dialog label .mono{text-transform:none}.delete-dialog h2{font-size:26px;line-height:1.1}.delete-dialog p{margin-top:12px;font-size:14px;line-height:1.5}.delete-dialog .actions{justify-content:flex-end;margin-top:20px}.delete-dialog .btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}.delete-dialog .ds-name{background:var(--accent-soft);padding:10px;border:1px solid var(--ink)}
+@media(max-width:800px){.ds-grid{grid-template-columns:minmax(0,1fr)}}
+`
+
+export const deploymentSettingsPage = (account: Account, deployment: Deployment, message?: string | null) => {
   const name = confirmNameFor(deployment)
   const hosted = !deployment.provider || deployment.provider === HOSTED_PROVIDER
-  const id = `confirm-${esc(deployment.id)}`
-  return `<div class="card" data-delete-card><h4>Delete deployment <span class="mono" style="text-transform:none">${esc(deploymentName(deployment))}</span></h4><div class="body">
-<p style="font-size:14px">${
-    hosted
-      ? 'Permanently deletes this Papyrus workspace and all of its data, cancels its subscription now (prorated) and revokes its license. The organization name becomes available to others. This cannot be undone.'
-      : 'Cancels its subscription now (prorated) and revokes its license, so Papyrus stops working. Nothing is deleted in your cloud account: you get a list of what to remove. This cannot be undone.'
-  }</p>
-<form method="post" action="/deploy/${esc(deployment.id)}/delete" style="margin-top:12px"><label for="${id}">Type <span class="mono">${esc(name)}</span> to confirm</label>
-<input id="${id}" name="confirm" required autocomplete="off" autocapitalize="none" spellcheck="false" data-confirm="${esc(name)}">
-<div class="actions" style="margin-top:14px"><button class="btn danger" type="submit">Delete deployment</button></div></form></div></div>`
+  const deleting = deployment.lifecycle === 'deleting' || deployment.lifecycle === 'deleted'
+  const warning = hosted
+    ? 'Permanently deletes this Papyrus workspace and all of its data, cancels its subscription now (prorated) and revokes its license. The organization name becomes available to others. This cannot be undone.'
+    : 'Cancels its subscription now (prorated) and revokes its license, so Papyrus stops working. Nothing is deleted in your cloud account: you get a list of what to remove. This cannot be undone.'
+  const body = `<div class="ds"><p class="ds-name"><a href="/deploy">Deployments</a> / <a href="/deploy/${esc(deployment.id)}">${esc(deploymentName(deployment))}</a></p>
+${pageTop('Deployment', 'Settings', `<a class="btn" href="/deploy/${esc(deployment.id)}">Back to deployment</a>`)}${notice(message)}
+<div class="ds-grid"><section class="card"><h4>Address and configuration</h4><div class="body"><div class="kv"><span>Provider</span><span>${esc(providerName(deployment))}</span></div><div class="kv"><span>Deployment ID</span><span class="mono">${esc(deployment.id)}</span></div>
+${deployment.hostname ? `<label for="deployment-address">Address</label><input id="deployment-address" class="mono" value="${esc(deployment.hostname)}" readonly><p class="help">Addresses are fixed once claimed.</p>` : `<p class="help">No address yet. <a href="/deploy/${esc(deployment.id)}">Choose your organization name</a>.</p>`}</div></section>
+<section class="card ds-danger" data-delete-card><h4>Delete deployment</h4><div class="body"><p class="ds-name">${esc(deploymentName(deployment))}</p><p class="help">${esc(warning)}</p>
+${deleting ? `<p class="help">This deployment is ${esc(deployment.lifecycle)}. <a href="/deploy/${esc(deployment.id)}">View teardown progress</a>.</p>` : '<div class="actions"><button class="btn danger" type="button" data-delete-open>Delete deployment</button></div>'}</div></section></div>
+${deleting ? '' : `<dialog id="delete-deployment" class="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-warning"><h2 id="delete-title" class="disp">Delete this deployment?</h2><p class="ds-name">${esc(deploymentName(deployment))}</p><p id="delete-warning">${esc(warning)}</p>
+<form method="post" action="/deploy/${esc(deployment.id)}/delete"><label for="delete-confirm">Type <span class="mono">${esc(name)}</span> to confirm</label><input id="delete-confirm" name="confirm" required autocomplete="off" autocapitalize="none" spellcheck="false" data-confirm="${esc(name)}"><div class="actions"><button class="btn" type="button" data-delete-cancel>Cancel</button><button class="btn danger" type="submit" data-delete-submit disabled>Delete permanently</button></div></form></dialog>`}</div>`
+  return consoleLayout({ title: `${deploymentName(deployment)} · Settings`, account, active: 'deployment', body, scripts: [DEPLOYMENT_SETTINGS_SCRIPT_PATH], styles: DEPLOYMENT_SETTINGS_STYLES })
 }
 
+/** Global settings contain only the account profile. Deployment settings live at /deploy/:id/settings. */
 export const settingsPage = (account: Account, deployments: Deployment[], message?: { text: string; kind: 'error' | 'ok' } | null) => {
-  // The organization goes on the license when a deployment registers, so it is fixed from then on.
   const locked = deployments.some((d) => d.license_deployment_id)
-  const body = `${pageTop('Settings', 'Settings')}${message ? notice(message.text, message.kind) : ''}
-<div class="tiles"><div class="card"><h4>Account</h4><div class="body"><form method="post" action="/settings">
+  const body = `${pageTop('Account', 'Account settings')}${message ? notice(message.text, message.kind) : ''}
+<div class="card" style="max-width:680px"><h4>Account</h4><div class="body"><form method="post" action="/settings">
 <label for="name">Your name</label><input id="name" name="name" value="${esc(account.name ?? '')}" autocomplete="name" maxlength="200">
 <label for="organization">Organization</label><input id="organization" name="organization" value="${esc(account.organization ?? '')}" autocomplete="organization" maxlength="200"${locked ? ' readonly aria-describedby="org-locked"' : ''}>
 ${locked ? '<p class="help" id="org-locked">Fixed once deployed: it is on your Papyrus license.</p>' : ''}
 <label for="email">Email</label><input id="email" value="${esc(account.email)}" readonly>
-<div class="actions" style="margin-top:18px"><button class="btn primary" type="submit">Save</button></div></form></div></div>
-<div class="card"><h4>Addresses</h4><div class="body">${
-    deployments.length
-      ? deployments
-          .map((d) =>
-            d.hostname
-              ? `<label for="host-${esc(d.id)}">${esc(providerName(d))}</label><input id="host-${esc(d.id)}" class="mono" value="${esc(d.hostname)}" readonly>`
-              : `<p style="font-size:14px">No address yet. <a href="/deploy/${esc(d.id)}">Choose your organization name</a>.</p>`,
-          )
-          .join('') + '<p class="help">Addresses are fixed once claimed.</p>'
-      : '<p style="font-size:14px;color:var(--muted)">No deployments yet.</p>'
-  }</div></div>${deployments.filter((d) => d.lifecycle !== 'deleting').map(deleteCard).join('')}</div>`
-  return consoleLayout({ title: 'Settings', account, active: 'settings', body })
+<div class="actions" style="margin-top:18px"><button class="btn primary" type="submit">Save</button></div></form></div></div>`
+  return consoleLayout({ title: 'Account settings', account, active: 'settings', body })
 }
 
 /** Live org-name check: lowercases as you type, then asks the server (syntax, reserved list, uniqueness). Plain ES2020. */

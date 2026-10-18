@@ -32,12 +32,12 @@ const passed = (...ids: Array<'connect' | 'deploy' | 'dns' | 'health' | 'microso
 describe('Console shell', () => {
   it('renders the sidebar nav with the active item', async () => {
     const { get } = signedIn()
-    for (const [path, label] of [['/billing', 'Billing'], ['/team', 'Team'], ['/support', 'Support'], ['/settings', 'Settings'], ['/deploy', 'Deployment']] as const) {
+    for (const [path, label] of [['/billing', 'Billing'], ['/team', 'Team'], ['/support', 'Support'], ['/settings', 'Account'], ['/deploy', 'Deployment']] as const) {
       const response = await get(path)
       expect(response.status, path).toBe(200)
       const html = await response.text()
       expect(html).toContain('<aside class="side"')
-      for (const item of ['Deployment', 'Billing', 'Team', 'Support', 'Settings']) expect(html).toContain(`>${item}</a>`)
+      for (const item of ['Deployment', 'Billing', 'Team', 'Support', 'Account']) expect(html).toContain(`>${item}</a>`)
       expect(html.match(/aria-current="page"/g)).toHaveLength(1)
       expect(html).toMatch(new RegExp(`class="on" aria-current="page">${label}</a>`))
       expect(html).toContain('owner@example.com')
