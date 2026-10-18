@@ -34,16 +34,6 @@ export async function storeEvents(env: Bindings, events: readonly StoredEvent[])
   })))
 }
 
-/** Records one server-side event (admin mutations, huddle.ended) and forwards it. */
-export async function recordEvent(env: Bindings, event: StoredEvent): Promise<void> {
-  try {
-    await storeEvents(env, [event])
-    await forwardToCustomerIo(env, [event])
-  } catch (error) {
-    console.error('record event failed', { event: event.event, message: error instanceof Error ? error.message : String(error) })
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Customer.io Track API v2 batch
 

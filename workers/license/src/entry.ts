@@ -4,7 +4,6 @@ import { syncMarketplaceVmUsageScheduled } from './marketplace-reports'
 import type { Bindings } from './env'
 import api, { isApiPath, isOpenCorsPath } from './api'
 
-export { ConversationRoom } from './conversation-room'
 export { LicenseRpc } from './license-rpc'
 
 const WWW_ORIGIN = 'https://beaglabs.com'
@@ -32,15 +31,13 @@ function appendVary(headers: Headers, value: string): void {
 
 const OPEN_CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Range',
-  'Access-Control-Expose-Headers': 'Content-Disposition, Content-Range, Content-Length, Accept-Ranges',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400',
 }
 
-/** Header-authenticated APIs (chat, session, track, admin): any origin, never credentials. */
+/** Header-authenticated API (track): any origin, never credentials. */
 function withOpenCors(response: Response): Response {
-  if (response.status === 101) return response // WebSocket upgrades must pass through untouched
   const wrapped = new Response(response.body, response)
   for (const [name, value] of Object.entries(OPEN_CORS_HEADERS)) wrapped.headers.set(name, value)
   return wrapped
@@ -48,7 +45,6 @@ function withOpenCors(response: Response): Response {
 
 function withCors(request: Request, response: Response): Response {
   if (isOpenCorsPath(new URL(request.url).pathname)) return withOpenCors(response)
-  if (response.status === 101) return response
   const origin = allowedOrigin(request)
   if (!origin) return response
 

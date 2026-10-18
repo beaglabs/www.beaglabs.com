@@ -34,11 +34,7 @@ MARKETPLACE_ANALYTICS_CLIENT_SECRET=""
 BASE_URL="http://localhost:8787"
 MARKETPLACE_FROM_EMAIL="Beag Labs Marketplace <sales@mail.beaglabs.com>"
 
-# --- Papyrus admin app, customer chat, event pipe -------------------------------
-# Admin app API app registration (staff tokens). Production value is in wrangler.jsonc.
-ADMIN_API_CLIENT_ID="76fd8c28-6c8d-4b41-ae10-a99da42880a1"
-# HMAC secret for 1-hour customer chat session JWTs. Generate: openssl rand -base64 48
-CHAT_SESSION_SECRET=""
+# --- Deployment registration, event pipe, Sentry --------------------------------
 # Optional Marketplace plan pin for /api/provision/bootstrap (unset = plan check skipped).
 PAPYRUS_MARKETPLACE_PUBLISHER=""
 PAPYRUS_MARKETPLACE_PRODUCT=""
@@ -46,19 +42,5 @@ PAPYRUS_MARKETPLACE_PRODUCT=""
 CUSTOMERIO_SITE_ID=""
 CUSTOMERIO_API_KEY=""
 CUSTOMERIO_REGION="us"
-# Cloudflare RealtimeKit (huddles). API token needs the Realtime / Realtime Admin permission.
-CF_ACCOUNT_ID=""
-REALTIMEKIT_APP_ID=""
-REALTIMEKIT_API_TOKEN=""
-REALTIMEKIT_PRESET_NAME="group_call_participant"
 # Sentry internal integration client secret (verifies Sentry-Hook-Signature).
 SENTRY_CLIENT_SECRET=""
-# Push: FCM HTTP v1 (Android). FCM_SERVICE_ACCOUNT_JSON is the full service-account JSON key.
-FCM_PROJECT_ID=""
-FCM_SERVICE_ACCOUNT_JSON=""
-# Push: APNs token auth (macOS). APNS_PRIVATE_KEY is the .p8 PEM contents. APNS_ENVIRONMENT = production | sandbox.
-APNS_KEY_ID=""
-APNS_TEAM_ID=""
-APNS_BUNDLE_ID="com.beaglabs.papyrus.admin"
-APNS_PRIVATE_KEY=""
-APNS_ENVIRONMENT="production"

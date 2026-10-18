@@ -8,7 +8,7 @@ import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
 import { accountTrial, backfillTrialEnds, handleWebhook, portalUrl, startCheckout } from './billing'
 import { ACTIVITY_JS, ACTIVITY_SCRIPT_PATH } from './activity'
-import { CHAT_BUBBLE_JS, CHAT_SCRIPT_PATH, CHAT_SESSION_PATH } from './chat-bubble'
+import { SUPPORT_JS, SUPPORT_SCRIPT_PATH } from './support'
 import { encryptJson, randomToken, timingSafeEqual } from './crypto'
 import { EVENT_FILTERS, eventJson, isEventFilter, listEvents, logEvent } from './events'
 import { HOSTED_PROVIDER, byocEnabled, claimOrgName, hostedHostname, hostedProviderContext, loadHostedInfra, orgNameAvailability, saveHostedInfra } from './hosted'
@@ -37,20 +37,19 @@ const fromBase64 = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCode
 const LOGOS_PNG: Record<string, Uint8Array<ArrayBuffer>> = { [LOGO_PATHS.small]: fromBase64(LOGO_64_BASE64), [LOGO_PATHS.large]: fromBase64(LOGO_128_BASE64) }
 
 /**
- * Scripts only from this site; the chat bubble talks to the chat API over HTTPS and WebSocket and shows its avatars and
- * images; live Activity opens a WebSocket to this site (wss: spelled out for browsers whose 'self' omits it).
+ * Scripts and images only from this site (the support photo is a static asset here); live Activity opens a WebSocket
+ * to this site (wss: spelled out for browsers whose 'self' omits it).
  */
-export const contentSecurityPolicy = (env: Pick<Bindings, 'CHAT_API_ORIGIN' | 'BASE_URL'>) => {
-  const chat = new URL(env.CHAT_API_ORIGIN)
-  const wss = (url: URL) => `${url.protocol === 'http:' ? 'ws:' : 'wss:'}//${url.host}`
-  const socket = `${wss(new URL(env.BASE_URL))} ${wss(chat)}`
+export const contentSecurityPolicy = (env: Pick<Bindings, 'BASE_URL'>) => {
+  const base = new URL(env.BASE_URL)
+  const socket = `${base.protocol === 'http:' ? 'ws:' : 'wss:'}//${base.host}`
   return [
     "default-src 'self'",
     "script-src 'self'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    `img-src 'self' data: blob: ${chat.origin}`,
-    `connect-src 'self' ${chat.origin} ${socket}`,
+    "img-src 'self' data:",
+    `connect-src 'self' ${socket}`,
     "base-uri 'none'",
     "frame-ancestors 'none'",
   ].join('; ')
@@ -105,6 +104,7 @@ export function createApp(deps: AppDeps = {}) {
         const deployments = yield* listDeployments(account.id)
         yield* backfillTrialEnds(deployments).pipe(Effect.ignore)
         account.trial = accountTrial(deployments)
+        account.hostnames = deployments.flatMap((d) => (d.hostname ? [d.hostname] : []))
         return yield* body(account)
       }),
     )
@@ -543,35 +543,9 @@ export function createApp(deps: AppDeps = {}) {
     return c.json({ error: failure.message }, failure.status as 500)
   })
 
-  // Beag Labs chat -----------------------------------------------------------------------------------------------
+  // Email support -------------------------------------------------------------------------------------------------
 
-  app.get(CHAT_SCRIPT_PATH, (c) => c.body(CHAT_BUBBLE_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
-
-  /** A customer chat session for the signed-in user, scoped by the license Worker to their deployment's tenant or to this account. */
-  app.post(CHAT_SESSION_PATH, async (c) => {
-    if (c.req.header('origin') !== new URL(c.env.BASE_URL).origin) return c.json({ error: 'Cross-origin request refused' }, 403)
-    const exit = await exec(
-      c,
-      Effect.gen(function* () {
-        const account = yield* currentAccount(c)
-        if (!account) return null
-        const deployment = (yield* listDeployments(account.id)).find((d) => d.license_deployment_id)
-        const session = yield* license('chat session', (rpc) =>
-          rpc.chatSession({
-            accountId: account.id,
-            userId: account.id,
-            email: account.email,
-            name: account.name ?? account.email,
-            ...(deployment?.license_deployment_id ? { deploymentId: deployment.license_deployment_id } : {}),
-          }),
-        )
-        return { ...session, apiOrigin: c.env.CHAT_API_ORIGIN }
-      }),
-    )
-    if (Exit.isSuccess(exit)) return exit.value ? c.json(exit.value, 200, { 'cache-control': 'no-store' }) : c.json({ error: 'Sign in first' }, 401)
-    const failure = userError(exit)!
-    return c.json({ error: failure.message }, failure.status as 500)
-  })
+  app.get(SUPPORT_SCRIPT_PATH, (c) => c.body(SUPPORT_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
 
   // Papyrus check-in ----------------------------------------------------------------------------------------------
 

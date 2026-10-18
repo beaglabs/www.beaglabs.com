@@ -160,9 +160,9 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
         // Papyrus usually answers within two minutes of a deploy; until STARTUP_GRACE_MS has passed, not yet is "still starting".
         const starting = Date.now() - Date.parse(deployment.steps.deploy.at ?? '') < STARTUP_GRACE_MS
         if (result._tag === 'Failure')
-          return outcome(starting ? 'pending' : 'fail', `GET ${url} → no answer over valid TLS${starting ? '; Papyrus is still starting.' : '. Retry, or message Beag Labs if it keeps failing.'}`)
+          return outcome(starting ? 'pending' : 'fail', `GET ${url} → no answer over valid TLS${starting ? '; Papyrus is still starting.' : '. Retry, or email james@beaglabs.com if it keeps failing.'}`)
         if (result.success.status !== 200 || result.success.body?.status !== 'ok')
-          return outcome(starting ? 'pending' : 'fail', `GET ${url} → ${result.success.status}${starting ? '; Papyrus is still starting.' : '. Retry, or message Beag Labs if it keeps failing.'}`)
+          return outcome(starting ? 'pending' : 'fail', `GET ${url} → ${result.success.status}${starting ? '; Papyrus is still starting.' : '. Retry, or email james@beaglabs.com if it keeps failing.'}`)
         return outcome('pass', `GET ${url} → 200 · healthy.`)
       }
       case 'microsoft': {

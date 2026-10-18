@@ -1,5 +1,9 @@
 # Papyrus Admin App, Customer Chat, and Tenant Event Pipe: Design
 
+> **2026-10-17: removed.** Chat (customer chat bubble, sessions, huddles, inbox, push) and the admin app's staff API
+> were removed in favour of email support (`james@beaglabs.com`). See "Support" in
+> `2026-10-17-papyrus-control-plane-design.md`. This document is kept for history.
+
 Date: 2026-10-17
 Status: Draft for review
 

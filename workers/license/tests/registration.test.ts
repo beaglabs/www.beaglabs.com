@@ -4,7 +4,7 @@ vi.mock('../src/db', () => import('./helpers/fake-db'))
 
 import fixture from './fixtures/attested.json'
 import { getDb, resetDb } from './helpers/fake-db'
-import { TENANT_A, call, customerIdToken, installFetch, makeEnv, type TestEnv } from './helpers/harness'
+import { call, installFetch, makeEnv, type TestEnv } from './helpers/harness'
 import { handleBootstrap } from '../src/registration'
 import { base64Decode } from '../src/util'
 
@@ -40,7 +40,7 @@ function bootstrap(body: Record<string, unknown> = {}, testEnv = env) {
 }
 
 describe('POST /api/provision/bootstrap', () => {
-  it('registers a verified VM, issues a key (stored hashed) and alerts owners', async () => {
+  it('registers a verified VM and issues a key (stored hashed)', async () => {
     const response = await bootstrap()
     expect(response.status).toBe(201)
     const body = await response.json() as { deploymentId: string; deploymentKey: string }
@@ -49,12 +49,10 @@ describe('POST /api/provision/bootstrap', () => {
     const row = (await getDb().execute('SELECT * FROM papyrus_deployments')).rows[0]
     expect(row).toMatchObject({ vm_id: '02aab8a4-74ef-476e-8182-f6d2ba4166a6', subscription_id: '8d10da13-8125-4ba9-a717-bf7490507b3d', plan_product: 'papyrus', public_origin: 'https://papyrus.contoso.com', region: 'eastus' })
     expect(String(row.key_sha256)).not.toContain(body.deploymentKey)
-    await new Promise((resolve) => setTimeout(resolve, 10))
-    expect((await getDb().execute("SELECT kind FROM inbox_items")).rows.map((r) => r.kind)).toEqual(['deployment.registered'])
 
     // The key authenticates Papyrus.
-    const session = await call(env, 'POST', '/api/papyrus/session', { deploymentKey: body.deploymentKey, body: { idToken: await customerIdToken(TENANT_A, 'admin-user') } })
-    expect(session.status).toBe(200)
+    const tracked = await call(env, 'POST', '/api/v1/track', { deploymentKey: body.deploymentKey, body: { batch: [{ type: 'track', event: 'app.started' }] } })
+    expect(tracked.status).toBe(200)
   })
 
   it('refuses a replayed attested document, and re-registration rotates the key', async () => {
@@ -65,7 +63,7 @@ describe('POST /api/provision/bootstrap', () => {
     const second = await (await bootstrap()).json() as any
     expect(second.deploymentKey).not.toBe(firstKey)
     expect((await getDb().execute('SELECT COUNT(*) AS n FROM papyrus_deployments')).rows[0].n).toBe(1)
-    const stale = await call(env, 'POST', '/api/papyrus/session', { deploymentKey: firstKey, body: { idToken: await customerIdToken(TENANT_A, 'u') } })
+    const stale = await call(env, 'POST', '/api/v1/track', { deploymentKey: firstKey, body: { batch: [] } })
     expect(stale.status).toBe(401)
   })
 

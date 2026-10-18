@@ -1,5 +1,9 @@
 # Admin App / Papyrus Chat: API Contract
 
+> **2026-10-17: removed.** Chat (customer chat bubble, sessions, huddles, inbox, push) and the admin app's staff API
+> were removed in favour of email support (`james@beaglabs.com`). See "Support" in
+> `2026-10-17-papyrus-control-plane-design.md`. This document is kept for history.
+
 This contract implements `2026-10-17-papyrus-admin-app-design.md`.
 
 **Host:** `https://license.beaglabs.com`, served by the `workers/license` Worker.

@@ -1,7 +1,6 @@
 import { ACTIVITY_SCRIPT_PATH, activityCard } from './activity'
 import { isTrialing, trialStatus } from './billing'
 import { PLATFORM_MONTHLY_USD, PRICE_ROWS, PRICE_SUMMARY, SIZE_TABLE_CAPTION, TRIAL_DAYS, sizeRows, type SizeRow, usageLine, type MonthUsage, type PriceRow } from './pricing'
-import { CHAT_STYLES, chatBubbleMarkup } from './chat-bubble'
 import type { DnsRecord } from './dns'
 import type { EventRow } from './events'
 import { HOSTED_DOMAIN, HOSTED_PROVIDER } from './hosted'
@@ -12,6 +11,7 @@ import { PROVIDERS } from './providers/registry'
 import type { CredentialField, ProviderEntry } from './providers/types'
 import { STEP_IDS, STEP_LABELS, canRun, isDone, visibleSteps, type StepId, type Steps } from './setup'
 import type { Account, Deployment } from './services'
+import { SUPPORT_STYLES, supportCardMarkup, supportPageCard } from './support'
 
 export const esc = (value: unknown) =>
   String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
@@ -250,8 +250,8 @@ export const NAV: readonly { id: NavItem; label: string; href: string }[] = [
 
 const accountLabel = (account: Account) => account.organization || account.name || account.email.split('@')[0]
 
-/** Signed-in pages: black sidebar, grid main area, the chat bubble. */
-export const consoleLayout = (input: { title: string; account: Account; active: NavItem | null; body: string; scripts?: string[] }) => `${head(input.title, CHAT_STYLES)}
+/** Signed-in pages: black sidebar, grid main area, the support card. */
+export const consoleLayout = (input: { title: string; account: Account; active: NavItem | null; body: string; scripts?: string[] }) => `${head(input.title, SUPPORT_STYLES)}
 <body class="console-body"><div class="console">
 <aside class="side" aria-label="Papyrus control plane">
 <a class="brand disp" href="/deploy">${logoImg()}<span>Papyrus</span></a>
@@ -260,14 +260,14 @@ export const consoleLayout = (input: { title: string; account: Account; active: 
 <div class="acct"><span class="who" title="${esc(accountLabel(input.account))}">${esc(accountLabel(input.account))}</span><span class="email" title="${esc(input.account.email)}">${esc(input.account.email)}</span><a href="/logout">Sign out</a></div>
 </aside>
 <main class="page grid-bg">${input.account.trial ? trialBanner(input.account.trial.trialEnd) : ''}${input.body}</main>
-</div>${chatBubbleMarkup()}${(input.scripts ?? []).map((src) => `<script src="${esc(src)}" defer></script>`).join('')}</body></html>`
+</div>${supportCardMarkup(input.account)}${(input.scripts ?? []).map((src) => `<script src="${esc(src)}" defer></script>`).join('')}</body></html>`
 
 /** Signed-out pages and the org-name claim screen: one centred card on the grid, no sidebar. */
-export const soloLayout = (input: { title: string; body: string; wide?: boolean; account?: Account | null; scripts?: string[] }) => `${head(input.title, input.account ? CHAT_STYLES : '')}
+export const soloLayout = (input: { title: string; body: string; wide?: boolean; account?: Account | null; scripts?: string[] }) => `${head(input.title, input.account ? SUPPORT_STYLES : '')}
 <body class="grid-bg"><main class="solo"><div class="panel${input.wide ? ' wide' : ''}">
 <header class="disp">${logoImg()}<span>Papyrus</span></header>
 ${input.body}
-</div></main>${input.account ? chatBubbleMarkup() : ''}${(input.scripts ?? []).map((src) => `<script src="${esc(src)}" defer></script>`).join('')}</body></html>`
+</div></main>${input.account ? supportCardMarkup(input.account) : ''}${(input.scripts ?? []).map((src) => `<script src="${esc(src)}" defer></script>`).join('')}</body></html>`
 
 const notice = (message?: string | null, kind: 'error' | 'ok' = 'error') => (message ? `<div class="notice ${kind}" role="${kind === 'error' ? 'alert' : 'status'}">${esc(message)}</div>` : '')
 
@@ -373,8 +373,8 @@ ${deployment.billing_state === 'none' ? '' : `<p class="usage">${esc(usageLine(u
 const planCard = (deployment: Deployment, usage?: MonthUsage) =>
   `<div class="card plan-card"><h4>Plan <span class="accent">${planLabel(deployment)}</span></h4><div class="body">${planRows(deployment, usage)}<div class="actions">${billingButton(deployment)}</div></div></div>`
 
-const helpCard = () =>
-  `<div class="card"><h4>Need a hand?</h4><div class="body" style="font-size:14px;color:var(--muted)">Your Beag Labs engineer is watching this setup. Message us any time.<div class="actions"><button type="button" class="btn dark" data-open-chat>Message Beag Labs</button></div></div></div>`
+/** Email support, the same card as /support. */
+const helpCard = (account: Account) => supportPageCard(account)
 
 // Setup checklist ------------------------------------------------------------------------------------------------------
 
@@ -426,7 +426,7 @@ const hostedCopy = (deployment: Deployment, account: Account, region: string): R
     dns: { title: (done) => (done ? 'Address ready' : 'Address'), description: `${host} resolves with a valid certificate.` },
     health: { title: (done) => (done ? 'Papyrus started' : 'Starting Papyrus'), description: 'Waiting for the health check. Usually under two minutes.' },
     microsoft: { title: () => 'Connect Microsoft', description: 'Sign in as a Microsoft 365 admin so your team can use Papyrus.' },
-    registration: { title: () => 'Register with Beag Labs', description: 'Turns on support chat and updates.' },
+    registration: { title: () => 'Register with Beag Labs', description: 'Turns on updates and links this deployment to your account.' },
     open: { title: () => 'Open Papyrus', description: 'Invite your team and build your first workflow.' },
   }
 }
@@ -555,7 +555,7 @@ export const deploymentPage = (input: DeploymentPageInput) => {
 ${pageTop(kicker, deploymentName(deployment), `${statusTag(deployment, rows)}${openPapyrusButton(deployment)}`)}
 ${notice(input.message)}
 <div class="cols"><div>${checklistCard(rows)}${hosted ? '' : `${hostnameCard(deployment)}${dnsTable(deployment.dnsRecords)}`}</div>
-<div class="stack">${planCard(deployment, input.usage)}${helpCard()}</div></div>
+<div class="stack">${planCard(deployment, input.usage)}${helpCard(account)}</div></div>
 ${activityCard({ endpoint: `/api/events?deployment=${encodeURIComponent(deployment.id)}`, deploymentId: deployment.id, events: input.events.events, next: input.events.next, fast: !isDone(deployment.steps) })}`
   return consoleLayout({ title: deploymentName(deployment), account, active: 'deployment', body, scripts: [ACTIVITY_SCRIPT_PATH] })
 }
@@ -586,7 +586,7 @@ export const deployListPage = (account: Account, deployments: Deployment[]) => {
 ${pricingTable(PRICE_ROWS, 'Billed monthly by Stripe. Cancel any time from the billing portal.')}
 <h5 class="kicker" style="margin:18px 0 8px">What it costs by organization size</h5>
 ${sizeTable()}
-<form method="post" action="/billing/checkout" class="actions" style="margin-top:16px"><button class="btn primary lg" type="submit">Start ${TRIAL_DAYS}-day trial</button></form></div></div><div class="stack">${helpCard()}</div></div>`
+<form method="post" action="/billing/checkout" class="actions" style="margin-top:16px"><button class="btn primary lg" type="submit">Start ${TRIAL_DAYS}-day trial</button></form></div></div><div class="stack">${helpCard(account)}</div></div>`
       : `${pageTop('Deployments', `${deployments.length} deployments`)}<div class="card">${deployments
           .map(
             (d) =>
@@ -648,7 +648,7 @@ ${credentialForm(provider, input.saved)}
 <div class="actions" style="margin-top:20px"><button class="btn primary" type="submit">Save and check</button>${deployment.steps.connect.status === 'pass' && deployment.provider === provider.id ? `<a class="btn" href="/deploy/${esc(deployment.id)}">Continue to deploy →</a>` : ''}</div></form>`
     : ''
 }</div></div>
-<div class="stack"><div class="card"><h4>Your credentials</h4><div class="body" style="font-size:14px;color:var(--muted)">We check them with a read-only call when you save. They are encrypted and used only to deploy and update this Papyrus.</div></div>${helpCard()}</div></div>`
+<div class="stack"><div class="card"><h4>Your credentials</h4><div class="body" style="font-size:14px;color:var(--muted)">We check them with a read-only call when you save. They are encrypted and used only to deploy and update this Papyrus.</div></div>${helpCard(input.account)}</div></div>`
   return consoleLayout({ title: 'Provision', account: input.account, active: 'deployment', body })
 }
 
@@ -681,8 +681,8 @@ export const teamPage = (account: Account, members: Account[]) => {
 }
 
 export const supportPage = (account: Account, deployments: Deployment[]) => {
-  const body = `${pageTop('Support', 'Talk to Beag Labs')}
-<div class="tiles"><div class="card"><h4>Message Beag Labs</h4><div class="body" style="font-size:14px;color:var(--muted)">Chat with the Beag Labs engineers who run your Papyrus. Replies land here and in Papyrus.<div class="actions"><button type="button" class="btn dark" data-open-chat>Message Beag Labs</button></div></div></div>
+  const body = `${pageTop('Support', 'Email Beag Labs')}
+<div class="tiles">${supportPageCard(account)}
 <div class="card"><h4>Your details</h4><div class="body">${
     deployments.length
       ? deployments

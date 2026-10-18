@@ -113,7 +113,7 @@ describe('Deployment page', () => {
     expect(failed).toContain('Needs attention · 3 of 6')
   })
 
-  it('has the plan card, the help card that opens chat, and the Activity log', async () => {
+  it('has the plan card, the email support card, and the Activity log', async () => {
     const { h, get, hosted, event } = signedIn()
     hosted('dep_abc', passed('connect'))
     h.sql.prepare("UPDATE deployments SET stripe_customer_id = 'cus_1', stripe_status = 'trialing' WHERE id = 'dep_abc'").run()
@@ -124,7 +124,8 @@ describe('Deployment page', () => {
     expect(html).toContain('$250/month platform · $0.50 per VM hour · $0.00194444 per agent-second (≈ $7/agent-hour)')
     expect(html).toContain('This month so far: 0 VM hours · 0 agent minutes · $0.00 estimated')
     expect(html).toContain('action="/billing/portal"')
-    expect(html).toContain('data-open-chat>Message Beag Labs')
+    expect(html).toContain('class="card support-page-card"')
+    expect(html).toContain('Stuck? Email James and get support within 48 hours')
     expect(html).toContain('<span class="lv warn">WAIT</span>')
     expect(html).toContain('data-endpoint="/api/events?deployment=dep_abc"')
     expect(html).toContain('data-interval="5000"')
@@ -244,18 +245,18 @@ describe('signed-out pages', () => {
       expect(html).toContain('<main class="solo">')
       expect(html).toContain('/assets/papyrus-logo-64.png')
       expect(html).not.toContain('<aside class="side"')
-      expect(html).not.toContain('beag-chat')
+      expect(html).not.toContain('support-card')
     }
   })
 
-  it('the org-name claim screen is a centred card too (with chat, signed in)', async () => {
+  it('the org-name claim screen is a centred card too (with the support card, signed in)', async () => {
     const { h, get } = signedIn()
     h.insertDeployment({ id: 'dep_abc' })
     const html = await (await get('/deploy/dep_abc')).text()
     expect(html).toContain('Choose your organization name')
     expect(html).toContain('<main class="solo">')
     expect(html).not.toContain('<aside class="side"')
-    expect(html).toContain('id="beag-chat"')
+    expect(html).toContain('id="support-card"')
   })
 
   it('sign-ins are logged', async () => {

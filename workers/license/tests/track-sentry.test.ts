@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('../src/db', () => import('./helpers/fake-db'))
 
 import { getDb, resetDb } from './helpers/fake-db'
-import { TENANT_A, call, customerSession, fetchCalls, installFetch, makeEnv, seedDeployment, staffToken, type TestEnv } from './helpers/harness'
+import { TENANT_A, call, fetchCalls, installFetch, makeEnv, seedDeployment, type TestEnv } from './helpers/harness'
 import { ANONYMOUS_BATCHES_PER_MINUTE, MAX_BATCH_BYTES, resetTrackRateLimit } from '../src/track'
 import { customerIoBatchItem } from '../src/events'
 import { handleSentryWebhook, readTag, SPIKE_ALERT_WINDOW_MS, verifySentrySignature } from '../src/sentry'
@@ -21,8 +21,7 @@ const item = (event = 'document.created', extra: Record<string, unknown> = {}) =
 
 describe('POST /api/v1/track', () => {
   it('stores deployment events under the bound tenant and forwards to Customer.io', async () => {
-    const { key } = await seedDeployment()
-    await customerSession(env, key, TENANT_A, 'u1') // binds tenant A
+    const { key } = await seedDeployment({ tenantId: TENANT_A })
     fetchCalls.length = 0
     const response = await call(env, 'POST', '/api/v1/track', { deploymentKey: key, body: { batch: [item(), item('workflow.run'), { type: 'identify', userId: 'u1', traits: { plan: 'x' } }, { type: 'track', event: 'Bad Name' }] } })
     expect(response.json).toEqual({ accepted: 3 })
@@ -57,19 +56,10 @@ describe('POST /api/v1/track', () => {
     expect((await call(env, 'POST', '/api/v1/track', { headers: { 'cf-connecting-ip': '203.0.113.10' }, body: { batch: [] } })).status).toBe(200)
   })
 
-  it('staff events are source=admin and only attach to tenants the caller can see', async () => {
-    const response = await call(env, 'POST', '/api/v1/track', { token: await staffToken(), body: { batch: [item('notification.opened', { context: { tenantId: TENANT_A } })] } })
-    expect(response.json.accepted).toBe(1)
-    const row = (await getDb().execute('SELECT tenant_id, source FROM tenant_events')).rows[0]
-    expect(row).toMatchObject({ tenant_id: TENANT_A, source: 'admin' })
-  })
-
-  it('support.requested creates an Inbox item', async () => {
-    const { key } = await seedDeployment()
-    await customerSession(env, key, TENANT_A, 'u1')
-    await call(env, 'POST', '/api/v1/track', { deploymentKey: key, body: { batch: [item('support.requested', { properties: { conversationId: 'cnv_1', message: 'help' } })] } })
-    const inbox = (await getDb().execute("SELECT kind, tenant_id, conversation_id, body FROM inbox_items WHERE kind='support.requested'")).rows
-    expect(inbox).toEqual([expect.objectContaining({ tenant_id: TENANT_A, conversation_id: 'cnv_1', body: 'help' })])
+  it('rejects bearer tokens (staff and chat sessions are gone)', async () => {
+    const response = await call(env, 'POST', '/api/v1/track', { token: 'eyJhbGciOiJIUzI1NiJ9.e30.x', body: { batch: [item()] } })
+    expect(response.status).toBe(401)
+    expect((await getDb().execute('SELECT COUNT(*) AS n FROM tenant_events')).rows[0].n).toBe(0)
   })
 
   it('maps page and anonymous events for Customer.io', () => {
@@ -108,15 +98,12 @@ describe('Sentry webhook', () => {
     expect(await (await post('event_alert', alert(), { nowMs: t0 + SPIKE_ALERT_WINDOW_MS + 3000 })).json()).toMatchObject({ alert: null })
     const errors = (await getDb().execute('SELECT sentry_issue_id, tenant_id, sentry_url FROM tenant_errors')).rows
     expect(errors).toEqual([expect.objectContaining({ sentry_issue_id: '42', tenant_id: TENANT, sentry_url: 'https://sentry.io/issues/42/' })])
-    await new Promise((resolve) => setTimeout(resolve, 20))
-    const kinds = (await getDb().execute('SELECT kind FROM inbox_items ORDER BY created_at')).rows.map((row) => row.kind)
-    expect(kinds).toEqual(['error.new', 'error.spike'])
   })
 
-  it('event alerts for unseen issues are error.new with the tenant tag; timeline links to Sentry', async () => {
+  it('event alerts for unseen issues are error.new and keep the tenant tag and Sentry link', async () => {
     expect(await (await post('event_alert', alert('77'))).json()).toMatchObject({ alert: 'error.new' })
-    const timeline = await call(env, 'GET', `/api/admin/customers/${TENANT}/timeline?type=error`, { token: await staffToken() })
-    expect(timeline.json).toEqual([expect.objectContaining({ type: 'error', name: 'TypeError: x is undefined', sentryUrl: 'https://sentry.io/issues/77/events/1/' })])
+    const row = (await getDb().execute("SELECT tenant_id, deployment_id, sentry_url FROM tenant_errors WHERE sentry_issue_id='77'")).rows[0]
+    expect(row).toMatchObject({ tenant_id: TENANT, deployment_id: 'dep_1', sentry_url: 'https://sentry.io/issues/77/events/1/' })
   })
 
   it('reads tags in both Sentry shapes', () => {

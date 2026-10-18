@@ -4,8 +4,6 @@ import { Resend } from 'resend'
 import { first, getDb } from './db'
 import type { Bindings } from './env'
 import { executionContext, notifyMarketplaceEvent } from './marketplace-notify'
-import { createInboxItem } from './inbox'
-import { background } from './util'
 
 type Row = Record<string, unknown>
 type AppEnv = { Bindings: Bindings }
@@ -332,16 +330,6 @@ app.post('/api/marketplace/leads', async (c) => {
       lead.phone || null, lead.country || null, lead.companyName, domain, organizationId, contactId, status, rawBody, timestampNow, timestampNow,
     ],
   })
-
-  if (!isTest) {
-    // Admin app Inbox + push (owners, plus the account manager once the org is assigned).
-    background(executionContext(c), 'lead.new inbox', createInboxItem(c.env, {
-      kind: 'lead.new',
-      title: `New Marketplace lead: ${[lead.firstName, lead.lastName].filter(Boolean).join(' ') || lead.companyName}`,
-      body: [lead.companyName, lead.offerTitle, lead.email].filter(Boolean).join(' · '),
-      leadId: recordId,
-    }, { audience: 'owners+assigned' }))
-  }
 
   void notifyMarketplaceEvent(c.env, {
     type: 'marketplace.lead.received',

@@ -1,14 +1,14 @@
 # Papyrus Control Plane: Design
 
 Date: 2026-10-17
-Repos: `www.beaglabs.com` → new `workers/control-plane` (papyrus.beaglabs.com); `workers/license` (registration, chat); `papyrus` (VM/container side)
+Repos: `www.beaglabs.com` → new `workers/control-plane` (papyrus.beaglabs.com); `workers/license` (registration, analytics); `papyrus` (VM/container side)
 
 ## Intent
 
 Beag Labs runs its own control plane for Papyrus deployments instead of relying on Azure Marketplace. A customer
 signs up at papyrus.beaglabs.com, pays through Stripe, connects their own cloud account, and the control plane
 deploys the hardened Papyrus container into it, then walks them through DNS and health checks until the deployment
-is live. Billing, licensing and Beag Labs messaging (chat bubble, admin app) all key off this one source of truth.
+is live. Billing, licensing and analytics all key off this one source of truth. Support is by email (see Support).
 
 Why: Marketplace plans, BYOL uploads and per-plan user gating were too many flows to manage. One place that knows
 every deployment and whether it is paid removes them.
@@ -22,8 +22,8 @@ every deployment and whether it is paid removes them.
   generated from a per-provider description.
 - AWS: a one-click **Connect AWS** button (AWS logo) that creates a role only the control plane can assume.
 - A setup step that verifies and shows pass/fail for: credentials, deploy, DNS, container health, registration.
-- Deployments created by the control plane are registered with Beag Labs at creation, so the chat bubble, admin app
-  and analytics work on any provider, not only Azure Marketplace VMs.
+- Deployments created by the control plane are registered with Beag Labs at creation, so analytics and Sentry
+  attribution work on any provider, not only Azure Marketplace VMs.
 - Papyrus checks in with the control plane and shows suspension when billing lapses.
 
 ## Non-goals
@@ -124,14 +124,35 @@ retry. Done when all are green.
   bound to the customer's hostname), installed at deploy. The signed status sits beside it and only says active or suspended.
 - Control-plane-managed deployments don't need Marketplace plan matching or license upload.
 
-### Messaging (chat bubble, admin app, analytics)
+### Registration and analytics
 
-- Today registration requires an Azure IMDS attested document (`provisioning-control-plane.ts`, `workers/license/src/registration.ts`),
-  which is why the bubble never appears off Azure.
+- Marketplace registration requires an Azure IMDS attested document (`workers/license/src/registration.ts`).
 - Control-plane deployments are registered at creation: the control plane creates the `papyrus_deployments` row and
   passes the container a one-time bootstrap token and deployment ID. On first start, Papyrus exchanges the token for
   its deployment key and stores it (same storage it uses today), then registration state is `registered`.
-- Chat, huddles, inbox and leads are unchanged. The admin app shows control-plane deployments and their billing state.
+- `/api/v1/track` analytics (deployment key) and the Sentry webhook are unchanged.
+
+### Support (email; chat removed 2026-10-17)
+
+The Beag Labs chat system (chat bubble, customer chat sessions, huddles, inbox, push and the admin app's staff API)
+was removed on 2026-10-17 in favour of email.
+
+- **Support card**: a small fixed rectangle bottom-right on every signed-in page, in the Console look (2px #111
+  border, hard shadow, #ff5f1f accent, square corners). James's photo (`public/assets/james-support-96.jpg`, a
+  Workers static asset, 96px, ≤ 25 KB) and the copy, exactly: **"Stuck? Email James and get support within 48 hours"**.
+  It links to `mailto:james@beaglabs.com?subject=Papyrus support` with the deployment hostname(s) and account in the body.
+- It collapses to a small tab. The choice is remembered in `localStorage` (every access in try/catch); with nothing
+  stored it is open on desktop and collapsed on phones (≤ 640px). The toggle is `/assets/support-card.js`, so the CSP
+  keeps `script-src 'self'`.
+- The **Support** page in the sidebar shows the same photo and copy as a larger card with the address spelled out.
+  The deployment page's help card is the same card.
+- CSP: `img-src 'self' data:`, `connect-src 'self' wss://<this host>`; no license-Worker origin. `CHAT_API_ORIGIN` and
+  `/chat/session` are gone.
+- License Worker: `/api/chat/*`, `/api/huddles/*`, `/api/admin/*` and `/api/papyrus/session` answer 404. The
+  `ConversationRoom` Durable Object is deleted by the `v2-remove-conversation-room` migration; the chat R2 binding,
+  `CHAT_SESSION_SECRET`, `ADMIN_API_CLIENT_ID`, `APNS_*`, `REALTIMEKIT_*` and FCM settings are no longer read. Chat and
+  admin tables stay in the database untouched (not dropped) but are no longer created or used. Deployments are no
+  longer bound to an Entra tenant (nothing needs it without chat).
 
 ## Calls made by Claude (check these)
 
@@ -171,7 +192,6 @@ retry. Done when all are green.
 - `verifyDeploymentKey(deploymentId: string, deploymentKey: string) → boolean`
 - `signStatus({ deploymentId, state: 'active' | 'suspended' }) → SignedStatus` with `issuedAt` now and `expiresAt` now + 7 days.
 - `registrationState(deploymentId: string) → 'pending' | 'registered'`
-- `chatSession({ accountId, userId, email, name, deploymentId?, tenantId? }) → { token, expiresAt, tenantId, user }` (same shape as `POST /api/papyrus/session`). Scoped to the tenant of the account's deployment once a Papyrus user has bound it, otherwise to `cp:<accountId>`; pre-tenant conversations move into the tenant when it resolves.
 
 `SignedStatus = { payload: { deploymentId: string, state: 'active' | 'suspended', issuedAt: string, expiresAt: string }, keyId: string, signature: string }`,
 signed exactly like licenses (canonical JSON, Key Vault RS256, same `keyId` scheme), so Papyrus verifies it with the keys it already trusts.

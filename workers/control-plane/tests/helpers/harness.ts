@@ -48,12 +48,6 @@ export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'goo
       signature: `signed:${input.deploymentId}:${input.state}`,
     })),
     registrationState: vi.fn(async () => 'pending' as const),
-    chatSession: vi.fn(async (input: { userId: string; name: string; deploymentId?: string }) => ({
-      token: 'chat-token',
-      expiresAt: '2999-01-01T00:00:00.000Z',
-      tenantId: input.deploymentId ? 'tenant-guid' : 'cp:acct_1',
-      user: { oid: input.userId, name: input.name },
-    })),
   } satisfies LicenseRpcApi
   return license
 }
@@ -65,7 +59,6 @@ export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi
     DB: db,
     LICENSE: license,
     BASE_URL: 'https://papyrus.beaglabs.test',
-    CHAT_API_ORIGIN: 'https://license.beaglabs.test',
     PAPYRUS_IMAGE: 'ghcr.io/beaglabs/papyrus/papyrus',
     PAPYRUS_IMAGE_DIGEST: 'sha256:abc',
     MAGIC_LINK_FROM_EMAIL: 'Papyrus <papyrus@mail.beaglabs.com>',
