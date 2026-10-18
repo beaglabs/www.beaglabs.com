@@ -140,13 +140,13 @@ export function createApp(deps: AppDeps = {}) {
 
   // Sign-up and sign-in -------------------------------------------------------------------------------------------
 
-  app.get('/signup', (c) => c.html(Views.signupPage()))
+  app.get('/signup', (c) => c.html(Views.signupPage(null, c.req.query('email')?.trim().slice(0, 254))))
   app.post('/signup', async (c) => {
     const form = await c.req.parseBody()
     const email = String(form.email ?? '')
     const exit = await exec(c, Auth.sendMagicLink(email, { name: String(form.name ?? ''), organization: String(form.organization ?? '') }))
     const failure = userError(exit)
-    return failure ? c.html(Views.signupPage(failure.message), failure.status as 400) : c.html(Views.checkEmailPage(Auth.normalizeEmail(email)))
+    return failure ? c.html(Views.signupPage(failure.message, email), failure.status as 400) : c.html(Views.checkEmailPage(Auth.normalizeEmail(email)))
   })
 
   app.get('/login', (c) => c.html(Views.loginPage()))

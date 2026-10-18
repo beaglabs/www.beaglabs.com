@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ArrowUpRight, Mail } from 'lucide-react'
 
+import { PageHero } from '@/components/page-hero'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
@@ -8,34 +9,26 @@ const BOOKING_URL =
   'https://bookings.cloud.microsoft/book/BeagLabsBookings@beaglabs.com/?ismsaljsauthenabled'
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Book a meeting',
+  title: 'Contact Beag Labs',
   description:
-    'Schedule a conversation with Beag Labs about Papyrus, back office automation, legacy workflows, or delivery partnerships.',
+    'Talk with Beag Labs about Papyrus, the agentic ERP: your data model, the back-office work agents can take on, and getting live at your own address.',
   path: '/contact',
   label: 'Contact',
   ogDescription:
-    'Choose a time to talk with Beag Labs about Papyrus, back office automation, legacy workflows, or delivery partnerships.',
+    'Pick a time to talk with Beag Labs about Papyrus, the agentic ERP.',
 })
 
 export default function ContactPage() {
   return (
     <>
 
-      <main className="site-page-grid min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-12 lg:px-9 lg:pb-28 lg:pt-16">
+      <PageHero
+        label="Contact"
+        title="Talk with Beag Labs"
+        description="The fastest way to see Papyrus is to try it. If you'd rather talk first about your records, your back office or your rollout, pick a time below."
+      />
+      <main className="site-page-grid bg-[#FAFAF9] px-6 pb-20 pt-12 lg:px-9 lg:pb-28 lg:pt-16">
         <div className="mx-auto w-full max-w-[1180px]">
-          <div className="mx-auto mb-9 max-w-[760px] text-center">
-            <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-[#ff5f1f]">
-              Contact / Schedule
-            </p>
-            <h1 className="mt-3 text-[length:min(42px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] text-[#111] sm:text-[58px]">
-              Talk with Beag Labs.
-            </h1>
-            <p className="mx-auto mt-5 max-w-[650px] text-[16px] font-medium leading-7 text-[#555]">
-              Pick a time to discuss Papyrus, back office automation, legacy workflows,
-              or delivery partnerships.
-            </p>
-          </div>
-
           <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[8px_8px_0_#111]">
             <div className="flex flex-col gap-3 border-b-[3px] border-[#111] bg-[#fff1e9] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>

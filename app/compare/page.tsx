@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { Breadcrumbs } from '@/components/breadcrumbs'
+import { PageHero } from '@/components/page-hero'
 import { CompareFaq } from '@/components/compare/compare-faq'
 import { Methodology } from '@/components/compare/methodology'
 import { ProductCard } from '@/components/compare/product-card'
@@ -16,7 +17,7 @@ import { pageMetadata } from '@/lib/seo'
 export const metadata: Metadata = pageMetadata({
   title: 'Compare AI Agent Platforms',
   description:
-    'Sourced comparisons of customer-controlled AI agent platforms. Every statement links to a record in the Beag Labs Claim Ledger, and every gap is marked rather than guessed.',
+    'Sourced comparisons of AI agent platforms for the back office, including Papyrus, the agentic ERP. Every statement links to a record in the Beag Labs Claim Ledger, and every gap is marked rather than guessed.',
   path: '/compare',
   label: 'Comparisons',
 })
@@ -39,25 +40,18 @@ export default function ComparePage() {
       <AnnouncementBanner />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="site-hero px-6 pb-16 pt-16 lg:px-9 lg:pb-20 lg:pt-20">
-        <div className="mx-auto max-w-[1440px]">
-          <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Comparisons', url: '/compare' }]} />
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <span className="nb-label">Comparisons</span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">{ledgerCount} cited claims</span>
-          </div>
-          <h1 className="max-w-[1040px] text-[length:min(44px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[60px] lg:text-[76px]">
-            Compare AI agent platforms, with receipts<span className="text-[#ff5f1f]">.</span>
-          </h1>
-          <p className="mt-6 max-w-[780px] text-[18px] font-medium leading-[1.7] text-[#333]">
-            Buyer’s guides for organizations that want agents running in their own environment. Every statement links to a source in our Claim Ledger, and where we could not find documentation we say so instead of guessing.
+      <PageHero
+        label="Comparisons"
+        title="Compare AI agent platforms, with receipts"
+        description="Buyer’s guides for teams putting agents to work on the back office. Every statement links to a source in our Claim Ledger, and where we could not find documentation we say so instead of guessing."
+        above={<Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Comparisons', url: '/compare' }]} />}
+        below={<div className="space-y-3 text-left">
+          <p className="flex flex-wrap justify-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]"><span>Verified {verifiedOn}</span><span>{ledgerCount} cited claims</span></p>
+          <p className="border-l-[4px] border-[#ff5f1f] pl-4 text-[13px] font-semibold leading-[1.7] text-[#333]">
+            Disclosure: Beag Labs makes Papyrus, the agentic ERP covered here.
           </p>
-          <p className="mt-4 max-w-[780px] border-l-[4px] border-[#ff5f1f] pl-4 text-[14px] font-semibold leading-[1.7] text-[#333]">
-            Disclosure: Beag Labs makes Papyrus, one of the platforms covered.
-          </p>
-        </div>
-      </section>
+        </div>}
+      />
 
       <section className="border-y-[3px] border-[#111] bg-white px-6 py-16 lg:px-9">
         <div className="mx-auto max-w-[1440px]">
@@ -109,7 +103,7 @@ export default function ComparePage() {
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Different question</p>
           <h2 className="mt-3 text-[26px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[32px]">Choosing an approach rather than a product?</h2>
           <p className="mt-3 max-w-[720px] text-[14px] font-medium leading-[1.7] text-[#444]">
-            These earlier explainers compare approaches such as custom development and legacy replacement. They are general guidance and have not yet been tied to the Claim Ledger.
+            These explainers compare approaches such as agent-run document work, custom development and legacy replacement. They are general guidance and are not tied to the Claim Ledger.
           </p>
           <ul className="mt-5 grid gap-3 md:grid-cols-3">
             {comparisons.map((item) => (

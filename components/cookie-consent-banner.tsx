@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import posthog from "posthog-js"
+import { customerIo } from "@/lib/customerio-browser"
 
 const CONSENT_KEY = "beaglabs_consent"
 
@@ -26,6 +27,7 @@ export function setConsent(consent: "accepted" | "rejected") {
   localStorage.setItem(CONSENT_KEY, value)
   if (consent === "accepted") {
     initPosthog()
+    customerIo()
   }
 }
 
@@ -48,6 +50,7 @@ export function PosthogConsentGate() {
     const consent = getConsent()
     if (consent === "accepted") {
       initPosthog()
+      customerIo()
     }
   }, [])
   return null

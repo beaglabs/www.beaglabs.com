@@ -4,6 +4,8 @@ import { notFound } from "next/navigation"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { PageHero } from "@/components/page-hero"
+import { TrialCtaLink } from "@/components/trial-cta-link"
 import { industries } from "@/data/use-cases/industries"
 import { ogImageUrl } from "@/lib/seo"
 
@@ -40,7 +42,7 @@ export async function generateMetadata({
       canonical: `https://beaglabs.com/use-cases/${slug}`,
     },
     openGraph: {
-      title: `${industry.title} — Beag Labs`,
+      title: `${industry.title} — Papyrus`,
       description: industry.metaDescription,
       url: `https://beaglabs.com/use-cases/${slug}`,
       images: [
@@ -48,13 +50,13 @@ export async function generateMetadata({
           url: ogUrl,
           width: 1200,
           height: 630,
-          alt: `Beag Labs — ${industry.industry}`,
+          alt: `Papyrus agentic ERP — ${industry.industry}`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${industry.title} — Beag Labs`,
+      title: `${industry.title} — Papyrus`,
       description: industry.metaDescription,
       images: [ogUrl],
     },
@@ -88,8 +90,11 @@ export default async function UseCaseDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="site-hero nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
+      <PageHero
+        label={industry.industry}
+        title={industry.title}
+        description={industry.heroDescription}
+        above={
           <Breadcrumbs
             items={[
               { name: "Home", url: "/" },
@@ -97,17 +102,8 @@ export default async function UseCaseDetailPage({
               { name: industry.industry, url: `/use-cases/${industry.slug}` },
             ]}
           />
-          <div className="mt-8 mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
-            {industry.industry}
-          </div>
-          <h1 className="mb-5 max-w-[820px] text-[length:min(42px,9vw)] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-            {industry.title}
-          </h1>
-          <p className="max-w-[640px] text-[17px] leading-[1.72] text-[#404040] font-medium">
-            {industry.heroDescription}
-          </p>
-        </div>
-      </section>
+        }
+      />
 
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
@@ -140,7 +136,7 @@ export default async function UseCaseDetailPage({
                 Benefits
               </div>
               <h2 className="max-w-[470px] text-[34px] font-extrabold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
-                Why teams choose Beag Labs.
+                Why teams run it on Papyrus.
               </h2>
             </div>
             <ul className="space-y-4">
@@ -165,10 +161,10 @@ export default async function UseCaseDetailPage({
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
-            Compliance &amp; Security
+            Control
           </div>
           <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
-            Built for your security requirements.
+            Agents do the work. You stay in charge.
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {industry.compliance.map((item) => (
@@ -192,27 +188,25 @@ export default async function UseCaseDetailPage({
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#FFB074]">
-              Get started
+              Try Papyrus
             </div>
             <h2 className="mb-4 max-w-[720px] text-[length:min(42px,9vw)] font-extrabold leading-[0.96] tracking-[-0.05em] text-white lg:text-[56px]">
               {industry.ctaText}
             </h2>
             <p className="max-w-[560px] text-[18px] leading-[1.65] text-[#C9C9C9] font-medium">
-              Talk to us about your document intake, requests, or evidence
-              workflows. Explore how Papyrus can connect your existing systems
-              with reviewable automation in your environment.
+              Sign up at papyrus.beaglabs.com and Papyrus runs at your own
+              address. Bring your customers, vendors and invoices; the agents
+              take it from there.
             </p>
           </div>
 
           <div className="flex flex-wrap items-end justify-start gap-4 lg:justify-end">
-            <a
-              href="/contact"
-              target="_blank"
-              rel="noopener noreferrer"
+            <TrialCtaLink
+              placement="section"
               className="nb-btn-orange inline-flex items-center gap-2 px-8 py-4 text-[12px] uppercase"
             >
-              Talk to us <span className="text-lg">&rarr;</span>
-            </a>
+              Try Papyrus now <span className="text-lg">&rarr;</span>
+            </TrialCtaLink>
           </div>
         </div>
       </section>

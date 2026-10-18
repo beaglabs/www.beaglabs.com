@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ClaimDiagram } from '@/components/claims/claim-diagram'
+import { PageHero } from '@/components/page-hero'
 import { SiteFooter } from '@/components/site-footer'
 import { claims, getClaim } from '@/lib/claims'
 import { pageMetadata } from '@/lib/seo'
@@ -53,21 +54,20 @@ export default async function ClaimPage({ params }: ClaimPageProps) {
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
 
-      <section className="site-hero px-6 pb-20 pt-16 lg:px-9 lg:pb-28 lg:pt-20">
+      <PageHero
+        label={claim.sourceOrganization}
+        title={claim.claimId}
+        description={claim.claim}
+        above={<Breadcrumbs items={[
+          { name: 'Home', url: '/' },
+          { name: 'Claim Ledger', url: '/claims' },
+          { name: claim.claimId, url: `/claims/${encodeURIComponent(claim.claimId)}` },
+        ]} />}
+        below={<span className="border border-[#111] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em]">{claim.status}</span>}
+      />
+
+      <section className="px-6 pb-20 pt-12 lg:px-9 lg:pb-28">
         <div className="mx-auto max-w-[1120px]">
-          <Breadcrumbs items={[
-            { name: 'Home', url: '/' },
-            { name: 'Claim Ledger', url: '/claims' },
-            { name: claim.claimId, url: `/claims/${encodeURIComponent(claim.claimId)}` },
-          ]} />
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <span className="nb-label">{claim.sourceOrganization}</span>
-            <span className="border border-[#111] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em]">{claim.status}</span>
-          </div>
-          <h1 className="mt-4 text-[length:min(42px,9vw)] font-extrabold leading-[1.02] tracking-[-0.05em] sm:text-[54px] lg:text-[64px]">
-            {claim.claimId}<span className="text-[#ff5f1f]">.</span>
-          </h1>
-          <p className="mt-4 max-w-[800px] text-[18px] font-semibold leading-[1.65] text-[#333]">{claim.claim}</p>
           <ClaimDiagram claim={claim} />
           <dl className="mt-8 grid gap-px border-2 border-[#111] bg-[#111] sm:grid-cols-2">
             {[

@@ -114,7 +114,7 @@ export const guides: Guide[] = [
     slug: 'self-hosted-ai-agent-platforms',
     title: 'Self-Hosted AI Agent Platforms Compared (2026)',
     description:
-      'Six customer-controlled platforms compared on deployment model, Azure Marketplace offer, human approval, licensing, security and intended buyer. Every cell links to its source.',
+      'Six customer-controlled agent platforms, including Papyrus, the agentic ERP, compared on deployment model, Azure Marketplace offer, human approval, licensing, security and intended buyer. Every cell links to its source.',
     kind: 'guide',
   },
   {

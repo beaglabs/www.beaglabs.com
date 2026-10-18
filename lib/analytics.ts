@@ -1,15 +1,21 @@
 import posthog from 'posthog-js'
+import { customerIo, customerIoLoaded } from '@/lib/customerio-browser'
 
-type TrialProperties = { placement: 'hero' | 'final'; page: string; destination: string }
+type Placement = 'hero' | 'final' | 'nav' | 'page-hero' | 'section'
+type TrialProperties = { placement: Placement; page: string; destination: string }
+
+function capture(event: string, properties: Record<string, unknown>) {
+  try {
+    if ((window as Window & { __posthogInitialized?: boolean }).__posthogInitialized) posthog.capture(event, properties)
+  } catch { /* analytics never blocks the visitor */ }
+}
 
 // Keep click tracking and notification delivery in the same .track() call.
 export const analytics = {
+  /** A click on any "Try Papyrus" path; all of them go to papyrus.beaglabs.com. */
   track(event: 'trial.cta.clicked', properties: TrialProperties) {
-    try {
-      if ((window as Window & { __posthogInitialized?: boolean }).__posthogInitialized) {
-        posthog.capture(event, properties)
-      }
-    } catch { /* notification delivery is independent of analytics availability */ }
+    capture(event, properties)
+    if (customerIoLoaded()) customerIo()?.track('Papyrus Signup Clicked', properties)
 
     const endpoint = 'https://license.beaglabs.com/api/events/trial-click'
     const body = JSON.stringify({ event, ...properties })
@@ -19,5 +25,13 @@ export const analytics = {
         method: 'POST', body, headers: { 'Content-Type': 'text/plain' }, keepalive: true,
       }).catch(() => {})
     } catch { /* tracking must not block trial navigation */ }
+  },
+
+  /** The homepage hero: someone gave us their work email to get Papyrus compute credit. */
+  heroEmailSubmitted(email: string, properties: { page: string; destination: string }) {
+    capture('hero.email.submitted', properties)
+    const cio = customerIo()
+    cio?.identify(email, { email, source: 'beaglabs.com/hero', compute_credit_requested: true })
+    cio?.track('Compute Credit Requested', { placement: 'hero', offer: '$1k Papyrus compute credit', ...properties })
   },
 }

@@ -98,8 +98,6 @@ export default function CommercialSupportPage() {
       intro="Support for self-deployed Papyrus appliances in commercial cloud and on-premises environments. Email reaches the team responsible for the product. If you are running the government offer, use"
       email={SUPPORT_EMAIL}
       mailSubject="Papyrus commercial support request"
-      image="https://images.pexels.com/photos/39081904/pexels-photo-39081904.png?auto=compress&cs=tinysrgb&w=1920"
-      imageAlt="Commercial deployment workspace"
       counterpart={{ label: 'government support', href: '/support/government' }}
       severities={SEVERITIES}
       diagnostics={DIAGNOSTICS}

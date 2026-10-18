@@ -36,6 +36,14 @@ const nextConfig = {
       },
     ],
   },
+  // Consulting offers retired when the site moved to Papyrus as an agentic ERP.
+  async redirects() {
+    return ['spec-drive-development', 'agent-ux', 'slm-feasibility', 'slm-deployment'].map((slug) => ({
+      source: `/capability/${slug}`,
+      destination: '/capabilities',
+      permanent: true,
+    }))
+  },
   async rewrites() {
     return [
       {

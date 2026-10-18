@@ -1,132 +1,120 @@
 "use client"
 
-import Link from "next/link"
-import { useState } from "react"
-import { ArrowRight, Check } from "lucide-react"
-import { InteractiveDots } from "@/components/ui/interactive-dots"
+import { useId, useState } from "react"
+import { ArrowRight, Check, LoaderCircle, Mail } from "lucide-react"
+import { HeroBackdrop } from "@/components/hero-backdrop"
+import { TrialCtaLink } from "@/components/trial-cta-link"
+import { analytics } from "@/lib/analytics"
+import { papyrusSignupUrl } from "@/lib/papyrus-links"
+
+const EMAIL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/
 
 export function HeroSection() {
   const [email, setEmail] = useState("")
-  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle")
+  const [state, setState] = useState<"idle" | "invalid" | "loading" | "done" | "error">("idle")
+  const id = useId()
+  const hintId = `${id}-hint`
 
   async function claimCredit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (state === "loading" || state === "done") return
+    const address = email.trim()
+    if (!EMAIL.test(address)) { setState("invalid"); return }
     setState("loading")
+    const destination = papyrusSignupUrl(address)
+    analytics.heroEmailSubmitted(address, { page: window.location.pathname, destination: "papyrus.beaglabs.com" })
     try {
       const res = await fetch("/api/newsletter/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: address }),
       })
       if (!res.ok) throw new Error("signup failed")
       setState("done")
+      // Straight on to Papyrus with the email filled in; the short pause lets the confirmation register.
+      window.setTimeout(() => window.location.assign(destination), 900)
     } catch {
       setState("error")
     }
   }
 
+  const problem = state === "invalid" || state === "error"
+  const hint = state === "invalid"
+    ? "Enter a work email like you@company.com."
+    : state === "error"
+      ? "That didn't go through. Check the email and try again."
+      : "One email with your credit code. No card required."
+
   return (
-    <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-white text-[#111]">
-      {/* Papyrus preview video behind everything */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <video
-          className="h-full w-full object-cover motion-reduce:hidden"
-          src="/hero/clip-1.mp4"
-          poster="/hero/poster-1.jpg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="hidden h-full w-full object-cover motion-reduce:block" src="/hero/poster-1.jpg" alt="" />
-        {/* Soft veil so the field reads as paper, not video */}
-        <div className="absolute inset-0 bg-white/60" />
-      </div>
+    <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#000000] text-[#111]">
+      <HeroBackdrop />
 
-      {/* Dot field: the pointer pushes dots aside and the video shows through the gaps */}
-      <InteractiveDots
-        className="absolute inset-0 z-10"
-        colors={["#ff5f1f", "#ff8a5c", "#ffb894", "#111111", "#ffc9b0"]}
-        spacing={22}
-        dotRadius={8}
-        repelForce={0.7}
-        repelDistance={14000}
-      />
+      {/* Copy sits in a solid card, so the dots stay crisp everywhere else */}
+      <div className="relative z-20 mx-auto flex min-h-[calc(100svh-67px)] max-w-[880px] flex-col items-center justify-center px-6 py-20">
+        <div className="w-full border-[3px] border-[#111] bg-white px-6 py-10 text-center shadow-[10px_10px_0_#111] sm:px-12 sm:py-12">
+          <span className="nb-label mb-6 inline-block !bg-[#ff5f1f]">Papyrus · Agentic ERP</span>
 
-      {/* Readability wash behind the copy block */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-10"
-        style={{ background: "radial-gradient(ellipse 60% 55% at 50% 46%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0) 100%)" }}
-      />
+          <h1 className="display-black mb-6 text-[length:min(48px,9.2vw)] leading-[.92] [overflow-wrap:normal] sm:text-[64px] lg:text-[76px]">
+            Building the Superintelligent ERP
+          </h1>
 
-      <div className="relative z-20 mx-auto flex min-h-[calc(100svh-67px)] max-w-[900px] flex-col items-center justify-center gap-7 px-6 py-20 text-center">
-        <span className="nb-label inline-block !bg-[#ff5f1f]">Papyrus · Customer-hosted software</span>
+          <div className="mx-auto mb-6 h-[3px] w-full max-w-[420px] bg-[#111]" />
 
-        <h1 className="display-black text-[54px] leading-[.92] sm:text-[76px] lg:text-[96px]">
-          Solving the boring problems.
-        </h1>
+          <p className="mx-auto mb-8 max-w-[580px] text-[16px] font-semibold leading-[1.65] text-[#333] sm:text-[18px]">
+            Experience what it feels like to have the data model ascendance of a superintelligent ERP. Try Papyrus now.
+          </p>
 
-        <div className="h-[3px] w-full max-w-[420px] bg-[#111]" />
-
-        <p className="max-w-[600px] text-[17px] font-semibold leading-[1.65] text-[#333] sm:text-[19px]">
-          Give Papyrus a document, a legacy workflow, or an internal process. It turns repetitive work into governed,
-          reviewable actions on your own infrastructure.
-        </p>
-
-        {state === "done" ? (
-          <div className="flex w-full max-w-[560px] items-center justify-center gap-3 border-[3px] border-[#111] bg-[#16a34a] px-5 py-4 text-white shadow-[5px_5px_0_#111]">
-            <Check className="h-5 w-5 shrink-0" strokeWidth={3} />
-            <p className="text-sm font-extrabold uppercase tracking-wide">
-              You&apos;re in — your $1k compute credit is headed to {email}
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={claimCredit} className="w-full max-w-[560px]">
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <label htmlFor="hero-credit-email" className="sr-only">
+          {state === "done" ? (
+            <div role="status" className="mx-auto flex w-full max-w-[580px] items-center justify-center gap-3 border-[3px] border-[#111] bg-[#16a34a] px-5 py-4 text-white shadow-[5px_5px_0_#111]">
+              <Check className="h-5 w-5 shrink-0" strokeWidth={3} />
+              <p className="text-sm font-extrabold uppercase tracking-wide">Credit on its way to {email.trim()} · Opening Papyrus…</p>
+            </div>
+          ) : (
+            <form onSubmit={claimCredit} noValidate className="mx-auto w-full max-w-[580px] text-left">
+              <label htmlFor={id} className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.14em] text-[#111]">
                 Work email
               </label>
-              <input
-                id="hero-credit-email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="you@agency.gov"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="h-[52px] min-w-0 flex-1 border-[3px] border-[#111] bg-white px-4 text-[15px] font-semibold text-[#111] placeholder:font-medium placeholder:text-[#999] focus:outline-none focus:ring-2 focus:ring-[#ff5f1f] focus:ring-offset-2"
-              />
-              <button
-                type="submit"
-                disabled={state === "loading"}
-                className="inline-flex h-[52px] shrink-0 items-center justify-center gap-2 border-[3px] border-[#111] bg-[#ff5f1f] px-5 text-[12px] font-black uppercase tracking-[.06em] text-[#111] shadow-[4px_4px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:bg-[#ffdfcf] hover:shadow-[6px_6px_0_#111] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
-              >
-                {state === "loading" ? "Claiming…" : "Get a $1k Papyrus Compute Credit"}
-                {state !== "loading" && <ArrowRight className="h-4 w-4" strokeWidth={3} />}
-              </button>
-            </div>
-            {state === "error" && (
-              <p role="alert" className="mt-3 font-mono text-[11px] font-bold uppercase tracking-wide text-[#c2410c]">
-                That didn&apos;t work — check the email and try again.
+              <div className={`flex flex-col border-[3px] bg-white shadow-[5px_5px_0_#111] transition-shadow focus-within:shadow-[7px_7px_0_#ff5f1f] sm:flex-row ${problem ? "border-[#c2410c]" : "border-[#111]"}`}>
+                <div className="flex min-w-0 flex-1 items-center gap-3 px-4">
+                  <Mail className="h-5 w-5 shrink-0 text-[#111]" strokeWidth={2.5} aria-hidden="true" />
+                  <input
+                    id={id}
+                    type="email"
+                    inputMode="email"
+                    required
+                    autoComplete="email"
+                    spellCheck={false}
+                    placeholder="you@company.com"
+                    value={email}
+                    aria-invalid={problem || undefined}
+                    aria-describedby={hintId}
+                    onChange={(event) => { setEmail(event.target.value); if (problem) setState("idle") }}
+                    className="h-[56px] min-w-0 flex-1 bg-transparent text-[16px] font-semibold text-[#111] placeholder:font-medium placeholder:text-[#8a8a8a] focus:outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={state === "loading"}
+                  className="inline-flex h-[56px] shrink-0 items-center justify-center gap-2 border-t-[3px] border-[#111] bg-[#ff5f1f] px-5 text-[12px] font-black uppercase tracking-[.06em] text-[#111] transition-colors hover:bg-[#111] hover:text-white focus-visible:bg-[#111] focus-visible:text-white focus-visible:outline-none disabled:cursor-wait disabled:opacity-80 sm:border-l-[3px] sm:border-t-0"
+                >
+                  {state === "loading"
+                    ? <><LoaderCircle className="h-4 w-4 animate-spin" strokeWidth={3} aria-hidden="true" /> Claiming…</>
+                    : <>Get $1k in Papyrus credit <ArrowRight className="h-4 w-4" strokeWidth={3} aria-hidden="true" /></>}
+                </button>
+              </div>
+              <p id={hintId} role={problem ? "alert" : undefined} className={`mt-3 font-mono text-[10px] font-bold uppercase tracking-wide ${problem ? "text-[#c2410c]" : "text-[#555]"}`}>
+                {hint}
               </p>
-            )}
-          </form>
-        )}
+            </form>
+          )}
 
-        <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-[#555]">
-          One email with your credit code · No card required
-        </p>
-
-        <Link
-          href="/products/papyrus"
-          className="mt-1 inline-flex items-center gap-2 border-b-2 border-[#111] pb-0.5 text-[12px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:border-[#ff5f1f] hover:text-[#ff5f1f]"
-        >
-          Or explore Papyrus first <ArrowRight className="h-3.5 w-3.5" strokeWidth={3} />
-        </Link>
+          <TrialCtaLink
+            placement="hero"
+            className="mt-6 inline-flex items-center gap-2 border-b-2 border-[#111] pb-0.5 text-[12px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:border-[#ff5f1f] hover:text-[#ff5f1f]"
+          >
+            Or go straight to papyrus.beaglabs.com <ArrowRight className="h-3.5 w-3.5" strokeWidth={3} />
+          </TrialCtaLink>
+        </div>
       </div>
     </section>
   )
