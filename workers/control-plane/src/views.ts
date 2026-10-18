@@ -468,8 +468,12 @@ export const checklist = (deployment: Deployment, account: Account, options: { m
       if (state !== 'waiting') actions = `<a class="btn sm${done ? '' : ' primary'}" href="/provision?deployment=${esc(deployment.id)}${deployment.provider ? `&provider=${esc(deployment.provider)}` : ''}">${done ? 'Change' : 'Connect'}</a>`
     } else if (canRun(steps, id) && index === current) {
       actions = state === 'failed' ? stepButton(deployment, id, 'Retry', true) : state === 'running' ? stepButton(deployment, id, 'Check now') : stepButton(deployment, id, 'Run', true)
+      // A health check that keeps failing usually needs a fresh rollout (e.g. a new image), not another check.
+      if (id === 'health' && state === 'failed') actions += stepButton(deployment, 'deploy', 'Redeploy')
+    } else if (done && id === 'deploy') {
+      actions = stepButton(deployment, id, 'Redeploy')
     } else if (done && options.mode === 'byoc') {
-      actions = stepButton(deployment, id, id === 'deploy' ? 'Redeploy' : 'Recheck')
+      actions = stepButton(deployment, id, 'Recheck')
     }
     if (id === 'microsoft' && deployment.hostname && canRun(steps, 'microsoft') && !done)
       actions = `<a class="btn sm" href="https://${esc(deployment.hostname)}/" target="_blank" rel="noopener">Open Papyrus and Connect Microsoft ↗</a>${actions}`
@@ -552,7 +556,7 @@ export const deploymentPage = (input: DeploymentPageInput) => {
   const provider = hosted ? null : PROVIDERS.find((p) => p.id === deployment.provider)
   const kicker = `Deployment · ${hosted ? 'Hosted by Beag Labs' : esc(provider?.name ?? deployment.provider ?? '')}`
   const body = `${input.multiple ? '<p class="kicker" style="margin-bottom:10px"><a href="/deploy">← All deployments</a></p>' : ''}
-${pageTop(kicker, deploymentName(deployment), `${statusTag(deployment, rows)}${openPapyrusButton(deployment)}`)}
+${pageTop(kicker, deploymentName(deployment), `${statusTag(deployment, rows)}${deployment.steps.deploy.status === 'pass' ? stepButton(deployment, 'deploy', 'Redeploy') : ''}${openPapyrusButton(deployment)}`)}
 ${notice(input.message)}
 <div class="cols"><div>${checklistCard(rows)}${hosted ? '' : `${hostnameCard(deployment)}${dnsTable(deployment.dnsRecords)}`}</div>
 <div class="stack">${planCard(deployment, input.usage)}${helpCard(account)}</div></div>

@@ -206,6 +206,8 @@ export const runStep = (deployment: Deployment, account: Account, step: StepId) 
     if (step === 'deploy') yield* logEvent({ accountId: account.id, deploymentId: deployment.id, level: 'info', source, message: `Deploying ${deployment.hostname ?? 'Papyrus'}` })
     const result = yield* stepOutcome(deployment, account, step)
     deployment.steps = record(deployment.steps, step, result)
+    // A redeploy rolls out a new container, so its health has to be shown again; later steps keep their state.
+    if (step === 'deploy' && result.status === 'pass' && previous.status === 'pass') deployment.steps = { ...deployment.steps, health: { status: 'pending' } }
     if (result.status !== 'pass') deployment.steps[step] = { ...deployment.steps[step], attempts: attempt }
     yield* saveProgress(deployment)
     const message = result.reason ?? (result.status === 'pass' ? 'Done.' : 'Not ready yet.')

@@ -93,6 +93,11 @@ describe('deploy step (Fly.io recipe)', () => {
     expect(calls.some((c) => c.method === 'POST' && c.url.endsWith('/v1/apps'))).toBe(false)
     expect(calls.some((c) => c.url.endsWith('/machines/m_1'))).toBe(true)
     expect(JSON.parse(h.deployment('dep_abc').steps as string).deploy.status).toBe('pass')
+    // The rollout is new, so its health is checked again.
+    expect(JSON.parse(h.deployment('dep_abc').steps as string).health.status).toBe('pending')
+    const page = await (await h.call('/deploy/dep_abc', { headers: { cookie: 'cp_session=session-token' } })).text()
+    expect(page).toContain('action="/deploy/dep_abc/steps/deploy"')
+    expect(page).toContain('>Redeploy</button>')
   })
 
   it('renders the setup and provision pages', async () => {
