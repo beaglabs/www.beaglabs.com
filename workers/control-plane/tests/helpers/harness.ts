@@ -48,6 +48,7 @@ export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'goo
       signature: `signed:${input.deploymentId}:${input.state}`,
     })),
     registrationState: vi.fn(async () => 'pending' as const),
+    revokeDeployment: vi.fn(async () => true),
   } satisfies LicenseRpcApi
   return license
 }

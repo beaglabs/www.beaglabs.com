@@ -103,3 +103,9 @@ CREATE TABLE IF NOT EXISTS control_plane_deployments (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_control_plane_deployments_account ON control_plane_deployments(account_id);
+-- Control-plane deployments the customer deleted (LicenseRpc.revokeDeployment). A revoked deployment's status is always
+-- suspended and its deployment key never verifies again. A side table so this file stays idempotent (no ALTER).
+CREATE TABLE IF NOT EXISTS control_plane_revocations (
+  deployment_id TEXT PRIMARY KEY REFERENCES control_plane_deployments(deployment_id),
+  revoked_at TEXT NOT NULL
+);

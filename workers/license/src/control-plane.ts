@@ -67,10 +67,33 @@ export async function createDeployment(env: Bindings, input: CreateDeploymentInp
 export async function verifyDeploymentKey(env: Bindings, deploymentId: string, deploymentKey: string): Promise<boolean> {
   if (typeof deploymentId !== 'string' || typeof deploymentKey !== 'string' || !/^pdk_[A-Za-z0-9_-]{20,128}$/.test(deploymentKey)) return false
   const row = first<Row>(await getDb(env).execute({
-    sql: 'SELECT id FROM papyrus_deployments WHERE id=? AND key_sha256=?',
+    sql: `SELECT id FROM papyrus_deployments WHERE id=? AND key_sha256=?
+          AND NOT EXISTS (SELECT 1 FROM control_plane_revocations r WHERE r.deployment_id = papyrus_deployments.id)`,
     args: [deploymentId, await deploymentKeyHash(deploymentKey)],
   }))
   return Boolean(row)
+}
+
+async function isRevoked(env: Bindings, deploymentId: string): Promise<boolean> {
+  return Boolean(first<Row>(await getDb(env).execute({ sql: 'SELECT deployment_id FROM control_plane_revocations WHERE deployment_id=?', args: [deploymentId] })))
+}
+
+/**
+ * The customer deleted a control-plane deployment. From now on its status is signed `suspended` whatever the control
+ * plane asks for, its deployment key stops verifying (the stored hash is also replaced with one of a key nobody has, so
+ * analytics and Sentry auth fail too) and its bootstrap token can't be exchanged. Idempotent. Returns false for a
+ * deployment the control plane doesn't own (e.g. a Marketplace install), which is left untouched.
+ */
+export async function revokeDeployment(env: Bindings, deploymentId: string): Promise<boolean> {
+  const id = requireStr(deploymentId, 'deploymentId', 128)
+  const db = getDb(env)
+  if (!first<Row>(await db.execute({ sql: 'SELECT deployment_id FROM control_plane_deployments WHERE deployment_id=?', args: [id] }))) return false
+  const timestamp = now()
+  await db.batch([
+    { sql: 'INSERT OR IGNORE INTO control_plane_revocations (deployment_id, revoked_at) VALUES (?,?)', args: [id, timestamp] },
+    { sql: 'UPDATE papyrus_deployments SET key_sha256=?, updated_at=? WHERE id=?', args: [await deploymentKeyHash(newDeploymentKey()), timestamp, id] },
+  ])
+  return true
 }
 
 export async function signStatus(env: Bindings, input: { deploymentId: string; state: DeploymentState }): Promise<SignedStatus> {
@@ -79,7 +102,8 @@ export async function signStatus(env: Bindings, input: { deploymentId: string; s
   const issued = Date.now()
   const payload: StatusPayload = {
     deploymentId,
-    state: input.state,
+    // A deleted deployment stays suspended whatever the caller asks for.
+    state: (await isRevoked(env, deploymentId)) ? 'suspended' : input.state,
     issuedAt: new Date(issued).toISOString(),
     expiresAt: new Date(issued + STATUS_TTL_MS).toISOString(),
   }
@@ -107,6 +131,7 @@ export async function handleControlPlaneExchange(request: Request, env: Bindings
   const timestamp = now()
   const deploymentKey = newDeploymentKey()
   // Key rotation and token consumption commit together, and only while the token is unused and unexpired.
+  if (await isRevoked(env, deploymentId)) throw new ApiError(410, 'deployment_revoked', 'This deployment was deleted.')
   const usable = 'SELECT 1 FROM control_plane_deployments WHERE deployment_id=? AND bootstrap_sha256=? AND exchanged_at IS NULL AND bootstrap_expires_at > ?'
   const [, consumed] = await db.batch([
     {

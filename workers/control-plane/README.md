@@ -28,7 +28,11 @@ keys and signing.
 - `GET /api/events/live` — WebSocket to the account's `ActivityHub` Durable Object; pushes each new event (session cookie, same origin)
 - `GET /api/deployments/status` — Papyrus check-in: Bearer deployment key + `X-Papyrus-Deployment-Id` → signed status
 - `POST /api/deployments/usage` — Papyrus agent-execution usage (same auth) → Stripe meter event (`src/metering.ts`)
-- Cron `5 * * * *` — one VM-hour meter event per running deployment; nothing is sent while trialing
+- `POST /deploy/:id/stop`, `POST /deploy/:id/start` — scale the ECS service to 0 / 1 (hosted and AWS BYOC); see below
+- `POST /deploy/:id/delete` (Settings → Delete deployment; body `confirm` = the org name, or the hostname for BYOC),
+  `POST /deploy/:id/teardown` — retry or continue a teardown
+- Cron `5 * * * *` — one VM-hour meter event per running deployment (none for hours that start while stopped; nothing is
+  sent while trialing), then continues teardowns that are waiting (not failed ones: those wait for Retry)
 
 ## Hosted by Beag Labs
 
@@ -54,6 +58,49 @@ ALB quotas to watch: 100 rules per listener and 100 target groups per ALB by def
 4. In Cloudflare (beaglabs.com zone) add the records it prints, **DNS only** (grey cloud): the ACM validation CNAME,
    and `*.papyrus` CNAME → the ALB's DNS name. Rerun step 3 once ACM has issued the certificate (creates the HTTPS listener).
 
+## Stop, Start and Delete
+
+`src/lifecycle.ts` (effects) and `src/lifecycle-model.ts` (pure). State lives in `deployment_lifecycle` (no row = running):
+`running` → `stopped` → `running`, or → `deleting` → `deleted`.
+
+- **Stop** sets the ECS service's `desiredCount` to 0 (hosted through Beag Labs' role, AWS BYOC through the customer's
+  role). Data, secrets, target group, DNS and registration are kept. The subscription continues, so the $250/month
+  platform fee does too; VM hours stop. Setup steps can't run while stopped. **Start** sets it back to 1, puts health
+  back to pending and checks it, as after a redeploy.
+- **Delete** (irreversible): the customer types the org name (hosted) or hostname (BYOC). Teardown steps, each one
+  Activity line, idempotent and resumable (progress is saved per step; a failed step shows Retry):
+  1. cancel the Stripe subscription now (`prorate` + `invoice_now`: credit for unused platform time, usage so far on a
+     final invoice); 2. `LicenseRpc.revokeDeployment` (status always `suspended`, key never verifies again);
+  then, hosted only: scale to 0 and delete the service → deregister the `papyrus-<id>` task definitions → delete the
+  listener rule and target group → delete the EFS access point, then the data directory → delete the
+  `papyrus/<licenseDeploymentId>/*` secrets (`ForceDeleteWithoutRecovery`) → delete `/papyrus/<licenseDeploymentId>`
+  logs → release the org name. Shared infrastructure (cluster, ALB, listeners, EFS file system, wildcard certificate,
+  security groups, DNS) is never deleted: ids that belong to it are refused.
+- **The data directory**: EFS has no API to delete files, so a one-off Fargate task (`papyrus-hosted-cleanup`, busybox,
+  ARM64, registered on first use and saved in `hosted_infra`) mounts the file system root in the shared cluster and runs
+  `rm -rf /efs/tenants/<deploymentId>`; the step waits for it to exit 0 ("Check now", or the next cron run).
+- **BYOC delete** deletes nothing in the customer's account: billing and license only, then a list of the resources to
+  remove themselves, with the names and ids we stored.
+- Deleted deployments disappear from the console but stay in D1 (`deployments` + `deployment_lifecycle`) for audit.
+
+### One-time stack update (owner)
+
+The teardown and the health-check fix need new permissions on the Connect AWS role. Beag Labs' hosted role uses the same
+template, so until it is updated, Delete stops at its first AWS step with an access-denied error (Retry once updated);
+Stop/Start and deploys work without it.
+
+1. Upload the new template (also served at `/aws/connect-template.yaml`; a copy is at `~/Desktop/connect-aws.yaml`):
+   `aws s3 cp ~/Desktop/connect-aws.yaml s3://beaglabs-public/connect-aws.yaml --content-type text/yaml`
+   (https://beaglabs-public.s3.us-east-2.amazonaws.com/connect-aws.yaml).
+2. Update the `BeagLabsPapyrus` stack in Beag Labs' account (us-east-2): CloudFormation → the stack → Update → Replace
+   existing template → that S3 URL → keep both parameters as they are → acknowledge IAM → Submit. Or:
+   `aws cloudformation update-stack --region us-east-2 --stack-name BeagLabsPapyrus --template-url https://beaglabs-public.s3.us-east-2.amazonaws.com/connect-aws.yaml --parameters ParameterKey=ExternalId,UsePreviousValue=true ParameterKey=BeagLabsPrincipal,UsePreviousValue=true --capabilities CAPABILITY_NAMED_IAM`
+3. Apply both schemas (`npm run db:apply` here; `npm run db:apply` in `workers/license` for `control_plane_revocations`),
+   deploying the license Worker before this one (the control plane calls `revokeDeployment`).
+
+BYOC customers only need the update for the health-check fix on redeploy; Stop/Start uses `ecs:UpdateService`, which
+they already have, and BYOC delete makes no AWS calls.
+
 ## BYOC
 
 Off by default. `BYOC_ENABLED="true"` turns it on for every account; otherwise one account at a time:
@@ -71,8 +118,9 @@ adding an entry to the registry.
 ## Configuration
 
 Vars (`wrangler.jsonc`): `PAPYRUS_IMAGE_DIGEST`, `AWS_PRINCIPAL_ARN`, `AWS_CONNECT_TEMPLATE_URL` (S3 copy of
-`/aws/connect-template.yaml`; **re-upload it to S3 whenever the template changes** — it last gained
-`elasticloadbalancing:CreateRule` and `acm:ListCertificates` for hosted host rules and the wildcard-certificate lookup),
+`/aws/connect-template.yaml`; **re-upload it to S3 whenever the template changes** — it last gained the scoped delete
+actions for hosted teardown, `ecs:RunTask`/`ecs:StopTask` for the data cleanup task and
+`elasticloadbalancing:ModifyTargetGroup` for the health-check fix; see "One-time stack update"),
 `BYOC_ENABLED`, `HOSTED_AWS_ROLE_ARN`, `HOSTED_AWS_REGION`, `STRIPE_PRODUCT`, `STRIPE_PRICE_PLATFORM`, `STRIPE_PRICE_COMPUTE`,
 `STRIPE_PRICE_EXECUTION` (metered prices' meters are looked up at runtime), D1 `database_id`. Secrets: see `secrets.required`. `CREDENTIALS_KEY` is base64 of 32
 random bytes (`openssl rand -base64 32`); rotating it makes saved credentials unreadable.

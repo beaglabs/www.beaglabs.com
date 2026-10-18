@@ -36,6 +36,9 @@ const aws = vi.hoisted(() => {
     createListener: mk(async (input: { Port: number }) => ({ Listeners: [{ ListenerArn: `arn:listener/${input.Port}` }] })),
     createTargetGroup: mk(ok({ TargetGroups: [{ TargetGroupArn: 'arn:tg/acme' }] })),
     createRule: mk(ok({ Rules: [{ RuleArn: 'arn:rule/acme' }] })),
+    // A target group from before the health check moved to /api/config/public.
+    describeTargetGroups: mk(ok({ TargetGroups: [{ TargetGroupArn: 'arn:tg/acme', HealthCheckPath: '/api/health' }] })),
+    modifyTargetGroup: mk(ok({})),
     registerTaskDefinition: mk(ok({ taskDefinition: { taskDefinitionArn: 'arn:task/acme:1' } })),
     createService: mk(ok({ service: { serviceArn: 'arn:service/acme' } })),
     updateService: mk(ok({})),
@@ -59,7 +62,7 @@ vi.mock('@distilled.cloud/aws/ecs', () => ops('createCluster', 'registerTaskDefi
 vi.mock('@distilled.cloud/aws/efs', () => ops('describeFileSystems', 'createFileSystem', 'createMountTarget', 'createAccessPoint'))
 vi.mock('@distilled.cloud/aws/acm', () => ops('listCertificates', 'requestCertificate', 'describeCertificate'))
 vi.mock('@distilled.cloud/aws/elastic-load-balancing-v2', () =>
-  ops('describeLoadBalancers', 'createLoadBalancer', 'describeListeners', 'createListener', 'createTargetGroup', 'createRule'),
+  ops('describeLoadBalancers', 'createLoadBalancer', 'describeListeners', 'createListener', 'createTargetGroup', 'createRule', 'describeTargetGroups', 'modifyTargetGroup'),
 )
 vi.mock('@distilled.cloud/aws/secrets-manager', () => ops('createSecret'))
 vi.mock('@distilled.cloud/aws/cloudwatch-logs', () => ops('createLogGroup'))
@@ -145,6 +148,7 @@ describe('hosted deploy (shared AWS infrastructure)', () => {
         loadBalancers: [{ targetGroupArn: 'arn:tg/acme', containerName: 'papyrus', containerPort: 3210 }],
       }),
     )
+    expect(aws.modifyTargetGroup).not.toHaveBeenCalled()
     // Nothing shared is created per customer.
     for (const shared of ['createLoadBalancer', 'createListener', 'createFileSystem', 'createCluster', 'requestCertificate', 'createSecurityGroup'] as const) expect(aws[shared]).not.toHaveBeenCalled()
 
@@ -156,6 +160,8 @@ describe('hosted deploy (shared AWS infrastructure)', () => {
     expect(aws.createSecret).not.toHaveBeenCalled()
     expect(aws.createService).not.toHaveBeenCalled()
     expect(aws.updateService).toHaveBeenCalledWith(expect.objectContaining({ cluster: 'arn:cluster/papyrus-hosted', taskDefinition: 'arn:task/acme:1', forceNewDeployment: true }))
+    // The redeploy also fixes an old target group's health-check path.
+    expect(aws.modifyTargetGroup).toHaveBeenCalledWith({ TargetGroupArn: 'arn:tg/acme', HealthCheckPath: '/api/config/public', Matcher: { HttpCode: '200' } })
   })
 
   it('the architecture is a parameter (BYOC tasks stay without runtimePlatform)', async () => {

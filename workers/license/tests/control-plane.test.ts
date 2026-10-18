@@ -136,6 +136,39 @@ describe('LicenseRpc.signStatus', () => {
   })
 })
 
+describe('LicenseRpc.revokeDeployment', () => {
+  it('makes signStatus suspended and verifyDeploymentKey false from then on', async () => {
+    const created = await create()
+    const other = await create()
+    const key = (await exchange({ deploymentId: created.deploymentId, bootstrapToken: created.bootstrapToken })).json.deploymentKey
+    const otherKey = (await exchange({ deploymentId: other.deploymentId, bootstrapToken: other.bootstrapToken })).json.deploymentKey
+    expect((await rpc.signStatus({ deploymentId: created.deploymentId, state: 'active' })).payload.state).toBe('active')
+    expect(await rpc.verifyDeploymentKey(created.deploymentId, key)).toBe(true)
+
+    expect(await rpc.revokeDeployment(created.deploymentId)).toBe(true)
+    expect(await rpc.revokeDeployment(created.deploymentId)).toBe(true) // idempotent
+
+    const status = await rpc.signStatus({ deploymentId: created.deploymentId, state: 'active' })
+    expect(status.payload.state).toBe('suspended')
+    expect(verifies(status.payload, status.signature)).toBe(true)
+    expect(await rpc.verifyDeploymentKey(created.deploymentId, key)).toBe(false)
+    expect((await getDb().execute({ sql: 'SELECT revoked_at FROM control_plane_revocations WHERE deployment_id = ?', args: [created.deploymentId] })).rows).toHaveLength(1)
+
+    // Other deployments are untouched.
+    expect(await rpc.verifyDeploymentKey(other.deploymentId, otherKey)).toBe(true)
+    expect((await rpc.signStatus({ deploymentId: other.deploymentId, state: 'active' })).payload.state).toBe('active')
+  })
+
+  it('blocks a bootstrap exchange after revocation and ignores deployments the control plane does not own', async () => {
+    const created = await create()
+    await rpc.revokeDeployment(created.deploymentId)
+    const response = await exchange({ deploymentId: created.deploymentId, bootstrapToken: created.bootstrapToken })
+    expect(response.status).toBe(410)
+    expect(await rpc.registrationState(created.deploymentId)).toBe('pending')
+    expect(await rpc.revokeDeployment('dep_marketplace')).toBe(false)
+  })
+})
+
 describe('LicenseRpc.registrationState', () => {
   it('treats unknown ids as pending', async () => {
     expect(await rpc.registrationState('dep_missing')).toBe('pending')

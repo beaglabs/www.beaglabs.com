@@ -22,6 +22,8 @@ import { Env, UserError, getOwnedDeployment, listDeployments, newId, nowIso, run
 import { initialSteps, isStepId, record, resetFrom } from './setup'
 import { deploymentStatus } from './status'
 import { meterComputeHour, monthUsage, reportUsage } from './metering'
+import { deleteDeployment, resumeTeardowns, runTeardown, startDeployment, stopDeployment } from './lifecycle'
+import { byocCleanupList, teardownSteps } from './lifecycle-model'
 import { LIVE_PATH } from './activity-hub'
 import * as Views from './views'
 
@@ -61,10 +63,12 @@ export const runProgram = <A>(env: Bindings, program: Program<A>, deps: AppDeps 
   return Effect.runPromiseExit(withFetch.pipe(Effect.provide(FetchHttpClient.layer), Effect.provideService(Env, env)) as Effect.Effect<A, unknown, never>)
 }
 
-/** The hourly cron: compute meter events for the hour that just ended (src/metering.ts). */
+/** The hourly cron: compute meter events for the hour that just ended (src/metering.ts), then waiting teardowns. */
 export const scheduled = async (env: Bindings, now = Date.now(), deps: AppDeps = {}) => {
   const exit = await runProgram(env, meterComputeHour(now), deps)
   if (Exit.isFailure(exit)) console.error('compute metering failed', (Cause.squash(exit.cause) as { _tag?: string })?._tag ?? 'defect')
+  const teardowns = await runProgram(env, resumeTeardowns(), deps)
+  if (Exit.isFailure(teardowns)) console.error('resuming teardowns failed', (Cause.squash(teardowns.cause) as { _tag?: string })?._tag ?? 'defect')
   return Exit.isSuccess(exit) ? exit.value : null
 }
 
@@ -207,8 +211,10 @@ export function createApp(deps: AppDeps = {}) {
     return signedIn(c, (account) =>
       Effect.gen(function* () {
         let deployment: Deployment
-        if (form.deployment) deployment = yield* getOwnedDeployment(account.id, String(form.deployment))
-        else {
+        if (form.deployment) {
+          deployment = yield* getOwnedDeployment(account.id, String(form.deployment))
+          if (deployment.lifecycle === 'deleting' || deployment.lifecycle === 'deleted') return yield* new UserError({ message: 'This deployment was deleted.', status: 409 })
+        } else {
           const id = newId('dep')
           yield* run('INSERT INTO deployments (id, account_id, steps, created_at, updated_at) VALUES (?, ?, ?, ?, ?)', id, account.id, JSON.stringify(initialSteps()), nowIso(), nowIso())
           deployment = yield* getOwnedDeployment(account.id, id)
@@ -343,6 +349,10 @@ export function createApp(deps: AppDeps = {}) {
   const renderDeployment = (c: Ctx, account: Account, deployment: Deployment, message?: string | null, status = 200) =>
     Effect.gen(function* () {
       const byoc = yield* byocEnabled(account)
+      if (deployment.lifecycle === 'deleting' || deployment.lifecycle === 'deleted') {
+        const events = yield* listEvents(account.id, { deploymentId: deployment.id })
+        return c.html(Views.teardownPage({ account, deployment, events, steps: teardownSteps(deployment), cleanup: byocCleanupList(deployment), message }), status as 200)
+      }
       if (!deployment.provider) return c.html(Views.claimPage(account, deployment, message, byoc), status as 200)
       const events = yield* listEvents(account.id, { deploymentId: deployment.id })
       const multiple = (yield* listDeployments(account.id)).length > 1
@@ -438,6 +448,46 @@ export function createApp(deps: AppDeps = {}) {
       }),
     ),
   )
+
+  // Stop / Start / Delete ----------------------------------------------------------------------------------------
+
+  /** Run a lifecycle action; a refusal or provider failure is shown on the deployment page. */
+  const lifecycleAction = (c: Ctx, action: (deployment: Deployment, account: Account) => Program<unknown>) =>
+    signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployment = yield* getOwnedDeployment(account.id, c.req.param('id')!)
+        const result = yield* action(deployment, account).pipe(Effect.result)
+        if (result._tag === 'Failure') {
+          const failure = result.failure as { _tag?: string; message?: string; status?: number }
+          if (failure?._tag !== 'UserError') return yield* Effect.fail(result.failure)
+          return yield* renderDeployment(c, account, yield* getOwnedDeployment(account.id, deployment.id), failure.message, failure.status ?? 400)
+        }
+        return c.redirect(`/deploy/${deployment.id}`, 303)
+      }),
+    )
+
+  app.post('/deploy/:id/stop', (c) => lifecycleAction(c, stopDeployment))
+  app.post('/deploy/:id/start', (c) => lifecycleAction(c, startDeployment))
+  /** Retry (or check on) a teardown that failed or is waiting. */
+  app.post('/deploy/:id/teardown', (c) => lifecycleAction(c, (deployment, account) => runTeardown(deployment, account.id)))
+
+  /** Settings → Delete deployment. The exact org name (hosted) or hostname (BYOC) confirms it. */
+  app.post('/deploy/:id/delete', async (c) => {
+    const typed = String((await c.req.parseBody()).confirm ?? '')
+    return signedIn(c, (account) =>
+      Effect.gen(function* () {
+        const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+        const result = yield* deleteDeployment(deployment, account, typed).pipe(Effect.result)
+        if (result._tag === 'Failure') {
+          const failure = result.failure as { _tag?: string; message?: string; status?: number }
+          if (failure?._tag !== 'UserError') return yield* Effect.fail(result.failure)
+          const deployments = yield* listDeployments(account.id)
+          return c.html(Views.settingsPage(account, deployments, { text: failure.message ?? 'Delete failed', kind: 'error' }), (failure.status ?? 400) as 400)
+        }
+        return c.redirect(`/deploy/${deployment.id}`, 303)
+      }),
+    )
+  })
 
   // Team, Support, Settings --------------------------------------------------------------------------------------
 

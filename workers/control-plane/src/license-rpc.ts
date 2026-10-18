@@ -25,4 +25,6 @@ export interface LicenseRpcApi {
   verifyDeploymentKey(deploymentId: string, deploymentKey: string): Promise<boolean>
   signStatus(input: { deploymentId: string; state: StatusState }): Promise<SignedStatus>
   registrationState(deploymentId: string): Promise<'pending' | 'registered'>
+  /** Deleted: from now on signStatus says suspended and the deployment key no longer verifies. True if it was a control-plane deployment. */
+  revokeDeployment(deploymentId: string): Promise<boolean>
 }

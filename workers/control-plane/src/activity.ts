@@ -12,7 +12,7 @@ import { EVENT_FILTERS, type EventFilter, type EventRow } from './events'
  */
 
 /** Sources whose events change the setup checklist. */
-export const STEP_SOURCES = ['deploy', 'address', 'dns', 'health', 'microsoft', 'registration', 'connect'] as const
+export const STEP_SOURCES = ['deploy', 'address', 'dns', 'health', 'microsoft', 'registration', 'connect', 'lifecycle'] as const
 
 export const ACTIVITY_SCRIPT_PATH = '/assets/activity.js'
 

@@ -5,7 +5,7 @@ import { isTrialing, stripeLayer } from './billing'
 import { logEvent } from './events'
 import type { PriceKind } from './pricing'
 import { license } from './runner'
-import { Env, UserError, all, first, nowIso, run, toDeployment, type Deployment, type DeploymentRow } from './services'
+import { Env, SELECT_DEPLOYMENT, UserError, all, first, nowIso, run, toDeployment, type Deployment, type DeploymentRow } from './services'
 
 /**
  * Usage billing through Stripe Billing Meters.
@@ -134,12 +134,17 @@ const HOUR_MS = 3_600_000
 /** Start of the last full UTC hour before `now`. */
 export const previousHourStart = (now: number) => new Date(Math.floor(now / HOUR_MS) * HOUR_MS - HOUR_MS)
 
-/** Running = deployed (deploy step passed before the hour ended) on a subscription that is active or trialing. */
-export const runningDuring = (deployment: Deployment, hourEnd: number) =>
+/**
+ * Running = deployed (deploy step passed before the hour ended) on a subscription that is active or trialing, and not
+ * stopped or deleted before the hour began. A deployment stopped part-way through an hour is billed for that hour (it
+ * ran in it); hours that start while it is stopped are not.
+ */
+export const runningDuring = (deployment: Deployment, hourEnd: number, hourStart = hourEnd - HOUR_MS) =>
   Boolean(deployment.provider) &&
   deployment.billing_state === 'active' &&
   deployment.steps.deploy.status === 'pass' &&
-  Date.parse(deployment.steps.deploy.at ?? '') < hourEnd
+  Date.parse(deployment.steps.deploy.at ?? '') < hourEnd &&
+  (deployment.lifecycle === 'running' || !(Date.parse(deployment.lifecycle_at ?? '') <= hourStart))
 
 /**
  * The hourly cron: one compute meter event per running deployment for the hour that just ended, then retries of
@@ -149,10 +154,10 @@ export const meterComputeHour = (now = Date.now()) =>
   Effect.gen(function* () {
     const hourStart = previousHourStart(now)
     const hourEnd = hourStart.getTime() + HOUR_MS
-    const rows = yield* all<DeploymentRow>('SELECT d.*, b.trial_end FROM deployments d LEFT JOIN billing_periods b ON b.deployment_id = d.id WHERE d.provider IS NOT NULL')
+    const rows = yield* all<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.provider IS NOT NULL`)
     const outcomes: Record<string, MeterOutcome | 'failed'> = {}
     for (const deployment of rows.map(toDeployment)) {
-      if (!runningDuring(deployment, hourEnd)) continue
+      if (!runningDuring(deployment, hourEnd, hourStart.getTime())) continue
       const identifier = `${meterDeploymentId(deployment)}:${hourStart.toISOString()}`
       const result = yield* meterUsage({ deployment, kind: 'compute', value: 1, identifier, periodStart: hourStart.toISOString(), periodEnd: new Date(hourEnd).toISOString() }).pipe(Effect.result)
       outcomes[identifier] = result._tag === 'Success' ? result.success : 'failed'
@@ -164,7 +169,7 @@ export const meterComputeHour = (now = Date.now()) =>
     )
     for (const row of failed) {
       if (outcomes[row.identifier]) continue
-      const deploymentRow = yield* first<DeploymentRow>('SELECT d.*, b.trial_end FROM deployments d LEFT JOIN billing_periods b ON b.deployment_id = d.id WHERE d.id = ?', row.deployment_id)
+      const deploymentRow = yield* first<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.id = ?`, row.deployment_id)
       if (!deploymentRow) continue
       const result = yield* meterUsage({ deployment: toDeployment(deploymentRow), kind: row.kind, value: row.value, identifier: row.identifier, periodStart: row.period_start, periodEnd: row.period_end }).pipe(Effect.result)
       outcomes[row.identifier] = result._tag === 'Success' ? result.success : 'failed'
@@ -214,7 +219,7 @@ export const reportUsage = (authorization: string | null | undefined, deployment
     if (!valid) return yield* new UserError({ message: 'Invalid deployment key', status: 401 })
     const report = parseUsageReport(body)
     if (typeof report === 'string') return yield* new UserError({ message: report, status: 400 })
-    const row = yield* first<DeploymentRow>('SELECT d.*, b.trial_end FROM deployments d LEFT JOIN billing_periods b ON b.deployment_id = d.id WHERE d.license_deployment_id = ?', id)
+    const row = yield* first<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.license_deployment_id = ?`, id)
     if (!row) return yield* new UserError({ message: 'Not a control-plane deployment', status: 404 })
     const outcome = yield* meterUsage({
       deployment: toDeployment(row),

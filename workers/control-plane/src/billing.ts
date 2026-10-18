@@ -1,5 +1,5 @@
 import * as Stripe from '@distilled.cloud/stripe'
-import { CreateBillingPortalSession, CreateCheckoutSession, GetSubscription } from '@distilled.cloud/stripe/stripe'
+import { CreateBillingPortalSession, CreateCheckoutSession, DeleteSubscription, GetSubscription } from '@distilled.cloud/stripe/stripe'
 import { constructEvent, type StripeEvent } from '@distilled.cloud/stripe/Webhooks'
 import * as Effect from 'effect/Effect'
 import * as FetchHttpClient from 'effect/http/FetchHttpClient'
@@ -58,6 +58,26 @@ export const portalUrl = (deployment: Deployment) =>
       Effect.mapError(stripeFailure),
     )
     return session.url
+  })
+
+/**
+ * Delete a deployment: cancel its subscription now (one subscription per deployment, so the whole subscription goes).
+ * `prorate` credits the unused part of the platform fee; `invoice_now` bills un-invoiced metered usage with that
+ * credit on a final invoice. Already canceled (or gone) counts as done.
+ */
+export const cancelSubscription = (deployment: Pick<Deployment, 'stripe_subscription_id' | 'stripe_status'>) =>
+  Effect.gen(function* () {
+    if (!deployment.stripe_subscription_id || deployment.stripe_status === 'canceled') return 'none' as const
+    const env = yield* Env
+    yield* DeleteSubscription({ subscription_exposed_id: deployment.stripe_subscription_id, prorate: true, invoice_now: true }).pipe(
+      Effect.provide(stripeLayer(env)),
+      Effect.asVoid,
+      Effect.catch((cause) => {
+        const text = `${(cause as { _tag?: string })?._tag ?? ''} ${(cause as { message?: string })?.message ?? ''}`
+        return /No such subscription|already (been )?cancel|canceled subscription/i.test(text) ? Effect.void : Effect.fail(stripeFailure(cause))
+      }),
+    )
+    return 'canceled' as const
   })
 
 interface SubscriptionObject {
@@ -225,7 +245,11 @@ export const applyBillingUpdate = (update: BillingUpdate) =>
     )
     if (update.trialEnd) yield* saveTrialEnd(deploymentId, update.trialEnd)
     const accountId = yield* accountOf(deploymentId)
-    if (accountId) yield* logEvent({ accountId, deploymentId, source: 'billing', ...billingEventFor(update) })
+    // A deleted deployment's subscription was canceled on purpose: not a suspension.
+    const lifecycle = yield* first<{ state: string }>('SELECT state FROM deployment_lifecycle WHERE deployment_id = ?', deploymentId)
+    const deleting = lifecycle?.state === 'deleting' || lifecycle?.state === 'deleted'
+    const line = deleting && update.stripeStatus === 'canceled' ? { level: 'info' as const, message: 'Subscription canceled · deployment deleted' } : billingEventFor(update)
+    if (accountId) yield* logEvent({ accountId, deploymentId, source: 'billing', ...line })
   })
 
 /** POST /api/stripe/webhook: verify the signature over the raw body, apply each event once. */

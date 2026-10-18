@@ -11,12 +11,12 @@ import { Env, all, insert, nowIso } from './services'
 export type EventLevel = 'ok' | 'info' | 'wait' | 'error'
 export const EVENT_LEVELS: readonly EventLevel[] = ['ok', 'info', 'wait', 'error']
 
-export type EventSource = 'deploy' | 'address' | 'dns' | 'health' | 'microsoft' | 'registration' | 'connect' | 'billing' | 'account'
+export type EventSource = 'deploy' | 'address' | 'dns' | 'health' | 'microsoft' | 'registration' | 'connect' | 'billing' | 'account' | 'lifecycle'
 
 /** The Activity card's filter buttons. */
 export const EVENT_FILTERS = {
   all: {},
-  deploy: { sources: ['deploy', 'address', 'dns', 'health', 'microsoft', 'registration', 'connect'] as EventSource[] },
+  deploy: { sources: ['deploy', 'address', 'dns', 'health', 'microsoft', 'registration', 'connect', 'lifecycle'] as EventSource[] },
   billing: { sources: ['billing'] as EventSource[] },
   team: { sources: ['account'] as EventSource[] },
   errors: { levels: ['error'] as EventLevel[] },

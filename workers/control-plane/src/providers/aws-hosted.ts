@@ -7,6 +7,7 @@ import * as Effect from 'effect/Effect'
 import type { DnsRecord } from '../dns'
 import { HOSTED_DOMAIN, hostedHostname, infraReady, type HostedInfra } from '../hosted'
 import {
+  CLEANUP_FAMILY,
   PORT,
   customerLayer,
   ensureLogGroup,
@@ -15,10 +16,13 @@ import {
   regionOf,
   registerTask,
   remember,
+  serviceName,
   short,
   tags,
   type CpuArchitecture,
 } from './aws'
+import * as Logs from '@distilled.cloud/aws/cloudwatch-logs'
+import * as SecretsManager from '@distilled.cloud/aws/secrets-manager'
 import { ProviderError, providerError, type DeployContext, type DeployResult, type ProviderContext } from './types'
 
 /**
@@ -37,6 +41,20 @@ export const HOSTED_NAME = 'papyrus-hosted'
 export const WILDCARD = `*.${HOSTED_DOMAIN}`
 /** Customer N's access point uid/gid is POSIX_BASE + N (never the image's 65532, never another customer's). */
 export const POSIX_BASE = 100000
+
+/** Answers in both of Papyrus's modes (setup and running); the target group health check and the health step use it. */
+export const HEALTH_CHECK_PATH = '/api/config/public'
+
+const ensureHealthCheckPath = (targetGroupArn: string) =>
+  Elb.describeTargetGroups({ TargetGroupArns: [targetGroupArn] }).pipe(
+    Effect.flatMap((out) => {
+      const group = out.TargetGroups?.[0]
+      return group && group.HealthCheckPath !== HEALTH_CHECK_PATH
+        ? Elb.modifyTargetGroup({ TargetGroupArn: targetGroupArn, HealthCheckPath: HEALTH_CHECK_PATH, Matcher: { HttpCode: '200' } })
+        : Effect.void
+    }),
+    Effect.ignore,
+  )
 
 const notFound = (error: unknown) => /NotFound/i.test(String((error as { _tag?: string })?._tag ?? '') + String((error as { message?: string })?.message ?? ''))
 
@@ -241,7 +259,7 @@ export const hostedDeploy = (ctx: DeployContext, infra: HostedInfra, org: Hosted
     if (!infraReady(infra)) return yield* new ProviderError({ message: 'Hosted deployments are not open yet. Beag Labs has been notified; retry shortly.' })
     const { layer, accountId } = yield* customerLayer(ctx)
     const region = regionOf(ctx)
-    const name = `papyrus-${short(ctx)}`
+    const name = serviceName(ctx.deploymentId)
     const hostname = hostedHostname(org.name)
     const posixId = POSIX_BASE + org.slot
     const fail = (what: string) => providerError(what)
@@ -265,6 +283,7 @@ export const hostedDeploy = (ctx: DeployContext, infra: HostedInfra, org: Hosted
       const logGroup = yield* ensureLogGroup(ctx)
 
       // Routing: a target group and a host-header rule on the shared HTTPS listener.
+      const existingTargetGroup = typeof ctx.resources.targetGroupArn === 'string'
       const targetGroupArn = yield* remember(
         ctx,
         'targetGroupArn',
@@ -274,11 +293,14 @@ export const hostedDeploy = (ctx: DeployContext, infra: HostedInfra, org: Hosted
           Port: PORT,
           VpcId: infra.vpcId!,
           TargetType: 'ip',
-          HealthCheckPath: '/api/config/public',
+          HealthCheckPath: HEALTH_CHECK_PATH,
           Matcher: { HttpCode: '200' },
         }).pipe(Effect.mapError(fail('Creating the target group failed'))),
         (out) => out.TargetGroups?.[0]?.TargetGroupArn,
       )
+      // Target groups created before the health check moved to /api/config/public are fixed on redeploy (best effort:
+      // a role without ModifyTargetGroup yet must not block a redeploy).
+      if (existingTargetGroup) yield* ensureHealthCheckPath(targetGroupArn)
       yield* remember(
         ctx,
         'listenerRuleArn',
@@ -329,6 +351,213 @@ export const hostedDeploy = (ctx: DeployContext, infra: HostedInfra, org: Hosted
         )
       }
       return { status: 'pass', reason: `Deployed. Papyrus is starting at https://${hostname}/.`, dnsRecords: [] } satisfies DeployResult
+    })
+    return yield* program.pipe(Effect.provide(layer))
+  })
+
+// Stop / Start -------------------------------------------------------------------------------------------------------
+
+/** Stop (0) or start (1) a hosted deployment: only the service's desiredCount changes. */
+export const hostedScale = (ctx: ProviderContext, infra: HostedInfra, deploymentId: string, desiredCount: 0 | 1) =>
+  Effect.gen(function* () {
+    if (!infra.clusterArn) return yield* new ProviderError({ message: 'Hosted infrastructure is not set up.' })
+    const { layer } = yield* customerLayer(ctx)
+    yield* Ecs.updateService({ cluster: infra.clusterArn, service: serviceName(deploymentId), desiredCount }).pipe(
+      Effect.provide(layer),
+      Effect.mapError(providerError(desiredCount === 0 ? 'Stopping the ECS service failed' : 'Starting the ECS service failed')),
+    )
+  })
+
+// Teardown -----------------------------------------------------------------------------------------------------------
+
+/**
+ * Deleting a hosted deployment removes only what was created for it, in this order. Every step is idempotent (a
+ * resource that is already gone counts as deleted) and records progress in `resources`, so a retry after a failure
+ * resumes where it stopped. Shared infrastructure (cluster, ALB and its listeners, EFS file system, wildcard
+ * certificate, security groups, DNS) is never touched: `assertNotShared` refuses any id that belongs to it.
+ */
+export const HOSTED_TEARDOWN_STEPS = ['service', 'taskDefinitions', 'routing', 'data', 'secrets', 'logs'] as const
+export type HostedTeardownStep = (typeof HOSTED_TEARDOWN_STEPS)[number]
+
+export interface TeardownTarget {
+  /** Control-plane deployment id (service name, EFS directory). */
+  deploymentId: string
+  /** License deployment id (secret and log group names). */
+  licenseDeploymentId: string | null
+  /** The deployment's saved resources. Mutated: deleted ids are removed, progress markers are added. */
+  resources: Record<string, unknown>
+}
+
+export interface TeardownOutcome {
+  status: 'pass' | 'pending' | 'fail'
+  reason: string
+}
+
+/**
+ * EFS has no API to delete files. The data directory is removed by a one-off Fargate task in the shared cluster that
+ * mounts the file system root (the customer's access point is already deleted) and runs `rm -rf /efs/tenants/<id>`.
+ * The id arrives as $TENANT and is checked again in the shell; the command itself is fixed in the task definition.
+ */
+export const CLEANUP_SCRIPT =
+  'case "$TENANT" in dep_*) ;; *) echo "refusing: bad tenant"; exit 2 ;; esac; ' +
+  'case "$TENANT" in *[!a-z0-9_]*) echo "refusing: bad tenant"; exit 2 ;; esac; ' +
+  'rm -rf -- "/efs/tenants/$TENANT" && test ! -e "/efs/tenants/$TENANT"'
+
+const TENANT_ID = /^dep_[a-z0-9]+$/
+
+const gone = (error: unknown) =>
+  /NotFound|NotActive|does not exist|not found/i.test(String((error as { _tag?: string })?._tag ?? '') + ' ' + String((error as { message?: string })?.message ?? ''))
+
+/** Delete-or-gone: a resource that no longer exists counts as deleted. */
+const deleted = <A, E, R>(effect: Effect.Effect<A, E, R>) => effect.pipe(Effect.asVoid, Effect.catch((error) => (gone(error) ? Effect.void : Effect.fail(error))))
+
+const sharedIds = (infra: HostedInfra) =>
+  new Set(
+    Object.values(infra)
+      .flatMap((value) => (Array.isArray(value) ? value : [value]))
+      .filter((value): value is string => typeof value === 'string' && value.length > 0),
+  )
+
+/** Refuse to delete anything that is part of the shared hosted infrastructure. */
+export const assertNotShared = (infra: HostedInfra, id: string) =>
+  sharedIds(infra).has(id) ? Effect.fail(new ProviderError({ message: `Refusing to delete ${id}: it is shared hosted infrastructure.` })) : Effect.void
+
+const cleanupTaskDefinition = (infra: HostedInfra) =>
+  Effect.gen(function* () {
+    if (infra.cleanupTaskDefinitionArn) return infra.cleanupTaskDefinitionArn as string
+    const registered = yield* Ecs.registerTaskDefinition({
+      family: CLEANUP_FAMILY,
+      networkMode: 'awsvpc',
+      requiresCompatibilities: ['FARGATE'],
+      cpu: '256',
+      memory: '512',
+      runtimePlatform: { cpuArchitecture: 'ARM64', operatingSystemFamily: 'LINUX' },
+      volumes: [{ name: 'efs', efsVolumeConfiguration: { fileSystemId: infra.fileSystemId!, rootDirectory: '/', transitEncryption: 'ENABLED' } }],
+      containerDefinitions: [
+        {
+          name: 'cleanup',
+          image: 'public.ecr.aws/docker/library/busybox:1.37',
+          essential: true,
+          user: '0:0',
+          command: ['sh', '-c', CLEANUP_SCRIPT],
+          mountPoints: [{ sourceVolume: 'efs', containerPath: '/efs' }],
+        },
+      ],
+      tags: [{ key: 'beaglabs:papyrus', value: 'hosted' }],
+    }).pipe(Effect.mapError(providerError('Registering the cleanup task failed')))
+    const arn = registered.taskDefinition?.taskDefinitionArn
+    if (!arn) return yield* new ProviderError({ message: 'AWS did not return the cleanup task definition' })
+    infra.cleanupTaskDefinitionArn = arn
+    return arn
+  })
+
+/** One teardown step. `infra` may gain `cleanupTaskDefinitionArn`; the caller saves both it and `target.resources`. */
+export const hostedTeardownStep = (ctx: ProviderContext, infra: HostedInfra, target: TeardownTarget, step: HostedTeardownStep) =>
+  Effect.gen(function* () {
+    const { layer } = yield* customerLayer(ctx)
+    const name = serviceName(target.deploymentId)
+    const resources = target.resources
+    const pass = (reason: string): TeardownOutcome => ({ status: 'pass', reason })
+
+    const program: Effect.Effect<TeardownOutcome, ProviderError, any> = Effect.gen(function* () {
+      switch (step) {
+        case 'service': {
+          if (!infra.clusterArn) return pass('No ECS service.')
+          const cluster = infra.clusterArn
+          yield* deleted(Ecs.updateService({ cluster, service: name, desiredCount: 0 })).pipe(Effect.mapError(providerError('Scaling the ECS service to 0 failed')))
+          yield* deleted(Ecs.deleteService({ cluster, service: name, force: true })).pipe(Effect.mapError(providerError('Deleting the ECS service failed')))
+          delete resources.serviceArn
+          return pass(`Scaled to 0 and deleted the ECS service ${name}.`)
+        }
+        case 'taskDefinitions': {
+          const arns: string[] = []
+          let nextToken: string | undefined
+          do {
+            const page = yield* Ecs.listTaskDefinitions({ familyPrefix: name, status: 'ACTIVE', ...(nextToken ? { nextToken } : {}) }).pipe(
+              Effect.mapError(providerError('Listing task definitions failed')),
+            )
+            // familyPrefix is a prefix: keep only this deployment's own family.
+            arns.push(...(page.taskDefinitionArns ?? []).filter((arn) => arn.split('/').pop()?.replace(/:\d+$/, '') === name))
+            nextToken = page.nextToken
+          } while (nextToken)
+          for (const taskDefinition of arns) {
+            yield* deleted(Ecs.deregisterTaskDefinition({ taskDefinition })).pipe(Effect.mapError(providerError('Deregistering a task definition failed')))
+          }
+          delete resources.taskDefinitionArn
+          return pass(arns.length ? `Deregistered ${arns.length} task definition${arns.length === 1 ? '' : 's'} (${name}).` : 'No task definitions left.')
+        }
+        case 'routing': {
+          if (typeof resources.listenerRuleArn === 'string') {
+            yield* assertNotShared(infra, resources.listenerRuleArn)
+            yield* deleted(Elb.deleteRule({ RuleArn: resources.listenerRuleArn })).pipe(Effect.mapError(providerError('Deleting the listener rule failed')))
+            delete resources.listenerRuleArn
+          }
+          if (typeof resources.targetGroupArn === 'string') {
+            yield* assertNotShared(infra, resources.targetGroupArn)
+            yield* deleted(Elb.deleteTargetGroup({ TargetGroupArn: resources.targetGroupArn })).pipe(Effect.mapError(providerError('Deleting the target group failed')))
+            delete resources.targetGroupArn
+          }
+          return pass('Removed the listener rule and target group.')
+        }
+        case 'data': {
+          if (typeof resources.accessPointId === 'string') {
+            yield* assertNotShared(infra, resources.accessPointId)
+            yield* deleted(Efs.deleteAccessPoint({ AccessPointId: resources.accessPointId })).pipe(Effect.mapError(providerError('Deleting the EFS access point failed')))
+            delete resources.accessPointId
+          }
+          if (resources.dataDeleted === true || !infra.fileSystemId) return pass('Deleted the EFS access point and data directory.')
+          if (!TENANT_ID.test(target.deploymentId)) return yield* new ProviderError({ message: 'Unexpected deployment id; not deleting data.' })
+          if (typeof resources.cleanupTaskArn !== 'string') {
+            const taskDefinition = yield* cleanupTaskDefinition(infra)
+            const started = yield* Ecs.runTask({
+              cluster: infra.clusterArn!,
+              taskDefinition,
+              launchType: 'FARGATE',
+              count: 1,
+              startedBy: `cleanup-${short({ deploymentId: target.deploymentId })}`,
+              networkConfiguration: { awsvpcConfiguration: { subnets: infra.subnetIds!, securityGroups: [infra.taskSecurityGroup!], assignPublicIp: 'ENABLED' } },
+              overrides: { containerOverrides: [{ name: 'cleanup', environment: [{ name: 'TENANT', value: target.deploymentId }] }] },
+            }).pipe(Effect.mapError(providerError('Starting the data cleanup task failed')))
+            const taskArn = started.tasks?.[0]?.taskArn
+            if (!taskArn) return yield* new ProviderError({ message: `The data cleanup task did not start${started.failures?.[0]?.reason ? `: ${started.failures[0].reason}` : ''}.` })
+            resources.cleanupTaskArn = taskArn
+            return { status: 'pending', reason: 'Access point deleted. Deleting the data directory (one-off task, about a minute).' } satisfies TeardownOutcome
+          }
+          const described = yield* Ecs.describeTasks({ cluster: infra.clusterArn!, tasks: [resources.cleanupTaskArn] }).pipe(Effect.mapError(providerError('Reading the data cleanup task failed')))
+          const task = described.tasks?.[0]
+          if (task && task.lastStatus !== 'STOPPED') return { status: 'pending', reason: `Deleting the data directory (cleanup task ${task.lastStatus?.toLowerCase() ?? 'starting'}).` } satisfies TeardownOutcome
+          delete resources.cleanupTaskArn
+          const exitCode = task?.containers?.find((container) => container.name === 'cleanup')?.exitCode
+          if (exitCode !== 0)
+            return yield* new ProviderError({ message: `The data cleanup task did not finish (${task ? task.stoppedReason ?? `exit code ${exitCode ?? 'unknown'}` : 'task not found'}). Retry runs it again.` })
+          resources.dataDeleted = true
+          return pass('Deleted the EFS access point and data directory.')
+        }
+        case 'secrets': {
+          const prefix = target.licenseDeploymentId ? `papyrus/${target.licenseDeploymentId}` : null
+          const secrets: Array<[string, string | null]> = [
+            ['bootstrapSecretArn', prefix && `${prefix}/bootstrap-token`],
+            ['licenseSecretArn', prefix && `${prefix}/license`],
+            ['masterKeySecretArn', prefix && `${prefix}/master-key`],
+          ]
+          for (const [key, fallback] of secrets) {
+            const id = typeof resources[key] === 'string' ? (resources[key] as string) : fallback
+            if (!id) continue
+            if (!/(^|:secret:)papyrus\//.test(id)) return yield* new ProviderError({ message: `Refusing to delete ${id}: not a Papyrus secret.` })
+            yield* deleted(SecretsManager.deleteSecret({ SecretId: id, ForceDeleteWithoutRecovery: true })).pipe(Effect.mapError(providerError('Deleting a secret failed')))
+            delete resources[key]
+          }
+          return pass(prefix ? `Deleted the secrets under ${prefix}/ (no recovery window).` : 'No secrets.')
+        }
+        case 'logs': {
+          const group = typeof resources.logGroup === 'string' ? resources.logGroup : target.licenseDeploymentId ? `/papyrus/${target.licenseDeploymentId}` : null
+          if (!group) return pass('No log group.')
+          if (!/^\/papyrus\/[\w-]+$/.test(group)) return yield* new ProviderError({ message: `Refusing to delete log group ${group}.` })
+          yield* deleted(Logs.deleteLogGroup({ logGroupName: group })).pipe(Effect.mapError(providerError('Deleting the log group failed')))
+          delete resources.logGroup
+          return pass(`Deleted the log group ${group}.`)
+        }
+      }
     })
     return yield* program.pipe(Effect.provide(layer))
   })

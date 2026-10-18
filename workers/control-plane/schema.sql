@@ -125,3 +125,12 @@ CREATE TABLE IF NOT EXISTS meter_pushes (
 );
 
 CREATE INDEX IF NOT EXISTS meter_pushes_deployment ON meter_pushes(deployment_id, period_start);
+
+-- Stop/Start and Delete (src/lifecycle.ts). No row = running. state: running | stopped | deleting | deleted.
+-- changed_at: when it last changed (the VM-hour cron skips hours that started after a stop). teardown: per-step progress JSON.
+CREATE TABLE IF NOT EXISTS deployment_lifecycle (
+  deployment_id TEXT PRIMARY KEY REFERENCES deployments(id),
+  state TEXT NOT NULL,
+  changed_at TEXT NOT NULL,
+  teardown TEXT NOT NULL DEFAULT '{}'
+);

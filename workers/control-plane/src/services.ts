@@ -42,6 +42,12 @@ export interface Account {
 
 export type BillingState = 'none' | 'active' | 'suspended'
 
+/**
+ * Whether the deployment's container is meant to run. `stopped`: the service is scaled to 0 (data, secrets, routing and
+ * registration kept). `deleting` → `deleted`: torn down (hosted) or handed back (BYOC); deleted rows stay for audit.
+ */
+export type LifecycleState = 'running' | 'stopped' | 'deleting' | 'deleted'
+
 export interface DeploymentRow {
   id: string
   account_id: string
@@ -62,12 +68,21 @@ export interface DeploymentRow {
   updated_at: string
   /** From billing_periods (Stripe's trial_end), when known. */
   trial_end?: string | null
+  /** From deployment_lifecycle; no row = running. */
+  lifecycle?: LifecycleState | null
+  lifecycle_at?: string | null
+  teardown?: string | null
 }
 
-export interface Deployment extends Omit<DeploymentRow, 'resources' | 'dns_records' | 'steps'> {
+export interface Deployment extends Omit<DeploymentRow, 'resources' | 'dns_records' | 'steps' | 'lifecycle' | 'teardown'> {
   resources: Record<string, unknown>
   dnsRecords: DnsRecord[]
   steps: Steps
+  lifecycle: LifecycleState
+  /** When the lifecycle state last changed (stop, start, delete). */
+  lifecycle_at?: string | null
+  /** Teardown progress while deleting (src/lifecycle.ts). */
+  teardown: Record<string, { status: 'pending' | 'pass' | 'fail'; reason?: string; at?: string }>
 }
 
 const parseJson = <T>(text: string | null | undefined, fallback: T): T => {
@@ -79,11 +94,20 @@ const parseJson = <T>(text: string | null | undefined, fallback: T): T => {
 }
 
 export const toDeployment = (row: DeploymentRow): Deployment => {
-  const { resources, dns_records, steps, ...rest } = row
-  return { ...rest, resources: parseJson(resources, {}), dnsRecords: parseJson(dns_records, []), steps: parseSteps(steps) }
+  const { resources, dns_records, steps, lifecycle, teardown, ...rest } = row
+  return {
+    ...rest,
+    resources: parseJson(resources, {}),
+    dnsRecords: parseJson(dns_records, []),
+    steps: parseSteps(steps),
+    lifecycle: lifecycle ?? 'running',
+    teardown: parseJson(teardown, {}),
+  }
 }
 
-const SELECT_DEPLOYMENT = 'SELECT d.*, b.trial_end FROM deployments d LEFT JOIN billing_periods b ON b.deployment_id = d.id'
+/** Deployment rows with their trial end and lifecycle state (both in side tables, so schema.sql stays idempotent). */
+export const SELECT_DEPLOYMENT =
+  'SELECT d.*, b.trial_end, l.state AS lifecycle, l.changed_at AS lifecycle_at, l.teardown FROM deployments d LEFT JOIN billing_periods b ON b.deployment_id = d.id LEFT JOIN deployment_lifecycle l ON l.deployment_id = d.id'
 
 export const getDeployment = (id: string) => first<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.id = ?`, id).pipe(Effect.map((row) => (row ? toDeployment(row) : null)))
 
@@ -95,8 +119,24 @@ export const getOwnedDeployment = (accountId: string, id: string) =>
     ),
   )
 
+/** The account's deployments, without deleted ones (those stay in D1 for audit and open only by id). */
 export const listDeployments = (accountId: string) =>
-  all<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.account_id = ? ORDER BY d.created_at`, accountId).pipe(Effect.map((rows) => rows.map(toDeployment)))
+  all<DeploymentRow>(`${SELECT_DEPLOYMENT} WHERE d.account_id = ? AND COALESCE(l.state, 'running') != 'deleted' ORDER BY d.created_at`, accountId).pipe(
+    Effect.map((rows) => rows.map(toDeployment)),
+  )
+
+/** Set the lifecycle state (and optionally the teardown progress) of a deployment. */
+export const saveLifecycle = (deployment: Pick<Deployment, 'id' | 'lifecycle' | 'teardown'> & { lifecycle_at?: string | null }) =>
+  Effect.suspend(() =>
+    run(
+      `INSERT INTO deployment_lifecycle (deployment_id, state, changed_at, teardown) VALUES (?, ?, ?, ?)
+       ON CONFLICT(deployment_id) DO UPDATE SET state = excluded.state, changed_at = excluded.changed_at, teardown = excluded.teardown`,
+      deployment.id,
+      deployment.lifecycle,
+      deployment.lifecycle_at ?? nowIso(),
+      JSON.stringify(deployment.teardown ?? {}),
+    ),
+  )
 
 /** Write the mutable progress columns of a deployment. */
 export const saveProgress = (deployment: Pick<Deployment, 'id' | 'resources' | 'dnsRecords' | 'steps'>) =>

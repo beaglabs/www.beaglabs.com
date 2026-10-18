@@ -95,7 +95,8 @@ retry. Done when all are green.
   (`price.recurring.meter` → `GET /v1/billing/meters/{id}` → `event_name`) and caches it in D1 (`stripe_meters`). No event
   names are hardcoded and the control plane creates no Stripe objects.
 - Compute: an hourly cron (`5 * * * *`) sends one meter event, value 1, per deployment that was running during the hour
-  that just ended (provider set, deploy step passed before the hour ended, billing active). Identifier and Idempotency-Key
+  that just ended (provider set, deploy step passed before the hour ended, billing active, not stopped or deleted before
+  the hour began). Identifier and Idempotency-Key
   `<deploymentId>:<hourStart ISO>`. Failed sends are retried by later runs for 24 hours.
 - Execution: Papyrus reports agent-seconds to `POST /api/deployments/usage` (contract below); each report becomes one meter
   event, value `executionSeconds`, identifier `<deploymentId>:<reportId>`.
@@ -110,7 +111,41 @@ retry. Done when all are green.
 - The trial starts when the customer subscribes; deploying is allowed during the trial.
 - Stripe webhooks set each deployment's billing state: `trialing`/`active` → active; `past_due`/`unpaid`/`canceled` → `suspended`.
 - Nothing is ever deleted from the customer's cloud. A cancelled or unpaid deployment stays suspended; the customer removes
-  the resources themselves. Paying again lifts the suspension.
+  the resources themselves. Paying again lifts the suspension. (Deleting a deployment is separate: see Stop, Start and Delete.)
+
+### Stop, Start and Delete (added 2026-10-18)
+
+- **Stop** (reversible; hosted and AWS BYOC): the ECS service's desiredCount goes to 0 and the deployment is `stopped`.
+  Data, secrets, target group, DNS and registration are kept. The subscription continues, so the $250/month platform fee
+  continues while stopped (the confirm says so); VM hours stop: the hourly cron skips hours that begin while stopped.
+  Usage reports aren't expected while stopped; any that arrive are accepted. BYOC stops through the customer's role and
+  only changes desiredCount.
+- **Start**: desiredCount back to 1, then health goes back to pending and is checked again, as after a redeploy.
+- **UI**: Stop (with a confirm) or Start in the deployment header next to Redeploy / Open Papyrus; status tag "Stopped";
+  the checklist shows a "Stopped" banner with Start in place of the health action; Open Papyrus is disabled with the
+  reason "Stopped". Setup steps can't run while stopped.
+- **Delete** (irreversible): Settings → "Delete deployment"; the customer types the org name (hosted) or the hostname
+  (BYOC). The deployment goes `deleting` → `deleted`. Teardown steps run in order, idempotent and resumable, each logged
+  to Activity, a failed step showing Retry:
+  1. cancel the deployment's Stripe subscription now, prorated (one subscription per deployment, so the whole
+     subscription; `invoice_now` puts usage so far and the credit on a final invoice);
+  2. revoke the license (`LicenseRpc.revokeDeployment`);
+  3. hosted only, in Beag Labs' account: scale to 0 and delete the ECS service; deregister its task definitions; delete
+     the listener rule and target group on the shared ALB; delete the EFS access point, then the customer's data
+     directory; delete the `papyrus/<deploymentId>/*` secrets with ForceDeleteWithoutRecovery; delete its log group;
+     then release the org name.
+  Billing and the license go first so a stalled teardown never keeps charging or running. Shared infrastructure (cluster,
+  ALB, EFS file system, wildcard certificate, DNS) is never touched.
+- EFS can't delete files through its API: a one-off Fargate task in the shared cluster mounts the file system root and
+  runs `rm -rf /efs/tenants/<deploymentId>`; the step passes when it exits 0.
+- **Org name**: released after deletion and can be claimed again. Deleted deployments disappear from the console but
+  stay in D1 as deleted, for audit.
+- **BYOC delete**: nothing is deleted in the customer's cloud. Billing is canceled, the license revoked, and the page
+  lists what they should remove, with the exact resource names and ids we stored.
+- **IAM**: the Connect AWS template grants the delete actions scoped to `papyrus-*` names, the `papyrus/` secret and
+  `/papyrus/` log-group prefixes and the `beaglabs:papyrus` tag, plus `ecs:RunTask`/`ecs:StopTask` for the cleanup task
+  and `elasticloadbalancing:ModifyTargetGroup` (hosted redeploys set an old target group's health-check path to
+  `/api/config/public`). Existing stacks need a one-time update (control-plane README).
 
 ### Licensing (check-in)
 
@@ -169,6 +204,11 @@ was removed on 2026-10-17 in favour of email.
 - DNS verification uses DNS-over-HTTPS to 1.1.1.1.
 - Sign-in to papyrus.beaglabs.com itself (not to Papyrus): email magic link plus Sign in with Microsoft and Google.
 - The status signer stays in the license Worker; the control plane signs through the service binding.
+- Stop/Start/Delete (2026-10-18): lifecycle state and teardown progress live in a side table (`deployment_lifecycle`;
+  revocations in `control_plane_revocations` on the license side) so both schema files stay idempotent. A deployment
+  stopped part-way through an hour is billed for that hour. Stop/Start exist only where the recipe runs an ECS service
+  (hosted, AWS BYOC). The hourly cron also moves on teardowns that are waiting (e.g. for the cleanup task); failed steps
+  wait for Retry. Revocation also replaces the stored deployment-key hash, so analytics and Sentry auth fail too.
 
 ## Left to the builder
 
@@ -192,6 +232,9 @@ was removed on 2026-10-17 in favour of email.
 - `verifyDeploymentKey(deploymentId: string, deploymentKey: string) → boolean`
 - `signStatus({ deploymentId, state: 'active' | 'suspended' }) → SignedStatus` with `issuedAt` now and `expiresAt` now + 7 days.
 - `registrationState(deploymentId: string) → 'pending' | 'registered'`
+- `revokeDeployment(deploymentId: string) → boolean` — marks a control-plane deployment revoked (deleted): from then on
+  `signStatus` signs `suspended` whatever state is asked for, `verifyDeploymentKey` is false, and its bootstrap token
+  can't be exchanged (`410`). Idempotent; `false` for a deployment the control plane doesn't own.
 
 `SignedStatus = { payload: { deploymentId: string, state: 'active' | 'suspended', issuedAt: string, expiresAt: string }, keyId: string, signature: string }`,
 signed exactly like licenses (canonical JSON, Key Vault RS256, same `keyId` scheme), so Papyrus verifies it with the keys it already trusts.

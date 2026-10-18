@@ -26,6 +26,8 @@ import { ProviderError, providerError, required, type AwsBase, type DeployContex
  */
 
 export const STACK_NAME = 'BeagLabsPapyrus'
+/** Task definition family of the hosted one-off data cleanup task (src/providers/aws-hosted.ts). */
+export const CLEANUP_FAMILY = 'papyrus-hosted-cleanup'
 export const CONTROL_PLANE_ROLE = 'BeagLabsPapyrusControlPlane'
 export const TASK_EXECUTION_ROLE = 'PapyrusTaskExecution'
 export const PORT = 3210
@@ -49,8 +51,10 @@ export const quickCreateUrl = (input: { templateUrl: string; externalId: string;
 /** The template behind the quick-create link (served at /aws/connect-template.yaml; upload the same file to S3). */
 export const connectTemplate = (): string => `AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
-  Lets Beag Labs deploy and update Papyrus in this account (ECS Fargate, EFS, ALB, ACM, Secrets Manager under papyrus/).
-  Only Beag Labs' principal can assume the role, and only with your ExternalId. Delete this stack to revoke access.
+  Lets Beag Labs deploy, update, stop and start Papyrus in this account (ECS Fargate, EFS, ALB, ACM, Secrets Manager under
+  papyrus/). Delete permissions are limited to Papyrus-named or Papyrus-tagged resources; Beag Labs never deletes anything
+  in a customer's account. Only Beag Labs' principal can assume the role, and only with your ExternalId. Delete this stack
+  to revoke access.
 Parameters:
   ExternalId:
     Type: String
@@ -140,6 +144,44 @@ Resources:
                   - secretsmanager:DescribeSecret
                   - secretsmanager:TagResource
                 Resource: !Sub arn:aws:secretsmanager:*:\${AWS::AccountId}:secret:papyrus/*
+              # Teardown (Beag Labs-hosted deployments only), scoped to Papyrus names and tags.
+              - Effect: Allow
+                Action:
+                  - ecs:DeregisterTaskDefinition
+                  - ecs:ListTaskDefinitions
+                Resource: '*'
+              - Effect: Allow
+                Action: ecs:DeleteService
+                Resource: !Sub arn:aws:ecs:*:\${AWS::AccountId}:service/papyrus-*/papyrus-*
+              - Effect: Allow
+                Action: ecs:RunTask
+                Resource: !Sub arn:aws:ecs:*:\${AWS::AccountId}:task-definition/${CLEANUP_FAMILY}:*
+                Condition:
+                  ArnLike:
+                    'ecs:cluster': !Sub arn:aws:ecs:*:\${AWS::AccountId}:cluster/papyrus-*
+              - Effect: Allow
+                Action: ecs:StopTask
+                Resource: !Sub arn:aws:ecs:*:\${AWS::AccountId}:task/papyrus-*/*
+              - Effect: Allow
+                Action: elasticloadbalancing:DeleteRule
+                Resource: !Sub arn:aws:elasticloadbalancing:*:\${AWS::AccountId}:listener-rule/app/papyrus-*/*/*/*
+              - Effect: Allow
+                Action:
+                  - elasticloadbalancing:DeleteTargetGroup
+                  - elasticloadbalancing:ModifyTargetGroup
+                Resource: !Sub arn:aws:elasticloadbalancing:*:\${AWS::AccountId}:targetgroup/papyrus-*/*
+              - Effect: Allow
+                Action: elasticfilesystem:DeleteAccessPoint
+                Resource: !Sub arn:aws:elasticfilesystem:*:\${AWS::AccountId}:access-point/*
+                Condition:
+                  'Null':
+                    'aws:ResourceTag/beaglabs:papyrus': 'false'
+              - Effect: Allow
+                Action: secretsmanager:DeleteSecret
+                Resource: !Sub arn:aws:secretsmanager:*:\${AWS::AccountId}:secret:papyrus/*
+              - Effect: Allow
+                Action: logs:DeleteLogGroup
+                Resource: !Sub arn:aws:logs:*:\${AWS::AccountId}:log-group:/papyrus/*
               - Effect: Allow
                 Action: iam:PassRole
                 Resource: !GetAtt PapyrusTaskExecutionRole.Arn
@@ -204,7 +246,24 @@ export const tags = (ctx: DeployContext) => [
   { Key: 'Name', Value: `papyrus-${ctx.deploymentId}` },
 ]
 
-export const short = (ctx: DeployContext) => ctx.deploymentId.replace(/^dep_/, '').slice(0, 16)
+export const short = (ctx: Pick<DeployContext, 'deploymentId'>) => ctx.deploymentId.replace(/^dep_/, '').slice(0, 16)
+
+/** The per-deployment ECS service (and BYOC cluster, task family) name: papyrus-<first 16 of the id>. */
+export const serviceName = (deploymentId: string) => `papyrus-${short({ deploymentId })}`
+
+/**
+ * Stop/Start in the customer's account (BYOC): only the service's desiredCount changes (0 or 1). Nothing is created or
+ * deleted; data, certificate, load balancer and secrets stay as they are.
+ */
+export const awsScale = (ctx: ProviderContext, deploymentId: string, desiredCount: 0 | 1) =>
+  Effect.gen(function* () {
+    const { layer } = yield* customerLayer(ctx)
+    const name = serviceName(deploymentId)
+    yield* Ecs.updateService({ cluster: name, service: name, desiredCount }).pipe(
+      Effect.provide(layer),
+      Effect.mapError(providerError(desiredCount === 0 ? 'Stopping the ECS service failed' : 'Starting the ECS service failed')),
+    )
+  })
 
 /** Remember a resource id the moment it exists, so a retry never creates a second one. */
 export const remember = <A>(ctx: Pick<DeployContext, 'resources'>, key: string, create: Effect.Effect<A, ProviderError, any>, pick: (value: A) => string | undefined) =>

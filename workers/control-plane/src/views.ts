@@ -10,6 +10,7 @@ import { LOGOS } from './providers/logos'
 import { PROVIDERS } from './providers/registry'
 import type { CredentialField, ProviderEntry } from './providers/types'
 import { STEP_IDS, STEP_LABELS, canRun, isDone, visibleSteps, type StepId, type Steps } from './setup'
+import { TEARDOWN_LABELS, canStop, confirmNameFor, type CleanupItem, type TeardownStep } from './lifecycle-model'
 import type { Account, Deployment } from './services'
 import { SUPPORT_STYLES, supportCardMarkup, supportPageCard } from './support'
 
@@ -38,6 +39,14 @@ a{color:inherit}
 .btn.lg{font-size:15px;padding:11px 18px}
 .btn.sm{font-size:12px;padding:5px 10px;box-shadow:2px 2px 0 var(--ink)}
 .btn[aria-disabled=true],.btn:disabled{opacity:.45;box-shadow:none;cursor:not-allowed;transform:none}
+.btn.danger{background:#fee2e2;border-color:#991b1b;color:#991b1b;box-shadow:3px 3px 0 #991b1b}
+details.confirm{position:relative;display:inline-block}
+details.confirm>summary{list-style:none}
+details.confirm>summary::-webkit-details-marker{display:none}
+details.confirm .pop{position:absolute;right:0;top:calc(100% + 8px);z-index:20;width:min(340px,calc(100vw - 32px));background:#fff;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:14px;font-size:14px;white-space:normal}
+details.confirm .pop .actions{margin-top:12px;display:flex;gap:8px}
+.banner{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:2px solid var(--ink);background:#111;color:#fff;font:600 13px var(--mono);text-transform:uppercase}
+.cleanup td,.cleanup th{vertical-align:top}
 .btn svg{width:20px;height:20px;flex:none}
 .tag{display:inline-block;font:600 11px var(--mono);border:1.5px solid var(--ink);padding:2px 7px;text-transform:uppercase;background:#fff;white-space:nowrap}
 .tag.ok{background:#dcfce7}.tag.run{background:var(--accent-soft);border-color:var(--accent);color:#b43c0c}.tag.wait{color:var(--soft);border-color:#bbb}
@@ -475,7 +484,9 @@ export const checklist = (deployment: Deployment, account: Account, options: { m
     } else if (done && options.mode === 'byoc') {
       actions = stepButton(deployment, id, 'Recheck')
     }
-    if (id === 'microsoft' && deployment.hostname && canRun(steps, 'microsoft') && !done)
+    // Stopped: nothing runs, so the health row offers Start instead of a check.
+    if (deployment.lifecycle === 'stopped') actions = id === 'health' ? startButton(deployment) : id === 'connect' ? actions : ''
+    else if (id === 'microsoft' && deployment.hostname && canRun(steps, 'microsoft') && !done)
       actions = `<a class="btn sm" href="https://${esc(deployment.hostname)}/" target="_blank" rel="noopener">Open Papyrus and Connect Microsoft ↗</a>${actions}`
     const progress = state === 'running' && id !== 'microsoft' ? progressFor(steps, id, now) : undefined
     return {
@@ -490,8 +501,17 @@ export const checklist = (deployment: Deployment, account: Account, options: { m
   })
 }
 
-const checklistCard = (rows: ChecklistRow[]) =>
-  `<div class="card checklist">${rows
+const startButton = (deployment: Deployment, primary = true) =>
+  `<form method="post" action="/deploy/${esc(deployment.id)}/start"><button class="btn sm${primary ? ' primary' : ''}" type="submit">Start</button></form>`
+
+/** Stop asks first (no script: a disclosure with the confirm button inside). */
+const stopButton = (deployment: Deployment) =>
+  `<details class="confirm"><summary class="btn">Stop</summary><div class="pop" role="dialog" aria-label="Stop this deployment"><p><strong>Stop ${esc(deploymentName(deployment))}?</strong></p>
+<p style="margin-top:8px">Papyrus shuts down and nobody can use it until you start it again. Data, address and registration are kept. VM hours stop; the $${PLATFORM_MONTHLY_USD}/month platform fee continues while stopped.</p>
+<div class="actions"><form method="post" action="/deploy/${esc(deployment.id)}/stop"><button class="btn primary sm" type="submit">Stop deployment</button></form></div></div></details>`
+
+const checklistCard = (rows: ChecklistRow[], deployment?: Deployment) =>
+  `<div class="card checklist">${deployment?.lifecycle === 'stopped' ? `<div class="banner" data-stopped><span>Stopped</span>${startButton(deployment)}</div>` : ''}${rows
     .map((row, index) => {
       const num = row.state === 'done' ? '<div class="num ok">✓</div>' : row.state === 'running' ? `<div class="num run">${index + 1}</div>` : row.state === 'failed' ? '<div class="num err">!</div>' : `<div class="num">${index + 1}</div>`
       return `<div class="step" id="${row.id}" data-state="${row.state}">${num}<div><h5>${esc(row.title)}</h5>${row.description ? `<p>${esc(row.description)}</p>` : ''}${
@@ -503,6 +523,9 @@ const checklistCard = (rows: ChecklistRow[]) =>
     .join('')}</div>`
 
 const statusTag = (deployment: Deployment, rows: ChecklistRow[]) => {
+  if (deployment.lifecycle === 'stopped') return '<span class="tag wait">Stopped</span>'
+  if (deployment.lifecycle === 'deleting') return '<span class="tag run">Deleting</span>'
+  if (deployment.lifecycle === 'deleted') return '<span class="tag">Deleted</span>'
   if (deployment.billing_state === 'suspended') return '<span class="tag err">Suspended</span>'
   const index = rows.findIndex((row) => row.state !== 'done')
   if (index === -1) return '<span class="tag ok">Live</span>'
@@ -513,7 +536,9 @@ const statusTag = (deployment: Deployment, rows: ChecklistRow[]) => {
 
 /** "Open Papyrus →": a link to the host once the health step has passed, disabled with the reason before. */
 export const openPapyrusButton = (deployment: Deployment) =>
-  deployment.hostname && deployment.steps.health.status === 'pass'
+  deployment.lifecycle !== 'running'
+    ? `<span class="btn primary lg" data-open-papyrus role="link" aria-disabled="true" aria-describedby="open-why">Open Papyrus →</span><span class="why" id="open-why">${deployment.lifecycle === 'stopped' ? 'Stopped' : 'Deleted'}</span>`
+    : deployment.hostname && deployment.steps.health.status === 'pass'
     ? `<a class="btn primary lg" data-open-papyrus href="https://${esc(deployment.hostname)}/" target="_blank" rel="noopener">Open Papyrus →</a>`
     : `<span class="btn primary lg" data-open-papyrus role="link" aria-disabled="true" aria-describedby="open-why">Open Papyrus →</span><span class="why" id="open-why">${
         deployment.hostname ? 'Opens once the health check passes.' : 'Opens once your organization name is chosen.'
@@ -548,6 +573,12 @@ const hostnameCard = (deployment: Deployment) => {
 ${locked ? '<span class="help">Bound to the license issued at deploy.</span>' : '<button class="btn" type="submit">Save</button>'}</form></div></div>`
 }
 
+/** Redeploy and Stop while running; Start while stopped. */
+const headerActions = (deployment: Deployment) => {
+  if (deployment.lifecycle === 'stopped') return startButton(deployment).replace('btn sm primary', 'btn primary')
+  return `${deployment.steps.deploy.status === 'pass' ? stepButton(deployment, 'deploy', 'Redeploy') : ''}${canStop(deployment) ? stopButton(deployment) : ''}`
+}
+
 /** The Deployment page: header, setup checklist, plan and help cards, Activity. */
 export const deploymentPage = (input: DeploymentPageInput) => {
   const { account, deployment } = input
@@ -556,12 +587,55 @@ export const deploymentPage = (input: DeploymentPageInput) => {
   const provider = hosted ? null : PROVIDERS.find((p) => p.id === deployment.provider)
   const kicker = `Deployment · ${hosted ? 'Hosted by Beag Labs' : esc(provider?.name ?? deployment.provider ?? '')}`
   const body = `${input.multiple ? '<p class="kicker" style="margin-bottom:10px"><a href="/deploy">← All deployments</a></p>' : ''}
-${pageTop(kicker, deploymentName(deployment), `${statusTag(deployment, rows)}${deployment.steps.deploy.status === 'pass' ? stepButton(deployment, 'deploy', 'Redeploy') : ''}${openPapyrusButton(deployment)}`)}
+${pageTop(kicker, deploymentName(deployment), `${statusTag(deployment, rows)}${headerActions(deployment)}${openPapyrusButton(deployment)}`)}
 ${notice(input.message)}
-<div class="cols"><div>${checklistCard(rows)}${hosted ? '' : `${hostnameCard(deployment)}${dnsTable(deployment.dnsRecords)}`}</div>
+<div class="cols"><div>${checklistCard(rows, deployment)}${hosted ? '' : `${hostnameCard(deployment)}${dnsTable(deployment.dnsRecords)}`}</div>
 <div class="stack">${planCard(deployment, input.usage)}${helpCard(account)}</div></div>
 ${activityCard({ endpoint: `/api/events?deployment=${encodeURIComponent(deployment.id)}`, deploymentId: deployment.id, events: input.events.events, next: input.events.next, fast: !isDone(deployment.steps) })}`
   return consoleLayout({ title: deploymentName(deployment), account, active: 'deployment', body, scripts: [ACTIVITY_SCRIPT_PATH] })
+}
+
+export interface TeardownPageInput {
+  account: Account
+  deployment: Deployment
+  events: { events: EventRow[]; next: number | null }
+  steps: TeardownStep[]
+  /** BYOC: what the customer removes from their own cloud. */
+  cleanup: CleanupItem[]
+  message?: string | null
+}
+
+/** A deployment being deleted (teardown progress, Retry) or deleted (what was done; BYOC: what to remove). */
+export const teardownPage = (input: TeardownPageInput) => {
+  const { account, deployment } = input
+  const hosted = !deployment.provider || deployment.provider === HOSTED_PROVIDER
+  const current = input.steps.findIndex((step) => deployment.teardown[step]?.status !== 'pass')
+  const rows = input.steps
+    .map((step, index) => {
+      const state = deployment.teardown[step]
+      const status: RowState = state?.status === 'pass' ? 'done' : state?.status === 'fail' ? 'failed' : index === current && state ? 'running' : index === current ? 'next' : 'waiting'
+      const num = status === 'done' ? '<div class="num ok">✓</div>' : status === 'failed' ? '<div class="num err">!</div>' : `<div class="num${status === 'running' ? ' run' : ''}">${index + 1}</div>`
+      const action =
+        deployment.lifecycle === 'deleting' && index === current
+          ? `<div class="actions"><form method="post" action="/deploy/${esc(deployment.id)}/teardown"><button class="btn sm${status === 'failed' ? ' primary' : ''}" type="submit">${status === 'failed' ? 'Retry' : status === 'running' ? 'Check now' : 'Continue'}</button></form></div>`
+          : ''
+      return `<div class="step" id="teardown-${step}" data-state="${status}">${num}<div><h5>${esc(TEARDOWN_LABELS[step])}</h5>${state?.reason ? `<p class="reason${status === 'failed' ? ' err' : ''}">${esc(state.reason)}</p>` : ''}${action}</div>${TAGS[status]}</div>`
+    })
+    .join('')
+  const cleanup =
+    !hosted && input.cleanup.length
+      ? `<div class="card" style="margin-top:22px" data-cleanup><h4>Remove from your cloud account</h4><div class="body"><p style="font-size:14px;margin-bottom:12px">Beag Labs did not delete anything in your account. Papyrus no longer runs with a license, but these resources still exist (and still cost you) until you remove them, roughly in this order:</p><div style="overflow-x:auto"><table class="dns cleanup"><thead><tr><th>Resource</th><th>Name or id</th><th>Note</th></tr></thead><tbody>${input.cleanup
+          .map((item) => `<tr><td>${esc(item.what)}</td><td class="mono">${esc(item.name)}</td><td style="word-break:normal">${esc(item.note ?? '')}</td></tr>`)
+          .join('')}</tbody></table></div></div></div>`
+      : ''
+  const title = deployment.lifecycle === 'deleted' ? 'Deleted' : 'Deleting'
+  const body = `<p class="kicker" style="margin-bottom:10px"><a href="/deploy">← All deployments</a></p>
+${pageTop(`Deployment · ${hosted ? 'Hosted by Beag Labs' : esc(PROVIDERS.find((p) => p.id === deployment.provider)?.name ?? deployment.provider ?? '')}`, deploymentName(deployment), statusTag(deployment, []))}
+${notice(input.message)}
+<div class="cols"><div><div class="card checklist" data-teardown><div class="banner"><span>${title}</span></div>${rows}</div>${cleanup}</div>
+<div class="stack">${helpCard(account)}</div></div>
+${activityCard({ endpoint: `/api/events?deployment=${encodeURIComponent(deployment.id)}`, deploymentId: deployment.id, events: input.events.events, next: input.events.next, fast: deployment.lifecycle === 'deleting' })}`
+  return consoleLayout({ title: `${title} · ${deploymentName(deployment)}`, account, active: 'deployment', body, scripts: [ACTIVITY_SCRIPT_PATH] })
 }
 
 /** Pick an org name (hosted, the default): a centred card, no sidebar. Live validation from ORG_NAME_SCRIPT_PATH. */
@@ -697,6 +771,22 @@ export const supportPage = (account: Account, deployments: Deployment[]) => {
   return consoleLayout({ title: 'Support', account, active: 'support', body })
 }
 
+/** Settings → Delete deployment: irreversible, confirmed by typing the org name (hosted) or hostname (BYOC). */
+const deleteCard = (deployment: Deployment) => {
+  const name = confirmNameFor(deployment)
+  const hosted = !deployment.provider || deployment.provider === HOSTED_PROVIDER
+  const id = `confirm-${esc(deployment.id)}`
+  return `<div class="card" data-delete-card><h4>Delete deployment <span class="mono" style="text-transform:none">${esc(deploymentName(deployment))}</span></h4><div class="body">
+<p style="font-size:14px">${
+    hosted
+      ? 'Permanently deletes this Papyrus workspace and all of its data, cancels its subscription now (prorated) and revokes its license. The organization name becomes available to others. This cannot be undone.'
+      : 'Cancels its subscription now (prorated) and revokes its license, so Papyrus stops working. Nothing is deleted in your cloud account: you get a list of what to remove. This cannot be undone.'
+  }</p>
+<form method="post" action="/deploy/${esc(deployment.id)}/delete" style="margin-top:12px"><label for="${id}">Type <span class="mono">${esc(name)}</span> to confirm</label>
+<input id="${id}" name="confirm" required autocomplete="off" autocapitalize="none" spellcheck="false" data-confirm="${esc(name)}">
+<div class="actions" style="margin-top:14px"><button class="btn danger" type="submit">Delete deployment</button></div></form></div></div>`
+}
+
 export const settingsPage = (account: Account, deployments: Deployment[], message?: { text: string; kind: 'error' | 'ok' } | null) => {
   // The organization goes on the license when a deployment registers, so it is fixed from then on.
   const locked = deployments.some((d) => d.license_deployment_id)
@@ -717,7 +807,7 @@ ${locked ? '<p class="help" id="org-locked">Fixed once deployed: it is on your P
           )
           .join('') + '<p class="help">Addresses are fixed once claimed.</p>'
       : '<p style="font-size:14px;color:var(--muted)">No deployments yet.</p>'
-  }</div></div></div>`
+  }</div></div>${deployments.filter((d) => d.lifecycle !== 'deleting').map(deleteCard).join('')}</div>`
   return consoleLayout({ title: 'Settings', account, active: 'settings', body })
 }
 

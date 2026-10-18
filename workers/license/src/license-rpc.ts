@@ -21,4 +21,8 @@ export class LicenseRpc extends WorkerEntrypoint<Bindings> {
     return controlPlane.registrationState(this.env, deploymentId)
   }
 
+  revokeDeployment(deploymentId: string): Promise<boolean> {
+    return controlPlane.revokeDeployment(this.env, deploymentId)
+  }
+
 }

@@ -38,7 +38,7 @@ const HOSTNAME = /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,6
 
 export const isHostname = (value: string) => HOSTNAME.test(value) && !value.endsWith('.beaglabs.com')
 
-const providerContext = (env: Bindings, deployment: Deployment, credentials: Record<string, string>): ProviderContext => ({
+export const providerContext = (env: Bindings, deployment: Deployment, credentials: Record<string, string>): ProviderContext => ({
   credentials,
   externalId: deployment.aws_external_id,
   aws: { accessKeyId: env.AWS_ACCESS_KEY_ID, secretAccessKey: env.AWS_SECRET_ACCESS_KEY, principalArn: env.AWS_PRINCIPAL_ARN },
@@ -159,7 +159,9 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
         const url = `https://${deployment.hostname}/api/config/public`
         const result = yield* getJson(url).pipe(Effect.result)
         // Papyrus usually answers within two minutes of a deploy; until STARTUP_GRACE_MS has passed, not yet is "still starting".
-        const starting = Date.now() - Date.parse(deployment.steps.deploy.at ?? '') < STARTUP_GRACE_MS
+        // A Start counts like a deploy: the grace runs from whichever came last.
+        const since = Math.max(Date.parse(deployment.steps.deploy.at ?? '') || 0, (deployment.lifecycle === 'running' && Date.parse(deployment.lifecycle_at ?? '')) || 0)
+        const starting = Date.now() - since < STARTUP_GRACE_MS
         if (result._tag === 'Failure')
           return outcome(starting ? 'pending' : 'fail', `GET ${url} → no answer over valid TLS${starting ? '; Papyrus is still starting.' : '. Retry, or email james@beaglabs.com if it keeps failing.'}`)
         if (result.success.status !== 200 || typeof result.success.body !== 'object' || result.success.body === null)
@@ -199,6 +201,8 @@ const levelFor = (status: StepOutcome['status']): EventLevel => (status === 'pas
 /** Run a step if allowed, record the outcome, and save progress (resources are saved whatever happened). */
 export const runStep = (deployment: Deployment, account: Account, step: StepId) =>
   Effect.gen(function* () {
+    if (deployment.lifecycle !== 'running')
+      return yield* new UserError({ message: deployment.lifecycle === 'stopped' ? 'This deployment is stopped. Start it first.' : 'This deployment is being deleted.', status: 409 })
     if (!canRun(deployment.steps, step)) return yield* new UserError({ message: 'Finish the earlier steps first', status: 409 })
     const previous = deployment.steps[step]
     // Repeated runs of a step that hasn't passed yet (e.g. health checks while Papyrus starts) are numbered.
