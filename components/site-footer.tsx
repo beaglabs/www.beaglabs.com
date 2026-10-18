@@ -1,14 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight } from 'lucide-react'
-import { TrialCtaLink } from '@/components/trial-cta-link'
 
 const footerColumns = [
   { title: 'Solutions', links: [
     { label: 'Agentic Back Office', href: '/solutions/agentic-back-office' },
     { label: 'Modernization Factory', href: '/solutions/agentic-modernization-factory' },
-    { label: 'Document Automation', href: '/solutions/document-automation' },
-    { label: 'Internal App Factory', href: '/solutions/internal-app-factory' },
+    { label: 'Document Automation', href: '/products/papyrus#documents' },
+    { label: 'Internal App Factory', href: '/products/papyrus#factory' },
     { label: 'Agentic Modernization', href: '/capability/modernization' },
     { label: 'All Capabilities', href: '/capabilities' },
   ] },
@@ -35,15 +33,9 @@ export function SiteFooter() {
   return (
     <footer className="relative overflow-hidden bg-[#ffffff] px-6 py-14 text-[#111] lg:px-9 lg:py-16">
       <div className="relative mx-auto max-w-[1440px]">
-        <div className="mb-12 flex flex-col gap-8 border-b-[3px] border-[#111] pb-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-12 border-b-[3px] border-[#111] pb-8">
           <div className="display-black max-w-[900px] text-[44px] leading-[0.95] sm:text-[58px] lg:text-[72px]">
-            The agentic ERP. Run by agents, approved by people.
-          </div>
-          <div className="flex shrink-0 flex-col items-start gap-2">
-            <TrialCtaLink placement="section" className="inline-flex items-center gap-3 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-xs font-black uppercase tracking-wide text-[#111] shadow-[5px_5px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:bg-[#ffdfcf] hover:shadow-[7px_7px_0_#111]">
-              Try Papyrus <ArrowRight className="h-4 w-4" strokeWidth={3} />
-            </TrialCtaLink>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-[#444]">papyrus.beaglabs.com</span>
+            Documents to decisions. Legacy systems to modern apps.
           </div>
         </div>
 
@@ -58,7 +50,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="max-w-[280px] text-[14px] font-semibold leading-[1.7] text-[#111]">
-              Papyrus, the agentic ERP: one data model for your business, with agents doing the back-office work.
+              Document automation, internal apps, and legacy modernization—on your infrastructure.
             </p>
             <div className="mt-5 flex items-center gap-4">
               <a

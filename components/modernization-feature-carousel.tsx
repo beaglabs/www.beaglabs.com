@@ -8,22 +8,22 @@ import { StickySection } from '@/components/ui/feature-sticky-section'
 
 const FEATURES = [
   {
-    number: '01', video: '/hero/solution-documents.mp4', poster: '/hero/solution-documents.jpg', kicker: 'Documents in, ledger out', title: 'Every document becomes a record.',
-    copy: 'Invoices, contracts, forms and spreadsheets become structured records in the ERP, checked against what it already knows.',
-    result: 'Documents → ledger records', href: '/solutions/document-automation', Icon: FileText,
-    steps: ['Agents read the document', 'Match it to vendors, customers and invoices', 'People approve what matters'],
+    number: '01', video: '/hero/solution-documents.mp4', poster: '/hero/solution-documents.jpg', kicker: 'Document automation', title: 'Put your documents to work.',
+    copy: 'Turn PDFs, forms, and office files into structured information, reviewable actions, and repeatable workflows.',
+    result: 'Documents → structured work', href: '/solutions/document-automation', Icon: FileText,
+    steps: ['Read source documents', 'Extract and normalize fields', 'Review evidence and approve'],
   },
   {
-    number: '02', video: '/hero/solution-apps.mp4', poster: '/hero/solution-apps.jpg', kicker: 'Apps on your records', title: 'Build around how your team works.',
-    copy: 'Create apps, forms and dashboards for requests, approvals and status, all on the same data model.',
-    result: 'Processes → apps on the ERP', href: '/solutions/internal-app-factory', Icon: PanelsTopLeft,
-    steps: ['Describe a business process', 'Generate the interface', 'Review, ship, iterate'],
+    number: '02', video: '/hero/solution-apps.mp4', poster: '/hero/solution-apps.jpg', kicker: 'Internal app factory', title: 'Build around how your team works.',
+    copy: 'Create useful apps, forms, and dashboards for the processes your organization already runs.',
+    result: 'Requirements → internal apps', href: '/solutions/internal-app-factory', Icon: PanelsTopLeft,
+    steps: ['Describe a business process', 'Generate usable interfaces', 'Validate, deploy, iterate'],
   },
   {
-    number: '03', video: '/hero/solution-legacy.mp4', poster: '/hero/solution-legacy.jpg', kicker: 'Existing systems', title: 'Bring your old systems along.',
-    copy: 'Connect terminals and SOAP/XML services so agents can work them through modern APIs, without replacing the system underneath.',
-    result: 'Legacy systems → agent tools', href: '/solutions/agentic-modernization', Icon: Terminal,
-    steps: ['Connect existing systems', 'Expose them as governed tools', 'Let agents and people use them'],
+    number: '03', video: '/hero/solution-legacy.mp4', poster: '/hero/solution-legacy.jpg', kicker: 'Legacy modernization', title: 'Modernize without starting over.',
+    copy: 'Make terminals and SOAP/XML services usable through modern APIs and browser interfaces, while preserving systems of record.',
+    result: 'Legacy systems → modern services', href: '/solutions/agentic-modernization', Icon: Terminal,
+    steps: ['Connect existing systems', 'Expose governed API interfaces', 'Give operators a better UX'],
   },
 ]
 
@@ -48,7 +48,7 @@ function PanelVideo({ src, poster, caption }: { src: string, poster: string, cap
 }
 
 export function ModernizationFeatureCarousel() {
-  return <section id="capabilities" className="relative border-b-[3px] border-[#111] bg-[#ffe7da] px-6 py-20 text-[#111] lg:px-9 lg:py-28" aria-label="What Papyrus runs">
+  return <section id="capabilities" className="relative border-b-[3px] border-[#111] bg-[#ffe7da] px-6 py-20 text-[#111] lg:px-9 lg:py-28" aria-label="Modernization solutions">
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
       <video className="h-full w-full object-cover opacity-50 motion-reduce:hidden" src="/hero/clip-2.mp4" poster="/hero/poster-2.jpg" autoPlay muted loop playsInline preload="metadata" />
       <img className="hidden h-full w-full object-cover opacity-50 motion-reduce:block" src="/hero/poster-2.jpg" alt="" />
@@ -58,10 +58,10 @@ export function ModernizationFeatureCarousel() {
     <div className="relative mx-auto max-w-[1440px]">
       <div className="mb-14 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-end lg:gap-16">
         <div>
-          <span className="nb-label mb-5 inline-block !bg-[#ff5f1f]">One agentic ERP</span>
-          <h2 className="display-black text-[length:min(45px,9vw)] leading-[.95] sm:text-[64px] lg:text-[76px]">A back office that runs itself</h2>
+          <span className="nb-label mb-5 inline-block !bg-[#ff5f1f]">What we modernize</span>
+          <h2 className="display-black text-[length:min(45px,9vw)] leading-[.95] sm:text-[64px] lg:text-[76px]">Backoffice automation for public works</h2>
         </div>
-        <p className="text-base font-medium leading-relaxed text-[#111]">Papyrus keeps your customers, vendors, invoices and payments in one data model. Agents do the work on it; your team approves what matters.</p>
+        <p className="text-base font-medium leading-relaxed text-[#111]">We connect your documents, applications, and legacy systems—then build practical ways for your team to use them.</p>
       </div>
 
       <StickySection.Root className="border-t border-[#111]/30">

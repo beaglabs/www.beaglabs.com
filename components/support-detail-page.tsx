@@ -1,6 +1,6 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
-import { PageHero } from '@/components/page-hero'
 import { SiteFooter } from '@/components/site-footer'
 
 type Severity = {
@@ -18,6 +18,8 @@ type SupportDetailPageProps = {
   intro: string
   email: string
   mailSubject: string
+  image: string
+  imageAlt: string
   counterpart: {
     label: string
     href: string
@@ -41,6 +43,8 @@ export function SupportDetailPage({
   intro,
   email,
   mailSubject,
+  image,
+  imageAlt,
   counterpart,
   severities,
   diagnostics,
@@ -55,21 +59,46 @@ export function SupportDetailPage({
     <main className="bg-[#FAFAF9] text-[#111]">
 
 
-      <PageHero
-        label={eyebrow}
-        title={title}
-        description={<>
-          {intro}{' '}
-          <Link href={counterpart.href} className="text-[#111] underline underline-offset-4">
-            {counterpart.label}
-          </Link>
-          .
-        </>}
-        below={<div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] font-bold uppercase tracking-[0.08em]">
-          <a href={supportHref} className="break-all underline decoration-2 underline-offset-4">Email {email}</a>
-          <Link href="/support" className="underline decoration-2 underline-offset-4">All support</Link>
-        </div>}
-      />
+      <section className="site-hero overflow-hidden border-b-[3px] border-[#111]">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
+          <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
+            <p className="nb-label mb-5 inline-block">{eyebrow}</p>
+            <h1 className="max-w-[760px] text-[length:min(52px,9vw)] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
+              {title}
+            </h1>
+            <p className="mt-7 max-w-[680px] text-[18px] font-medium leading-[1.7] text-[#444]">
+              {intro}{' '}
+              <Link href={counterpart.href} className="text-[#111] underline underline-offset-4">
+                {counterpart.label}
+              </Link>
+              .
+            </p>
+
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <a
+                href={supportHref}
+                className="nb-btn-orange inline-flex items-center gap-2 px-6 py-3.5 text-[12px] uppercase tracking-[0.08em]"
+              >
+                Email {email}
+              </a>
+              <Link
+                href="/support"
+                className="inline-flex items-center border-2 border-[#111] bg-white px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.08em] transition hover:bg-[#111] hover:text-white"
+              >
+                All support
+              </Link>
+            </div>
+          </div>
+
+          <div className="relative min-h-[420px] border-t-[3px] border-[#111] bg-white lg:min-h-[520px] lg:border-t-0">
+            <Image src={image} alt={imageAlt} fill className="object-cover" priority />
+            <div className="absolute inset-x-0 bottom-0 border-t-[3px] border-[#111] bg-[#FAFAF9]/95 p-5 backdrop-blur-sm">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Support channel</p>
+              <p className="mt-1 break-all text-[18px] font-extrabold tracking-[-0.025em]">{email}</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="severity" className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-28">

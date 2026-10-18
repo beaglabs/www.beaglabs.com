@@ -1,17 +1,15 @@
 # Beag Labs
 
-> Beag Labs builds Papyrus, an agentic ERP: one data model for a business's customers, vendors, invoices and payments, with agents that run the back-office work and people who approve what matters. Sign up at https://papyrus.beaglabs.com.
+> Customer-hosted agentic software for document automation, internal app development, and legacy system modernization.
 
 Official website: https://beaglabs.com/
 
 ## Core offering
 
-- [Papyrus](https://beaglabs.com/products/papyrus): The agentic ERP. A data model of the business that agents understand and operate.
-- [Agentic back office](https://beaglabs.com/solutions/agentic-back-office): Agents run AP, AR, intake, approvals and reconciliation.
-- [Document automation](https://beaglabs.com/solutions/document-automation): Documents in, ledger out. Invoices, contracts and forms become ERP records.
-- [Internal app factory](https://beaglabs.com/solutions/internal-app-factory): Apps for requests and approvals on the same data model.
-- [Modernization](https://beaglabs.com/capability/modernization): Connect existing systems so agents can use them.
-- [Try Papyrus](https://papyrus.beaglabs.com/signup): Sign up; Papyrus runs at your own address with Microsoft sign-in.
+- [Papyrus](https://beaglabs.com/products/papyrus): Governed agentic workflows and internal applications.
+- [Document automation](https://beaglabs.com/products/papyrus#documents): Process PDF and office documents into reviewable workflows.
+- [Internal app factory](https://beaglabs.com/products/papyrus#factory): Build interfaces for internal business processes.
+- [Modernization](https://beaglabs.com/capability/modernization): Modernize legacy workflows and interfaces.
 
 ## Resources
 

@@ -5,8 +5,6 @@ import Link from 'next/link'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { SiteFooter } from '@/components/site-footer'
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import { PageHero } from '@/components/page-hero'
-import { TrialCtaLink } from '@/components/trial-cta-link'
 import { capabilities, capabilityBySlug } from '@/data/capabilities'
 import { company } from '@/data/company'
 import { pageMetadata } from '@/lib/seo'
@@ -40,29 +38,88 @@ export default async function CapabilityPage({ params }: { params: Params }) {
 
 
       {/* ─── HERO ─── */}
-      <PageHero
-        label={cap.eyebrow}
-        title={cap.title}
-        description={cap.subtitle}
-        above={
-          <Breadcrumbs
-            items={[
-              { name: 'Home', url: '/' },
-              { name: 'Capabilities', url: '/capabilities' },
-              { name: cap.title, url: `/capability/${cap.slug}` },
-            ]}
-          />
-        }
-        below={cap.slug === 'modernization' ? (
-          <a
-            href="/capabilities/modernization.pdf"
-            download
-            className="font-mono text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#111] underline decoration-[#ff5f1f] decoration-2 underline-offset-4"
-          >
-            Download PDF brief
-          </a>
-        ) : null}
-      />
+      <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9]">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 pb-20 pt-10 lg:grid-cols-[1.05fr_minmax(420px,560px)] lg:gap-16 lg:px-9 lg:pb-24 lg:pt-14">
+          <div className="max-w-[760px]">
+            <Breadcrumbs
+              items={[
+                { name: 'Home', url: '/' },
+                { name: 'Capabilities', url: '/capabilities' },
+                { name: cap.title, url: `/capability/${cap.slug}` },
+              ]}
+            />
+            <div className="mt-8 mb-6 flex items-center gap-3">
+              <span className="nb-label">{cap.eyebrow}</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">
+                {cap.number} / {String(capabilities.length).padStart(2, '0')}
+              </span>
+            </div>
+
+            <h1 className="mb-6 text-[length:min(44px,9vw)] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[56px] lg:text-[72px]">
+              {cap.title}
+            </h1>
+
+            <p className="mb-6 max-w-[640px] text-[20px] font-extrabold leading-[1.3] tracking-[-0.015em] text-[#111] sm:text-[22px]">
+              {cap.subtitle}
+            </p>
+
+            <p className="mb-10 max-w-[640px] text-[16px] leading-[1.65] text-[#404040] font-medium">
+              {cap.description}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href="/contact"
+                className="nb-btn-orange group inline-flex items-center gap-2 px-6 py-3 text-[12px]"
+              >
+                {cap.cta.headline}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M5 12h14M13 6l6 6-6 6"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="square"
+                    strokeLinejoin="miter"
+                  />
+                </svg>
+              </a>
+              <a
+                href="/capabilities/modernization.pdf"
+                download
+                className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-5 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[3px_3px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_#ff5f1f]"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="square"
+                    strokeLinejoin="miter"
+                  />
+                </svg>
+                Download PDF brief
+              </a>
+            </div>
+          </div>
+
+          {/* Brutalist photo */}
+          <div className="relative mx-auto w-full max-w-[560px]">
+            <div className="absolute -top-4 -left-4 z-10 border-[3px] border-[#111] bg-[#ff5f1f] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[4px_4px_0px_0px_#111]">
+              {cap.hero.badge}
+            </div>
+            <div className="aspect-square overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[10px_10px_0px_0px_#ff5f1f]">
+              <img
+                src={cap.hero.src}
+                alt={cap.hero.alt}
+                className="h-full w-full object-cover grayscale-[15%] contrast-[1.05]"
+              />
+            </div>
+            <div className="absolute -bottom-3 -right-3 z-10 border-[3px] border-[#111] bg-white px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[4px_4px_0px_0px_#111]">
+              beaglabs / {cap.slug}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ─── INCLUDES ─── */}
       <section className="border-b-[3px] border-[#111] bg-white px-6 py-20 lg:px-9 lg:py-24">
@@ -75,9 +132,6 @@ export default async function CapabilityPage({ params }: { params: Params }) {
               <h2 className="max-w-[640px] text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#111] sm:text-[40px]">
                 The whole vertical slice, not a fragment.
               </h2>
-              <p className="mt-4 max-w-[760px] text-[16px] font-medium leading-[1.65] text-[#404040]">
-                {cap.description}
-              </p>
             </div>
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#555]">
               {cap.includes.length} sections
@@ -115,7 +169,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-12">
             <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
-              How it works
+              How we work
             </span>
             <h2 className="max-w-[640px] text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#111] sm:text-[40px]">
               Three steps. No surprises.
@@ -180,11 +234,11 @@ export default async function CapabilityPage({ params }: { params: Params }) {
             {cap.cta.blurb}
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <TrialCtaLink
-              placement="section"
+            <a
+              href="/contact"
               className="nb-btn group inline-flex items-center gap-2 bg-[#111] px-6 py-3 text-[12px] text-white"
             >
-              Try Papyrus now
+              Email james@beaglabs.com
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M5 12h14M13 6l6 6-6 6"
@@ -194,7 +248,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
                   strokeLinejoin="miter"
                 />
               </svg>
-            </TrialCtaLink>
+            </a>
           </div>
         </div>
       </section>

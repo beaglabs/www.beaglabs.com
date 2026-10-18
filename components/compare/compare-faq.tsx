@@ -4,7 +4,7 @@ export const compareFaqs = [
   {
     question: 'Is this comparison independent?',
     answer:
-      'No. Beag Labs makes Papyrus, the agentic ERP and one of the platforms compared. We disclose that on every comparison, label Papyrus cells as first-party, and apply the same evidence rules to every platform, including a fair account of where each alternative may fit better.',
+      'No. Beag Labs makes Papyrus, one of the platforms compared. We disclose that on every comparison, label Papyrus cells as first-party, and apply the same evidence rules to every platform, including a fair account of where each alternative may fit better.',
   },
   {
     question: 'Did you test these products?',

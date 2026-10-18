@@ -101,6 +101,8 @@ export default function GovernmentSupportPage() {
       intro="Support for Papyrus appliances deployed in government, accredited, and disconnected environments. Contract-specific terms always control, and the government mailbox keeps those requests separate from commercial support. If you are using the commercial offer, use"
       email={SUPPORT_EMAIL}
       mailSubject="Papyrus government support request"
+      image="https://images.pexels.com/photos/4328661/pexels-photo-4328661.jpeg?auto=compress&cs=tinysrgb&w=1920"
+      imageAlt="Government deployment workspace"
       counterpart={{ label: 'commercial support', href: '/support/commercial' }}
       severities={SEVERITIES}
       diagnostics={DIAGNOSTICS}

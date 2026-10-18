@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import { PageHero } from '@/components/page-hero'
 import { EvidenceCell } from '@/components/compare/evidence-cell'
 import { FitNotes } from '@/components/compare/fit-notes'
 import { Methodology } from '@/components/compare/methodology'
@@ -46,26 +45,25 @@ export function HeadToHead({ guide, beag, other }: { guide: Guide; beag: Platfor
       <AnnouncementBanner />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <PageHero
-        label="Head to head"
-        title={guide.title}
-        description={guide.description}
-        above={<Breadcrumbs items={[
-          { name: 'Home', url: '/' },
-          { name: 'Comparisons', url: '/compare' },
-          { name: guide.title, url: path },
-        ]} />}
-        below={<div className="space-y-3 text-left">
-          <p className="text-center font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</p>
-          <p className="border-l-[4px] border-[#ff5f1f] pl-4 text-[13px] font-semibold leading-[1.7] text-[#333]">
+      <section className="site-hero px-6 pb-14 pt-16 lg:px-9 lg:pb-16 lg:pt-20">
+        <div className="mx-auto max-w-[1280px]">
+          <Breadcrumbs items={[
+            { name: 'Home', url: '/' },
+            { name: 'Comparisons', url: '/compare' },
+            { name: guide.title, url: path },
+          ]} />
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <span className="nb-label">Head to head</span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
+          </div>
+          <h1 className="max-w-[980px] text-[length:min(40px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[56px] lg:text-[68px]">
+            {guide.title}<span className="text-[#ff5f1f]">.</span>
+          </h1>
+          <p className="mt-6 max-w-[780px] text-[18px] font-medium leading-[1.7] text-[#333]">{guide.description}</p>
+          <p className="mt-4 max-w-[780px] border-l-[4px] border-[#ff5f1f] pl-4 text-[14px] font-semibold leading-[1.7] text-[#333]">
             Disclosure: Beag Labs makes Papyrus. Its cells cite our own pages and are labelled first-party; {other.name} is held to the same evidence rules. This comparison is documentation-based and we have not run hands-on tests of either product.
           </p>
-        </div>}
-      />
-
-      <section className="px-6 py-14 lg:px-9">
-        <div className="mx-auto max-w-[1280px]">
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="mt-8 grid gap-5 md:grid-cols-2">
             {[beag, other].map((platform) => (
               <div key={platform.slug} className="border-[3px] border-[#111] bg-white p-5">
                 <Link href={productHref(platform)} className="flex items-center gap-4 hover:text-[#b33d0d]">

@@ -2,18 +2,17 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import { PageHero } from '@/components/page-hero'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = pageMetadata({
   title: 'Support',
   description:
-    'Support for Papyrus, the agentic ERP: dedicated mailboxes, response targets, security reports and support scope.',
+    'Papyrus support for commercial and government deployments, with dedicated mailboxes, response targets, diagnostics, and support scope.',
   path: '/support',
   label: 'Support',
   ogDescription:
-    'Find the right Papyrus support channel for your deployment.',
+    'Choose commercial or government Papyrus support and see the correct support channel for your deployment.',
 })
 
 const SUPPORT_PATHS = [
@@ -52,12 +51,50 @@ export default function SupportPage() {
     <main className="bg-[#FAFAF9] text-[#111]">
 
 
-      <PageHero
-        label="Papyrus support"
-        title="Support starts with the right channel"
-        description="Papyrus runs at your own address and does not stream telemetry back to Beag Labs. Pick the channel below that matches your deployment and the right team gets your case."
-        above={<Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Support', url: '/support' }]} />}
-      />
+      <section className="site-hero overflow-hidden border-b-[3px] border-[#111]">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
+          <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
+            <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Support', url: '/support' }]} />
+            <p className="nb-label mb-5 inline-block">Papyrus support</p>
+            <h1 className="max-w-[760px] text-[length:min(52px,9vw)] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
+              Support starts with the right channel.
+            </h1>
+            <p className="mt-7 max-w-[680px] text-[18px] font-medium leading-[1.7] text-[#444]">
+              Papyrus runs inside your environment and does not stream appliance telemetry back to Beag Labs.
+              Choose the deployment path below so the right team receives your case with the right handling context.
+            </p>
+          </div>
+
+          <div className="grid min-h-[520px] border-t-[3px] border-[#111] bg-white lg:border-t-0">
+            {SUPPORT_PATHS.map((path, index) => (
+              <div
+                key={path.id}
+                className={`flex flex-col justify-between p-7 sm:p-9 ${index === 0 ? 'border-b-[3px] border-[#111]' : ''}`}
+              >
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">{path.eyebrow}</p>
+                  <h2 className="mt-2 text-[30px] font-extrabold tracking-[-0.04em]">{path.title}</h2>
+                  <p className="mt-3 max-w-[540px] text-[14px] leading-relaxed text-[#444]">{path.summary}</p>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    href={path.href}
+                    className="nb-btn-orange inline-flex items-center px-5 py-3 text-[11px] uppercase tracking-[0.08em]"
+                  >
+                    View support terms
+                  </Link>
+                  <a
+                    href={`mailto:${path.email}?subject=${encodeURIComponent(path.subject)}`}
+                    className="inline-flex items-center border-2 border-[#111] bg-white px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] transition hover:bg-[#111] hover:text-white"
+                  >
+                    Email support
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-28">
@@ -187,23 +224,15 @@ export default function SupportPage() {
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff7c4a]">Not sure which path applies?</p>
             <h2 className="mt-2 max-w-[760px] text-[32px] font-extrabold tracking-[-0.04em] sm:text-[42px]">
-              Most teams use commercial. Under a government agreement or accredited boundary? Use government.
+              Government agreement or accredited boundary? Use government. Everything else, use commercial.
             </h2>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/support/commercial"
-              className="inline-flex w-fit items-center border-2 border-white bg-white px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#111] transition hover:bg-[#ff5f1f] hover:text-white"
-            >
-              Commercial support
-            </Link>
-            <Link
-              href="/support/government"
-              className="inline-flex w-fit items-center border-2 border-white px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#ff5f1f]"
-            >
-              Government support
-            </Link>
-          </div>
+          <Link
+            href="/support/government"
+            className="inline-flex w-fit items-center border-2 border-white bg-white px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#111] transition hover:bg-[#ff5f1f] hover:text-white"
+          >
+            Government support
+          </Link>
         </div>
       </section>
 

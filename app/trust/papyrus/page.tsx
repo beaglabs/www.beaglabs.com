@@ -15,10 +15,7 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react'
-import { Breadcrumbs } from '@/components/breadcrumbs'
-import { PageHero } from '@/components/page-hero'
 import { SiteFooter } from '@/components/site-footer'
-import { TrialCtaLink } from '@/components/trial-cta-link'
 import { pageMetadata } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -258,22 +255,46 @@ export default function PapyrusTrustCenter() {
     <main className="min-h-screen bg-[#FAFAF9] text-[#111]">
 
 
-      <PageHero
-        label="Papyrus / Trust Center"
-        title="Security evidence, published in the open"
-        description="Papyrus is an agentic ERP that runs at your own address. Your team signs in with Microsoft Entra ID, agents run in sandboxed execution, consequential actions wait for approval, and secrets never sit inline. The evidence is below."
-        above={<Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Trust Center', url: '/trust/papyrus' }]} />}
-        below={<div className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-bold">
-          <a href="/contact" className="underline decoration-2 underline-offset-4">Request evidence</a>
-          <a href="/privacy" className="underline decoration-2 underline-offset-4">Privacy policy</a>
-        </div>}
-      />
-
-      <section className="border-b-[3px] border-[#111] bg-[#fff3e6] px-6 py-4 lg:px-9">
-        <p className="mx-auto max-w-[1440px] text-xs font-semibold leading-5 text-[#444]">
-          Scope: potential software control contributions only. These materials are not a FedRAMP authorization, ATO, SSP, certification, or independent assessment.
-          Papyrus is not an authorization to operate, a cross-domain solution, or a claim of GCC High, DoD, IL4, IL6, or SIPR accreditation.
-        </p>
+      <section className="site-hero border-b-[3px] border-[#111]">
+        <div className="mx-auto max-w-[1440px] px-6 py-8 lg:px-9 lg:py-10">
+          <div className="overflow-hidden border-[3px] border-[#111] bg-white">
+            <div className="grid min-h-[440px] lg:grid-cols-[.92fr_1.08fr]">
+              <div className="flex flex-col justify-center px-7 py-14 lg:px-14">
+                <span className="nb-label mb-6 w-fit">Papyrus / Trust Center</span>
+                <h1 className="max-w-[700px] text-[length:min(46px,9vw)] font-extrabold leading-[1.02] tracking-[-0.055em] sm:text-[58px]">
+                  Security evidence, published in the open.
+                </h1>
+                <p className="mt-6 max-w-[650px] text-[17px] font-medium leading-[1.65] text-[#404040]">
+                  Papyrus is a customer-hosted durable agent runtime powered by Mastra. Entra ID is the identity
+                  authority. The product surface is a Mastra-native agent runtime with governed plugin lifecycle,
+                  offline licensing, sandboxed execution, and zero-inline-secrets architecture.
+                </p>
+                <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
+                  <a href="/contact" className="underline decoration-2 underline-offset-4">
+                    Request evidence
+                  </a>
+                  <a href="/privacy" className="underline decoration-2 underline-offset-4">
+                    Privacy policy
+                  </a>
+                </div>
+              </div>
+              <div className="relative min-h-[300px] border-t-[3px] border-[#111] lg:border-l-[3px] lg:border-t-0">
+                <img
+                  src="https://jamesnaderblog.co.uk/wp-content/uploads/2024/07/james-nader-banner.jpg"
+                  alt="Abstract reflective green and orange forms"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#ff5f1f]/20 to-transparent" />
+              </div>
+            </div>
+            <div className="border-t-[3px] border-[#111] bg-[#fff3e6] px-6 py-4">
+              <p className="text-xs font-semibold leading-5 text-[#444]">
+                Scope: potential software control contributions only. These materials are not a FedRAMP authorization, ATO, SSP, certification, or independent assessment.
+                Papyrus is not an authorization to operate, a cross-domain solution, or a claim of GCC High, DoD, IL4, IL6, or SIPR accreditation.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
@@ -584,22 +605,18 @@ export default function PapyrusTrustCenter() {
         <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
-              Seen the evidence?
+              Need deployment evidence?
             </p>
             <h2 className="mt-4 max-w-4xl text-[length:min(2.25rem,9vw)] font-extrabold leading-[1.04] tracking-[-0.05em] lg:text-6xl">
-              Now see the agentic ERP run on your records.
+              Map the component into your actual authorization boundary.
             </h2>
-            <p className="mt-4 text-sm font-medium text-[#444]">
-              Need deployment evidence for a review?{' '}
-              <a href="/contact" className="font-bold underline decoration-2 underline-offset-4">Request evidence</a>.
-            </p>
           </div>
-          <TrialCtaLink
-            placement="section"
+          <a
+            href="/contact"
             className="nb-btn-orange inline-flex items-center justify-center gap-2 px-6 py-4 text-xs uppercase tracking-[0.1em]"
           >
-            Try Papyrus now <ArrowUpRight className="h-4 w-4" />
-          </TrialCtaLink>
+            Request evidence <ArrowUpRight className="h-4 w-4" />
+          </a>
         </div>
       </section>
 

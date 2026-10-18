@@ -2,8 +2,8 @@ import { pageMetadata } from '@/lib/seo'
 import { AgenticGuide } from '@/components/backoffice/agentic-guide'
 
 export const metadata = pageMetadata({
-  title: 'Agentic Back Office: AP, AR and Approvals Run by Agents',
-  description: 'How Papyrus agents run the back office on one data model: invoice and document intake, AP and AR, exceptions, reconciliation and human approvals.',
+  title: 'Agentic Back Office',
+  description: 'A practical guide to agentic back office automation: document intake, tool use, exceptions, human approvals, and traceable evidence.',
   path: '/solutions/agentic-back-office',
   label: 'Papyrus / Back office',
 })

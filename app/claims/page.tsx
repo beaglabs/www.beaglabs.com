@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { AnnouncementBanner } from '@/components/announcement-banner'
-import { PageHero } from '@/components/page-hero'
 import { SiteFooter } from '@/components/site-footer'
 import { claims } from '@/lib/claims'
 import { pageMetadata } from '@/lib/seo'
@@ -21,16 +20,21 @@ export default function ClaimsPage() {
     <main className="bg-[#FAFAF9] text-[#111]">
       <AnnouncementBanner />
 
-      <PageHero
-        label="Reference"
-        title="Claim Ledger"
-        description="Verified statements with approved wording, source links, and clear boundaries for how each claim should be used. Every claim on this site about Papyrus traces back here."
-        below={<p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#555]">{claims.length} documented claims</p>}
-      />
-
-      <section className="px-6 pb-20 pt-16 lg:px-9 lg:pb-28 lg:pt-20">
+      <section className="site-hero px-6 pb-20 pt-16 lg:px-9 lg:pb-28 lg:pt-20">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-y-[3px] border-[#111]">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="nb-label">Reference</span>
+            <span className="h-px w-10 bg-[#111]" aria-hidden="true" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#555]">{claims.length} documented claims</span>
+          </div>
+          <h1 className="max-w-[850px] text-[length:min(44px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[58px] lg:text-[72px]">
+            Claim Ledger<span className="text-[#ff5f1f]">.</span>
+          </h1>
+          <p className="mt-5 max-w-[680px] text-[17px] font-medium leading-[1.7] text-[#404040]">
+            Verified statements with approved wording, source links, and clear boundaries for how each claim should be used.
+          </p>
+
+          <div className="mt-12 border-y-[3px] border-[#111]">
             {claims.map((claim, index) => (
               <Link
                 key={claim.claimId}

@@ -4,7 +4,6 @@ import { fetchHygraph } from '@/lib/hygraph/client'
 import { GET_BLOG_POSTS_BY_TAG, GET_ALL_BLOG_TAGS } from '@/lib/hygraph/queries'
 import type { BlogPostsResponse } from '@/lib/hygraph/types'
 import { BlogList, Pagination } from '@/components/blog/blog-list'
-import { PageHero } from '@/components/page-hero'
 import { ogImageUrl } from '@/lib/seo'
 
 export async function generateStaticParams() {
@@ -90,14 +89,23 @@ export default async function BlogTagPage({
   )
 
   return (
-    <main>
-      <PageHero
-        label="Blog tag"
-        title={`#${decoded}`}
-        description={<>{data.blogPostsConnection.aggregate.count} post{data.blogPostsConnection.aggregate.count !== 1 ? 's' : ''} tagged &ldquo;{decoded}&rdquo;.</>}
-      />
-      <div className="site-page-grid px-6 py-14 lg:px-9 lg:py-16">
+    <main className="site-page-grid px-6 py-14 lg:px-9 lg:py-16">
       <div className="mx-auto max-w-[1440px]">
+        <div className="mb-14 grid grid-cols-1 gap-8 border-b border-[rgba(0,0,0,0.08)] pb-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+          <div>
+            <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+              Blog Tag
+            </div>
+            <h1 className="mb-3 text-[42px] font-bold tracking-[-0.05em] text-[#111] lg:text-[54px]">
+              #{decoded}
+            </h1>
+          </div>
+          <p className="max-w-[520px] text-[17px] leading-[1.72] text-[#4e4e4e] lg:justify-self-end">
+            {data.blogPostsConnection.aggregate.count} post
+            {data.blogPostsConnection.aggregate.count !== 1 ? 's' : ''} tagged
+            &nbsp;&ldquo;{decoded}&rdquo;.
+          </p>
+        </div>
         <BlogList
           posts={data.blogPosts}
           emptyMessage={`No posts tagged "${decoded}" yet.`}
@@ -107,7 +115,6 @@ export default async function BlogTagPage({
           totalPages={totalPages}
           basePath={`/blog/tag/${tag}`}
         />
-      </div>
       </div>
     </main>
   )
