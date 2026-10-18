@@ -17,6 +17,10 @@ export interface Bindings {
   AWS_CONNECT_TEMPLATE_URL: string
   /** One ActivityHub Durable Object per account: live Activity over hibernatable WebSockets. */
   ACTIVITY?: HubNamespace
+  /** Cloudflare Browser Rendering: screenshots of a deployment's public page for the preview. Optional. */
+  BROWSER?: Fetcher
+  /** R2 bucket holding the latest preview screenshot per deployment. Optional (no bucket = no screenshots). */
+  PREVIEWS?: R2Bucket
   /** Stripe product every Papyrus price belongs to. */
   STRIPE_PRODUCT: string
   /** $250/month platform subscription (licensed). */

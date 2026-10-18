@@ -22,18 +22,20 @@ describe('Console layout', () => {
     expect(styles).not.toMatch(/\.side\{[^}]*position:sticky/)
   })
 
-  it('wraps long Activity messages and clamps them to two lines with More', async () => {
+  it('collapses long Activity output behind an expand control; the terminal scrolls on its own', async () => {
     const { h, get } = signedIn()
     h.insertDeployment({ id: 'dep_1', billing_state: 'active' })
     h.sql.prepare("UPDATE deployments SET provider = 'hosted', hostname = 'acme.papyrus.beaglabs.com' WHERE id = 'dep_1'").run()
     const long = `Azure: ${'InvalidTemplateDeployment/'.repeat(30)}`
     h.sql.prepare("INSERT INTO events (account_id, deployment_id, at, level, source, message) VALUES ('acct_1', 'dep_1', '2026-10-17T14:00:00.000Z', 'error', 'deploy', ?)").run(long)
     const html = await (await get('/deploy/dep_1')).text()
-    expect(html).toContain(`<td class="msg"><span class="txt">${long}</span><button type="button" class="xp" data-expand aria-expanded="false" hidden>More</button></td>`)
+    // Long technical output starts as its first line with an expand control; the full text is in the data island.
+    expect(html).toContain(`<span>${long.slice(0, 139)}…</span><button type="button" class="tl-more" aria-expanded="false">Show full output</button>`)
     const styles = css(html)
-    expect(styles).toContain('.log td.msg{overflow-wrap:anywhere;word-break:normal;min-width:0}')
-    expect(styles).toContain('-webkit-line-clamp:2')
-    expect(styles).toContain('.log .scroll{max-height:440px;overflow-y:auto;overflow-x:hidden}')
-    expect(styles).toContain('.cols{display:grid;grid-template-columns:minmax(0,1fr) 330px')
+    expect(styles).toContain('.tl-msg{color:#e7e7e7;overflow-wrap:anywhere;min-width:0}')
+    expect(styles).toMatch(/\.term-body\{height:380px;overflow-y:auto;overscroll-behavior:contain/)
+    expect(styles).toContain('.dp-grid{display:grid;grid-template-columns:minmax(0,1fr) 390px')
+    // Reduced motion: no animation anywhere on the deployment pages.
+    expect(styles).toMatch(/@media \(prefers-reduced-motion:reduce\)\{\s*\.dp \*[^{]*\{animation:none!important;transition:none!important/)
   })
 })

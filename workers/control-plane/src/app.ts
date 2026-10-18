@@ -7,7 +7,6 @@ import { Hono, type Context as HonoContext } from 'hono'
 import { getCookie } from 'hono/cookie'
 import * as Auth from './auth'
 import { accountTrial, backfillTrialEnds, handleWebhook, portalUrl, startCheckout } from './billing'
-import { ACTIVITY_JS, ACTIVITY_SCRIPT_PATH } from './activity'
 import { SUPPORT_JS, SUPPORT_SCRIPT_PATH } from './support'
 import { encryptJson, randomToken, timingSafeEqual } from './crypto'
 import { EVENT_FILTERS, eventJson, isEventFilter, listEvents, logEvent } from './events'
@@ -23,13 +22,18 @@ import { initialSteps, isStepId, record, resetFrom } from './setup'
 import { deploymentStatus } from './status'
 import { meterComputeHour, monthUsage, reportUsage } from './metering'
 import { deleteDeployment, resumeTeardowns, runTeardown, startDeployment, stopDeployment } from './lifecycle'
-import { byocCleanupList, teardownSteps } from './lifecycle-model'
 import { LIVE_PATH } from './activity-hub'
 import * as Views from './views'
+import { autoAdvance, dueCheck } from './advance'
+import { availableActions, buildDeploymentView, buildSummary, currentStep, type ViewContext } from './deployment-view'
+import { browserCapture, captureAndStore, loadCapture, previewObject, requestCapture, screenshotsEnabled, type CaptureFn } from './preview'
+import type { ActionId, ActionResult, DetailPayload, ListPayload } from './ui/types'
 
 export interface AppDeps {
   /** Override fetch for every outbound call (tests). */
   fetch?: typeof fetch
+  /** Override the preview screenshot (tests); production uses Browser Rendering. */
+  capture?: CaptureFn
 }
 
 type Ctx = HonoContext<{ Bindings: Bindings }>
@@ -345,28 +349,51 @@ export function createApp(deps: AppDeps = {}) {
 
   // Deploy and setup ----------------------------------------------------------------------------------------------
 
+  /** Everything the deployment view model needs besides the row itself. */
+  const viewContext = (c: Ctx, account: Account, deployment: Deployment, siblings: Deployment[]) =>
+    Effect.gen(function* () {
+      const usage = (yield* monthUsage(account.id))[deployment.id]
+      const capture = yield* loadCapture(deployment.id)
+      return {
+        account,
+        region: c.env.HOSTED_AWS_REGION || 'us-east-2',
+        now: Date.now(),
+        screenshots: screenshotsEnabled(c.env),
+        capture,
+        ...(usage ? { usage } : {}),
+        siblings: siblings.filter((d) => d.id !== deployment.id),
+      } satisfies ViewContext
+    })
+
+  const detailView = (c: Ctx, account: Account, deployment: Deployment) =>
+    Effect.gen(function* () {
+      const siblings = yield* listDeployments(account.id)
+      return buildDeploymentView(deployment, yield* viewContext(c, account, deployment, siblings))
+    })
+
+  const listPayload = (c: Ctx, deployments: Deployment[]): ListPayload => ({
+    deployments: deployments.map((d) => buildSummary(d, { region: c.env.HOSTED_AWS_REGION || 'us-east-2', now: Date.now() })),
+    serverTime: nowIso(),
+  })
+
   /** The org-name claim screen until the deployment has an address; then the Deployment page. */
   const renderDeployment = (c: Ctx, account: Account, deployment: Deployment, message?: string | null, status = 200) =>
     Effect.gen(function* () {
       const byoc = yield* byocEnabled(account)
-      if (deployment.lifecycle === 'deleting' || deployment.lifecycle === 'deleted') {
-        const events = yield* listEvents(account.id, { deploymentId: deployment.id })
-        return c.html(Views.teardownPage({ account, deployment, events, steps: teardownSteps(deployment), cleanup: byocCleanupList(deployment), message }), status as 200)
-      }
-      if (!deployment.provider) return c.html(Views.claimPage(account, deployment, message, byoc), status as 200)
+      if (!deployment.provider && deployment.lifecycle === 'running') return c.html(Views.claimPage(account, deployment, message, byoc), status as 200)
       const events = yield* listEvents(account.id, { deploymentId: deployment.id })
-      const multiple = (yield* listDeployments(account.id)).length > 1
-      const usage = (yield* monthUsage(account.id))[deployment.id]
-      return c.html(Views.deploymentPage({ account, deployment, events, byoc, region: c.env.HOSTED_AWS_REGION || 'us-east-2', multiple, message, usage }), status as 200)
+      const view = yield* detailView(c, account, deployment)
+      const before = byoc && deployment.provider && deployment.provider !== HOSTED_PROVIDER && !deployment.license_deployment_id && deployment.lifecycle === 'running' ? Views.hostnameCard(deployment) : ''
+      return c.html(Views.deploymentPage({ account, view, events, serverTime: nowIso(), message, before }), status as 200)
     })
 
   app.get('/deploy', (c) =>
     signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployments = yield* listDeployments(account.id)
-        // One deployment (the usual case) is the page itself; several get a list to click into.
+        // One deployment (the usual case) is the page itself; several get the table.
         if (deployments.length === 1) return yield* renderDeployment(c, account, deployments[0]!, c.req.query('error'))
-        return c.html(Views.deployListPage(account, deployments))
+        return c.html(Views.deployListPage(account, listPayload(c, deployments)))
       }),
     ),
   )
@@ -563,8 +590,6 @@ export function createApp(deps: AppDeps = {}) {
     return stub.fetch('https://activity-hub/connect', { headers: { upgrade: 'websocket', 'x-account-id': account.id } })
   })
 
-  app.get(ACTIVITY_SCRIPT_PATH, (c) => c.body(ACTIVITY_JS, 200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300' }))
-
   for (const path of Object.keys(LOGOS_PNG)) {
     app.get(path, (c) => c.body(LOGOS_PNG[path]!, 200, { 'content-type': 'image/png', 'cache-control': 'public, max-age=86400' }))
   }
@@ -614,6 +639,155 @@ export function createApp(deps: AppDeps = {}) {
     const failure = userError(exit)!
     return c.json({ error: failure.message }, failure.status as 400)
   })
+
+  // Deployment view-model API (the deployment pages poll these) ----------------------------------------------------
+
+  /** JSON routes behind sign-in. Mutations must come from this site. */
+  const api = (c: Ctx, body: (account: Account) => Program<Response>, options: { mutation?: boolean } = {}) =>
+    (async () => {
+      if (options.mutation && c.req.header('origin') !== new URL(c.env.BASE_URL).origin) return c.json({ ok: false, message: 'Cross-origin request refused' }, 403)
+      const exit = await exec(
+        c,
+        Effect.gen(function* () {
+          const account = yield* currentAccount(c)
+          if (!account) return c.json({ ok: false, message: 'Sign in first' }, 401)
+          return yield* body(account)
+        }),
+      )
+      if (Exit.isSuccess(exit)) {
+        exit.value.headers.set('cache-control', 'no-store')
+        return exit.value
+      }
+      const failure = userError(exit)!
+      return c.json({ ok: false, message: failure.message }, failure.status as 400, { 'cache-control': 'no-store' })
+    })()
+
+  /** Run work after the response when the runtime allows it (Workers), else inline (tests). */
+  const background = (c: Ctx, program: Program<unknown>) => {
+    const promise = exec(c, program).then(() => undefined)
+    try {
+      c.executionCtx.waitUntil(promise)
+      return Promise.resolve()
+    } catch {
+      return promise
+    }
+  }
+
+  /** The signed-in account's deployments, as table rows. */
+  app.get('/api/deployments', (c) => api(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.json(listPayload(c, deployments)))))
+
+  /**
+   * One deployment's view model. While its page is open, the read-only check that is due (address, health, Microsoft,
+   * registration, a waiting teardown) runs after the response, so the next poll shows the result.
+   */
+  app.get('/api/deployments/:id', (c) =>
+    api(c, (account) =>
+      Effect.gen(function* () {
+        const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+        const view = yield* detailView(c, account, deployment)
+        if (dueCheck(deployment)) yield* Effect.promise(() => background(c, autoAdvance(deployment, account)))
+        return c.json({ deployment: view, serverTime: nowIso() } satisfies DetailPayload)
+      }),
+    ),
+  )
+
+  const ACTION_DONE: Record<ActionId, string> = {
+    stop: 'Stopped. Data, address and registration are kept.',
+    start: 'Started. Papyrus is starting up.',
+    redeploy: 'Redeployed.',
+    retry: 'Retried.',
+    check: 'Checked.',
+    teardown: 'Teardown continued.',
+  }
+  const isActionId = (value: string): value is ActionId => Object.hasOwn(ACTION_DONE, value)
+
+  /** Lifecycle and setup actions as JSON. Ownership and whether the action is allowed are checked here, not in the page. */
+  const runAction = (deployment: Deployment, account: Account, action: ActionId): Program<string> =>
+    Effect.gen(function* () {
+      const allowed = availableActions(deployment).some((a) => a.id === action)
+      if (!allowed) return yield* new UserError({ message: `${action[0]!.toUpperCase()}${action.slice(1)} is not available for this deployment right now.`, status: 409 })
+      switch (action) {
+        case 'stop':
+          yield* stopDeployment(deployment, account)
+          return ACTION_DONE.stop
+        case 'start':
+          yield* startDeployment(deployment, account)
+          return ACTION_DONE.start
+        case 'teardown':
+          yield* runTeardown(deployment, account.id)
+          return ACTION_DONE.teardown
+        case 'redeploy': {
+          const result = yield* runStep(deployment, account, 'deploy')
+          if (result.status === 'fail') return yield* new UserError({ message: result.reason ?? 'Redeploy failed.', status: 502 })
+          return result.reason ?? ACTION_DONE.redeploy
+        }
+        case 'retry':
+        case 'check': {
+          const step = currentStep(deployment)
+          if (!step) return ACTION_DONE[action]
+          const result = yield* runStep(deployment, account, step)
+          if (result.status === 'fail' && action === 'retry') return yield* new UserError({ message: result.reason ?? 'Still failing.', status: 502 })
+          return result.reason ?? ACTION_DONE[action]
+        }
+      }
+    })
+
+  app.post('/api/deployments/:id/actions/:action', (c) =>
+    api(
+      c,
+      (account) =>
+        Effect.gen(function* () {
+          const action = c.req.param('action')
+          if (!isActionId(action)) return c.json({ ok: false, message: 'Unknown action' }, 404)
+          const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+          const outcome = yield* runAction(deployment, account, action).pipe(Effect.result)
+          const fresh = yield* getOwnedDeployment(account.id, deployment.id)
+          const view = yield* detailView(c, account, fresh)
+          if (outcome._tag === 'Failure') {
+            const failure = outcome.failure as { _tag?: string; message?: string; status?: number }
+            if (failure?._tag !== 'UserError') return yield* Effect.fail(outcome.failure)
+            return c.json({ ok: false, message: failure.message ?? 'That did not work', deployment: view } satisfies ActionResult, (failure.status ?? 400) as 400)
+          }
+          return c.json({ ok: true, message: outcome.success, deployment: view } satisfies ActionResult)
+        }),
+      { mutation: true },
+    ),
+  )
+
+  /** Take (or retake) the preview screenshot. 429 while rate-limited; the capture runs after the response. */
+  app.post('/api/deployments/:id/preview', (c) =>
+    api(
+      c,
+      (account) =>
+        Effect.gen(function* () {
+          const deployment = yield* getOwnedDeployment(account.id, c.req.param('id'))
+          const claimed = yield* requestCapture(deployment).pipe(Effect.result)
+          if (claimed._tag === 'Success') yield* Effect.promise(() => background(c, captureAndStore(deployment, deps.capture ?? browserCapture)))
+          const view = yield* detailView(c, account, yield* getOwnedDeployment(account.id, deployment.id))
+          if (claimed._tag === 'Failure') {
+            const failure = claimed.failure as { message?: string; status?: number }
+            return c.json({ ok: false, message: failure.message ?? 'Preview unavailable', deployment: view } satisfies ActionResult, (failure.status ?? 400) as 400)
+          }
+          return c.json({ ok: true, message: 'Capturing the preview.', deployment: view } satisfies ActionResult, 202)
+        }),
+      { mutation: true },
+    ),
+  )
+
+  /** The stored screenshot, only for the deployment's own account. Versioned URL (?v=capture time), so cache hard. */
+  app.get('/api/deployments/:id/preview.jpg', (c) =>
+    api(c, (account) =>
+      Effect.gen(function* () {
+        yield* getOwnedDeployment(account.id, c.req.param('id'))
+        const object = yield* previewObject(c.req.param('id'))
+        if (!object) return c.json({ ok: false, message: 'No preview yet' }, 404)
+        return new Response(object.body as ReadableStream, { headers: { 'content-type': 'image/jpeg', 'x-content-type-options': 'nosniff' } })
+      }),
+    ).then((response) => {
+      if (response.status === 200) response.headers.set('cache-control', 'private, max-age=31536000, immutable')
+      return response
+    }),
+  )
 
   return app
 }

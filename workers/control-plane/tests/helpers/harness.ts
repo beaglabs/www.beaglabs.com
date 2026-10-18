@@ -53,7 +53,7 @@ export function fakeLicense(validKeys: Record<string, string> = { 'pd_123': 'goo
   return license
 }
 
-export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi; env?: Partial<Bindings> } = {}) {
+export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi; env?: Partial<Bindings>; capture?: (env: Bindings, url: string) => Promise<Uint8Array> } = {}) {
   const { sql, db } = fakeD1()
   const license = options.license ?? fakeLicense()
   const env = {
@@ -87,7 +87,7 @@ export function harness(options: { fetch?: typeof fetch; license?: LicenseRpcApi
     STRIPE_PRICE_EXECUTION: 'price_execution',
     ...options.env,
   } satisfies Bindings
-  const app = createApp({ fetch: options.fetch ?? (async () => new Response('unexpected fetch', { status: 599 })) })
+  const app = createApp({ fetch: options.fetch ?? (async () => new Response('unexpected fetch', { status: 599 })), ...(options.capture ? { capture: options.capture } : {}) })
   const call = (path: string, init: RequestInit = {}) => app.request(`https://papyrus.beaglabs.test${path}`, init, env)
   const insertAccount = (id = 'acct_1', email = 'owner@example.com') =>
     sql.prepare('INSERT INTO accounts (id, email, created_at) VALUES (?, ?, ?)').run(id, email, '2026-10-17T00:00:00.000Z')

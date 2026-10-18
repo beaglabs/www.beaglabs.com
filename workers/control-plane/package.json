@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev --config wrangler.jsonc",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.client.json",
     "test": "vitest run",
     "check": "npm run typecheck && npm test && wrangler deploy --dry-run --config wrangler.jsonc --outdir .wrangler-dry-run",
     "db:apply": "wrangler d1 execute papyrus-control-plane --remote --file schema.sql --config wrangler.jsonc",
-    "deploy": "npm run db:apply && wrangler deploy --config wrangler.jsonc"
+    "deploy": "npm run db:apply && wrangler deploy --config wrangler.jsonc",
+    "build:client": "node scripts/build-client.mjs",
+    "preview:ui": "node scripts/build-client.mjs && vite-node scripts/ui-preview.ts"
   },
   "dependencies": {
+    "@cloudflare/puppeteer": "1.4.0",
     "@distilled.cloud/aws": "1.0.0-rc.15",
     "@distilled.cloud/azure": "1.0.0-rc.15",
     "@distilled.cloud/cloudflare": "1.0.0-rc.15",
@@ -31,11 +34,15 @@
     "@distilled.cloud/stackit": "1.0.0-rc.15",
     "@distilled.cloud/stripe": "1.0.0-rc.15",
     "effect": "4.0.5",
-    "hono": "4.13.9"
+    "hono": "4.13.9",
+    "motion": "13.5.1",
+    "preact": "10.29.8",
+    "preact-render-to-string": "6.7.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261016.1",
     "@types/node": "22.20.4",
+    "esbuild": "0.28.2",
     "typescript": "5.9.3",
     "vitest": "3.2.7",
     "wrangler": "4.147.0"

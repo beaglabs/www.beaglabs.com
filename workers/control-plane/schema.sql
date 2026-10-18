@@ -134,3 +134,20 @@ CREATE TABLE IF NOT EXISTS deployment_lifecycle (
   changed_at TEXT NOT NULL,
   teardown TEXT NOT NULL DEFAULT '{}'
 );
+
+-- Browser preview: the latest screenshot per deployment lives in R2 (PREVIEWS); this row is its capture time and the
+-- rate limit (attempted_at). Never holds credentials: url is the bare public origin.
+CREATE TABLE IF NOT EXISTS preview_captures (
+  deployment_id TEXT PRIMARY KEY REFERENCES deployments(id),
+  url TEXT,
+  captured_at TEXT,
+  attempted_at TEXT,
+  error TEXT
+);
+
+-- Automatic read-only checks while a deployment page is open (DNS, health, Microsoft, registration, teardown):
+-- a lease so two open tabs do not run the same check at once.
+CREATE TABLE IF NOT EXISTS auto_checks (
+  deployment_id TEXT PRIMARY KEY REFERENCES deployments(id),
+  claimed_at TEXT NOT NULL
+);
