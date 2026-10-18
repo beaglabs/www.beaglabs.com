@@ -3,6 +3,7 @@ import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Navbar } from '@/components/navbar'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
+import { CustomerIoPageViews } from '@/components/customerio-page-views'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
@@ -114,6 +115,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationJsonLd, websiteJsonLd]) }}
         />
         <PosthogConsentGate />
+        <CustomerIoPageViews />
         <Navbar />
         {children}
         <CookieConsentBanner />
