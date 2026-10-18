@@ -2,10 +2,10 @@
   {
     "slug": "modernization",
     "number": "01",
-    "eyebrow": "Capability · Legacy into the ERP",
+    "eyebrow": "Capability · Agentic modernization",
     "title": "Agentic Legacy Modernization",
-    "subtitle": "Bring the systems you already run into the agentic ERP.",
-    "description": "Papyrus agents work with the terminal, COBOL and SOAP/XML systems you already trust. They map the interfaces, wrap them in tested OpenAPI adapters and put usable front ends on top, so agents can work with those systems alongside your customers, vendors and invoices while the system of record keeps doing its job.",
+    "subtitle": "Modern APIs and internal apps for the systems of record you already trust.",
+    "description": "Modernize legacy workflows incrementally. Discover existing terminal, COBOL and SOAP/XML interfaces; describe their contracts; expose validated OpenAPI-compatible adapters and build usable React front ends while retaining the underlying system's business behavior.",
     "hero": {
       "src": "https://images.pexels.com/photos/3735218/pexels-photo-3735218.jpeg",
       "alt": "Vintage computer terminal in a dim room",
@@ -33,13 +33,13 @@
         ]
       },
       {
-        "title": "Put it to work",
-        "blurb": "Give agents and people a way into the systems of record.",
+        "title": "Give teams a usable front end",
+        "blurb": "Create interfaces around the existing systems of record.",
         "bullets": [
-          "Agents call the wrapped system in back-office workflows",
-          "Forms and views built on the same data model",
+          "React-based forms and process views",
+          "Identity-aware internal request workflows",
           "Human approval for consequential steps",
-          "Incremental rollout without forced replacement"
+          "Incremental deployment without forced replacement"
         ]
       }
     ],
@@ -75,10 +75,10 @@
       }
     ],
     "cta": {
-      "headline": "Bring your legacy systems into the agentic ERP",
-      "blurb": "Start Papyrus, wrap one legacy workflow and let the agents work with it. The core system stays as it is.",
+      "headline": "Modernize access without rewriting the core",
+      "blurb": "Discuss a bounded legacy workflow and the right level of API wrapping, UI replacement and regression testing.",
       "chatPrompt": "I want to modernize an existing terminal or SOAP/XML workflow using OpenAPI and an internal application."
     },
-    "metaDescription": "Bring COBOL, mainframe, TN3270 and SOAP/XML systems into the Papyrus agentic ERP. Tested OpenAPI adapters and front ends let agents work with the systems you already run."
+    "metaDescription": "Agentic legacy modernization for COBOL, mainframes, TN3270 and SOAP/XML interfaces. Preserve existing systems behind OpenAPI adapters and internal applications."
   }
 ]

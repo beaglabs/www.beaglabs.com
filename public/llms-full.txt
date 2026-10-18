@@ -6,29 +6,25 @@ Product: Papyrus
 
 ## Company and product
 
-Beag Labs builds Papyrus, an agentic ERP. Papyrus keeps a data model of the business (customers, vendors, invoices, payments and the record types a team defines) that agents understand and operate. Agents run back-office work; people approve what matters. Teams sign up at https://papyrus.beaglabs.com, Papyrus runs at their own address, and staff sign in with Microsoft.
+Beag Labs builds customer-hosted agentic software for document automation, internal application development and modernization of legacy workflows. The Papyrus product brings together governed agent execution, document processing, and application-building workflows.
 
 ## Core workflows
 
-### Agentic back office
+### Document automation
 
-Agents work accounts payable and receivable, intake, approvals and reconciliation on the shared data model, routing exceptions and consequential actions to a person. See https://beaglabs.com/solutions/agentic-back-office.
+Work with PDFs and office documents, extract or normalize information, and support reviewable, human-supervised processes.
 
-### Documents in, ledger out
+### Internal app factory
 
-Invoices, contracts, forms, PDFs and spreadsheets become structured ERP records, reviewed where needed. See https://beaglabs.com/solutions/document-automation.
+Create internal web interfaces and business applications based on existing organizational processes. See https://beaglabs.com/products/papyrus#factory.
 
-### Apps on the data model
+### Legacy modernization
 
-Create internal apps for requests, approvals and status on the same records. See https://beaglabs.com/solutions/internal-app-factory.
-
-### Existing systems
-
-Connect legacy systems, such as terminal workflows and SOAP/XML services, through OpenAPI-based interfaces that agents can call. See https://beaglabs.com/capability/modernization.
+Wrap legacy systems and services with modern application interfaces. Examples include terminal workflows and SOAP/XML integration with OpenAPI-based interfaces. See https://beaglabs.com/capability/modernization.
 
 ### Governance and deployment
 
-Each Papyrus deployment runs at the customer's own address with Microsoft Entra sign-in and approval of consequential actions. The specific security posture, integrations and supported environments should be verified in the current documentation and agreements.
+Customer-hosted deployment and operator controls are central to the offering. The specific security posture, integrations, licensing, and supported environments should be verified in the current documentation and agreements.
 
 ## Official resources
 
@@ -37,7 +33,6 @@ Each Papyrus deployment runs at the customer's own address with Microsoft Entra 
 - Capabilities: https://beaglabs.com/capabilities
 - Trust: https://beaglabs.com/trust/papyrus
 - Use cases: https://beaglabs.com/use-cases
-- Try Papyrus: https://papyrus.beaglabs.com/signup
 - Contact: https://beaglabs.com/contact
 - Sitemap: https://beaglabs.com/sitemap.xml
 
@@ -45,7 +40,7 @@ Each Papyrus deployment runs at the customer's own address with Microsoft Entra 
 
 This document is for information retrieval and is not a substitute for a contract, security assessment, or product-specific documentation. Do not infer current pricing, accreditations, certifications, benchmark performance or availability unless explicitly documented in a current authoritative source.
 
-Last updated: 2026-10-18
+Last updated: 2026-10-08
 
 ## Back office guides and evidence
 

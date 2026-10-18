@@ -12,10 +12,10 @@ function capture(event: string, properties: Record<string, unknown>) {
 
 // Keep click tracking and notification delivery in the same .track() call.
 export const analytics = {
-  /** A click on any "Try Papyrus" path; all of them go to papyrus.beaglabs.com. */
+  /** A click on any "Start a trial" button. */
   track(event: 'trial.cta.clicked', properties: TrialProperties) {
     capture(event, properties)
-    if (customerIoLoaded()) customerIo()?.track('Papyrus Signup Clicked', properties)
+    if (customerIoLoaded()) customerIo()?.track('Trial CTA Clicked', properties)
 
     const endpoint = 'https://license.beaglabs.com/api/events/trial-click'
     const body = JSON.stringify({ event, ...properties })

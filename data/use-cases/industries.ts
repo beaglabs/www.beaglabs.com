@@ -14,112 +14,94 @@ export const industries: UseCase[] = [
   {
     "slug": "finance",
     "industry": "Finance",
-    "title": "Agentic ERP for Finance Teams",
-    "metaDescription": "Papyrus agents run accounts payable and receivable: invoices in, records matched, approvals routed, payments reconciled. People approve what matters.",
-    "heroDescription": "Papyrus agents take invoices in, match them to vendors and customers, route approvals and keep payables and receivables moving. Your team approves what matters.",
+    "title": "Back Office Finance Automation",
+    "metaDescription": "Explore reviewable invoice intake and financial evidence assembly with customer-hosted back office automation.",
+    "heroDescription": "Use Papyrus to connect invoice intake and financial evidence assembly to existing systems and human-reviewed workflows. These are example patterns, not claims of completed deployments.",
     "useCases": [
       {
-        "title": "Accounts payable",
-        "description": "Agents read incoming invoices, match the vendor and create the bill with the source document attached."
+        "title": "Document intake",
+        "description": "Extract structured inputs while retaining source context for review."
       },
       {
-        "title": "Accounts receivable",
-        "description": "Agents prepare customer invoices, track what is owed and flag what is overdue."
+        "title": "Requests and approvals",
+        "description": "Route work to authorized staff, with explicit handling for exceptions."
       },
       {
-        "title": "Approvals",
-        "description": "Payments and exceptions go to the right person before anything moves."
-      },
-      {
-        "title": "Reconciliation",
-        "description": "Agents match payments to invoices and surface what doesn't line up."
+        "title": "Evidence assembly",
+        "description": "Collect source records and review decisions into a traceable work packet."
       }
     ],
     "benefits": [
-      "One data model for customers, vendors, invoices and payments",
-      "Less rekeying between inbox, spreadsheet and ledger",
-      "Agents handle the routine; people decide the exceptions"
+      "Reduce repeated data entry where validated automation is appropriate",
+      "Make exceptions and review responsibilities visible",
+      "Connect existing systems through controlled interfaces"
     ],
     "compliance": [
-      "Microsoft sign-in for your team",
-      "Approval steps before payments and other consequential actions",
-      "Documents become reviewed, structured records",
-      "Runs at your own Papyrus address"
+      "Assess applicable handling requirements before deployment",
+      "Customer-hosted operation does not establish compliance or authorization"
     ],
-    "ctaText": "Put payables and receivables on Papyrus."
+    "ctaText": "Discuss your back office workflow"
   },
   {
     "slug": "legal",
     "industry": "Legal",
-    "title": "Agentic ERP for Legal Operations",
-    "metaDescription": "Papyrus agents handle legal back-office work: contract and document intake, client invoicing, outside counsel bills and approvals, on one data model.",
-    "heroDescription": "Papyrus agents turn contracts, engagement letters and invoices into records your team can act on, then route billing and approvals to the right people.",
+    "title": "Legal Back Office Document Workflows",
+    "metaDescription": "Explore reviewable document intake and contract review routing with customer-hosted back office automation.",
+    "heroDescription": "Use Papyrus to connect document intake and contract review routing to existing systems and human-reviewed workflows. These are example patterns, not claims of completed deployments.",
     "useCases": [
       {
         "title": "Document intake",
-        "description": "Agents read contracts and engagement letters and file the key terms against the right client or vendor."
+        "description": "Extract structured inputs while retaining source context for review."
       },
       {
-        "title": "Client invoicing",
-        "description": "Agents prepare invoices from the records you already keep and track what is outstanding."
+        "title": "Requests and approvals",
+        "description": "Route work to authorized staff, with explicit handling for exceptions."
       },
       {
-        "title": "Outside counsel bills",
-        "description": "Vendor invoices are matched to the matter and routed for approval before payment."
-      },
-      {
-        "title": "Approvals",
-        "description": "Consequential steps wait for a person, with the source document one click away."
+        "title": "Evidence assembly",
+        "description": "Collect source records and review decisions into a traceable work packet."
       }
     ],
     "benefits": [
-      "Clients, vendors, matters and invoices in one data model",
-      "Less copying terms out of documents by hand",
-      "Approvals where they matter, not everywhere"
+      "Reduce repeated data entry where validated automation is appropriate",
+      "Make exceptions and review responsibilities visible",
+      "Connect existing systems through controlled interfaces"
     ],
     "compliance": [
-      "Microsoft sign-in for your team",
-      "Approval steps before payments and other consequential actions",
-      "Documents become reviewed, structured records",
-      "Runs at your own Papyrus address"
+      "Assess applicable handling requirements before deployment",
+      "Customer-hosted operation does not establish compliance or authorization"
     ],
-    "ctaText": "Run your legal back office on Papyrus."
+    "ctaText": "Discuss your back office workflow"
   },
   {
     "slug": "government-defense",
-    "industry": "Public sector",
-    "title": "Agentic ERP for Public Sector Back Offices",
-    "metaDescription": "Papyrus agents handle public sector back-office work: requests, vendor invoices, approvals and records, with people approving what matters.",
-    "heroDescription": "Papyrus agents take requests and vendor invoices in, keep records in one data model and route each decision to the person who owns it.",
+    "industry": "Government",
+    "title": "Government Back Office Automation",
+    "metaDescription": "Explore reviewable administrative requests and audit remediation evidence with customer-hosted back office automation.",
+    "heroDescription": "Use Papyrus to connect administrative requests and audit remediation evidence to existing systems and human-reviewed workflows. These are example patterns, not claims of completed deployments.",
     "useCases": [
       {
-        "title": "Request intake",
-        "description": "Agents turn forms and emails into structured requests and route them to the right team."
+        "title": "Document intake",
+        "description": "Extract structured inputs while retaining source context for review."
       },
       {
-        "title": "Vendor invoices",
-        "description": "Agents match invoices to vendors and records and queue them for approval."
+        "title": "Requests and approvals",
+        "description": "Route work to authorized staff, with explicit handling for exceptions."
       },
       {
-        "title": "Approvals",
-        "description": "Consequential steps wait for an authorized person, with the source attached."
-      },
-      {
-        "title": "Records and evidence",
-        "description": "Documents stay attached to the records they created, ready for review."
+        "title": "Evidence assembly",
+        "description": "Collect source records and review decisions into a traceable work packet."
       }
     ],
     "benefits": [
-      "Requests, vendors, invoices and payments in one data model",
-      "Less rekeying between forms, inboxes and systems of record",
-      "People approve what matters; agents do the routine work"
+      "Reduce repeated data entry where validated automation is appropriate",
+      "Make exceptions and review responsibilities visible",
+      "Connect existing systems through controlled interfaces"
     ],
     "compliance": [
-      "Microsoft sign-in for your team",
-      "Approval steps before payments and other consequential actions",
-      "Documents become reviewed, structured records",
-      "Review your handling requirements before go-live"
+      "Assess applicable handling requirements before deployment",
+      "Customer-hosted operation does not establish compliance or authorization"
     ],
-    "ctaText": "Run your back office on Papyrus."
+    "ctaText": "Discuss your back office workflow"
   }
 ]

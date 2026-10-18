@@ -4,17 +4,17 @@ import { SolutionPage } from '@/components/solution-page'
 
 export const metadata: Metadata = pageMetadata({
   title: "Internal App Factory",
-  description: "Describe a process and Papyrus builds the forms, queues and views your team needs, on the same data model its agents run.",
+  description: "Turn process requirements into useful interfaces, forms and workflows, with human oversight and controls.",
   path: '/solutions/internal-app-factory',
   label: "Internal App Factory",
 })
 
 export default function Page() {
   return <SolutionPage content={{
-    eyebrow: "Papyrus · Internal apps",
-    title: "Apps on your ERP, built by agents.",
-    description: "Describe a process and Papyrus builds the forms, queues and views your team needs, on the same customers, vendors and invoices its agents work with.",
-    result: "From a prompt to an app on your own records.",
-    steps: [{"title":"Describe the workflow","description":"Name the process, the records it touches and the people who own it."},{"title":"Agents build it","description":"Papyrus creates the forms, queues and views on your existing data model."},{"title":"Review and run","description":"Review the changes, publish the app and keep running it at your own Papyrus address."}],
+    eyebrow: "Internal App Factory",
+    title: "Build the internal apps you actually need.",
+    description: "Turn process requirements into useful interfaces, forms and workflows, with human oversight and controls.",
+    result: "From prompts to practical apps",
+    steps: [{"title":"Describe the workflow","description":"Start with a business process, the data it uses, and the people responsible."},{"title":"Build an interface","description":"Create role-aware forms, dashboards and operational interfaces around the process."},{"title":"Validate and operate","description":"Validate generated changes and keep ownership of deployment, access, and operations."}],
   }} />
 }

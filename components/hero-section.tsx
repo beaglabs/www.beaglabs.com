@@ -1,9 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import { useId, useState } from "react"
 import { ArrowRight, Check, LoaderCircle, Mail } from "lucide-react"
 import { HeroBackdrop } from "@/components/hero-backdrop"
-import { TrialCtaLink } from "@/components/trial-cta-link"
 import { analytics } from "@/lib/analytics"
 import { papyrusSignupUrl } from "@/lib/papyrus-links"
 
@@ -43,7 +43,7 @@ export function HeroSection() {
     ? "Enter a work email like you@company.com."
     : state === "error"
       ? "That didn't go through. Check the email and try again."
-      : "One email with your credit code. No card required."
+      : "One email with your credit code · No card required"
 
   return (
     <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#000000] text-[#111]">
@@ -52,7 +52,7 @@ export function HeroSection() {
       {/* Copy sits in a solid card, so the dots stay crisp everywhere else */}
       <div className="relative z-20 mx-auto flex min-h-[calc(100svh-67px)] max-w-[880px] flex-col items-center justify-center px-6 py-20">
         <div className="w-full border-[3px] border-[#111] bg-white px-6 py-10 text-center shadow-[10px_10px_0_#111] sm:px-12 sm:py-12">
-          <span className="nb-label mb-6 inline-block !bg-[#ff5f1f]">Papyrus · Agentic ERP</span>
+          <span className="nb-label mb-6 inline-block !bg-[#ff5f1f]">Papyrus · Customer-hosted software</span>
 
           <h1 className="display-black mb-6 text-[length:min(48px,9.2vw)] leading-[.92] [overflow-wrap:normal] sm:text-[64px] lg:text-[76px]">
             Building the Superintelligent ERP
@@ -99,7 +99,7 @@ export function HeroSection() {
                 >
                   {state === "loading"
                     ? <><LoaderCircle className="h-4 w-4 animate-spin" strokeWidth={3} aria-hidden="true" /> Claiming…</>
-                    : <>Get $1k in Papyrus credit <ArrowRight className="h-4 w-4" strokeWidth={3} aria-hidden="true" /></>}
+                    : <>Get a $1k Papyrus Compute Credit <ArrowRight className="h-4 w-4" strokeWidth={3} aria-hidden="true" /></>}
                 </button>
               </div>
               <p id={hintId} role={problem ? "alert" : undefined} className={`mt-3 font-mono text-[10px] font-bold uppercase tracking-wide ${problem ? "text-[#c2410c]" : "text-[#555]"}`}>
@@ -108,12 +108,12 @@ export function HeroSection() {
             </form>
           )}
 
-          <TrialCtaLink
-            placement="hero"
+          <Link
+            href="/products/papyrus"
             className="mt-6 inline-flex items-center gap-2 border-b-2 border-[#111] pb-0.5 text-[12px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:border-[#ff5f1f] hover:text-[#ff5f1f]"
           >
-            Or go straight to papyrus.beaglabs.com <ArrowRight className="h-3.5 w-3.5" strokeWidth={3} />
-          </TrialCtaLink>
+            Or explore Papyrus first <ArrowRight className="h-3.5 w-3.5" strokeWidth={3} />
+          </Link>
         </div>
       </div>
     </section>
