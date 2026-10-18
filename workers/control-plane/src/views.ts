@@ -374,16 +374,6 @@ const billingButton = (deployment: Deployment, label = 'Manage billing') =>
 
 const NO_USAGE: MonthUsage = { vmHours: 0, executionSeconds: 0 }
 
-const planRows = (deployment: Deployment, usage: MonthUsage | undefined, now = Date.now()) => {
-  const trialing = isTrialing(deployment)
-  return `<div class="kv"><span>Plan</span><span>Papyrus</span></div>
-${trialing ? `<div class="kv"><span>Status</span><span data-trial>${esc(trialStatus(deployment.trial_end, now))}</span></div>` : ''}
-${deployment.billing_state === 'suspended' ? `<div class="kv"><span>Status</span><span>Suspended${deployment.stripe_status ? ` · ${esc(deployment.stripe_status.replace(/_/g, ' '))}` : ''}</span></div>` : ''}
-${deployment.billing_state === 'none' ? `<div class="kv"><span>Trial</span><span>${TRIAL_DAYS} days free</span></div>` : ''}
-<p class="price-summary">${esc(PRICE_SUMMARY)}</p>
-${deployment.billing_state === 'none' ? '' : `<p class="usage">${esc(usageLine(usage ?? NO_USAGE, { platform: deployment.billing_state === 'active' && !trialing }))}</p>`}`
-}
-
 /** Email support, the same card as /support. */
 const helpCard = (account: Account) => supportPageCard(account)
 
@@ -547,16 +537,63 @@ ${credentialForm(provider, input.saved)}
 
 // Billing, Team, Support, Settings ------------------------------------------------------------------------------------
 
+/** Billing keeps per-deployment status and actions together; shared rates appear once. */
+const BILLING_STYLES = `
+.billing{max-width:1380px;margin:0 auto}
+.billing .top{margin-bottom:18px}
+.billing-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.billing-grid>*{min-width:0;box-shadow:4px 4px 0 var(--ink)}
+.billing-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 18px;align-items:center;padding:16px;border-bottom:1px dashed #ccc}
+.billing-row:last-child{border-bottom:0}
+.billing-identity{min-width:0}
+.billing-name{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px}
+.billing-name h3{font:600 14px/1.4 var(--mono);min-width:0;overflow-wrap:anywhere}
+.billing-name a{text-decoration:none}
+.billing-name a:hover{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
+.billing-name a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.billing-status{font-size:13px;color:var(--muted);margin-top:6px;overflow-wrap:anywhere}
+.billing-usage{font:11.5px/1.6 var(--mono);margin-top:9px;overflow-wrap:anywhere}
+.billing-row form{margin:0}
+.billing .card h4{min-height:46px}
+.billing-count{font-weight:400;color:var(--muted)}
+.billing-pricing .body{padding:14px}
+.billing-pricing table.pricing th,.billing-pricing table.pricing td{padding:10px 8px}
+.billing-pricing table.pricing th{font-size:13px}
+.billing-pricing table.pricing th small{font-size:12px}
+.billing-pricing table.pricing .amt{font-size:15px}
+.billing-pricing table.pricing .unit{font-size:10px;white-space:normal}
+.billing-note{font-size:12.5px;line-height:1.55;color:var(--muted);margin-top:12px}
+.billing-empty{padding:20px 16px;color:var(--muted);font-size:14px}
+@media (min-width:901px) and (max-width:1180px){.billing-grid{grid-template-columns:minmax(0,1fr) 310px}.billing-row{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.billing-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.billing-row{grid-template-columns:minmax(0,1fr);padding:14px}.billing-row .btn{width:100%;justify-content:center}.billing .top .right{width:100%}.billing .top .right form,.billing .top .right .btn{width:100%;justify-content:center}}
+`
+
 export const billingPage = (account: Account, deployments: Deployment[], message?: string | null, usage: Record<string, MonthUsage> = {}) => {
-  const cards = deployments.map(
-    (d) => `<div class="card"><h4><span class="mono" style="text-transform:none;word-break:break-all">${esc(deploymentName(d))}</span><span class="accent">${planLabel(d)}</span></h4><div class="body">${planRows(d, usage[d.id])}<div class="actions">${billingButton(d)}</div></div></div>`,
-  )
-  const body = `${pageTop('Billing', 'Plan and invoices')}${notice(message)}
-<div class="tiles">${cards.join('')}<div class="card"><h4>Pricing <span class="accent">${TRIAL_DAYS}-day trial</span></h4><div class="body">
-${pricingTable()}
-<p style="font-size:14px;color:var(--muted);margin-top:12px">One subscription per deployment. Unlimited users. Your card is collected at signup and first charged when the trial ends; usage during the trial is free. Cards and invoices live in the Stripe customer portal.</p>
-<form method="post" action="/billing/checkout" class="actions"><button class="btn${deployments.length ? '' : ' primary'}" type="submit">${deployments.length ? 'Add a deployment' : `Start ${TRIAL_DAYS}-day trial`}</button></form></div></div></div>`
-  return consoleLayout({ title: 'Billing', account, active: 'billing', body })
+  const rows = deployments.map((d) => {
+    const trialing = isTrialing(d)
+    const label = planLabel(d)
+    const status = trialing
+      ? trialStatus(d.trial_end)
+      : d.billing_state === 'none'
+        ? `${TRIAL_DAYS} days free · Start a trial to deploy Papyrus.`
+        : d.billing_state === 'suspended'
+          ? `Suspended${d.stripe_status ? ` · ${d.stripe_status.replace(/_/g, ' ')}` : ''}`
+          : 'Papyrus · Subscription active'
+    return `<article class="billing-row" aria-labelledby="billing-${esc(d.id)}">
+<div class="billing-identity"><div class="billing-name"><h3 id="billing-${esc(d.id)}"><a href="/deploy/${esc(d.id)}">${esc(deploymentName(d))}</a></h3><span class="tag ${d.billing_state === 'suspended' ? 'err' : trialing ? 'run' : d.billing_state === 'active' ? 'ok' : 'wait'}">${esc(label === 'None' ? 'No plan' : label)}</span></div>
+<p class="billing-status"${trialing ? ' data-trial' : ''}>${esc(status)}</p>
+${d.billing_state === 'none' ? '' : `<p class="billing-usage">${esc(usageLine(usage[d.id] ?? NO_USAGE, { platform: d.billing_state === 'active' && !trialing }))}</p>`}</div>
+${billingButton(d)}</article>`
+  })
+  const add = `<form method="post" action="/billing/checkout"><button class="btn${deployments.length ? '' : ' primary'}" type="submit">${deployments.length ? 'Add a deployment' : `Start ${TRIAL_DAYS}-day trial`}</button></form>`
+  const body = `<div class="billing">${pageTop('Billing', 'Plan and invoices', add)}${notice(message)}
+<div class="billing-grid"><section class="card" aria-labelledby="billing-deployments"><h4 id="billing-deployments">Deployments <span class="billing-count">${deployments.length} ${deployments.length === 1 ? 'deployment' : 'deployments'}</span></h4>
+${rows.length ? rows.join('') : '<p class="billing-empty">No deployments yet. Start a trial to create your Papyrus workspace.</p>'}</section>
+<section class="card billing-pricing" aria-labelledby="billing-pricing"><h4 id="billing-pricing">Pricing <span class="accent">${TRIAL_DAYS}-day trial</span></h4><div class="body">${pricingTable()}
+<p class="billing-note">One subscription per deployment. Unlimited users. Usage during the trial is free. Your card is collected at signup and first charged when the trial ends.</p>
+<p class="billing-note">Use <strong>Manage billing</strong> for a deployment to view invoices, update your card, or manage its subscription in Stripe.</p></div></section></div></div>`
+  return consoleLayout({ title: 'Billing', account, active: 'billing', body, styles: BILLING_STYLES })
 }
 
 const day = (iso: string) => {
