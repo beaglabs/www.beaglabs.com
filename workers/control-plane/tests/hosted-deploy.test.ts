@@ -234,6 +234,10 @@ describe('hosted bootstrap', () => {
   it('finds existing resources by name instead of creating duplicates, and waits for the certificate', async () => {
     aws.describeSecurityGroups.mockImplementation(async (input: any) => ({ SecurityGroups: [{ GroupId: `sg-existing-${input.Filters[1].Values[0]}` }] }))
     aws.describeFileSystems.mockImplementation(async () => ({ FileSystems: [{ FileSystemId: 'fs-existing', LifeCycleState: 'available' }] }))
+    // EFS's answer when the file system already has a mount target in that AZ (e.g. after hosted_infra was lost).
+    aws.createMountTarget.mockImplementation(async () => {
+      throw Object.assign(new Error('mount target already exists in this AZ'), { _tag: 'MountTargetConflict' })
+    })
     aws.listCertificates.mockImplementation(async () => ({ CertificateSummaryList: [{ DomainName: '*.papyrus.beaglabs.com', CertificateArn: 'arn:cert/existing', Status: 'PENDING_VALIDATION' }] }))
     aws.describeCertificate.mockImplementation(async () => ({ Certificate: { Status: 'PENDING_VALIDATION', DomainValidationOptions: [{ ResourceRecord: { Name: '_v.papyrus.beaglabs.com.', Value: '_w.acm-validations.aws.' } }] } }))
     aws.describeLoadBalancers.mockImplementation(async () => ({ LoadBalancers: [{ LoadBalancerArn: 'arn:alb/existing', DNSName: 'existing.elb.amazonaws.com' }] }))
@@ -243,7 +247,7 @@ describe('hosted bootstrap', () => {
     const result = await runEffect(bootstrapHosted(hostedProviderContext(env), infra))
     expect(result.status).toBe('pending')
     expect(result.reason).toMatch(/wildcard certificate/)
-    expect(infra).toMatchObject({ albSecurityGroup: 'sg-existing-papyrus-hosted-alb', fileSystemId: 'fs-existing', certificateArn: 'arn:cert/existing', loadBalancerArn: 'arn:alb/existing', httpListenerArn: 'arn:listener/existing-80' })
+    expect(infra).toMatchObject({ albSecurityGroup: 'sg-existing-papyrus-hosted-alb', fileSystemId: 'fs-existing', mountTargets: true, certificateArn: 'arn:cert/existing', loadBalancerArn: 'arn:alb/existing', httpListenerArn: 'arn:listener/existing-80' })
     expect(infra.httpsListenerArn).toBeUndefined()
     for (const create of ['createSecurityGroup', 'createFileSystem', 'requestCertificate', 'createLoadBalancer', 'createListener'] as const) expect(aws[create], create).not.toHaveBeenCalled()
     expect(result.dnsRecords.map((r) => r.name)).toEqual(['_v.papyrus.beaglabs.com', '*.papyrus.beaglabs.com'])
