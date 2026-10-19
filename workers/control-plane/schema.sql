@@ -224,3 +224,18 @@ CREATE TABLE IF NOT EXISTS compute_credit_offers (
   stripe_grant_id TEXT UNIQUE,
   redeemed_at TEXT
 );
+
+-- Durable integration outbox. Create via schema migration before enabling Linear.
+CREATE TABLE IF NOT EXISTS linear_outbox (
+  key TEXT PRIMARY KEY,
+  kind TEXT NOT NULL CHECK (kind IN ('lead','deployment')),
+  account_id TEXT NOT NULL REFERENCES accounts(id),
+  deployment_id TEXT,
+  linear_issue_id TEXT,
+  linear_customer_id TEXT,
+  created_at TEXT NOT NULL,
+  delivered_at TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  next_attempt_at TEXT
+);
+CREATE INDEX IF NOT EXISTS linear_outbox_pending ON linear_outbox(delivered_at,next_attempt_at);
