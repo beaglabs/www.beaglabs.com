@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { CSSProperties } from 'react'
+import { ogImageUrl } from '@/lib/seo'
 import type { BlogPost } from '@/lib/hygraph/types'
 
 interface BlogCardProps {
@@ -18,14 +18,6 @@ function normalizeTags(tags: string[]): string[] {
   })
 }
 
-// Blacksmith-style dotted-grid placeholder for posts without a cover image.
-const DOT_GRID: CSSProperties = {
-  backgroundColor: '#f4f4f2',
-  backgroundImage: 'radial-gradient(#c9c9c4 1.2px, transparent 1.2px)',
-  backgroundSize: '16px 16px',
-  backgroundPosition: '-1px -1px',
-}
-
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -37,31 +29,20 @@ function formatDate(iso: string) {
 function Thumbnail({
   post,
   className = '',
-  chipSize = 'sm',
+
 }: {
   post: BlogPost
   className?: string
-  chipSize?: 'sm' | 'lg'
+
 }) {
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {post.coverImage ? (
-        <img
-          src={post.coverImage.url}
-          alt={post.title}
-          className="h-full w-full object-cover grayscale-[10%] transition-transform duration-500 group-hover:scale-[1.03]"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center" style={DOT_GRID}>
-          <span
-            className={`border-[3px] border-[#111] bg-[#ff5f1f] font-mono font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[4px_4px_0px_0px_#111] ${
-              chipSize === 'lg' ? 'px-5 py-2.5 text-[13px]' : 'px-4 py-2 text-[11px]'
-            }`}
-          >
-            {post.category}
-          </span>
-        </div>
-      )}
+      <img
+        src={ogImageUrl({ title:post.title, description:post.exerpt, label:post.category, date:post.publishedAt })}
+        alt={`Branded cover: ${post.title}`}
+        loading="lazy"
+        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      />
       <span className="absolute right-3 top-3 border-[2px] border-[#111] bg-white px-2 py-1 font-mono text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#111]">
         beaglabs / blog
       </span>
@@ -79,7 +60,6 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
         <article className="nb-card group grid grid-cols-1 overflow-hidden bg-white lg:grid-cols-[1.15fr_1fr]">
           <Thumbnail
             post={post}
-            chipSize="lg"
             className="aspect-[16/10] border-b-[3px] border-[#111] lg:aspect-auto lg:border-b-0 lg:border-r-[3px]"
           />
           <div className="flex flex-col justify-center p-7 lg:p-10">
