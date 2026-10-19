@@ -25,7 +25,7 @@ const robotoCondensed = Roboto_Condensed({
 })
 
 const homeDescription =
-  'Beag Labs helps teams automate documents, create internal apps and modernize legacy workflows with customer-hosted agentic software.'
+  'Papyrus by Beag Labs is an agentic ERP orchestration layer for complex multi-entity operations. Keep existing ERP and legacy systems of record while automating governed workflows.'
 
 const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-10-19-homepage-dots-v1'
 
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs — Document Automation, Internal Apps & Modernization',
+    default: 'Beag Labs | Agentic ERP & Model-Aware Orchestration',
   },
   description:
     homeDescription,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   applicationName: 'Beag Labs',
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: 'Agentic Solutions for SLED and Federal — Beag Labs',
+    title: 'Papyrus Agentic ERP — Beag Labs',
     description: homeDescription,
     url: 'https://beaglabs.com',
     siteName: 'Beag Labs',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
         url: homeOgImage,
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Agentic Solutions for SLED and Federal',
+        alt: 'Beag Labs — Agentic ERP & Model-Aware Orchestration',
         type: 'image/png',
       },
     ],
@@ -91,6 +91,10 @@ const organizationJsonLd = {
   description: homeDescription,
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [
+    'Agentic ERP',
+    'Data-model-aware orchestration',
+    'Multi-entity workflow automation',
+    'ERP system-of-record integration',
     'AI document automation',
     'Agentic internal app factory',
     'Agentic legacy modernization',

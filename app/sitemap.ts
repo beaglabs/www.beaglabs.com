@@ -5,6 +5,8 @@ import { GET_ALL_BLOG_SLUGS, GET_ALL_BLOG_CATEGORIES, GET_ALL_BLOG_TAGS } from '
 const BASE_URL = 'https://beaglabs.com'
 
 const staticRoutes: MetadataRoute.Sitemap = [
+  { url: `${BASE_URL}/agentic-erp`, changeFrequency: 'weekly', priority: 0.95 },
+  ...['numeric','odoo','dynamics-365','netsuite','zapier','n8n'].map(slug => ({ url: `${BASE_URL}/compare/${slug}`, changeFrequency: 'monthly' as const, priority: 0.75 })),
   { url: `${BASE_URL}/solutions/agentic-back-office`, changeFrequency: 'monthly', priority: 0.9 },
   { url: `${BASE_URL}/solutions/agentic-modernization-factory`, changeFrequency: 'monthly', priority: 0.9 },
   { url: `${BASE_URL}/claims`, changeFrequency: 'monthly', priority: 0.6 },
@@ -84,16 +86,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch {}
 
   try {
-    const { comparisons } = await import('@/data/comparisons/comparisons')
-    const { guides, verifiedOnIso } = await import('@/lib/compare')
-    const { platforms, profileSlug } = await import('@/lib/compare')
+    const { verifiedOnIso, platforms, profileSlug } = await import('@/lib/compare')
     dataRoutes.push(...platforms.map((platform) => ({
       url: `${BASE_URL}/products/${profileSlug(platform)}`,
       lastModified: new Date(verifiedOnIso),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })))
-    dataRoutes.push(...guides.map((guide) => ({
+    /* Historical guides have been superseded by ERP-focused comparisons; omit their legacy URLs. */
+    /* dataRoutes.push(...guides.map((guide) => ({
       url: `${BASE_URL}/compare/${guide.slug}`,
       lastModified: new Date(verifiedOnIso),
       changeFrequency: 'monthly' as const,
@@ -103,7 +104,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${BASE_URL}/compare/${c.slug}`,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
-    })))
+    }))) */
   } catch {}
 
   const { claims } = await import('@/lib/claims')

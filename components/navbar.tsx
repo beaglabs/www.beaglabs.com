@@ -10,6 +10,7 @@ import {
 
 const GROUPS = [
   { name: 'Solutions', links: [
+    { title: 'Agentic ERP', href: '/agentic-erp', description: 'The data-model-aware operating layer above your existing systems of record.' },
     { title: 'Agentic Back Office', href: '/solutions/agentic-back-office', description: 'Document work, decisions, and governed tools.' },
     { title: 'Modernization Factory', href: '/solutions/agentic-modernization-factory', description: 'Follow the terminal-to-browser workflow.' },
     { title: 'Document Automation', href: '/solutions/document-automation', description: 'Turn documents into structured, actionable workflows.' },
@@ -18,7 +19,7 @@ const GROUPS = [
     { title: 'Use Cases', href: '/use-cases', description: 'Explore industry workflows.' },
   ] },
   { name: 'Explore', links: [
-    { title: 'Papyrus', href: '/products/papyrus', description: 'See the agentic modernization factory.' },
+    { title: 'Papyrus', href: '/products/papyrus', description: 'Explore model-aware Agentic ERP orchestration.' },
     { title: 'Capabilities', href: '/capabilities', description: 'Explore technical capabilities.' },
     { title: 'Trust & Security', href: '/trust/papyrus', description: 'Review the Papyrus trust model.' },
   ] },
