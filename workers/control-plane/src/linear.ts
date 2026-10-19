@@ -97,12 +97,14 @@ export const flushLinearOutbox = () => Effect.gen(function* () {
           const businessDomain=domain && !personalDomain.has(domain)?domain:null
           const orgName=account.organization?.trim() || (businessDomain?cleanName(businessDomain):'Unverified organization')
           const base=`**Organization:** ${orgName}\n**Email domain:** ${domain || 'Unknown'}\n**Contact:** ${account.name ?? 'Not supplied'} (${account.email})\n**Control-plane account:** ${account.id}\n**Website candidate:** ${businessDomain ? 'https://'+businessDomain : 'Not established (personal email)'}\n\n**Linear Agent research brief:** Research the company using its public domain. Establish industry, location, employee range, and relevant enterprise software only when supported by citations. Add sourced findings to this issue; clearly mark uncertainties. Never invent company or contact details.\n`
-          // Optional: land issues in a specific status (e.g. Todo instead of the team's default Backlog) and assign them.
-          const routing={stateId:env.LINEAR_ISSUE_STATE_ID||undefined,assigneeId:env.LINEAR_ASSIGNEE_ID||undefined}
+          // High priority (Linear: 1 urgent, 2 high, 3 medium, 4 low); optional status (e.g. Todo instead of the team's default Backlog). The assignee is also subscribed.
+          const assigneeId=env.LINEAR_ASSIGNEE_ID||undefined
+          const routing={priority:2,stateId:env.LINEAR_ISSUE_STATE_ID||undefined,assigneeId,subscriberIds:assigneeId?[assigneeId]:undefined}
+          const labels=(...ids:Array<string|undefined>)=>{const set=ids.filter((id):id is string=>!!id); return set.length?set:undefined}
           let issueId=job.linear_issue_id
           if(job.kind==='lead') {
             if(!issueId){
-              const result=await gql(env,ISSUE,{input:{...routing,teamId:env.LINEAR_TEAM_ID,title:'New Lead | '+domain,description:base+'\n**Interest:** $1,000 Papyrus compute credit requested and account created.\n**Next steps:** Qualify organization, validate fit, and follow up.'}})
+              const result=await gql(env,ISSUE,{input:{...routing,teamId:env.LINEAR_TEAM_ID,title:'New Lead | '+domain,description:base+'\n**Interest:** $1,000 Papyrus compute credit requested and account created.\n**Next steps:** Qualify organization, validate fit, and follow up.',labelIds:labels(env.LINEAR_SALES_PIPELINE_LABEL_ID)}})
               if(!result.issueCreate?.success) throw new Error('Linear issueCreate unsuccessful')
               issueId=result.issueCreate.issue.id
               await execute('UPDATE linear_outbox SET linear_issue_id = ? WHERE key = ?',issueId,job.key)
@@ -111,7 +113,8 @@ export const flushLinearOutbox = () => Effect.gen(function* () {
             const deploymentId=job.deployment_id!
             let customerId=job.linear_customer_id
             if(!customerId) {
-              const input:Record<string,unknown>={name:orgName,externalIds:[account.id]}
+              // CustomerUpsertInput takes a single externalId (externalIds exists only on customerCreate/customerUpdate).
+              const input:Record<string,unknown>={name:orgName,externalId:account.id}
               if(businessDomain) input.domains=[businessDomain]
               const customer=await gql(env,UPSERT,{input})
               if(!customer.customerUpsert?.success) throw new Error('Linear customerUpsert unsuccessful')
@@ -119,7 +122,7 @@ export const flushLinearOutbox = () => Effect.gen(function* () {
               await execute('UPDATE linear_outbox SET linear_customer_id = ? WHERE key = ?',customerId,job.key)
             }
             if(!issueId){
-              const issue=await gql(env,ISSUE,{input:{...routing,teamId:env.LINEAR_TEAM_ID,title:`New Deployment - ${orgName} @ ${deploymentId}`,description:base+`\n**First deployment:** ${deploymentId}\n**Status:** Deployment created after verified Stripe checkout.\n**Follow-up:** Confirm provisioning and onboarding.`,labelIds:env.LINEAR_NEW_CUSTOMER_LABEL_ID?[env.LINEAR_NEW_CUSTOMER_LABEL_ID]:undefined}})
+              const issue=await gql(env,ISSUE,{input:{...routing,teamId:env.LINEAR_TEAM_ID,title:`New Deployment - ${orgName} @ ${deploymentId}`,description:base+`\n**First deployment:** ${deploymentId}\n**Status:** Deployment created after verified Stripe checkout.\n**Follow-up:** Confirm provisioning and onboarding.`,labelIds:labels(env.LINEAR_NEW_CUSTOMER_LABEL_ID,env.LINEAR_SALES_PIPELINE_LABEL_ID)}})
               if(!issue.issueCreate?.success) throw new Error('Linear issueCreate unsuccessful')
               issueId=issue.issueCreate.issue.id
               await execute('UPDATE linear_outbox SET linear_issue_id = ? WHERE key = ?',issueId,job.key)
