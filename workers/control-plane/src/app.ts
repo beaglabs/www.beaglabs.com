@@ -1,4 +1,5 @@
 import * as Effect from 'effect/Effect'
+import { wakeLinearSync } from './linear-sync'
 import { flushLinearOutbox, reconcileLinearOutbox } from './linear'
 import * as Exit from 'effect/Exit'
 import * as Cause from 'effect/Cause'
@@ -220,6 +221,7 @@ export function createApp(deps: AppDeps = {}) {
     try { body = await c.req.json() } catch { return c.json({ error: 'Invalid email' }, 400) }
     const result = await exec(c, requestComputeCredit(typeof body.email === 'string' ? body.email : ''))
     if (Exit.isFailure(result)) { const failure = userError(result)!; return c.json({ error: failure.message }, failure.status as 400) }
+    c.executionCtx.waitUntil(wakeLinearSync(c.env).catch(error => console.error('Linear wake failed', error instanceof Error ? error.message : String(error))))
     return c.json(result.value, 200, { 'cache-control': 'no-store' })
   })
 
