@@ -7,8 +7,8 @@ export const runtime = 'edge'
 
 export async function GET() {
   return renderOgImage({
-    title: HOME_OG.title,
-    description: 'Papyrus: the agentic modernization factory. Document automation, internal apps and legacy modernization, customer-hosted.',
+    title: 'Papyrus Agentic ERP',
+    description: 'Data-model-aware orchestration, enterprise Classes, durable agents and governed workflows over existing systems of record.',
     label: 'PAPYRUS',
   })
 }
