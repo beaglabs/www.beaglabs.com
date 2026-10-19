@@ -10,14 +10,11 @@ import {
 } from '@/components/ui/navigation-menu'
 
 const GROUPS = [
-  { name: 'Solutions', links: [
-    { title: 'Agentic ERP', href: '/agentic-erp', description: 'The data-model-aware operating layer above your existing systems of record.' },
-    { title: 'Agentic Back Office', href: '/solutions/agentic-back-office', description: 'Document work, decisions, and governed tools.' },
-    { title: 'Modernization Factory', href: '/solutions/agentic-modernization-factory', description: 'Follow the terminal-to-browser workflow.' },
-    { title: 'Document Automation', href: '/solutions/document-automation', description: 'Turn documents into structured, actionable workflows.' },
-    { title: 'Internal App Factory', href: '/solutions/internal-app-factory', description: 'Create governed internal applications.' },
-    { title: 'Agentic Modernization', href: '/solutions/agentic-modernization', description: 'Modernize existing processes and legacy interfaces.' },
-    { title: 'Use Cases', href: '/use-cases', description: 'Explore industry workflows.' },
+  { name: 'Explore', links: [
+    { title: 'Agentic ERP', href: '/agentic-erp', description: 'Model-aware orchestration across your existing systems of record.' },
+    { title: 'Papyrus', href: '/products/papyrus', description: 'Explore Papyrus and its Classes, agents, and workflows.' },
+    { title: 'Capabilities', href: '/capabilities', description: 'Explore technical capabilities.' },
+    { title: 'Trust & Security', href: '/trust/papyrus', description: 'Review the Papyrus trust model.' },
   ] },
   { name: 'Resources', links: [
     { title: 'Blog', href: '/blog', description: 'Ideas, announcements, and engineering notes.' },
