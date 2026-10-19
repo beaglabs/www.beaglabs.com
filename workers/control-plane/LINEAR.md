@@ -11,7 +11,7 @@ The control plane queues lifecycle events in `linear_outbox` (D1). A singleton `
 ## Customers
 Every account in the sales pipeline (a claimed compute credit, or a deployment that has been through Checkout) is a Linear customer, kept up to date on each Linear sync (every wake-up and the five-minute cron) from `linear_customers`:
 - **One customer per organization:** accounts sharing a business email domain share a customer (`externalId` `domain:<domain>`); personal email addresses get their own (`account:<id>`).
-- **Name, domain, owner:** the signup organization (else the domain), the business domain, and `LINEAR_ASSIGNEE_ID` as owner.
+- **Name, domain, logo, owner:** the signup organization (else the domain), the business domain, its logo from logo.dev (`LOGO_DEV_TOKEN`; personal addresses get none), and `LINEAR_ASSIGNEE_ID` as owner.
 - **Status:** **Active** while any of its deployments is billed (active or suspended) and not deleted, **Churned** once it has paid but nothing is billed, otherwise **Prospect**. Create statuses with exactly these names under Settings → Customer requests; a missing one is logged and left unset.
 - Only customers whose attributes changed call Linear. Billing webhooks and account settings changes wake the sync, so updates land within seconds.
 - Lead and first-deployment issues are linked to their customer as a customer request, so they show on the customer page.

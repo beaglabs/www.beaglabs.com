@@ -13,13 +13,16 @@ export const customerKeyOf = (account: Pick<Org,'id'|'email'>) => { const domain
 
 export type CustomerStatusName = 'Prospect' | 'Active' | 'Churned'
 type PipelineAccount = Org & { active: number; paid: number }
-export type CustomerAttributes = { externalId: string; name: string; domains?: string[]; ownerId?: string; status: CustomerStatusName }
+export type CustomerAttributes = { externalId: string; name: string; domains?: string[]; logoUrl?: string; ownerId?: string; status: CustomerStatusName }
+
+/** logo.dev serves the company logo for a domain; the token is a publishable key meant for image URLs. */
+export const logoUrlOf = (domain: string, token: string) => `https://img.logo.dev/${encodeURIComponent(domain)}?token=${encodeURIComponent(token)}`
 
 /**
  * What Linear should hold for each customer, from D1: Active while any of its deployments is billed (active or suspended)
  * and not deleted, Churned once it has paid but nothing is billed any more, otherwise Prospect (signed up, credit claimed).
  */
-export const customerAttributes = (accounts: PipelineAccount[], ownerId?: string): Map<string, CustomerAttributes> => {
+export const customerAttributes = (accounts: PipelineAccount[], ownerId?: string, logoToken?: string): Map<string, CustomerAttributes> => {
   const groups=new Map<string,PipelineAccount[]>()
   for(const account of accounts){ const key=customerKeyOf(account); groups.set(key,[...(groups.get(key)??[]),account]) }
   const result=new Map<string,CustomerAttributes>()
@@ -29,7 +32,7 @@ export const customerAttributes = (accounts: PipelineAccount[], ownerId?: string
     const named=members.find(m=>m.organization?.trim())
     const name=named?.organization!.trim() ?? (domain?cleanName(domain):members[0]!.name?.trim() || members[0]!.email)
     const status:CustomerStatusName=members.some(m=>m.active)?'Active':members.some(m=>m.paid)?'Churned':'Prospect'
-    result.set(key,{externalId:key,name,...(domain?{domains:[domain]}:{}),...(ownerId?{ownerId}:{}),status})
+    result.set(key,{externalId:key,name,...(domain?{domains:[domain]}:{}),...(domain&&logoToken?{logoUrl:logoUrlOf(domain,logoToken)}:{}),...(ownerId?{ownerId}:{}),status})
   }
   return result
 }
@@ -132,7 +135,7 @@ export const flushLinearOutbox = () => Effect.gen(function* () {
       const accounts=(await db.prepare(PIPELINE).all<PipelineAccount>()).results??[]
       const synced=new Map(((await db.prepare('SELECT customer_key,linear_customer_id,synced FROM linear_customers').all<{customer_key:string;linear_customer_id:string|null;synced:string|null}>()).results??[]).map(row=>[row.customer_key,row]))
       let statusIds:Map<string,string>|null=null
-      for(const [key,attributes] of customerAttributes(accounts,env.LINEAR_ASSIGNEE_ID||undefined)){
+      for(const [key,attributes] of customerAttributes(accounts,env.LINEAR_ASSIGNEE_ID||undefined,env.LOGO_DEV_TOKEN||undefined)){
         try {
           statusIds??=new Map(((await gql(env,STATUSES,{})).customerStatuses?.nodes??[]).map((s:{id:string;name:string})=>[s.name.toLowerCase(),s.id]))
           const statusId=statusIds.get(attributes.status.toLowerCase())

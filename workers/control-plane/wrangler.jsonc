@@ -38,6 +38,8 @@
     "AWS_CONNECT_TEMPLATE_URL": "https://beaglabs-public.s3.us-east-2.amazonaws.com/connect-aws.yaml",
     // Bring-your-own-cloud is off: "true" turns it on for every account (else per account in D1 account_flags).
     "BYOC_ENABLED": "false",
+    // logo.dev publishable key (made for image URLs, so not a secret): Linear customers' logos.
+    "LOGO_DEV_TOKEN": "pk_PJhuwvcfSPKKCJJxJcElsQ",
     // Hosted by Beag Labs: the Connect AWS stack deployed once into Beag Labs' own account (README → Hosted setup).
     "HOSTED_AWS_ROLE_ARN": "arn:aws:iam::615583899145:role/BeagLabsPapyrusControlPlane",
     "HOSTED_AWS_REGION": "us-east-2",

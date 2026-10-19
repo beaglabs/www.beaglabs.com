@@ -54,7 +54,7 @@ describe('Linear customer sync', () => {
   }
 
   const setup = () => {
-    const h = harness({ env: { LINEAR_API_KEY: 'lin_x', LINEAR_TEAM_ID: 'team_1', LINEAR_ASSIGNEE_ID: 'user_james' } })
+    const h = harness({ env: { LINEAR_API_KEY: 'lin_x', LINEAR_TEAM_ID: 'team_1', LINEAR_ASSIGNEE_ID: 'user_james', LOGO_DEV_TOKEN: 'pk_test' } })
     h.insertAccount('acct_1', 'dana@acme.com')
     h.sql.prepare("INSERT INTO compute_credit_offers (email, code_hash, code_ciphertext, issued_at) VALUES ('dana@acme.com', 'h', 'c', 'now')").run()
     return h
@@ -64,7 +64,7 @@ describe('Linear customer sync', () => {
     const h = setup()
     const linear = fakeLinear()
     await scheduledLinear(h.env)
-    expect(linear.upserts()).toEqual([{ externalId: 'domain:acme.com', name: 'Acme', domains: ['acme.com'], ownerId: 'user_james', statusId: 'st_prospect' }])
+    expect(linear.upserts()).toEqual([{ externalId: 'domain:acme.com', name: 'Acme', domains: ['acme.com'], logoUrl: 'https://img.logo.dev/acme.com?token=pk_test', ownerId: 'user_james', statusId: 'st_prospect' }])
     const need = linear.calls.find((c) => c.query.includes('customerNeedCreate'))!
     expect(need.variables.input).toMatchObject({ issueId: 'issue_1', customerId: 'cust_1' })
     expect(h.sql.prepare("SELECT delivered_at, linear_customer_id FROM linear_outbox WHERE key = 'lead:acct_1'").get()).toMatchObject({ linear_customer_id: 'cust_1' })
