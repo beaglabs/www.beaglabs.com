@@ -303,7 +303,7 @@ export const buildDeploymentView = (deployment: Deployment, ctx: ViewContext): D
     failure = { stage: failedMilestone.label, message: failedMilestone.detail, recovery: recovery.filter((id) => summary.actions.some((a) => a.id === id)) }
   }
 
-  // Offered from the first deploy (Papyrus registered) until the step passes; the step itself passes once it can run.
+  // Routes reconcile this status from the Microsoft binding independently of infrastructure readiness.
   const microsoft: MicrosoftConnectView | null =
     !deleting && deployment.license_deployment_id && deployment.steps.microsoft.status !== 'pass'
       ? { href: `/deploy/${encodeURIComponent(deployment.id)}/microsoft/connect`, termsAccepted: Boolean(ctx.termsAccepted), termsUrl: LEGAL.termsUrl, privacyUrl: LEGAL.privacyUrl }

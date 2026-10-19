@@ -2,9 +2,9 @@
  * The setup page's step state machine. Pure: the routes load a deployment's steps, run one step, record its outcome
  * here and save the result.
  *
- * Steps run in order. A step may run only when every earlier step has passed. Recording any outcome other than a pass
- * resets every later step to pending, so a changed deploy (or a DNS record that disappeared) has to be re-verified
- * downstream. Done when all steps pass.
+ * Infrastructure steps run in order. Microsoft identity is independent: it can be verified before the container is
+ * ready and stays connected across infrastructure retries. Other downstream checks reset when an earlier step fails.
+ * Done when all steps pass.
  */
 
 export const STEP_IDS = ['connect', 'deploy', 'dns', 'health', 'microsoft', 'registration'] as const
@@ -70,8 +70,8 @@ export const isStepId = (value: string): value is StepId => (STEP_IDS as readonl
 
 const indexOf = (id: StepId) => STEP_IDS.indexOf(id)
 
-/** A step may run when every earlier step has passed. */
-export const canRun = (steps: Steps, id: StepId): boolean => STEP_IDS.slice(0, indexOf(id)).every((earlier) => steps[earlier].status === 'pass')
+/** Microsoft can be checked independently; infrastructure steps require every earlier step to pass. */
+export const canRun = (steps: Steps, id: StepId): boolean => id === 'microsoft' || STEP_IDS.slice(0, indexOf(id)).every((earlier) => steps[earlier].status === 'pass')
 
 /** The first step that has not passed, or null when setup is done. */
 export const nextStep = (steps: Steps): StepId | null => STEP_IDS.find((id) => steps[id].status !== 'pass') ?? null
@@ -80,20 +80,20 @@ export const isDone = (steps: Steps): boolean => nextStep(steps) === null
 
 /**
  * Record a step's outcome. Throws if the step was not allowed to run (callers check `canRun` first).
- * Anything but a pass resets every later step to pending.
+ * Anything but a pass resets later readiness checks, preserving the independent Microsoft connection.
  */
 export const record = (steps: Steps, id: StepId, outcome: StepOutcome, now = new Date()): Steps => {
   if (!canRun(steps, id)) throw new Error(`Step ${id} cannot run before earlier steps pass`)
   const next: Steps = { ...steps, [id]: { status: outcome.status, ...(outcome.reason ? { reason: outcome.reason } : {}), at: now.toISOString() } }
   if (outcome.status !== 'pass') {
-    for (const later of STEP_IDS.slice(indexOf(id) + 1)) next[later] = { status: 'pending' }
+    for (const later of STEP_IDS.slice(indexOf(id) + 1)) if (later !== 'microsoft') next[later] = { status: 'pending' }
   }
   return next
 }
 
-/** Reset a step and everything after it (e.g. the customer changed provider credentials or hostname). */
+/** Reset infrastructure readiness without discarding Microsoft identity; an explicit Microsoft reset clears it. */
 export const resetFrom = (steps: Steps, id: StepId): Steps => {
   const next = { ...steps }
-  for (const later of STEP_IDS.slice(indexOf(id))) next[later] = { status: 'pending' }
+  for (const later of STEP_IDS.slice(indexOf(id))) if (later !== 'microsoft' || id === 'microsoft') next[later] = { status: 'pending' }
   return next
 }

@@ -10,9 +10,11 @@ import { hostedOrgFor } from './hosted'
 import { LEGAL } from './legal'
 import type { IdentityPayload, SignedIdentity } from './license-rpc'
 import { license } from './runner'
-import { Env, UserError, first, getDeployment, nowIso, run, saveProgress, type Account, type Deployment } from './services'
-import { canRun, record } from './setup'
+import { bindingFor, syncMicrosoftConnection, type MicrosoftBinding } from './microsoft-binding'
+import { Env, UserError, first, getDeployment, nowIso, run, type Account, type Deployment } from './services'
 import { authenticateDeployment } from './status'
+
+export { bindingFor, type MicrosoftBinding } from './microsoft-binding'
 
 /**
  * One-click Connect Microsoft: papyrus.beaglabs.com brokers Microsoft Entra sign-in for Papyrus deployments with one
@@ -104,18 +106,6 @@ export const acceptTerms = (deployment: Pick<Deployment, 'id' | 'hostname'>, acc
 
 // Bindings and transactions -------------------------------------------------------------------------------------------
 
-export interface MicrosoftBinding {
-  deployment_id: string
-  license_deployment_id: string
-  tenant_id: string
-  owner_oid: string
-  owner_name: string | null
-  owner_email: string | null
-  bound_at: string
-}
-
-export const bindingFor = (deploymentId: string) => first<MicrosoftBinding>('SELECT * FROM microsoft_bindings WHERE deployment_id = ?', deploymentId)
-
 interface Transaction {
   id: string
   kind: 'consent' | 'portal'
@@ -199,10 +189,11 @@ const authorizeUrl = (txn: Pick<Transaction, 'id' | 'tenant_id'>) =>
 export const startConsent = (deployment: Deployment, account: Account) =>
   Effect.gen(function* () {
     const env = yield* Env
-    const client = yield* microsoftClient
     if (deployment.lifecycle === 'deleting' || deployment.lifecycle === 'deleted') return yield* new UserError({ message: 'This deployment was deleted.', status: 409 })
     if (!deployment.license_deployment_id) return yield* new UserError({ message: 'Deploy first. Connect Microsoft once Papyrus is deployed.', status: 409 })
     if (!(yield* termsFor(deployment.id))) return yield* new UserError({ message: 'Accept the Terms of Service and Privacy Policy first.', status: 409 })
+    if (yield* syncMicrosoftConnection(deployment)) return `/deploy/${deployment.id}`
+    const client = yield* microsoftClient
     const id = yield* createTransaction({ kind: 'consent', deployment_id: deployment.id, account_id: account.id, phase: 'consent' })
     return adminConsentUrl(client.id, callbackUrl(env), id)
   })
@@ -324,11 +315,7 @@ const finishConsent = (txn: Transaction, profile: Profile, account: Account) =>
       nowIso(),
     )
     const owner = ownerLabel(profile)
-    // The step passes now when it can run; otherwise the automatic check finds the binding when it gets there.
-    if (deployment.lifecycle === 'running' && canRun(deployment.steps, 'microsoft') && deployment.steps.microsoft.status !== 'pass') {
-      deployment.steps = record(deployment.steps, 'microsoft', { status: 'pass', reason: `Microsoft connected · ${owner} is System Owner` })
-      yield* saveProgress(deployment)
-    }
+    yield* syncMicrosoftConnection(deployment)
     const org = domainOf(email ?? undefined)
     yield* logEvent({ accountId: account.id, deploymentId: deployment.id, level: 'ok', source: 'microsoft', message: ['Microsoft connected', org, `${owner} is System Owner`].filter(Boolean).join(' · ') })
     return { kind: 'redirect', url: `/deploy/${deployment.id}` } satisfies CallbackResult
