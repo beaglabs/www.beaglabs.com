@@ -1,12 +1,12 @@
 # Linear control-plane lifecycle automation
 
-The control plane queues lifecycle events in `linear_outbox` (D1). The existing hourly scheduled Worker processes queued events with exponential backoff. The integration never blocks signup, credit issuance, or deployment checkout.
+The control plane queues lifecycle events in `linear_outbox` (D1). A five-minute scheduled Worker reconciles missing lifecycle jobs from the accounts, compute-credit, and deployments tables, then processes queued events with exponential backoff. Billing/metering remains on its separate hourly schedule. The integration never blocks signup, credit issuance, or deployment checkout.
 
 ## Setup
 1. Apply the updated `schema.sql` to the control-plane D1 database **before** deploying the Worker (using the existing D1 schema deployment procedure). Verify `linear_outbox` exists.
 2. In Linear, obtain the target team's UUID and create or identify an issue label **New Customer**. Obtain that label's UUID.
 3. Configure `LINEAR_TEAM_ID` and `LINEAR_NEW_CUSTOMER_LABEL_ID` as Worker environment variables (or secrets). Add `LINEAR_API_KEY` via `wrangler secret put LINEAR_API_KEY --config workers/control-plane/wrangler.jsonc` from the repository root (or the deployment pipeline's equivalent secret-management method). Never put the key in source or `vars`.
-4. Deploy the control-plane Worker and confirm cron execution. If any of the three settings is absent, the outbox remains queued without outbound API requests.
+4. Deploy the control-plane Worker and confirm both cron triggers are active (`*/5 * * * *` for Linear, `5 * * * *` for billing). If any of the three settings is absent, the outbox remains queued without outbound API requests.
 
 ## Events
 - An email requesting a compute credit **and** a verified control-plane account produces one issue titled `New Lead | {emailDomain}` keyed by account ID, regardless of whether the credit request or signup occurs first.
@@ -19,4 +19,4 @@ The control plane queues lifecycle events in `linear_outbox` (D1). The existing 
 - Do not send login tokens, credit codes, payment credentials, or confidential deployment settings to Linear.
 - Public/free email domains are not added to Linear Customer domains.
 - Inspect outstanding jobs: `SELECT key,kind,attempts,next_attempt_at,linear_issue_id,linear_customer_id FROM linear_outbox WHERE delivered_at IS NULL;`
-- The scheduler runs hourly (at minute 5), so issue creation is not instantaneous.
+- The Linear scheduler runs every five minutes. Existing missed events are backfilled automatically, including older credit-request + verified-account pairs and the oldest first active deployment per account. No account or credit event is produced for a mere unverified email signup. Retry delays can be longer than five minutes after repeated API errors.
