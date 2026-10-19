@@ -1,5 +1,5 @@
 export const BASE_URL = 'https://beaglabs.com'
-const OG_IMAGE_VERSION = '2026-10-12-sled-federal-v2'
+const OG_IMAGE_VERSION = '2026-10-19-homepage-dots-v1'
 
 export function canonical(path: string) {
   return {
