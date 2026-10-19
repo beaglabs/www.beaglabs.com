@@ -258,6 +258,37 @@ export interface HostedRecipeOptions {
   architecture?: CpuArchitecture
 }
 
+/**
+ * The listener rule priority for a hostname: the org's slot when free, else the lowest free one. The listener can hold
+ * rules D1 no longer knows about (hosted_orgs restarted at slot 1 after a database move), so the slot alone can clash.
+ * An older rule for the same hostname must come after ours (lower number wins); the role cannot modify or delete it.
+ */
+const rulePriority = (listenerArn: string, hostname: string, slot: number) =>
+  Effect.gen(function* () {
+    const used = new Set<number>()
+    let sameHost: number | null = null
+    let marker: string | undefined
+    do {
+      const page = yield* Elb.describeRules({ ListenerArn: listenerArn, PageSize: 400, ...(marker ? { Marker: marker } : {}) }).pipe(Effect.mapError(providerError('Reading the listener rules failed')))
+      for (const rule of page.Rules ?? []) {
+        const priority = Number(rule.Priority)
+        if (!Number.isInteger(priority)) continue // the default rule
+        used.add(priority)
+        const hosts = (rule.Conditions ?? []).flatMap((c) => (c.Field === 'host-header' ? (c.HostHeaderConfig?.Values ?? c.Values ?? []) : []))
+        if (hosts.includes(hostname)) sameHost = Math.min(sameHost ?? priority, priority)
+      }
+      marker = page.NextMarker
+    } while (marker)
+    let priority = slot
+    if (used.has(priority) || (sameHost !== null && priority > sameHost)) {
+      priority = 1
+      while (used.has(priority)) priority++
+    }
+    if (sameHost !== null && priority > sameHost)
+      return yield* new ProviderError({ message: `${hostname} is still routed by an older listener rule (priority ${sameHost}). Delete that rule in AWS, then retry.` })
+    return priority
+  })
+
 /** Per-customer hosted deploy: everything in one pass (the shared HTTPS listener and wildcard certificate already exist). */
 export const hostedDeploy = (ctx: DeployContext, infra: HostedInfra, org: HostedOrgInput, options: HostedRecipeOptions = {}) =>
   Effect.gen(function* () {
@@ -309,13 +340,16 @@ export const hostedDeploy = (ctx: DeployContext, infra: HostedInfra, org: Hosted
       yield* remember(
         ctx,
         'listenerRuleArn',
-        Elb.createRule({
-          ListenerArn: infra.httpsListenerArn!,
-          Priority: org.slot,
-          Conditions: [{ Field: 'host-header', HostHeaderConfig: { Values: [hostname] } }],
-          Actions: [{ Type: 'forward', TargetGroupArn: targetGroupArn }],
-          Tags: tags(ctx),
-        }).pipe(Effect.mapError(fail('Routing the hostname failed'))),
+        Effect.gen(function* () {
+          const priority = yield* rulePriority(infra.httpsListenerArn!, hostname, org.slot)
+          return yield* Elb.createRule({
+            ListenerArn: infra.httpsListenerArn!,
+            Priority: priority,
+            Conditions: [{ Field: 'host-header', HostHeaderConfig: { Values: [hostname] } }],
+            Actions: [{ Type: 'forward', TargetGroupArn: targetGroupArn }],
+            Tags: tags(ctx),
+          }).pipe(Effect.mapError(fail('Routing the hostname failed')))
+        }),
         (out) => out.Rules?.[0]?.RuleArn,
       )
 
