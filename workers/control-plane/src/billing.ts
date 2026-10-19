@@ -1,4 +1,5 @@
 import * as Stripe from '@distilled.cloud/stripe'
+import { enqueueFirstDeployment } from './linear'
 import { CreateBillingPortalSession, CreateCheckoutSession, DeleteSubscription, GetCheckoutSession, GetSubscription } from '@distilled.cloud/stripe/stripe'
 import { constructEvent, type StripeEvent } from '@distilled.cloud/stripe/Webhooks'
 import * as Effect from 'effect/Effect'
@@ -183,7 +184,10 @@ const completeCheckoutSession = (session: CheckoutObject, intent: CheckoutIntent
     const created = yield* run('INSERT OR IGNORE INTO deployments (id, account_id, steps, stripe_customer_id, stripe_subscription_id, stripe_status, billing_state, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', intent.deployment_id, intent.account_id, JSON.stringify(initialSteps()), customerId, subscriptionId, subscription.status, 'active', nowIso(), nowIso())
     if (!created) yield* run("UPDATE deployments SET stripe_customer_id = ?, stripe_subscription_id = ?, stripe_status = ?, billing_state = 'active', updated_at = ? WHERE id = ? AND account_id = ?", customerId, subscriptionId, subscription.status, nowIso(), intent.deployment_id, intent.account_id)
     if (typeof subscription.trial_end === 'number') yield* saveTrialEnd(intent.deployment_id, new Date(subscription.trial_end * 1000).toISOString())
-    if (created) yield* logEvent({ accountId: intent.account_id, deploymentId: intent.deployment_id, level: 'ok', source: 'billing', message: 'Billing setup completed · deployment created' })
+    if (created) {
+      yield* logEvent({ accountId: intent.account_id, deploymentId: intent.deployment_id, level: 'ok', source: 'billing', message: 'Billing setup completed · deployment created' })
+      yield* enqueueFirstDeployment(intent.account_id, intent.deployment_id)
+    }
     return intent.deployment_id
   })
 
