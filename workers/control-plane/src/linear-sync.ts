@@ -1,3 +1,4 @@
+import { DurableObject } from 'cloudflare:workers'
 import type { Bindings } from './env'
 import { scheduledLinear } from './app'
 
