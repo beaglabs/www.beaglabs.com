@@ -14,13 +14,13 @@
   // Accounts, sessions, deployments, encrypted provider credentials, setup progress.
   // Create once: wrangler d1 create papyrus-control-plane, then paste the id here.
   "d1_databases": [
-    { "binding": "DB", "database_name": "papyrus-control-plane", "database_id": "d92c7f96-60a2-41e0-bd4b-373510d14ac1" }
+    { "binding": "DB", "database_name": "papyrus-control-plane", "database_id": "c5613d14-f01e-4c06-b8ae-058e0a02d419" }
   ],
   // Deployment rows, deployment keys and the Key Vault signer stay in the license Worker.
   "services": [{ "binding": "LICENSE", "service": "beaglabs-license", "entrypoint": "LicenseRpc" }],
   // Live Activity: one ActivityHub per account (idFromName(accountId)), hibernatable WebSockets at /api/events/live.
-  "durable_objects": { "bindings": [{ "name": "ACTIVITY", "class_name": "ActivityHub" }] },
-  "migrations": [{ "tag": "v1-activity-hub", "new_sqlite_classes": ["ActivityHub"] }],
+  "durable_objects": { "bindings": [{ "name": "ACTIVITY", "class_name": "ActivityHub" }, { "name": "LINEAR_SYNC", "class_name": "LinearSync" }] },
+  "migrations": [{ "tag": "v1-activity-hub", "new_sqlite_classes": ["ActivityHub"] }, { "tag": "v2-linear-sync", "new_sqlite_classes": ["LinearSync"] }],
   // Browser-preview screenshots are off (no BROWSER/PREVIEWS bindings): deployment pages link directly to the environment.
   // To turn them on: Workers Paid plan, `wrangler r2 bucket create papyrus-control-plane-previews`, then add
   //   "browser": { "binding": "BROWSER" }, "r2_buckets": [{ "binding": "PREVIEWS", "bucket_name": "papyrus-control-plane-previews" }]

@@ -1,12 +1,12 @@
 # Linear control-plane lifecycle automation
 
-The control plane queues lifecycle events in `linear_outbox` (D1). A five-minute scheduled Worker reconciles missing lifecycle jobs from the accounts, compute-credit, and deployments tables, then processes queued events with exponential backoff. Billing/metering remains on its separate hourly schedule. The integration never blocks signup, credit issuance, or deployment checkout.
+The control plane queues lifecycle events in `linear_outbox` (D1). A singleton `LinearSync` Durable Object wakes immediately on successful compute-credit issuance and retries on alarms. A five-minute scheduled Worker independently reconciles missing lifecycle jobs from the accounts, compute-credit, and deployments tables, then processes queued events with exponential backoff. Billing/metering remains on its separate hourly schedule. The integration never blocks signup, credit issuance, or deployment checkout.
 
 ## Setup
 1. Apply the updated `schema.sql` to the control-plane D1 database **before** deploying the Worker (using the existing D1 schema deployment procedure). Verify `linear_outbox` exists.
 2. In Linear, obtain the target team's UUID and create or identify an issue label **New Customer**. Obtain that label's UUID.
 3. Configure `LINEAR_TEAM_ID` and `LINEAR_NEW_CUSTOMER_LABEL_ID` as Worker environment variables (or secrets). Add `LINEAR_API_KEY` via `wrangler secret put LINEAR_API_KEY --config workers/control-plane/wrangler.jsonc` from the repository root (or the deployment pipeline's equivalent secret-management method). Never put the key in source or `vars`.
-4. Deploy the control-plane Worker and confirm both cron triggers are active (`*/5 * * * *` for Linear, `5 * * * *` for billing). If any of the three settings is absent, the outbox remains queued without outbound API requests.
+4. Deploy the control-plane Worker and confirm both cron triggers are active (`*/5 * * * *` for Linear, `5 * * * *` for billing). `LINEAR_API_KEY` and `LINEAR_TEAM_ID` are required for delivery; the customer label ID is optional for lead issues. The five-minute cron is a fallback, while the Durable Object keeps itself scheduled even after failures. Run `npm run db:apply` before `npm run deploy` after updating the D1 database UUID and verifying the `DB` binding.
 
 ## Events
 - An email requesting a compute credit **and** a verified control-plane account produces one issue titled `New Lead | {emailDomain}` keyed by account ID, regardless of whether the credit request or signup occurs first.
