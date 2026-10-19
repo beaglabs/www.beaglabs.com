@@ -9,5 +9,5 @@ const app = createApp()
 
 export default {
   fetch: app.fetch,
-  scheduled: (controller: ScheduledController, env: Bindings, ctx: ExecutionContext) => ctx.waitUntil(controller.cron === '*/5 * * * *' ? wakeLinearSync(env).then(() => scheduledLinear(env)) : scheduled(env)),
+  scheduled: (controller: ScheduledController, env: Bindings, ctx: ExecutionContext) => ctx.waitUntil(controller.cron === '*/5 * * * *' ? scheduledLinear(env).then(() => wakeLinearSync(env).catch(error => console.error('Linear alarm wake failed', String(error)))) : scheduled(env)),
 } satisfies ExportedHandler<Bindings>
