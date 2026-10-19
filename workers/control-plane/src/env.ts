@@ -3,6 +3,7 @@ import type { LicenseRpcApi } from './license-rpc'
 
 export interface Bindings {
   DB: D1Database
+  LINEAR_SYNC?: DurableObjectNamespace
   LINEAR_API_KEY?: string
   LINEAR_TEAM_ID?: string
   LINEAR_NEW_CUSTOMER_LABEL_ID?: string
