@@ -239,3 +239,13 @@ CREATE TABLE IF NOT EXISTS linear_outbox (
   next_attempt_at TEXT
 );
 CREATE INDEX IF NOT EXISTS linear_outbox_pending ON linear_outbox(delivered_at,next_attempt_at);
+
+-- One Linear customer per organization ('domain:<business domain>') or per account with a personal email
+-- ('account:<id>'). synced is the attribute set last sent (name, domains, owner, status), so each Linear sync only calls
+-- Linear for customers whose attributes changed. No foreign key: deleting an account must not need this row gone first.
+CREATE TABLE IF NOT EXISTS linear_customers (
+  customer_key TEXT PRIMARY KEY,
+  linear_customer_id TEXT,
+  synced TEXT,
+  synced_at TEXT
+);

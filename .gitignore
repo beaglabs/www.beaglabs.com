@@ -42,3 +42,6 @@ public/cookbook-preview.html
 # Cloudflare vinext output and generated bindings
 .cloudflare/
 .vite/
+
+# Brainstorm mockups
+.superpowers/
