@@ -63,7 +63,10 @@ const NEED = `mutation($input:CustomerNeedCreateInput!){customerNeedCreate(input
 /** Scheduled delivery, with partial-progress checkpoints to avoid duplicate issues on retries. */
 export const flushLinearOutbox = () => Effect.gen(function* () {
   const env=yield* Env
-  if (!env.LINEAR_API_KEY || !env.LINEAR_TEAM_ID || !env.LINEAR_NEW_CUSTOMER_LABEL_ID) return
+  if (!env.LINEAR_API_KEY || !env.LINEAR_TEAM_ID) {
+    console.error('Linear delivery disabled: LINEAR_API_KEY or LINEAR_TEAM_ID missing')
+    return
+  }
   yield* Effect.tryPromise({
     try:async () => {
       const db=env.DB
