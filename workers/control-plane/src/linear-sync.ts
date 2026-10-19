@@ -1,9 +1,9 @@
-import { DurableObject } from 'cloudflare:workers'
 import type { Bindings } from './env'
 import { scheduledLinear } from './app'
 
 /** One singleton coordinator per control plane. D1 remains the durable event ledger. */
-export class LinearSync extends DurableObject<Bindings> {
+export class LinearSync {
+  constructor(private readonly ctx: DurableObjectState, private readonly env: Bindings) {}
   private async schedule(delayMs = 0) {
     const due = Date.now() + Math.max(1000, delayMs)
     const current = await this.ctx.storage.getAlarm()
