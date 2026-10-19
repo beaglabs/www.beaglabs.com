@@ -1,4 +1,5 @@
 import * as Effect from 'effect/Effect'
+import { flushLinearOutbox } from './linear'
 import * as Exit from 'effect/Exit'
 import * as Cause from 'effect/Cause'
 import * as FetchHttpClient from 'effect/http/FetchHttpClient'
@@ -78,6 +79,8 @@ export const scheduled = async (env: Bindings, now = Date.now(), deps: AppDeps =
   const teardowns = await runProgram(env, resumeTeardowns(), deps)
   if (Exit.isFailure(teardowns)) console.error('resuming teardowns failed', (Cause.squash(teardowns.cause) as { _tag?: string })?._tag ?? 'defect')
   await runProgram(env, pruneTransactions(), deps)
+  const linear = await runProgram(env, flushLinearOutbox(), deps)
+  if (Exit.isFailure(linear)) console.error('Linear outbox processing failed')
   return Exit.isSuccess(exit) ? exit.value : null
 }
 

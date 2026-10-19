@@ -3,6 +3,9 @@ import type { LicenseRpcApi } from './license-rpc'
 
 export interface Bindings {
   DB: D1Database
+  LINEAR_API_KEY?: string
+  LINEAR_TEAM_ID?: string
+  LINEAR_NEW_CUSTOMER_LABEL_ID?: string
   /** Service binding to workers/license, entrypoint `LicenseRpc`. */
   LICENSE: LicenseRpcApi
   BASE_URL: string

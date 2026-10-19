@@ -1,4 +1,5 @@
 import * as Effect from 'effect/Effect'
+import { enqueueCreditLead } from './linear'
 import * as Stripe from '@distilled.cloud/stripe'
 import { CreateBillingCreditGrant, CreateCustomer, GetCheckoutSession, GetSubscription, GetBillingCreditGrants } from '@distilled.cloud/stripe/stripe'
 import { decryptJson, encryptJson, randomToken, sha256Hex } from './crypto'
@@ -19,6 +20,7 @@ export const requestComputeCredit = (email: string) => Effect.gen(function* () {
   const code = `PAPYRUS-${randomToken(18)}`
   yield* run('INSERT OR IGNORE INTO compute_credit_offers (email, code_hash, code_ciphertext, issued_at) VALUES (?, ?, ?, ?)', normalized, yield* sha256Hex(code), yield* encryptJson(env.CREDENTIALS_KEY, `credit:${normalized}`, { code }), nowIso())
   const offer = (yield* first<Offer>('SELECT * FROM compute_credit_offers WHERE email = ?', normalized))!
+  yield* enqueueCreditLead(normalized)
   if (offer.redeemed_deployment_id) return { redeemed: true, code: null, redeemUrl: `${env.BASE_URL}/billing` }
   const stored = yield* decryptJson<{ code: string }>(env.CREDENTIALS_KEY, `credit:${normalized}`, offer.code_ciphertext)
   return { redeemed: false, code: stored.code, redeemUrl: `${env.BASE_URL}/credits/redeem?code=${encodeURIComponent(stored.code)}` }

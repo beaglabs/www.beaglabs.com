@@ -68,7 +68,8 @@
       "AWS_ACCESS_KEY_ID",
       "AWS_SECRET_ACCESS_KEY",
       "HOSTED_AWS_EXTERNAL_ID",
-      "ADMIN_TOKEN"
+      "ADMIN_TOKEN",
+      "LINEAR_API_KEY"
     ]
   }
 }
