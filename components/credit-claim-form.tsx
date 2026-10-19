@@ -4,7 +4,7 @@ import { ArrowRight, LoaderCircle } from 'lucide-react'
 import { analytics } from '@/lib/analytics'
 import { papyrusSignupUrl } from '@/lib/papyrus-links'
 
-const valid = /^[^\\s@]+@[^\\s@.]+(\\.[^\\s@.]+)+$/
+const valid = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/
 export function CreditClaimForm({placement='page-hero',compact=false}:{placement?:'nav'|'page-hero'|'section';compact?:boolean}) {
   const id=useId()
   const [email,setEmail]=useState('')
