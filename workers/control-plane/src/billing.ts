@@ -1,5 +1,5 @@
 import * as Stripe from '@distilled.cloud/stripe'
-import { enqueueFirstDeployment } from './linear'
+import { enqueueFirstDeployment, wake as wakeLinear } from './linear'
 import { CreateBillingPortalSession, CreateCheckoutSession, DeleteSubscription, GetCheckoutSession, GetSubscription } from '@distilled.cloud/stripe/stripe'
 import { constructEvent, type StripeEvent } from '@distilled.cloud/stripe/Webhooks'
 import * as Effect from 'effect/Effect'
@@ -270,6 +270,8 @@ export const applyBillingUpdate = (update: BillingUpdate) =>
     const deleting = lifecycle?.state === 'deleting' || lifecycle?.state === 'deleted'
     const line = deleting && update.stripeStatus === 'canceled' ? { level: 'info' as const, message: 'Subscription canceled · deployment deleted' } : billingEventFor(update)
     if (accountId) yield* logEvent({ accountId, deploymentId, source: 'billing', ...line })
+    // Billing state drives the Linear customer status (Active / Churned).
+    yield* wakeLinear()
   })
 
 /** POST /api/stripe/webhook: verify the signature over the raw body, apply each event once. */

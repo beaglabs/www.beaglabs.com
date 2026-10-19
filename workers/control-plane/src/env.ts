@@ -8,7 +8,10 @@ export interface Bindings {
   LINEAR_TEAM_ID?: string
   LINEAR_NEW_CUSTOMER_LABEL_ID?: string
   LINEAR_ISSUE_STATE_ID?: string
+  LINEAR_SALES_PIPELINE_LABEL_ID?: string
   LINEAR_ASSIGNEE_ID?: string
+  /** logo.dev publishable key: Linear customers get https://img.logo.dev/<domain>?token=… as their logo. Optional. */
+  LOGO_DEV_TOKEN?: string
   /** Service binding to workers/license, entrypoint `LicenseRpc`. */
   LICENSE: LicenseRpcApi
   BASE_URL: string

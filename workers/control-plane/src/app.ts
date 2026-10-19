@@ -1,5 +1,5 @@
 import * as Effect from 'effect/Effect'
-import { flushLinearOutbox, reconcileLinearOutbox } from './linear'
+import { flushLinearOutbox, reconcileLinearOutbox, wake as wakeLinear } from './linear'
 import * as Exit from 'effect/Exit'
 import * as Cause from 'effect/Cause'
 import * as FetchHttpClient from 'effect/http/FetchHttpClient'
@@ -650,6 +650,8 @@ export function createApp(deps: AppDeps = {}) {
         const organization = locked ? account.organization : field('organization') || null
         yield* run('UPDATE accounts SET name = ?, organization = ? WHERE id = ?', name, organization, account.id)
         yield* logEvent({ accountId: account.id, level: 'info', source: 'account', message: 'Account settings updated' })
+        // The organization name is the Linear customer's name.
+        yield* wakeLinear()
         return c.html(Views.settingsPage({ ...account, name, organization }, deployments, { text: 'Saved.', kind: 'ok' }))
       }),
     )
