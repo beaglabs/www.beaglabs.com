@@ -1,4 +1,5 @@
 import * as Effect from 'effect/Effect'
+import { enqueueLead } from './linear'
 import * as HttpClient from 'effect/http/HttpClient'
 import * as HttpClientRequest from 'effect/http/HttpClientRequest'
 import { fromBase64, hmac, randomToken, sha256Hex, timingSafeEqual, toBase64Url } from './crypto'
@@ -39,7 +40,10 @@ export const accountForEmail = (email: string, profile: { name?: string | null; 
     }
     const account = yield* first<Account>('SELECT * FROM accounts WHERE email = ?', normalized)
     if (!account) return yield* new UserError({ message: 'Could not create the account', status: 500 })
-    if (created > 0) yield* logEvent({ accountId: account.id, level: 'ok', source: 'account', message: `Account created for ${normalized}` })
+    if (created > 0) {
+      yield* logEvent({ accountId: account.id, level: 'ok', source: 'account', message: `Account created for ${normalized}` })
+      yield* enqueueLead(account.id)
+    }
     return account
   })
 
