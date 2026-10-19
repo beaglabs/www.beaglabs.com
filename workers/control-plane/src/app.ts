@@ -221,7 +221,12 @@ export function createApp(deps: AppDeps = {}) {
     try { body = await c.req.json() } catch { return c.json({ error: 'Invalid email' }, 400) }
     const result = await exec(c, requestComputeCredit(typeof body.email === 'string' ? body.email : ''))
     if (Exit.isFailure(result)) { const failure = userError(result)!; return c.json({ error: failure.message }, failure.status as 400) }
-    c.executionCtx.waitUntil(wakeLinearSync(c.env).catch(error => console.error('Linear wake failed', error instanceof Error ? error.message : String(error))))
+    // Tests call app.request() without ExecutionContext; production Workers provide one.
+    // Keep the credit response independent of the best-effort Linear wake-up.
+    if (c.env.LINEAR_SYNC) {
+      const wake = wakeLinearSync(c.env).catch(error => console.error('Linear wake failed', error instanceof Error ? error.message : String(error)))
+      try { c.executionCtx.waitUntil(wake) } catch { void wake }
+    }
     return c.json(result.value, 200, { 'cache-control': 'no-store' })
   })
 
