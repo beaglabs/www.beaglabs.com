@@ -1,5 +1,5 @@
 import * as Effect from 'effect/Effect'
-import { flushLinearOutbox } from './linear'
+import { flushLinearOutbox, reconcileLinearOutbox } from './linear'
 import * as Exit from 'effect/Exit'
 import * as Cause from 'effect/Cause'
 import * as FetchHttpClient from 'effect/http/FetchHttpClient'
@@ -71,6 +71,17 @@ export const runProgram = <A>(env: Bindings, program: Program<A>, deps: AppDeps 
   return Effect.runPromiseExit(withFetch.pipe(Effect.provide(FetchHttpClient.layer), Effect.provideService(Env, env)) as Effect.Effect<A, unknown, never>)
 }
 
+/** Five-minute reconciliation recovers missed events and sends queued Linear jobs. */
+export const scheduledLinear = async (env: Bindings, deps: AppDeps = {}) => {
+  const reconciliation = await runProgram(env, reconcileLinearOutbox(), deps)
+  if (Exit.isFailure(reconciliation)) {
+    console.error('Linear reconciliation failed', String(Cause.squash(reconciliation.cause)))
+    return
+  }
+  const delivery = await runProgram(env, flushLinearOutbox(), deps)
+  if (Exit.isFailure(delivery)) console.error('Linear outbox processing failed', String(Cause.squash(delivery.cause)))
+}
+
 /** The hourly cron: compute meter events for the hour that just ended (src/metering.ts), then waiting teardowns. */
 export const scheduled = async (env: Bindings, now = Date.now(), deps: AppDeps = {}) => {
   await runProgram(env, pruneCheckoutIntents(), deps)
@@ -79,8 +90,6 @@ export const scheduled = async (env: Bindings, now = Date.now(), deps: AppDeps =
   const teardowns = await runProgram(env, resumeTeardowns(), deps)
   if (Exit.isFailure(teardowns)) console.error('resuming teardowns failed', (Cause.squash(teardowns.cause) as { _tag?: string })?._tag ?? 'defect')
   await runProgram(env, pruneTransactions(), deps)
-  const linear = await runProgram(env, flushLinearOutbox(), deps)
-  if (Exit.isFailure(linear)) console.error('Linear outbox processing failed')
   return Exit.isSuccess(exit) ? exit.value : null
 }
 
