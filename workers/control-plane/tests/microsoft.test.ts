@@ -172,8 +172,9 @@ describe('Connect Microsoft', () => {
     const s = setup()
     s.deployed()
     s.accepted()
-    s.bound('dep_abc', 'pd_123', OTHER_TENANT)
     const txn = await throughConsent(s)
+    // A second tab connected another tenant while this transaction was in flight.
+    s.bound('dep_abc', 'pd_123', OTHER_TENANT)
     const done = await s.get(`/microsoft/callback?code=code-1&state=${txn}`)
     expect(done.status).toBe(409)
     expect(await done.text()).toContain('This deployment is connected to a different Microsoft organization. Contact Beag Labs support to change it.')
@@ -251,6 +252,62 @@ describe('Connect Microsoft', () => {
 })
 
 describe('microsoft step', () => {
+  it('records an early connection immediately and does not request consent twice', async () => {
+    const s = setup()
+    s.deployed('dep_abc', 'pd_123', 'acme', ['connect', 'deploy'])
+    s.accepted()
+    const txn = await throughConsent(s)
+    expect((await s.get(`/microsoft/callback?code=code-1&state=${txn}`)).status).toBe(302)
+    const saved = JSON.parse(s.h.deployment('dep_abc').steps as string)
+    expect(saved.microsoft.status).toBe('pass')
+    expect(saved.dns.status).toBe('pending')
+    expect(saved.health.status).toBe('pending')
+    expect(saved.registration.status).toBe('pending')
+    const connectedAgain = await s.get('/deploy/dep_abc/microsoft/connect')
+    expect(connectedAgain.headers.get('location')).toBe('/deploy/dep_abc')
+    expect(s.h.sql.prepare('SELECT COUNT(*) AS n FROM microsoft_transactions').get()).toEqual({ n: 1 })
+    const view = (await (await s.get('/api/deployments/dep_abc')).json()) as DetailPayload
+    expect(view.deployment.microsoft).toBeNull()
+  })
+
+  it('repairs stale step state on reads while health is failing, and detects a removed binding', async () => {
+    const s = setup()
+    s.deployed('dep_abc', 'pd_123', 'acme', ['connect', 'deploy', 'dns'])
+    s.h.sql.prepare("UPDATE deployments SET steps = json_set(steps, '$.health.status', 'fail') WHERE id = 'dep_abc'").run()
+    s.bound()
+    const view = (await (await s.get('/api/deployments/dep_abc')).json()) as DetailPayload
+    expect(view.deployment.microsoft).toBeNull()
+    let saved = JSON.parse(s.h.deployment('dep_abc').steps as string)
+    expect(saved.microsoft.status).toBe('pass')
+    expect(saved.health.status).toBe('fail')
+    s.h.sql.prepare('DELETE FROM microsoft_bindings').run()
+    const unbound = (await (await s.get('/api/deployments/dep_abc')).json()) as DetailPayload
+    expect(unbound.deployment.microsoft).not.toBeNull()
+    saved = JSON.parse(s.h.deployment('dep_abc').steps as string)
+    expect(saved.microsoft.status).toBe('pending')
+    expect(saved.registration.status).toBe('pending')
+    expect(s.ms.state.calls).toEqual([])
+  })
+
+  it('does not adopt a binding for a different license deployment', async () => {
+    const s = setup()
+    s.deployed()
+    s.bound('dep_abc', 'pd_456')
+    const view = (await (await s.get('/api/deployments/dep_abc')).json()) as DetailPayload
+    expect(view.deployment.microsoft).not.toBeNull()
+  })
+
+  it('reconciles the deployment list without advancing bootstrap or contacting Microsoft', async () => {
+    const s = setup()
+    s.deployed('dep_abc', 'pd_123', 'acme', ['connect', 'deploy'])
+    s.bound()
+    expect((await s.get('/api/deployments')).status).toBe(200)
+    const saved = JSON.parse(s.h.deployment('dep_abc').steps as string)
+    expect(saved.microsoft.status).toBe('pass')
+    expect(saved.dns.status).toBe('pending')
+    expect(s.ms.state.calls).toEqual([])
+  })
+
   it('passes when the binding exists and is pending (no probing Papyrus) until then', async () => {
     const s = setup()
     s.deployed()

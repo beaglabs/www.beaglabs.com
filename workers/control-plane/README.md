@@ -24,7 +24,11 @@ keys and signing.
   `GET /microsoft/consented` is where the shareable admin-approval link lands. Papyrus sign-in through the broker:
   `POST /api/microsoft/transactions` → `GET /microsoft/start` → callback → one-time handle → `POST /api/microsoft/redeem`
   (60 s, once, that deployment only) → identity assertion signed by `LicenseRpc.signIdentity`. `GET /api/microsoft/binding`
-  tells Papyrus the tenant, app and owner. All three `/api/microsoft/*` routes use the deployment key, like the status
+  tells Papyrus the tenant, app and owner. The binding is authoritative: the console reconciles Microsoft status on
+  every deployment detail/list read, independently of DNS, health and registration. An existing connection skips
+  consent when its link is opened again; infrastructure retries retain it. This checks the saved binding, not live
+  Microsoft consent revocation (Microsoft verifies identity again at each new sign-in).
+  All three `/api/microsoft/*` routes use the deployment key, like the status
   check-in. Microsoft tokens are never stored. App: `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` (the same app as
   Sign in with Microsoft) with redirect URIs `/microsoft/callback` and `/microsoft/consented` added
 - `POST /admin/hosted/bootstrap` — one-time shared hosted infrastructure (`Authorization: Bearer $ADMIN_TOKEN`)

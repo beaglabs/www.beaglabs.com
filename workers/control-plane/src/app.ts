@@ -26,6 +26,7 @@ import { deleteDeployment, resumeTeardowns, runTeardown, startDeployment, stopDe
 import { LIVE_PATH } from './activity-hub'
 import * as Views from './views'
 import { autoAdvance, dueCheck } from './advance'
+import { syncMicrosoftConnection } from './microsoft-binding'
 import { acceptTerms, bindingInfo, createPortalTransaction, microsoftCallback, pruneTransactions, redeemHandle, startConsent, startPortal, termsFor } from './microsoft'
 import { availableActions, buildDeploymentView, buildSummary, currentStep, type ViewContext } from './deployment-view'
 import { browserCapture, captureAndStore, loadCapture, previewObject, requestCapture, screenshotsEnabled, type CaptureFn } from './preview'
@@ -399,13 +400,17 @@ export function createApp(deps: AppDeps = {}) {
 
   const detailView = (c: Ctx, account: Account, deployment: Deployment) =>
     Effect.gen(function* () {
+      yield* syncMicrosoftConnection(deployment)
       const siblings = yield* listDeployments(account.id)
       return buildDeploymentView(deployment, yield* viewContext(c, account, deployment, siblings))
     })
 
-  const listPayload = (c: Ctx, deployments: Deployment[]): ListPayload => ({
-    deployments: deployments.map((d) => buildSummary(d, { region: c.env.HOSTED_AWS_REGION || 'us-east-2', now: Date.now() })),
-    serverTime: nowIso(),
+  const listPayload = (c: Ctx, deployments: Deployment[]) => Effect.gen(function* () {
+    for (const deployment of deployments) yield* syncMicrosoftConnection(deployment)
+    return {
+      deployments: deployments.map((d) => buildSummary(d, { region: c.env.HOSTED_AWS_REGION || 'us-east-2', now: Date.now() })),
+      serverTime: nowIso(),
+    } satisfies ListPayload
   })
 
   /** The org-name claim screen until the deployment has an address; then the Deployment page. */
@@ -423,7 +428,7 @@ export function createApp(deps: AppDeps = {}) {
     signedIn(c, (account) =>
       Effect.gen(function* () {
         const deployments = yield* listDeployments(account.id)
-        return c.html(Views.deployListPage(account, listPayload(c, deployments)))
+        return c.html(Views.deployListPage(account, yield* listPayload(c, deployments)))
       }),
     ),
   )
@@ -795,7 +800,7 @@ export function createApp(deps: AppDeps = {}) {
   }
 
   /** The signed-in account's deployments, as table rows. */
-  app.get('/api/deployments', (c) => api(c, (account) => Effect.map(listDeployments(account.id), (deployments) => c.json(listPayload(c, deployments)))))
+  app.get('/api/deployments', (c) => api(c, (account) => Effect.flatMap(listDeployments(account.id), (deployments) => Effect.map(listPayload(c, deployments), (payload) => c.json(payload)))))
 
   /**
    * One deployment's view model. While its page is open, the read-only check that is due (address, health, Microsoft,

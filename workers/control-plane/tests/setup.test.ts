@@ -33,7 +33,8 @@ describe('setup step state machine', () => {
     const failed = record(done, 'dns', { status: 'fail', reason: 'CNAME papyrus.example.com not found' })
     expect(failed.dns).toMatchObject({ status: 'fail', reason: 'CNAME papyrus.example.com not found' })
     expect(failed.deploy.status).toBe('pass')
-    for (const later of ['health', 'microsoft', 'registration'] as const) expect(failed[later].status).toBe('pending')
+    for (const later of ['health', 'registration'] as const) expect(failed[later].status).toBe('pending')
+    expect(failed.microsoft).toEqual(done.microsoft)
     expect(nextStep(failed)).toBe('dns')
     const waiting = record(passThrough('microsoft'), 'registration', { status: 'pending', reason: 'Waiting for bootstrap exchange' })
     expect(waiting.registration.status).toBe('pending')
@@ -49,7 +50,16 @@ describe('setup step state machine', () => {
   it('resetFrom clears the step and everything after it', () => {
     const steps = resetFrom(passThrough('registration'), 'deploy')
     expect(steps.connect.status).toBe('pass')
-    expect(STEP_IDS.slice(1).every((id) => steps[id].status === 'pending')).toBe(true)
+    expect(STEP_IDS.slice(1).filter((id) => id !== 'microsoft').every((id) => steps[id].status === 'pending')).toBe(true)
+    expect(steps.microsoft.status).toBe('pass')
+    expect(resetFrom(steps, 'microsoft').microsoft.status).toBe('pending')
+  })
+
+  it('checks Microsoft independently while keeping registration gated on readiness', () => {
+    const steps = record(initialSteps(), 'microsoft', { status: 'pass' })
+    expect(steps.microsoft.status).toBe('pass')
+    expect(canRun(steps, 'registration')).toBe(false)
+    expect(nextStep(steps)).toBe('connect')
   })
 
   it('parses stored progress and tolerates garbage', () => {

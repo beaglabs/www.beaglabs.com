@@ -6,6 +6,7 @@ import { decryptJson, encryptJson } from './crypto'
 import { checkRecord, checkRecords, describeFailures } from './dns'
 import { HOSTED_PROVIDER, hostedOrgFor, hostedProviderContext, loadHostedInfra } from './hosted'
 import { hostedDeploy } from './providers/aws-hosted'
+import { bindingFor } from './microsoft-binding'
 import type { Bindings } from './env'
 import type { SignedLicense } from './license-rpc'
 import { providerById } from './providers/registry'
@@ -184,8 +185,8 @@ const stepOutcome = (deployment: Deployment, account: Account, step: StepId): Ef
       }
       case 'microsoft': {
         // Connect Microsoft happens here (src/microsoft.ts); Papyrus picks the binding up on its own.
-        const binding = yield* first<{ owner_name: string | null; owner_email: string | null }>('SELECT owner_name, owner_email FROM microsoft_bindings WHERE deployment_id = ?', deployment.id)
-        if (binding) return outcome('pass', `Microsoft connected · ${binding.owner_name ?? binding.owner_email ?? 'The administrator'} is System Owner`)
+        const binding = yield* bindingFor(deployment.id)
+        if (binding && binding.license_deployment_id === deployment.license_deployment_id) return outcome('pass', `Microsoft connected · ${binding.owner_name ?? binding.owner_email ?? 'The administrator'} is System Owner`)
         return outcome('pending', 'Connect Microsoft so your team can sign in.')
       }
       case 'registration': {
