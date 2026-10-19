@@ -86,9 +86,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch {}
 
   try {
-    const { comparisons } = await import('@/data/comparisons/comparisons')
-    const { guides, verifiedOnIso } = await import('@/lib/compare')
-    const { platforms, profileSlug } = await import('@/lib/compare')
+    const { verifiedOnIso, platforms, profileSlug } = await import('@/lib/compare')
     dataRoutes.push(...platforms.map((platform) => ({
       url: `${BASE_URL}/products/${profileSlug(platform)}`,
       lastModified: new Date(verifiedOnIso),
