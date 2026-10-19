@@ -61,7 +61,7 @@ export function HeroSection() {
           <div className="mx-auto mb-6 h-[3px] w-full max-w-[420px] bg-[#111]" />
 
           <p className="mx-auto mb-8 max-w-[580px] text-[16px] font-semibold leading-[1.65] text-[#333] sm:text-[18px]">
-            Experience what it feels like to have the data model ascendance of a superintelligent ERP. Try Papyrus now.
+            Your existing ERP stays the system of record. Papyrus orchestrates complex operations across entities, teams, and legacy systems.
           </p>
 
           {state === "done" ? (
@@ -109,7 +109,7 @@ export function HeroSection() {
           )}
 
           <Link
-            href="/products/papyrus"
+            href="/agentic-erp"
             className="mt-6 inline-flex items-center gap-2 border-b-2 border-[#111] pb-0.5 text-[12px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:border-[#ff5f1f] hover:text-[#ff5f1f]"
           >
             Or explore Papyrus first <ArrowRight className="h-3.5 w-3.5" strokeWidth={3} />
