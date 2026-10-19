@@ -105,7 +105,7 @@ export function createApp(deps: AppDeps = {}) {
     const error = Cause.squash(exit.cause) as { _tag?: string; message?: string; status?: number }
     if (error?._tag === 'UserError') return { message: error.message ?? 'Request failed', status: error.status ?? 400 }
     // Never log request bodies or credentials: the tag is enough to find the failing call.
-    console.error('control-plane error', error?._tag ?? 'defect')
+    console.error('control-plane error', error?._tag ?? 'defect', error?.message ?? '')
     return { message: 'Something went wrong on our side. Try again.', status: 500 }
   }
 
