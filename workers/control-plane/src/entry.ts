@@ -1,4 +1,4 @@
-import { createApp, scheduled } from './app'
+import { createApp, scheduled, scheduledLinear } from './app'
 import type { Bindings } from './env'
 
 export { ActivityHub } from './activity-hub'
@@ -7,5 +7,5 @@ const app = createApp()
 
 export default {
   fetch: app.fetch,
-  scheduled: (_controller: ScheduledController, env: Bindings, ctx: ExecutionContext) => ctx.waitUntil(scheduled(env)),
+  scheduled: (controller: ScheduledController, env: Bindings, ctx: ExecutionContext) => ctx.waitUntil(controller.cron === '*/5 * * * *' ? scheduledLinear(env) : scheduled(env)),
 } satisfies ExportedHandler<Bindings>

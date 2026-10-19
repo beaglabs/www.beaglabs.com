@@ -25,7 +25,7 @@
   // To turn them on: Workers Paid plan, `wrangler r2 bucket create papyrus-control-plane-previews`, then add
   //   "browser": { "binding": "BROWSER" }, "r2_buckets": [{ "binding": "PREVIEWS", "bucket_name": "papyrus-control-plane-previews" }]
   // Hourly compute metering: one Stripe meter event per running deployment for the hour that just ended.
-  "triggers": { "crons": ["5 * * * *"] },
+  "triggers": { "crons": ["5 * * * *", "*/5 * * * *"] },
   "vars": {
     "BASE_URL": "https://papyrus.beaglabs.com",
     "PAPYRUS_IMAGE": "ghcr.io/beaglabs/papyrus/papyrus",

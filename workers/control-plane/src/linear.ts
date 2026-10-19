@@ -27,6 +27,27 @@ export const enqueueFirstDeployment = (accountId: string, deploymentId: string) 
   yield* run("INSERT OR IGNORE INTO linear_outbox (key,kind,account_id,deployment_id,created_at) VALUES (?, 'deployment', ?, ?, ?)",'deployment:'+accountId,accountId,deploymentId,nowIso())
 })
 
+/** Reconcile source-of-truth rows periodically so failed/missed callbacks never lose lifecycle events.
+ * INSERT OR IGNORE + stable keys make this safe to run repeatedly and backfill older records.
+ * Each pass is bounded; remaining rows will be picked up on the next cron.
+ */
+export const reconcileLinearOutbox = () => Effect.gen(function* () {
+  yield* run(`INSERT OR IGNORE INTO linear_outbox (key, kind, account_id, created_at)
+    SELECT 'lead:' || a.id, 'lead', a.id, ?
+    FROM accounts a INNER JOIN compute_credit_offers c ON lower(c.email) = lower(a.email)
+    LEFT JOIN linear_outbox o ON o.key = 'lead:' || a.id
+    WHERE o.key IS NULL LIMIT 200`, nowIso())
+  yield* run(`INSERT OR IGNORE INTO linear_outbox (key, kind, account_id, deployment_id, created_at)
+    SELECT 'deployment:' || d.account_id, 'deployment', d.account_id, d.id, ?
+    FROM deployments d LEFT JOIN linear_outbox o ON o.key = 'deployment:' || d.account_id
+    WHERE o.key IS NULL AND d.billing_state = 'active'
+      AND NOT EXISTS (
+        SELECT 1 FROM deployments earlier WHERE earlier.account_id = d.account_id
+          AND (earlier.created_at < d.created_at OR (earlier.created_at = d.created_at AND earlier.id < d.id))
+      )
+    LIMIT 200`, nowIso())
+})
+
 async function gql(env: {LINEAR_API_KEY?:string}, query:string, variables:Record<string,unknown>) {
   const response=await fetch('https://api.linear.app/graphql',{method:'POST',headers:{'Authorization':env.LINEAR_API_KEY!, 'Content-Type':'application/json'},body:JSON.stringify({query,variables})})
   if (!response.ok) throw new Error('Linear HTTP '+response.status)
