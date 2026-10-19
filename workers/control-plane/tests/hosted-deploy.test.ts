@@ -36,6 +36,7 @@ const aws = vi.hoisted(() => {
     createListener: mk(async (input: { Port: number }) => ({ Listeners: [{ ListenerArn: `arn:listener/${input.Port}` }] })),
     createTargetGroup: mk(ok({ TargetGroups: [{ TargetGroupArn: 'arn:tg/acme' }] })),
     createRule: mk(ok({ Rules: [{ RuleArn: 'arn:rule/acme' }] })),
+    describeRules: mk(ok({ Rules: [{ RuleArn: 'arn:rule/default', Priority: 'default', IsDefault: true, Conditions: [] }] })),
     // A target group from before the health check moved to /api/config/public.
     describeTargetGroups: mk(ok({ TargetGroups: [{ TargetGroupArn: 'arn:tg/acme', HealthCheckPath: '/api/health' }] })),
     modifyTargetGroup: mk(ok({})),
@@ -62,7 +63,7 @@ vi.mock('@distilled.cloud/aws/ecs', () => ops('createCluster', 'registerTaskDefi
 vi.mock('@distilled.cloud/aws/efs', () => ops('describeFileSystems', 'createFileSystem', 'createMountTarget', 'createAccessPoint'))
 vi.mock('@distilled.cloud/aws/acm', () => ops('listCertificates', 'requestCertificate', 'describeCertificate'))
 vi.mock('@distilled.cloud/aws/elastic-load-balancing-v2', () =>
-  ops('describeLoadBalancers', 'createLoadBalancer', 'describeListeners', 'createListener', 'createTargetGroup', 'createRule', 'describeTargetGroups', 'modifyTargetGroup'),
+  ops('describeLoadBalancers', 'createLoadBalancer', 'describeListeners', 'createListener', 'createTargetGroup', 'createRule', 'describeRules', 'describeTargetGroups', 'modifyTargetGroup'),
 )
 vi.mock('@distilled.cloud/aws/secrets-manager', () => ops('createSecret'))
 vi.mock('@distilled.cloud/aws/cloudwatch-logs', () => ops('createLogGroup'))
@@ -162,6 +163,33 @@ describe('hosted deploy (shared AWS infrastructure)', () => {
     expect(aws.updateService).toHaveBeenCalledWith(expect.objectContaining({ cluster: 'arn:cluster/papyrus-hosted', taskDefinition: 'arn:task/acme:1', forceNewDeployment: true }))
     // The redeploy also fixes an old target group's health-check path.
     expect(aws.modifyTargetGroup).toHaveBeenCalledWith({ TargetGroupArn: 'arn:tg/acme', HealthCheckPath: '/api/config/public', Matcher: { HttpCode: '200' } })
+  })
+
+  /** Listener rules as ELB returns them: string priorities, plus the default rule. */
+  const listenerRules = (...rules: { priority: number; host: string }[]) => ({
+    Rules: [
+      ...rules.map((r) => ({ RuleArn: `arn:rule/${r.priority}`, Priority: String(r.priority), Conditions: [{ Field: 'host-header', HostHeaderConfig: { Values: [r.host] } }] })),
+      { RuleArn: 'arn:rule/default', Priority: 'default', IsDefault: true, Conditions: [] },
+    ],
+  })
+
+  it("takes the next free listener priority when the slot's is in use (rules left from before a database move)", async () => {
+    const { env } = harness()
+    aws.describeRules.mockImplementationOnce(async () => listenerRules({ priority: 1, host: 'old.papyrus.beaglabs.com' }, { priority: 2, host: 'older.papyrus.beaglabs.com' }))
+    await runEffect(hostedDeploy(deployCtx(env), READY, { name: 'acme', slot: 1 }))
+    expect(aws.createRule).toHaveBeenCalledWith(expect.objectContaining({ Priority: 3 }))
+  })
+
+  it('goes ahead of an older rule for the same hostname, or explains why it cannot', async () => {
+    const { env } = harness()
+    aws.describeRules.mockImplementationOnce(async () => listenerRules({ priority: 4, host: 'acme.papyrus.beaglabs.com' }))
+    await runEffect(hostedDeploy(deployCtx(env), READY, { name: 'acme', slot: 7 }))
+    expect(aws.createRule).toHaveBeenCalledWith(expect.objectContaining({ Priority: 1 }))
+
+    aws.createRule.mockClear()
+    aws.describeRules.mockImplementationOnce(async () => listenerRules({ priority: 1, host: 'acme.papyrus.beaglabs.com' }))
+    await expect(runEffect(hostedDeploy(deployCtx(env), READY, { name: 'acme', slot: 7 }))).rejects.toThrow(/older listener rule \(priority 1\)/)
+    expect(aws.createRule).not.toHaveBeenCalled()
   })
 
   it('the architecture is a parameter (BYOC tasks stay without runtimePlatform)', async () => {
