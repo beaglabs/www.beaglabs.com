@@ -27,7 +27,7 @@ const robotoCondensed = Roboto_Condensed({
 const homeDescription =
   'Papyrus by Beag Labs is an agentic ERP orchestration layer for complex multi-entity operations. Keep existing ERP and legacy systems of record while automating governed workflows.'
 
-const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-10-19-homepage-dots-v1'
+const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-10-19-dotted-card-v2'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),

@@ -172,40 +172,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         properties={{ slug, title: post.title, category: post.category }}
       />
 
-      {/* ─── HERO BAND ─── */}
-      <section className="site-hero border-b-[3px] border-[#111] bg-[#ff5f1f]">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-6 py-10 lg:grid-cols-[minmax(320px,460px)_1fr] lg:items-center lg:gap-16 lg:px-9 lg:py-14">
-          {post.coverImage ? (
-            <div className="relative aspect-[16/10] overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[7px_7px_0px_0px_#111]">
-              <img
-                src={post.coverImage.url}
-                alt={post.title}
-                className="h-full w-full object-cover"
-              />
-              <time
-                dateTime={post.publishedAt}
-                className="absolute bottom-4 left-4 border-[2px] border-[#111] bg-white px-3 py-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[3px_3px_0px_0px_#111]"
-              >
-                [ {formattedDate} ]
-              </time>
-            </div>
-          ) : (
-            <p className="font-mono text-[13px] font-bold uppercase tracking-[0.2em] text-[#111]">
-              [ <time dateTime={post.publishedAt}>{formattedDate}</time> ]
-            </p>
-          )}
-
-          <div className="max-w-[820px] lg:justify-self-end">
-            <span className="mb-5 inline-block border-[2px] border-[#111] bg-[#111] px-3 py-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ff5f1f]">
-              {post.category}
-            </span>
-            <h1 className="text-[length:min(36px,9vw)] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[46px] lg:text-[58px]">
-              {post.title}
-            </h1>
-            <p className="mt-5 max-w-[720px] text-[18px] font-medium leading-[1.6] text-[#111]">
-              {post.exerpt}
-            </p>
-          </div>
+      <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#111] px-5 py-14" style={{backgroundImage:'radial-gradient(circle at center, #ff5f1f 0 6px, transparent 6.5px), radial-gradient(circle at center, #ffc9b0 0 6px, transparent 6.5px), radial-gradient(circle at center, #fff 0 6px, transparent 6.5px)',backgroundSize:'54px 18px, 54px 18px, 54px 18px',backgroundPosition:'0 0,18px 0,36px 0'}}>
+        <div className="relative mx-auto flex max-w-[1050px] flex-col items-center border-[4px] border-[#111] bg-white px-6 py-12 text-center shadow-[10px_10px_0_#111] sm:px-12">
+          <span className="border-2 border-[#111] bg-[#ff5f1f] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-[.15em] shadow-[3px_3px_0_#111]">{post.category}</span>
+          <h1 className="mt-8 max-w-[960px] font-[family-name:var(--font-roboto-condensed)] text-[length:min(64px,9vw)] font-black uppercase leading-[.97] tracking-[-.04em]">{post.title}</h1>
+          <div className="mt-8 h-[3px] w-full max-w-[460px] bg-[#111]" />
+          <p className="mt-7 max-w-[740px] text-lg font-bold leading-8 text-[#333]">{post.exerpt}</p>
+          <time dateTime={post.publishedAt} className="mt-8 border-b-2 border-[#111] pb-1 font-mono text-xs font-black uppercase tracking-wider">{formattedDate} · Beag Labs</time>
         </div>
       </section>
 
