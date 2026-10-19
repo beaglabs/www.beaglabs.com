@@ -24,9 +24,9 @@ export const metadata: Metadata = {
   ...baseMetadata,
   openGraph: {
     ...baseMetadata.openGraph,
-    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-12-sled-federal-v2`, width: 1200, height: 630, alt: 'Papyrus: The Agentic Modernization Factory. Document automation, internal apps, and legacy system enablement.', type: 'image/png' }],
+    images: [{ url: `${BASE_URL}/products/papyrus/og?v=2026-10-19-homepage-dots-v1`, width: 1200, height: 630, alt: 'Papyrus: The Agentic Modernization Factory. Document automation, internal apps, and legacy system enablement.', type: 'image/png' }],
   },
-  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-12-sled-federal-v2`] },
+  twitter: { ...baseMetadata.twitter, images: [`${BASE_URL}/products/papyrus/og?v=2026-10-19-homepage-dots-v1`] },
 }
 
 const outcomes = [
