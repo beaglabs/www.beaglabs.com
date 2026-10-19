@@ -7,6 +7,8 @@ export interface Bindings {
   LINEAR_API_KEY?: string
   LINEAR_TEAM_ID?: string
   LINEAR_NEW_CUSTOMER_LABEL_ID?: string
+  LINEAR_ISSUE_STATE_ID?: string
+  LINEAR_ASSIGNEE_ID?: string
   /** Service binding to workers/license, entrypoint `LicenseRpc`. */
   LICENSE: LicenseRpcApi
   BASE_URL: string

@@ -7,13 +7,26 @@ const personalDomain = new Set(['gmail.com','outlook.com','hotmail.com','yahoo.c
 const domainOf = (email: string) => email.trim().toLowerCase().split('@')[1] ?? ''
 const cleanName = (domain: string) => domain.split('.')[0].replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase())
 
+export const wakeLinearSync = async (env: {LINEAR_SYNC?: DurableObjectNamespace}): Promise<void> => {
+  if (!env.LINEAR_SYNC) return
+  const id = env.LINEAR_SYNC.idFromName('control-plane')
+  await env.LINEAR_SYNC.get(id).fetch('https://linear-sync.internal/wake', { method: 'POST' })
+}
+
+/** Deliver a newly queued job now instead of on the next cron; best-effort, the cron still retries. */
+const wake = () => Effect.gen(function* () {
+  const env = yield* Env
+  yield* Effect.promise(() => wakeLinearSync(env).catch(error => console.error('Linear wake failed', error instanceof Error ? error.message : String(error))))
+})
+
 /** D1 outbox keys prevent duplicate Linear issues across callbacks, Stripe webhooks, and retries. */
 export const enqueueLead = (accountId: string) => Effect.gen(function* () {
   const account = yield* first<Org>('SELECT id,email,organization,name FROM accounts WHERE id = ?',accountId)
   if (!account) return
   const offer = yield* first<{email:string}>('SELECT email FROM compute_credit_offers WHERE email = ?',account.email)
   if (!offer) return
-  yield* run("INSERT OR IGNORE INTO linear_outbox (key,kind,account_id,created_at) VALUES (?, 'lead', ?, ?)",'lead:'+account.id,account.id,nowIso())
+  const queued = yield* run("INSERT OR IGNORE INTO linear_outbox (key,kind,account_id,created_at) VALUES (?, 'lead', ?, ?)",'lead:'+account.id,account.id,nowIso())
+  if (queued > 0) yield* wake()
 })
 
 export const enqueueCreditLead = (email: string) => Effect.gen(function* () {
@@ -24,7 +37,8 @@ export const enqueueCreditLead = (email: string) => Effect.gen(function* () {
 export const enqueueFirstDeployment = (accountId: string, deploymentId: string) => Effect.gen(function* () {
   const count = yield* first<{n:number}>('SELECT COUNT(*) AS n FROM deployments WHERE account_id = ?',accountId)
   if (count?.n !== 1) return
-  yield* run("INSERT OR IGNORE INTO linear_outbox (key,kind,account_id,deployment_id,created_at) VALUES (?, 'deployment', ?, ?, ?)",'deployment:'+accountId,accountId,deploymentId,nowIso())
+  const queued = yield* run("INSERT OR IGNORE INTO linear_outbox (key,kind,account_id,deployment_id,created_at) VALUES (?, 'deployment', ?, ?, ?)",'deployment:'+accountId,accountId,deploymentId,nowIso())
+  if (queued > 0) yield* wake()
 })
 
 /** Reconcile source-of-truth rows periodically so failed/missed callbacks never lose lifecycle events.
@@ -83,10 +97,12 @@ export const flushLinearOutbox = () => Effect.gen(function* () {
           const businessDomain=domain && !personalDomain.has(domain)?domain:null
           const orgName=account.organization?.trim() || (businessDomain?cleanName(businessDomain):'Unverified organization')
           const base=`**Organization:** ${orgName}\n**Email domain:** ${domain || 'Unknown'}\n**Contact:** ${account.name ?? 'Not supplied'} (${account.email})\n**Control-plane account:** ${account.id}\n**Website candidate:** ${businessDomain ? 'https://'+businessDomain : 'Not established (personal email)'}\n\n**Linear Agent research brief:** Research the company using its public domain. Establish industry, location, employee range, and relevant enterprise software only when supported by citations. Add sourced findings to this issue; clearly mark uncertainties. Never invent company or contact details.\n`
+          // Optional: land issues in a specific status (e.g. Todo instead of the team's default Backlog) and assign them.
+          const routing={stateId:env.LINEAR_ISSUE_STATE_ID||undefined,assigneeId:env.LINEAR_ASSIGNEE_ID||undefined}
           let issueId=job.linear_issue_id
           if(job.kind==='lead') {
             if(!issueId){
-              const result=await gql(env,ISSUE,{input:{teamId:env.LINEAR_TEAM_ID,title:'New Lead | '+domain,description:base+'\n**Interest:** $1,000 Papyrus compute credit requested and account created.\n**Next steps:** Qualify organization, validate fit, and follow up.'}})
+              const result=await gql(env,ISSUE,{input:{...routing,teamId:env.LINEAR_TEAM_ID,title:'New Lead | '+domain,description:base+'\n**Interest:** $1,000 Papyrus compute credit requested and account created.\n**Next steps:** Qualify organization, validate fit, and follow up.'}})
               if(!result.issueCreate?.success) throw new Error('Linear issueCreate unsuccessful')
               issueId=result.issueCreate.issue.id
               await execute('UPDATE linear_outbox SET linear_issue_id = ? WHERE key = ?',issueId,job.key)
@@ -103,7 +119,7 @@ export const flushLinearOutbox = () => Effect.gen(function* () {
               await execute('UPDATE linear_outbox SET linear_customer_id = ? WHERE key = ?',customerId,job.key)
             }
             if(!issueId){
-              const issue=await gql(env,ISSUE,{input:{teamId:env.LINEAR_TEAM_ID,title:`New Deployment - ${orgName} @ ${deploymentId}`,description:base+`\n**First deployment:** ${deploymentId}\n**Status:** Deployment created after verified Stripe checkout.\n**Follow-up:** Confirm provisioning and onboarding.`,labelIds:env.LINEAR_NEW_CUSTOMER_LABEL_ID?[env.LINEAR_NEW_CUSTOMER_LABEL_ID]:undefined}})
+              const issue=await gql(env,ISSUE,{input:{...routing,teamId:env.LINEAR_TEAM_ID,title:`New Deployment - ${orgName} @ ${deploymentId}`,description:base+`\n**First deployment:** ${deploymentId}\n**Status:** Deployment created after verified Stripe checkout.\n**Follow-up:** Confirm provisioning and onboarding.`,labelIds:env.LINEAR_NEW_CUSTOMER_LABEL_ID?[env.LINEAR_NEW_CUSTOMER_LABEL_ID]:undefined}})
               if(!issue.issueCreate?.success) throw new Error('Linear issueCreate unsuccessful')
               issueId=issue.issueCreate.issue.id
               await execute('UPDATE linear_outbox SET linear_issue_id = ? WHERE key = ?',issueId,job.key)

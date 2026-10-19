@@ -28,8 +28,4 @@ export class LinearSync {
   }
 }
 
-export const wakeLinearSync = async (env: Bindings): Promise<void> => {
-  if (!env.LINEAR_SYNC) return
-  const id = env.LINEAR_SYNC.idFromName('control-plane')
-  await env.LINEAR_SYNC.get(id).fetch('https://linear-sync.internal/wake', { method: 'POST' })
-}
+export { wakeLinearSync } from './linear'
