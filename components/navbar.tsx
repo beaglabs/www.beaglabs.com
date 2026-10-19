@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { CreditClaimForm } from '@/components/credit-claim-form'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import {
@@ -17,11 +18,6 @@ const GROUPS = [
     { title: 'Internal App Factory', href: '/solutions/internal-app-factory', description: 'Create governed internal applications.' },
     { title: 'Agentic Modernization', href: '/solutions/agentic-modernization', description: 'Modernize existing processes and legacy interfaces.' },
     { title: 'Use Cases', href: '/use-cases', description: 'Explore industry workflows.' },
-  ] },
-  { name: 'Explore', links: [
-    { title: 'Papyrus', href: '/products/papyrus', description: 'Explore model-aware Agentic ERP orchestration.' },
-    { title: 'Capabilities', href: '/capabilities', description: 'Explore technical capabilities.' },
-    { title: 'Trust & Security', href: '/trust/papyrus', description: 'Review the Papyrus trust model.' },
   ] },
   { name: 'Resources', links: [
     { title: 'Blog', href: '/blog', description: 'Ideas, announcements, and engineering notes.' },
@@ -70,10 +66,7 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
           </NavigationMenu>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Link href="/products/papyrus" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-3 py-2 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#111] shadow-[3px_3px_0_#111] transition hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#111] sm:px-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/papyrus-logo.svg" alt="" className="h-4 w-4" /> See Papyrus
-          </Link>
+          <CreditClaimForm placement="nav" compact />
           <button type="button" className="inline-flex h-10 w-10 items-center justify-center border-2 border-[#111] bg-white md:hidden" aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileOpen} aria-controls="mobile-site-navigation" onClick={() => setMobileOpen(v => !v)}>
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
