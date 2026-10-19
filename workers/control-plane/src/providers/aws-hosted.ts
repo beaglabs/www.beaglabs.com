@@ -150,7 +150,12 @@ export const bootstrapHosted = (ctx: ProviderContext, infra: HostedInfra) =>
         if (fs.FileSystems?.[0]?.LifeCycleState !== 'available') waiting = 'The EFS file system is still being created.'
         else {
           for (const SubnetId of infra.subnetIds!) {
-            yield* ignoreDuplicate(Efs.createMountTarget({ FileSystemId: fileSystemId, SubnetId, SecurityGroups: [efsSg] })).pipe(Effect.mapError(fail('Creating EFS mount targets failed')))
+            yield* ignoreDuplicate(Efs.createMountTarget({ FileSystemId: fileSystemId, SubnetId, SecurityGroups: [efsSg] })).pipe(
+              // EFS allows one mount target per AZ and answers MountTargetConflict when that AZ is already covered (a rerun
+              // after hosted_infra was lost): the containers in that AZ use the existing one.
+              Effect.catch((error) => (/MountTargetConflict|already exists/i.test(`${(error as { _tag?: string })?._tag ?? ''} ${(error as { message?: string })?.message ?? ''}`) ? Effect.void : Effect.fail(error))),
+              Effect.mapError(fail('Creating EFS mount targets failed')),
+            )
           }
           infra.mountTargets = true
         }
