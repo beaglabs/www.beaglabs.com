@@ -27,12 +27,20 @@ export { bindingFor, type MicrosoftBinding } from './microsoft-binding'
  *   and Papyrus redeems a one-time handle (60 s) server-to-server for an identity assertion signed by the license
  *   Worker. Microsoft tokens are used at the callback and then dropped: none is stored or forwarded.
  *
- * Public cloud only. No directory access: delegated User.Read for the signed-in person's own profile and photo.
+ * - Staff directory (kind `directory`, later and separate): an Entra administrator approves the app's application
+ *   permission User.Read.All for the bound tenant (adminconsent with `.default`). Papyrus then asks for an app-only Graph
+ *   token with its deployment key (POST /api/microsoft/app-token): for the bound tenant only, an hour at most, and only
+ *   once the token carries User.Read.All. Beag Labs mints the token and never reads the directory.
+ *
+ * Public cloud only. Sign-in itself uses delegated User.Read for the signed-in person's own profile and photo.
  */
 
 const AUTHORITY = 'https://login.microsoftonline.com'
 const GRAPH = 'https://graph.microsoft.com/v1.0'
 export const MICROSOFT_SCOPES = 'openid profile email https://graph.microsoft.com/User.Read'
+/** Everything the app registration lists, including the application permission User.Read.All. */
+export const DIRECTORY_SCOPE = 'https://graph.microsoft.com/.default'
+export const DIRECTORY_ROLE = 'User.Read.All'
 const TRANSACTION_MS = 10 * 60_000
 const HANDLE_MS = 60_000
 const ASSERTION_MS = 5 * 60_000
@@ -46,6 +54,10 @@ export const consentedUrl = (env: Pick<Bindings, 'BASE_URL'>) => `${env.BASE_URL
 /** The organizations admin-consent link; with no `state` it is the shareable link for an administrator. */
 export const adminConsentUrl = (clientId: string, redirectUri: string, state?: string) =>
   `${AUTHORITY}/organizations/v2.0/adminconsent?${new URLSearchParams({ client_id: clientId, scope: MICROSOFT_SCOPES, redirect_uri: redirectUri, ...(state ? { state } : {}) })}`
+
+/** Admin consent for the staff directory, in the bound tenant only. */
+export const directoryConsentUrl = (clientId: string, tenantId: string, redirectUri: string, state: string) =>
+  `${AUTHORITY}/${encodeURIComponent(tenantId)}/v2.0/adminconsent?${new URLSearchParams({ client_id: clientId, scope: DIRECTORY_SCOPE, redirect_uri: redirectUri, state })}`
 
 const notConfigured = () => new UserError({ message: "Connect Microsoft isn't set up on papyrus.beaglabs.com yet. Email james@beaglabs.com and we'll turn it on.", status: 503 })
 
@@ -108,7 +120,7 @@ export const acceptTerms = (deployment: Pick<Deployment, 'id' | 'hostname'>, acc
 
 interface Transaction {
   id: string
-  kind: 'consent' | 'portal'
+  kind: 'consent' | 'portal' | 'directory'
   deployment_id: string
   account_id: string | null
   phase: string
@@ -355,6 +367,21 @@ const finishPortal = (txn: Transaction, profile: Profile) =>
     return { kind: 'redirect', url: `${txn.return_origin}/api/auth/entra/callback?${new URLSearchParams({ handle, state: txn.client_state! })}` } satisfies CallbackResult
   })
 
+/**
+ * Back from the staff-directory approval: always to Papyrus's Staff page, saying how it went. Microsoft's answer only
+ * says consent was given; whether it took effect shows in the app token's roles (appToken).
+ */
+const finishDirectory = (txn: Transaction, query: { error?: string; tenant?: string; admin_consent?: string }) =>
+  Effect.gen(function* () {
+    const back = (directory: 'allowed' | 'denied' | 'wrong-tenant') => ({ kind: 'redirect', url: `${txn.return_origin}/portal/staff?${new URLSearchParams({ directory })}` }) satisfies CallbackResult
+    if (txn.phase !== 'consent' || !(yield* run('UPDATE microsoft_transactions SET phase = ?, used_at = ? WHERE id = ? AND used_at IS NULL', 'done', nowIso(), txn.id))) return yield* expired()
+    if (query.error || query.admin_consent?.toLowerCase() !== 'true') return back('denied')
+    if (query.tenant?.toLowerCase() !== txn.tenant_id) return back('wrong-tenant')
+    const deployment = yield* getDeployment(txn.deployment_id)
+    if (deployment) yield* logEvent({ accountId: deployment.account_id, deploymentId: deployment.id, level: 'ok', source: 'microsoft', message: 'Staff directory allowed · Papyrus can list everyone in the organization' })
+    return back('allowed')
+  })
+
 /** GET /microsoft/callback: Microsoft's answer to adminconsent (consent) or authorize (signin, start). */
 export const microsoftCallback = (
   query: { state?: string; code?: string; error?: string; error_description?: string; tenant?: string; admin_consent?: string },
@@ -364,6 +391,7 @@ export const microsoftCallback = (
     const env = yield* Env
     const client = yield* microsoftClient
     const txn = yield* liveTransaction(query.state)
+    if (txn.kind === 'directory') return yield* finishDirectory(txn, query)
     // Connect binds a tenant to a deployment: only the account that started it can finish it.
     if (txn.kind === 'consent' && (!account || account.id !== txn.account_id))
       return yield* new UserError({ message: 'Sign in to papyrus.beaglabs.com with the account that started Connect Microsoft, then try again.', status: 403 })
@@ -397,7 +425,7 @@ const notBound = () => new UserError({ message: 'Connect Microsoft at papyrus.be
 
 const controlPlaneDeployment = (licenseId: string) =>
   Effect.gen(function* () {
-    const row = yield* first<{ id: string; hostname: string | null }>('SELECT id, hostname FROM deployments WHERE license_deployment_id = ?', licenseId)
+    const row = yield* first<{ id: string; hostname: string | null; billing_state: string }>('SELECT id, hostname, billing_state FROM deployments WHERE license_deployment_id = ?', licenseId)
     if (!row) return yield* new UserError({ message: 'Not a control-plane deployment', status: 404, code: 'not_found' })
     return row
   })
@@ -459,6 +487,63 @@ export const redeemHandle = (authorization: string | null | undefined, deploymen
     if (!redeemed?.identity_json) return yield* invalid()
     yield* run('UPDATE microsoft_transactions SET identity_json = NULL WHERE id = ?', redeemed.id)
     return { assertion: JSON.parse(redeemed.identity_json) as SignedIdentity }
+  })
+
+/** POST /api/microsoft/directory-consent → `{ url }`: where an Entra administrator approves the staff directory. */
+export const createDirectoryTransaction = (authorization: string | null | undefined, deploymentId: string | null | undefined) =>
+  Effect.gen(function* () {
+    const env = yield* Env
+    const licenseId = yield* authenticateDeployment(authorization, deploymentId)
+    const deployment = yield* controlPlaneDeployment(licenseId)
+    const binding = yield* bindingFor(deployment.id)
+    if (!binding || !deployment.hostname) return yield* notBound()
+    const client = yield* microsoftClient
+    const id = yield* createTransaction({ kind: 'directory', deployment_id: deployment.id, phase: 'consent', tenant_id: binding.tenant_id, return_origin: `https://${deployment.hostname}` })
+    return { url: directoryConsentUrl(client.id, binding.tenant_id, callbackUrl(env), id) }
+  })
+
+const directoryNotAllowed = () =>
+  new UserError({ message: 'An Entra administrator has not allowed the staff directory yet', status: 409, code: 'directory_not_allowed' })
+
+/** The claims of a token Microsoft just issued to us over TLS (read, not verified: it is not ours to accept). */
+const claimsOf = (token: string): Record<string, unknown> => {
+  try {
+    const part = token.split('.')[1] ?? ''
+    return JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(part.length / 4) * 4, '='))) as Record<string, unknown>
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * POST /api/microsoft/app-token → `{ accessToken, expiresAt }`: an app-only Graph token for the bound tenant, for the
+ * Staff page and people search. Only for a paid-up deployment, and only once the token carries User.Read.All.
+ */
+export const appToken = (authorization: string | null | undefined, deploymentId: string | null | undefined) =>
+  Effect.gen(function* () {
+    const licenseId = yield* authenticateDeployment(authorization, deploymentId)
+    const deployment = yield* controlPlaneDeployment(licenseId)
+    if (deployment.billing_state !== 'active') return yield* new UserError({ message: 'This deployment is suspended', status: 403, code: 'suspended' })
+    const binding = yield* bindingFor(deployment.id)
+    if (!binding) return yield* notBound()
+    const client = yield* microsoftClient
+    const http = yield* HttpClient.HttpClient
+    const response = yield* http
+      .execute(
+        HttpClientRequest.post(`${AUTHORITY}/${encodeURIComponent(binding.tenant_id)}/oauth2/v2.0/token`).pipe(
+          HttpClientRequest.bodyUrlParams({ client_id: client.id, client_secret: client.secret, grant_type: 'client_credentials', scope: DIRECTORY_SCOPE }),
+        ),
+      )
+      .pipe(Effect.timeout('15 seconds'), Effect.mapError(() => failed('Could not reach Microsoft. Try again.')))
+    const body = (yield* response.json.pipe(Effect.orElseSucceed(() => ({})))) as { access_token?: string; expires_in?: number; error_description?: string }
+    // No service principal in the tenant, or consent withdrawn: the directory is not allowed (any more).
+    if (response.status === 400 || response.status === 401) return yield* directoryNotAllowed()
+    if (response.status !== 200 || !body.access_token) return yield* failed('Microsoft did not issue a directory token. Try again.')
+    const claims = claimsOf(body.access_token)
+    if (claims.tid !== binding.tenant_id) return yield* failed('Microsoft issued a token for another organization.')
+    if (!Array.isArray(claims.roles) || !claims.roles.includes(DIRECTORY_ROLE)) return yield* directoryNotAllowed()
+    const lifetime = Math.min(Math.max(Number(body.expires_in) || 3600, 60), 3600)
+    return { accessToken: body.access_token, expiresAt: new Date(Date.now() + lifetime * 1000).toISOString() }
   })
 
 /** GET /api/microsoft/binding: what Papyrus needs to finish setup on its own once Connect Microsoft is done. */
