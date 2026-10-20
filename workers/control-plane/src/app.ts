@@ -28,7 +28,7 @@ import { LIVE_PATH } from './activity-hub'
 import * as Views from './views'
 import { autoAdvance, dueCheck } from './advance'
 import { syncMicrosoftConnection } from './microsoft-binding'
-import { acceptTerms, bindingInfo, createPortalTransaction, microsoftCallback, pruneTransactions, redeemHandle, startConsent, startPortal, termsFor } from './microsoft'
+import { acceptTerms, appToken, bindingInfo, createDirectoryTransaction, createPortalTransaction, microsoftCallback, pruneTransactions, redeemHandle, startConsent, startPortal, termsFor } from './microsoft'
 import { availableActions, buildDeploymentView, buildSummary, currentStep, type ViewContext } from './deployment-view'
 import { browserCapture, captureAndStore, loadCapture, previewObject, requestCapture, screenshotsEnabled, type CaptureFn } from './preview'
 import type { ActionId, ActionResult, DetailPayload, ListPayload } from './ui/types'
@@ -767,6 +767,12 @@ export function createApp(deps: AppDeps = {}) {
     const body = await c.req.json().catch(() => null)
     return deploymentApi(c, redeemHandle(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'), body))
   })
+
+  /** Where an Entra administrator approves the staff directory for the bound tenant: `{ url }` for the browser. */
+  app.post('/api/microsoft/directory-consent', (c) => deploymentApi(c, createDirectoryTransaction(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'))))
+
+  /** An app-only Graph token for the bound tenant (409 directory_not_allowed until an administrator approves). */
+  app.post('/api/microsoft/app-token', (c) => deploymentApi(c, appToken(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'))))
 
   /** The tenant, app and System Owner, once Connect Microsoft is done (404 not_bound until then). */
   app.get('/api/microsoft/binding', (c) => deploymentApi(c, bindingInfo(c.req.header('authorization'), c.req.header('x-papyrus-deployment-id'))))
