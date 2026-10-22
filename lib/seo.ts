@@ -1,5 +1,5 @@
 export const BASE_URL = 'https://beaglabs.com'
-const OG_IMAGE_VERSION = '2026-10-19-dotted-card-v2'
+const OG_IMAGE_VERSION = '2026-10-22-edgy-grain'
 
 export function canonical(path: string) {
   return {

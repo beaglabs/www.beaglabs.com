@@ -1,25 +1,31 @@
 import { ImageResponse } from 'next/og'
 import { JETBRAINS_MONO_700_B64, ROBOTO_CONDENSED_900_B64, decodeFont } from '@/lib/og-fonts'
+import { splitHeadline } from '@/lib/headline'
 
 export const OG_SIZE = { width: 1200, height: 630 } as const
 
 const ORANGE = '#ff5f1f'
 const INK = '#111111'
-const WHITE = '#ffffff'
+const PEACH = '#fff1e9'
 const DISPLAY = 'Roboto Condensed'
 const MONO = 'JetBrains Mono'
 
-
-// Must stay in sync with the homepage <h1> in components/hero-section.tsx.
+// Must stay in sync with the homepage hero in components/hero-section.tsx.
 export const HOME_OG = {
-  title: 'Building the Superintelligent ERP',
-  description:
-    'Your existing ERP stays the system of record. Papyrus orchestrates complex operations across entities, teams, and legacy systems.',
-  label: 'Papyrus · Customer-hosted software',
+  title: 'We build superintelligent solutions.',
+  before: 'We build',
+  slab: 'superintelligent',
+  after: 'solutions.',
+  description: 'Deep expertise and solutioneering paired with superintelligent agents, deploying advanced solutions for federal and SLED.',
+  label: 'Beag Labs · Federal + SLED',
 } as const
 
 export type OgImageInput = {
   title: string
+  /** Optional explicit headline split; otherwise the title's last word(s) go on the slab. */
+  before?: string
+  slab?: string
+  after?: string
   description?: string
   label?: string
   date?: string
@@ -40,11 +46,14 @@ function truncate(value: string, max: number) {
   return `${value.slice(0, max - 1).trimEnd()}…`
 }
 
-function titleSize(title: string) {
-  if (title.length <= 19) return 88
-  if (title.length <= 33) return 73
-  if (title.length <= 52) return 60
-  if (title.length <= 75) return 49
+/** Font size from the longest headline line, so the slab never runs off the card. */
+function headlineSize(lines: string[]) {
+  const longest = Math.max(...lines.map((line) => line.length), 1)
+  if (longest <= 12) return 112
+  if (longest <= 17) return 96
+  if (longest <= 24) return 76
+  if (longest <= 32) return 60
+  if (longest <= 42) return 48
   return 40
 }
 
@@ -55,39 +64,50 @@ function formatDate(raw?: string) {
   return parsed.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit', timeZone: 'UTC' })
 }
 
+const crop = (style: Record<string, number | string>) => <div style={{ position: 'absolute', width: 30, height: 30, borderColor: INK, borderStyle: 'solid', borderWidth: 0, ...style }} />
+
+/** The social card, in the edgy hero's style: grainy peach-to-black gradient, crop marks, slab headline. */
 export async function renderOgImage(input: OgImageInput) {
-  const title = truncate(input.title || 'Beag Labs', 118)
-  const description = truncate(input.description || '', 150)
+  const title = truncate(input.title || 'Beag Labs', 110)
+  const [autoBefore, autoSlab, autoAfter] = splitHeadline(title)
+  const before = input.slab ? input.before ?? '' : autoBefore
+  const slab = input.slab ?? autoSlab
+  const after = input.slab ? input.after ?? '' : autoAfter
+  const description = truncate(input.description || '', 140)
   const label = truncate(input.label || HOME_OG.label, 44)
   const date = formatDate(input.date)
-  const size = titleSize(title)
+  const size = headlineSize([before, slab, after].filter(Boolean))
   const fonts = getFonts()
-  // Deterministic, repeating dot field shared by all pages and blog previews.
-  const palette = ['#ff5f1f', '#ff8a5c', '#ffb894', '#ffffff', '#ffc9b0']
-  const dots = Array.from({ length: 36 }, (_, row) =>
-    Array.from({ length: 68 }, (_, col) => {
-      const n = (col * 17 + row * 31 + (col * row) % 11) % palette.length
-      return { x: 7 + col * 18, y: 7 + row * 18, color: palette[n] }
-    })
-  ).flat()
+  // A fixed speckle pattern stands in for the hero's film grain.
+  const grain = Array.from({ length: 900 }, (_, i) => ({ x: (i * 97) % 1200, y: (i * 53 + Math.floor(i / 12) * 7) % 630, o: ((i * 31) % 10) / 60 }))
 
   return new ImageResponse(
-    <div style={{ width: 1200, height: 630, display: 'flex', position: 'relative', overflow: 'hidden', backgroundColor: '#111', fontFamily: DISPLAY, color: INK }}>
+    <div style={{ width: 1200, height: 630, display: 'flex', position: 'relative', overflow: 'hidden', fontFamily: DISPLAY, color: INK, backgroundImage: 'linear-gradient(145deg, #ffb894 0%, #ff5f1f 38%, #c2410c 72%, #000000 100%)' }}>
       <svg width="1200" height="630" viewBox="0 0 1200 630" style={{ position: 'absolute', top: 0, left: 0 }}>
-        {dots.map((dot, i) => <circle key={i} cx={dot.x} cy={dot.y} r="7.7" fill={dot.color} />)}
+        {grain.map((g, i) => <rect key={i} x={g.x} y={g.y} width="2" height="2" fill={i % 3 ? '#000' : '#fff'} fillOpacity={g.o} />)}
       </svg>
-      <div style={{ position: 'absolute', top: 56, left: 112, width: 984, height: 520, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '32px 66px 28px', backgroundColor: WHITE, border: '4px solid #111', boxShadow: '9px 9px 0 #111' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <div style={{ display: 'flex', maxWidth: '100%', backgroundColor: ORANGE, color: INK, border: '2px solid #111', boxShadow: '3px 3px 0 #111', padding: '8px 14px', fontFamily: MONO, fontSize: 14, letterSpacing: 1.7, textTransform: 'uppercase' }}>{label}</div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', width: '100%', marginTop: 22, fontSize: size, lineHeight: 0.98, fontWeight: 900, textTransform: 'uppercase', letterSpacing: -1.4, maxHeight: 220, overflow: 'hidden' }}>{title}</div>
-          <div style={{ display: 'flex', width: 440, height: 3, backgroundColor: INK, marginTop: 23 }} />
-          {description ? <div style={{ display: 'flex', width: '100%', maxHeight: 102, overflow: 'hidden', justifyContent: 'center', textAlign: 'center', marginTop: 21, fontFamily: DISPLAY, fontWeight: 900, fontSize: 23, lineHeight: 1.28, color: '#333' }}>{description}</div> : null}
+      {crop({ top: 22, left: 22, borderLeftWidth: 4, borderTopWidth: 4 })}
+      {crop({ top: 22, right: 22, borderRightWidth: 4, borderTopWidth: 4 })}
+      {crop({ bottom: 22, left: 22, borderLeftWidth: 4, borderBottomWidth: 4, borderColor: '#fff' })}
+      {crop({ bottom: 22, right: 22, borderRightWidth: 4, borderBottomWidth: 4, borderColor: '#fff' })}
+      <div style={{ position: 'absolute', top: 28, right: 70, display: 'flex', fontFamily: MONO, fontSize: 13, letterSpacing: 2.4, color: INK }}>38.8977° N · 77.0365° W</div>
+
+      <div style={{ position: 'absolute', top: 70, left: 72, right: 72, bottom: 70, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignSelf: 'flex-start', alignItems: 'center', backgroundColor: INK, color: '#fff', border: `3px solid ${INK}`, padding: '8px 14px', fontFamily: MONO, fontSize: 16, letterSpacing: 2.6, textTransform: 'uppercase' }}>
+          <div style={{ display: 'flex', width: 11, height: 11, backgroundColor: ORANGE, marginRight: 12 }} />{label}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28, fontFamily: MONO, fontSize: 15, letterSpacing: 2, color: INK }}>
-          <div style={{ display: 'flex', borderBottom: '2px solid #111', paddingBottom: 3 }}>BEAGLABS.COM →</div>
-          {date ? <div style={{ display: 'flex', fontSize: 11, letterSpacing: 0 }}>{date}</div> : null}
+        <div style={{ display: 'flex', flexDirection: 'column', marginTop: 26, fontSize: size, lineHeight: 0.9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: -1.5 }}>
+          {before ? <div style={{ display: 'flex' }}>{before}</div> : null}
+          {slab ? <div style={{ display: 'flex', alignSelf: 'flex-start', backgroundColor: INK, color: ORANGE, padding: `2px ${Math.round(size * 0.16)}px ${Math.round(size * 0.06)}px`, margin: `${Math.round(size * 0.08)}px 0`, transform: 'rotate(-1deg)', boxShadow: `8px 8px 0 ${PEACH}` }}>{slab}</div> : null}
+          {after ? <div style={{ display: 'flex' }}>{after}</div> : null}
         </div>
+        {description ? <div style={{ display: 'flex', alignSelf: 'flex-start', maxWidth: 820, marginTop: 30, backgroundColor: INK, color: '#fff', borderLeft: `8px solid ${ORANGE}`, padding: '14px 20px', fontFamily: DISPLAY, fontWeight: 900, fontSize: 24, lineHeight: 1.3 }}>{description}</div> : null}
       </div>
+
+      <div style={{ position: 'absolute', bottom: 28, left: 70, display: 'flex', alignItems: 'center', fontFamily: MONO, fontSize: 14, letterSpacing: 2.4, color: '#fff' }}>
+        <div style={{ display: 'flex', width: 10, height: 10, backgroundColor: ORANGE, marginRight: 12 }} />BEAGLABS.COM
+      </div>
+      {date ? <div style={{ position: 'absolute', bottom: 28, right: 70, display: 'flex', fontFamily: MONO, fontSize: 14, letterSpacing: 2.4, color: '#fff' }}>{date.toUpperCase()}</div> : null}
     </div>,
     {
       ...OG_SIZE,

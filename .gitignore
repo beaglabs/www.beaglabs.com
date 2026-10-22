@@ -45,3 +45,6 @@ public/cookbook-preview.html
 
 # Brainstorm mockups
 .superpowers/
+
+# Brief page previews (node scripts/briefs/build.mjs --png)
+scripts/briefs/out/

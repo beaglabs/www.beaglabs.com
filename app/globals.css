@@ -103,6 +103,24 @@
     background: #111111;
     color: #ffffff;
   }
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+  }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+  }
+  .maplibregl-ctrl-attrib {
+    @apply bg-background! text-muted-foreground! border-border! rounded-md! border! shadow-sm!;
+  }
+  .maplibregl-ctrl-attrib a {
+    @apply text-muted-foreground!;
+  }
+  .maplibregl-ctrl-attrib a:hover {
+    @apply text-foreground!;
+  }
+  .maplibregl-ctrl-attrib-button {
+    @apply bg-transparent! dark:invert;
+  }
 }
 
 @utility marketing-grid {
@@ -288,4 +306,18 @@
   border: 3px solid #111;
   background: #fff;
   box-shadow: 6px 6px 0px 0px #111;
+}
+
+/* ── live demo motion (homepage project gallery, product demos) ── */
+@keyframes demo-bars {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+@keyframes demo-travel {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+@keyframes demo-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }

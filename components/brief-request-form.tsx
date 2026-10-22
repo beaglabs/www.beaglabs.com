@@ -14,7 +14,7 @@ const BRIEF_PDF: Record<BriefType, string> = {
 const EMAIL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/
 
 /** "Request a solution brief": work email, a marketing opt-in radio, and the brief for this page sent by Customer.io. */
-export function BriefRequestForm({ briefType, placement }: { briefType: BriefType; placement: 'hero' | 'nav' | 'page-hero' }) {
+export function BriefRequestForm({ briefType, placement, stacked = false }: { briefType: BriefType; placement: 'hero' | 'nav' | 'page-hero'; stacked?: boolean }) {
   const id = useId()
   const [email, setEmail] = useState('')
   const [marketing, setMarketing] = useState<'yes' | 'no'>('no')
@@ -59,7 +59,7 @@ export function BriefRequestForm({ briefType, placement }: { briefType: BriefTyp
 
   return <form onSubmit={submit} noValidate aria-label="Request a solution brief" className="w-full text-left">
     <label htmlFor={id} className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.14em] text-[#111]">Work email</label>
-    <div className={`flex flex-col border-[3px] bg-white shadow-[5px_5px_0_#111] transition-shadow focus-within:shadow-[7px_7px_0_#ff5f1f] sm:flex-row ${problem ? 'border-[#c2410c]' : 'border-[#111]'}`}>
+    <div className={`flex flex-col border-[3px] bg-white shadow-[5px_5px_0_#111] transition-shadow focus-within:shadow-[7px_7px_0_#ff5f1f] ${stacked ? '' : 'sm:flex-row'} ${problem ? 'border-[#c2410c]' : 'border-[#111]'}`}>
       <div className="flex min-w-0 flex-1 items-center gap-3 px-4">
         <Mail className="h-5 w-5 shrink-0 text-[#111]" strokeWidth={2.5} aria-hidden="true" />
         <input
@@ -69,13 +69,13 @@ export function BriefRequestForm({ briefType, placement }: { briefType: BriefTyp
           className="h-[56px] min-w-0 flex-1 bg-transparent text-[16px] font-semibold text-[#111] placeholder:font-medium placeholder:text-[#8a8a8a] focus:outline-none"
         />
       </div>
-      <button type="submit" disabled={state === 'loading'} className="inline-flex h-[56px] shrink-0 items-center justify-center gap-2 border-t-[3px] border-[#111] bg-[#ff5f1f] px-5 text-[12px] font-black uppercase tracking-[.06em] text-[#111] transition-colors hover:bg-[#111] hover:text-white focus-visible:bg-[#111] focus-visible:text-white focus-visible:outline-none disabled:cursor-wait disabled:opacity-80 sm:border-l-[3px] sm:border-t-0">
+      <button type="submit" disabled={state === 'loading'} className={`inline-flex h-[56px] shrink-0 items-center justify-center gap-2 border-t-[3px] border-[#111] bg-[#ff5f1f] px-5 text-[12px] font-black uppercase tracking-[.06em] text-[#111] transition-colors hover:bg-[#111] hover:text-white focus-visible:bg-[#111] focus-visible:text-white focus-visible:outline-none disabled:cursor-wait disabled:opacity-80 ${stacked ? '' : 'sm:border-l-[3px] sm:border-t-0'}`}>
         {state === 'loading'
           ? <><LoaderCircle className="h-4 w-4 animate-spin" strokeWidth={3} aria-hidden="true" /> Sending…</>
           : <>Request a solution brief <ArrowRight className="h-4 w-4" strokeWidth={3} aria-hidden="true" /></>}
       </button>
     </div>
-    <fieldset className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-5">
+    <fieldset className={`mt-4 flex flex-col gap-2 ${stacked ? '' : 'sm:flex-row sm:items-center sm:gap-5'}`}>
       <legend className="sr-only">Marketing emails</legend>
       {([['yes', 'Yes, send me Beag Labs updates'], ['no', 'No, just the brief']] as const).map(([value, label]) => (
         <label key={value} className="flex cursor-pointer items-center gap-2 text-[13px] font-semibold text-[#111]">

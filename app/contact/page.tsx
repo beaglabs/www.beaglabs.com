@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { ArrowUpRight, Mail } from 'lucide-react'
 
 import { SiteFooter } from '@/components/site-footer'
+import { EdgyHero, heroButtonPrimary, heroButtonSecondary } from '@/components/edgy-hero'
 import { pageMetadata } from '@/lib/seo'
 
 const BOOKING_URL =
@@ -20,22 +21,21 @@ export const metadata: Metadata = pageMetadata({
 export default function ContactPage() {
   return (
     <>
+      <EdgyHero
+        background="daylight"
+        eyebrow="Contact / Schedule"
+        before="Talk with"
+        slab="Beag Labs."
+        description="Pick a time to discuss Papyrus, back office automation, legacy workflows, or delivery partnerships."
+        next={{ href: '#booking', label: 'Choose a time' }}
+        actions={<>
+          <a href="#booking" className={heroButtonPrimary}>Choose a time</a>
+          <a href="mailto:james@beaglabs.com" className={heroButtonSecondary}><Mail className="h-4 w-4" /> james@beaglabs.com</a>
+        </>}
+      />
 
-      <main className="site-page-grid min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-12 lg:px-9 lg:pb-28 lg:pt-16">
+      <main id="booking" className="site-page-grid min-h-screen scroll-mt-20 bg-[#FAFAF9] px-6 pb-20 pt-12 lg:px-9 lg:pb-28 lg:pt-16">
         <div className="mx-auto w-full max-w-[1180px]">
-          <div className="mx-auto mb-9 max-w-[760px] text-center">
-            <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-[#ff5f1f]">
-              Contact / Schedule
-            </p>
-            <h1 className="mt-3 text-[length:min(42px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] text-[#111] sm:text-[58px]">
-              Talk with Beag Labs.
-            </h1>
-            <p className="mx-auto mt-5 max-w-[650px] text-[16px] font-medium leading-7 text-[#555]">
-              Pick a time to discuss Papyrus, back office automation, legacy workflows,
-              or delivery partnerships.
-            </p>
-          </div>
-
           <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[8px_8px_0_#111]">
             <div className="flex flex-col gap-3 border-b-[3px] border-[#111] bg-[#fff1e9] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>

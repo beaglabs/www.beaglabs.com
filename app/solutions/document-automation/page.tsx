@@ -11,6 +11,10 @@ export const metadata: Metadata = pageMetadata({
 
 export default function Page() {
   return <SolutionPage content={{
+    headline: ["Turn documents into", "structured", "work."],
+    demo: "extraction",
+    highlights: ["Every extracted field links back to the line on the page it came from.", "Low-confidence values are held for a person, never posted on a guess.", "Results post into your system of record with the reviewer recorded."],
+    projects: ["intake", "ap", "records", "casework"],
     eyebrow: "Document Automation",
     title: "Turn documents into structured work.",
     description: "Extract useful information from PDFs and office files, review results, and turn content into repeatable workflows.",

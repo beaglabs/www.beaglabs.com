@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { AnnouncementBanner } from "@/components/announcement-banner"
 import { SiteFooter } from "@/components/site-footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { EdgyHero } from '@/components/edgy-hero'
 import { industries } from "@/data/use-cases/industries"
 import { ogImageUrl } from "@/lib/seo"
 
@@ -61,6 +62,13 @@ export async function generateMetadata({
   }
 }
 
+/** Hero headline parts: the last one or two words go on the slab. */
+function splitTitle(title: string) {
+  const words = title.trim().split(/\s+/)
+  const n = words.length >= 5 ? 2 : 1
+  return words.length < 2 ? { slab: title } : { before: words.slice(0, -n).join(' '), slab: words.slice(-n).join(' ') }
+}
+
 export default async function UseCaseDetailPage({
   params,
 }: UseCasePageProps) {
@@ -88,26 +96,20 @@ export default async function UseCaseDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="site-hero nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
-          <Breadcrumbs
+      <EdgyHero
+        background="dusk"
+        size="md"
+        breadcrumb={<div className="[&_a]:!text-white [&_li]:!text-white [&_ol]:!text-white [&_nav]:!mb-0"><Breadcrumbs
             items={[
               { name: "Home", url: "/" },
               { name: "Use Cases", url: "/use-cases" },
               { name: industry.industry, url: `/use-cases/${industry.slug}` },
             ]}
-          />
-          <div className="mt-8 mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
-            {industry.industry}
-          </div>
-          <h1 className="mb-5 max-w-[820px] text-[length:min(42px,9vw)] font-extrabold tracking-[-0.05em] text-[#111] lg:text-[54px]">
-            {industry.title}
-          </h1>
-          <p className="max-w-[640px] text-[17px] leading-[1.72] text-[#404040] font-medium">
-            {industry.heroDescription}
-          </p>
-        </div>
-      </section>
+          /></div>}
+        eyebrow={industry.industry}
+        {...splitTitle(industry.title)}
+        description={industry.heroDescription}
+      />
 
       <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
