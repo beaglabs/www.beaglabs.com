@@ -29,7 +29,7 @@
   "vars": {
     "BASE_URL": "https://papyrus.beaglabs.com",
     "PAPYRUS_IMAGE": "ghcr.io/beaglabs/papyrus/papyrus",
-    "PAPYRUS_IMAGE_DIGEST": "sha256:ab8fc338890e74a6922c9e63fc9fdc6aef72e9cdfa5ab29b080ff6ad1fa3e7fd",
+    "PAPYRUS_IMAGE_DIGEST": "sha256:8b23872eb130aa7408dd48c37cb84f00b7e66fb7f1e9ae4fc15e1d08a3945a53",
     // Sentry for deployed Papyrus: optional PAPYRUS_SENTRY_DSN, PAPYRUS_WEB_SENTRY_DSN and PAPYRUS_SENTRY_ENVIRONMENT, set
     // with `wrangler secret put` (not here, so a deploy never blanks them). Every deploy passes them to the container.
     "MAGIC_LINK_FROM_EMAIL": "Papyrus <papyrus@mail.beaglabs.com>",

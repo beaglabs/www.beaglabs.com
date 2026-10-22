@@ -27,18 +27,9 @@ export const analytics = {
     } catch { /* tracking must not block trial navigation */ }
   },
 
-  creditEmailSubmitted(email: string, properties: { placement: 'nav' | 'page-hero' | 'section'; page: string; destination: string }) {
-    capture('hero.email.submitted', { ...properties, offer: 'papyrus-compute-credit' })
-    capture('compute_credit.requested', { ...properties, offer: 'papyrus-compute-credit' })
-    const cio = customerIo()
-    cio?.identify(email, { email, source: properties.page, compute_credit_requested: true })
-    cio?.track('Compute Credit Requested', { ...properties, offer: '$1k Papyrus compute credit' })
+  /** PostHog only: the server sends the Customer.io event, which starts the brief campaign exactly once. */
+  briefRequested(properties: { placement: 'hero' | 'nav' | 'page-hero'; briefType: 'papyrus' | 'services'; marketingOptIn: boolean; ccOptIn: boolean; page: string }) {
+    capture('solution_brief.requested', properties)
   },
-  /** The homepage hero: someone gave us their work email to get Papyrus compute credit. */
-  heroEmailSubmitted(email: string, properties: { page: string; destination: string }) {
-    capture('hero.email.submitted', properties)
-    const cio = customerIo()
-    cio?.identify(email, { email, source: 'beaglabs.com/hero', compute_credit_requested: true })
-    cio?.track('Compute Credit Requested', { placement: 'hero', offer: '$1k Papyrus compute credit', ...properties })
-  },
+
 }

@@ -13,12 +13,12 @@ export function FinalCTASection() {
     </div>
     <div className="relative mx-auto flex max-w-[1440px] flex-col items-start gap-8 px-6 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-9 lg:py-20">
       <div className="max-w-[790px]">
-        <span className="mb-5 inline-block border-2 border-[#111] bg-[#ff5f1f] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-wider">Get started with Papyrus</span>
+        <span className="mb-5 inline-block border-2 border-[#111] bg-[#ff5f1f] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-wider">Next step</span>
         <h2 className="display-black text-[length:min(48px,9vw)] leading-[.95] sm:text-[64px]">Put your workflows to work.</h2>
-        <p className="mt-6 max-w-[680px] text-base font-semibold leading-7 text-[#444]">Get a $1,000 Papyrus compute credit and redeem it for one deployment. Explore document automation, internal apps, and modernization with your team.</p>
+        <p className="mt-6 max-w-[680px] text-base font-semibold leading-7 text-[#444]">Get the solution brief to see how we deliver document automation, internal apps, legacy modernization and back-office operations, or start with Papyrus commercial today.</p>
       </div>
       <div className="flex shrink-0 flex-col items-start gap-3">
-        <a href="/#compute-credit" className="inline-flex items-center gap-3 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-xs font-black uppercase tracking-wide shadow-[5px_5px_0_#111] hover:bg-[#ffdfcf]">Get your compute credit <ArrowRight className="h-4 w-4" /></a>
+        <a href="/#solution-brief" className="inline-flex items-center gap-3 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-xs font-black uppercase tracking-wide shadow-[5px_5px_0_#111] hover:bg-[#ffdfcf]">Request a solution brief <ArrowRight className="h-4 w-4" /></a>
         <Link href="/contact" className="text-xs font-bold underline underline-offset-4">Need a government or offline deployment?</Link>
       </div>
     </div>

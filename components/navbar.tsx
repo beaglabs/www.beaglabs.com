@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CreditClaimForm } from '@/components/credit-claim-form'
+import { BriefRequestNav } from '@/components/brief-request-nav'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import {
@@ -63,7 +63,7 @@ export function Navbar({ bannerHeight = 0 }: { bannerHeight?: number }) {
           </NavigationMenu>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <CreditClaimForm placement="nav" compact />
+          <BriefRequestNav />
           <button type="button" className="inline-flex h-10 w-10 items-center justify-center border-2 border-[#111] bg-white md:hidden" aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileOpen} aria-controls="mobile-site-navigation" onClick={() => setMobileOpen(v => !v)}>
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

@@ -20,7 +20,7 @@ export function SolutionPage({ content }: { content: SolutionPageContent }) {
           <h1 className="display-black max-w-4xl text-[length:min(3.3rem,9vw)] md:text-[clamp(3.3rem,7vw,6.5rem)] leading-[.95]">{content.title}</h1>
           <p className="mt-8 max-w-3xl text-lg font-semibold leading-relaxed text-[#444]">{content.description}</p>
           <div className="mt-10 flex flex-wrap gap-4">
-            <a href="/#compute-credit" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-xs font-black uppercase shadow-[4px_4px_0_#111]">Get $1,000 compute credit <ArrowRight size={17}/></a>
+            <a href="/#solution-brief" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-[#ff5f1f] px-6 py-4 text-xs font-black uppercase shadow-[4px_4px_0_#111]">Request a solution brief <ArrowRight size={17}/></a>
             <Link href="/contact" className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-6 py-4 text-xs font-black uppercase">Talk to us</Link>
           </div>
         </div>
