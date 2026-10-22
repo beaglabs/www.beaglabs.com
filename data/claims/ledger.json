@@ -320,26 +320,6 @@
     ]
   },
   {
-    "claim": "Papyrus — Security controls: 35 OSCAL control implementations: project-scoped RBAC, hash-linked audit records, OIDC/SAML/WebAuthn and CAC/PIV sign-in by profile.",
-    "allowedLanguage": "According to Beag Labs (first party), 35 OSCAL control implementations: project-scoped RBAC, hash-linked audit records, OIDC/SAML/WebAuthn and CAC/PIV sign-in by profile.",
-    "claimId": "BL-CLM-23",
-    "lastVerified": "October 13, 2026",
-    "prohibitedInference": "Do not present documented controls as a certification, authorization or independent audit.",
-    "scopeCaveat": "A self-published control mapping, not a third-party assessment, certification or authorization to operate. Customers retain responsibility for configuration.",
-    "source": "https://beaglabs.com/trust/papyrus",
-    "sourceDate": "August 7, 2026",
-    "sourceOrganization": "Beag Labs (first party)",
-    "status": "Verified",
-    "evidenceType": "First-party vendor documentation",
-    "sourceLocator": "OSCAL component definition v0.2.0 (ac-3, ac-6, au-6, au-9, ia-2, ia-8); machine-readable file at /compliance/papyrus-component-definition.json",
-    "usedOn": [
-      "/compare/self-hosted-ai-agent-platforms",
-      "/compare/papyrus-vs-corral-ai",
-      "/compare/papyrus-vs-heartbeatagents",
-      "/compare/papyrus-vs-openclaw"
-    ]
-  },
-  {
     "claim": "Papyrus — Intended buyer: Organizations that need back office automation on their own infrastructure, in business and government settings.",
     "allowedLanguage": "According to Beag Labs (first party), organizations that need back office automation on their own infrastructure, in business and government settings.",
     "claimId": "BL-CLM-24",

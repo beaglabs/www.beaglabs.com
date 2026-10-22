@@ -20,7 +20,6 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${BASE_URL}/solutions/internal-app-factory`, changeFrequency: 'monthly', priority: 0.85 },
   { url: `${BASE_URL}/solutions/agentic-modernization`, changeFrequency: 'monthly', priority: 0.85 },
   { url: `${BASE_URL}/products/papyrus`, changeFrequency: 'monthly', priority: 0.9 },
-  { url: `${BASE_URL}/trust/papyrus`, changeFrequency: 'monthly', priority: 0.8 },
   { url: `${BASE_URL}/contact`, changeFrequency: 'monthly', priority: 0.6 },
   { url: `${BASE_URL}/support`, changeFrequency: 'yearly', priority: 0.4 },
   { url: `${BASE_URL}/support/commercial`, changeFrequency: 'yearly', priority: 0.4 },

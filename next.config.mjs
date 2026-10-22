@@ -38,11 +38,15 @@ const nextConfig = {
   },
   // Consulting offers retired when the site moved to Papyrus as an agentic ERP.
   async redirects() {
-    return ['spec-drive-development', 'agent-ux', 'slm-feasibility', 'slm-deployment'].map((slug) => ({
-      source: `/capability/${slug}`,
-      destination: '/capabilities',
-      permanent: true,
-    }))
+    return [
+      ...['spec-drive-development', 'agent-ux', 'slm-feasibility', 'slm-deployment'].map((slug) => ({
+        source: `/capability/${slug}`,
+        destination: '/capabilities',
+        permanent: true,
+      })),
+      // The trust page was retired; its deployment and security story lives on the Papyrus page.
+      { source: '/trust/:path*', destination: '/products/papyrus', permanent: true },
+    ]
   },
   async rewrites() {
     return [
