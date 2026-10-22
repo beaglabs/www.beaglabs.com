@@ -14,7 +14,6 @@ const footerColumns = [
     { label: 'Papyrus', href: '/products/papyrus' },
     { label: 'Use Cases', href: '/use-cases' },
     { label: 'Comparisons', href: '/compare' },
-    { label: 'Trust Center', href: '/trust/papyrus' },
   ] },
   { title: 'Resources', links: [
     { label: 'Claim Ledger', href: '/claims' },

@@ -66,10 +66,6 @@
           {
             "href": "https://github.com/beaglabs/papyrus",
             "rel": "repository"
-          },
-          {
-            "href": "https://beaglabs.com/trust/papyrus",
-            "rel": "trust-center"
           }
         ],
         "control-implementations": [
@@ -838,17 +834,6 @@
           "rlinks": [
             {
               "href": "https://github.com/beaglabs/papyrus",
-              "media-type": "text/html"
-            }
-          ]
-        },
-        {
-          "uuid": "afc24235-fae9-4eb4-85a9-116cf8f6a9a6",
-          "title": "Papyrus Trust Center",
-          "description": "Human-readable security architecture, shared-responsibility, and evidence overview.",
-          "rlinks": [
-            {
-              "href": "https://beaglabs.com/trust/papyrus",
               "media-type": "text/html"
             }
           ]

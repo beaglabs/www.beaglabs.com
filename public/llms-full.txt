@@ -31,7 +31,6 @@ Customer-hosted deployment and operator controls are central to the offering. Th
 - Website: https://beaglabs.com/
 - Papyrus: https://beaglabs.com/products/papyrus
 - Capabilities: https://beaglabs.com/capabilities
-- Trust: https://beaglabs.com/trust/papyrus
 - Use cases: https://beaglabs.com/use-cases
 - Contact: https://beaglabs.com/contact
 - Sitemap: https://beaglabs.com/sitemap.xml

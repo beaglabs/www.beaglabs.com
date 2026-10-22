@@ -15,7 +15,6 @@ Official website: https://beaglabs.com/
 
 - [Capabilities](https://beaglabs.com/capabilities)
 - [Use cases](https://beaglabs.com/use-cases)
-- [Trust and security](https://beaglabs.com/trust/papyrus)
 - [Blog](https://beaglabs.com/blog)
 - [Sitemap](https://beaglabs.com/sitemap.xml)
 - [Extended machine-readable context](https://beaglabs.com/llms-full.txt)

@@ -69,14 +69,13 @@
           "claimId": "BL-CLM-22"
         },
         "security": {
-          "status": "Verified",
-          "value": "35 OSCAL control implementations: project-scoped RBAC, hash-linked audit records, OIDC/SAML/WebAuthn and CAC/PIV sign-in by profile.",
+          "status": "Not documented",
+          "value": "Not found in checked official pages.",
           "categories": [],
-          "caveat": "A self-published control mapping, not a third-party assessment, certification or authorization to operate. Customers retain responsibility for configuration.",
+          "caveat": "The Papyrus trust page that published the control mapping was retired on October 22, 2026.",
           "checked": [
-            "https://beaglabs.com/trust/papyrus"
-          ],
-          "claimId": "BL-CLM-23"
+            "https://beaglabs.com/products/papyrus"
+          ]
         },
         "buyer": {
           "status": "Verified",

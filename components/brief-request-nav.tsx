@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { ArrowRight, X } from 'lucide-react'
 import { BriefRequestForm, type BriefType } from '@/components/brief-request-form'
 
-const PAPYRUS_PAGES = ['/products/papyrus', '/agentic-erp', '/trust/papyrus']
+const PAPYRUS_PAGES = ['/products/papyrus', '/agentic-erp']
 
 /** The navbar's "Request a solution brief": opens the form in a panel, with the Papyrus brief on Papyrus pages. */
 export function BriefRequestNav() {

@@ -14,7 +14,6 @@ const GROUPS = [
     { title: 'Agentic ERP', href: '/agentic-erp', description: 'Model-aware orchestration across your existing systems of record.' },
     { title: 'Papyrus', href: '/products/papyrus', description: 'Explore Papyrus and its Classes, agents, and workflows.' },
     { title: 'Capabilities', href: '/capabilities', description: 'Explore technical capabilities.' },
-    { title: 'Trust & Security', href: '/trust/papyrus', description: 'Review the Papyrus trust model.' },
   ] },
   { name: 'Resources', links: [
     { title: 'Blog', href: '/blog', description: 'Ideas, announcements, and engineering notes.' },
