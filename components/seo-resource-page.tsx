@@ -3,6 +3,8 @@ import { ArrowUpRight, FileCode2, FileText, Workflow } from 'lucide-react'
 import { AnnouncementBanner } from '@/components/announcement-banner'
 import { SiteFooter } from '@/components/site-footer'
 import { Breadcrumbs } from '@/components/breadcrumbs'
+import { splitHeadline } from '@/lib/headline'
+import { EdgyHero, heroButtonPrimary, heroButtonSecondary } from '@/components/edgy-hero'
 
 export type SEOCard = {title:string; description:string; href:string; tag?:string}
 type Props = { eyebrow:string; title:string; intro:string; path:string; cards:SEOCard[]; heading:string; context:string; steps?:{title:string;description:string}[]; faqs?:{question:string;answer:string}[] }
@@ -14,16 +16,7 @@ const lanes = [
 export function SEOResourcePage({eyebrow,title,intro,path,cards,heading,context,steps,faqs}:Props){
  return <main className="bg-[#fafaf9] text-[#111]">
   <AnnouncementBanner/>
-  <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] px-6 pb-16 pt-20 lg:px-9 lg:pb-24">
-
-    <div className="relative mx-auto max-w-[1440px]">
-      <Breadcrumbs items={[{name:'Home',url:'/'},{name:eyebrow,url:path}]}/>
-      <div className="mb-5 inline-flex border-2 border-[#111] bg-[#ff5f1f] px-3 py-1 font-mono text-xs font-black uppercase tracking-widest">{eyebrow}</div>
-      <h1 className="max-w-[1080px] text-[length:min(44px,9vw)] font-black uppercase leading-[.98] tracking-[-.05em] sm:text-[64px] lg:text-[82px]">{title}</h1>
-      <p className="mt-8 max-w-[820px] text-lg font-medium leading-relaxed text-[#333]">{intro}</p>
-      <div className="mt-9 flex flex-wrap gap-3"><Link className="nb-btn-orange px-6 py-3 text-xs uppercase" href="/products/papyrus">Explore Papyrus →</Link><Link className="nb-btn-white px-6 py-3 text-xs uppercase" href="/contact">Discuss your workflow →</Link></div>
-    </div>
-  </section>
+  <EdgyHero background="ember" size="md" breadcrumb={<Breadcrumbs items={[{name:'Home',url:'/'},{name:eyebrow,url:path}]}/>} eyebrow={eyebrow} before={splitHeadline(title)[0]} slab={splitHeadline(title)[1]} description={intro} actions={<><Link className={heroButtonPrimary} href="/products/papyrus">Explore Papyrus →</Link><Link className={heroButtonSecondary} href="/contact">Discuss your workflow →</Link></>} />
   <section className="border-b-[3px] border-[#111] bg-white px-6 py-16 lg:px-9">
     <div className="mx-auto max-w-[1440px]">
       <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#ae420f]">Three connected capabilities</span>

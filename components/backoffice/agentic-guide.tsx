@@ -7,6 +7,7 @@ import { TerminalApiExample } from './terminal-api-example'
 import { WorkflowExplorer } from './workflow-explorer'
 import { agenticSources } from '@/data/agentic-sources'
 import { BASE_URL } from '@/lib/seo'
+import { EdgyHero, heroButtonPrimary, heroButtonSecondary } from '@/components/edgy-hero'
 
 type Mode = 'backoffice' | 'modernization'
 const officeFaqs = [
@@ -39,16 +40,21 @@ export function AgenticGuide({ mode }: { mode: Mode }) {
   ]
   return <main className="bg-[#fafaf9] text-[#111]">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-    <section className="site-hero overflow-hidden border-b-[3px] border-[#111]">
-      <div className="mx-auto max-w-[1440px] px-6 py-16 text-center lg:px-9 lg:py-24">
-        <div className="text-left"><Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Papyrus', url: '/products/papyrus' }, { name: title, url: path }]} /></div>
-        <div className="mb-7 flex justify-center"><span className="nb-label inline-flex items-center gap-2"><span className="h-2 w-2 shrink-0 bg-[#ff5f1f]" />{factory ? 'Existing systems. A clearer front door.' : 'Documents. Decisions. Done with care.'}</span></div>
-        <h1 className="mx-auto max-w-[1100px] font-[family-name:var(--font-display)] text-[9vw] font-black uppercase leading-[.93] tracking-[-.035em] sm:text-[78px] xl:text-[94px]">{title}</h1>
-        <p className="mx-auto mt-7 max-w-[850px] text-[17px] font-medium leading-[1.75] text-[#444]">{factory ? 'Make the systems you already depend on easier to use. Follow the work from a legacy screen to a controlled operation, a browser interface, and a release decision.' : 'Turn repetitive administrative work into structured, reviewable workflows. Give agents defined tools, keep exceptions visible, and put people at the decisions that matter.'}</p>
-        <div className="mt-9 flex flex-wrap justify-center gap-4"><a href="#walkthrough" className="nb-btn-orange inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Explore the workflow ↓</a><Link href="/contact" className="nb-btn-white inline-flex items-center gap-3 px-6 py-3.5 text-xs uppercase tracking-wider">Discuss your process</Link></div>
-        <div className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-2 font-mono text-[10px] font-bold uppercase tracking-wider text-[#555]">{(factory ? ['Legacy → controlled operations', 'Operations → usable apps', 'Validate → review → release'] : ['Documents → structured work', 'Exceptions → human review', 'Decisions → evidence']).map(item => <span key={item}>{item}</span>)}</div>
-      </div>
-    </section>
+    <EdgyHero
+      background="ember"
+      size="md"
+      breadcrumb={<Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Papyrus', url: '/products/papyrus' }, { name: title, url: path }]} />}
+      eyebrow={factory ? 'Existing systems. A clearer front door.' : 'Documents. Decisions. Done with care.'}
+      before={title.split(' ')[0]}
+      slab={title.split(' ').slice(1).join(' ')}
+      description={factory ? 'Make the systems you already depend on easier to use. Follow the work from a legacy screen to a controlled operation, a browser interface, and a release decision.' : 'Turn repetitive administrative work into structured, reviewable workflows. Give agents defined tools, keep exceptions visible, and put people at the decisions that matter.'}
+      actions={<>
+        <a href="#walkthrough" className={heroButtonPrimary}>Explore the workflow ↓</a>
+        <Link href="/contact" className={heroButtonSecondary}>Discuss your process</Link>
+        <div className="flex w-full flex-wrap gap-x-5 gap-y-2 font-mono text-[10px] font-bold uppercase tracking-wider text-[#111]">{(factory ? ['Legacy → controlled operations', 'Operations → usable apps', 'Validate → review → release'] : ['Documents → structured work', 'Exceptions → human review', 'Decisions → evidence']).map(item => <span key={item}>{item}</span>)}</div>
+      </>}
+      next={{ href: '#walkthrough', label: 'Walkthrough' }}
+    />
     <section className="border-b-[3px] border-[#111] bg-white px-6 py-12 lg:px-9"><div className="mx-auto max-w-[1440px]"><div className="flex flex-wrap items-center justify-between gap-4"><p className="font-mono text-[10px] font-bold uppercase tracking-widest">Research & technical references</p><Link href="/claims" className="text-xs font-bold underline underline-offset-4">Inspect the claim ledger ↗</Link></div><div className="mt-6 flex flex-wrap gap-4">{sources.map(source => <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 border-2 border-[#111] bg-[#fafaf9] px-4 py-3 hover:bg-[#ffe8da]"><img src={source.logo} width={28} height={28} alt={`${source.name} site logo`} className="h-7 w-7 object-contain" /><span className="text-sm font-black">{source.name}{source.id === 'tau' ? ' / τ-bench' : ''}</span><ArrowUpRight size={14} /></a>)}</div><p className="mt-5 text-xs leading-5 text-[#666]">Source logos identify cited publications. They do not indicate endorsement, partnership, certification, or product validation. τ-bench is a paper hosted on arXiv.</p></div></section>
     <section className="mx-auto grid max-w-[1440px] gap-8 px-6 py-20 lg:grid-cols-[minmax(0,.65fr)_minmax(0,1.35fr)] lg:px-9"><h2 className="display-black text-[length:min(2.25rem,9vw)] leading-tight">What does it mean in practice?</h2><div className="space-y-5 text-base leading-8 text-[#444]"><p className="text-xl font-semibold text-[#111]">{definition}</p><p>Anthropic distinguishes predefined workflows from agents that choose their own processes and tools. That is a useful design distinction: a stable rule can stay a rule, while an agent handles interpretation within an explicit set of operations.<ClaimLink id="BL-CLM-15" /></p>{factory ? <p>GAO’s 2025 review selected 11 critical federal legacy systems for modernization. Plans for eight lacked complete documentation of key elements. The lesson for a modernization project is to define the work, milestones, and intended future of the existing system before promising a transformation.<ClaimLink id="BL-CLM-16" /></p> : <p>NIST’s Generative AI Profile supports risk management across the AI lifecycle. For a back office workflow, our proposed implementation turns that principle into concrete checkpoints: source review, access boundaries, exception handling, evaluation, and an accountable owner.<ClaimLink id="BL-CLM-13" /></p>}</div></section>
     <section id="walkthrough" className="scroll-mt-8 border-y-[3px] border-[#111] bg-[#fafaf9] px-6 py-20 lg:px-9"><div className="mx-auto max-w-[1440px]"><p className="font-mono text-xs font-bold uppercase tracking-widest text-[#a43d11]">Follow one piece of work</p><h2 className="display-black mb-5 mt-4 max-w-[900px] text-[length:min(2.25rem,9vw)] leading-[1.1] sm:text-5xl">{factory ? 'From green screen to browser.' : 'From invoice to reviewable work.'}</h2><p className="mb-10 max-w-[750px] text-base leading-7 text-[#444]">{factory ? 'Choose a stage to see the host view, the operation exposed to the agent, and the artifact an engineer or operator reviews. Try the mock lookup with SR-1042 or a reference that does not exist.' : 'Choose a stage to follow a fictional invoice. Watch the missing purchase-order reference become an exception that requires a person’s attention.'}</p><WorkflowExplorer mode={mode} /></div></section>

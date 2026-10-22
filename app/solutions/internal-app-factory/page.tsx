@@ -11,6 +11,10 @@ export const metadata: Metadata = pageMetadata({
 
 export default function Page() {
   return <SolutionPage content={{
+    headline: ["Build the", "internal apps", "you actually need."],
+    demo: "apps",
+    highlights: ["Forms, queues and dashboards generated from how your team describes the work.", "Built and running in weeks, on your identity and access rules.", "Changed in place as the process changes, with every change reviewed."],
+    projects: ["inspection", "dispatch", "dashboards", "casework"],
     eyebrow: "Internal App Factory",
     title: "Build the internal apps you actually need.",
     description: "Turn process requirements into useful interfaces, forms and workflows, with human oversight and controls.",

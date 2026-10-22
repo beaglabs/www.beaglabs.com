@@ -25,15 +25,15 @@ const robotoCondensed = Roboto_Condensed({
 })
 
 const homeDescription =
-  'Papyrus by Beag Labs is an agentic ERP orchestration layer for complex multi-entity operations. Keep existing ERP and legacy systems of record while automating governed workflows.'
+  'Beag Labs builds superintelligent solutions for federal and SLED: deep expertise and solutioneering paired with superintelligent agents, delivered as running software inside your environment.'
 
-const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-10-19-dotted-card-v2'
+const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-10-22-edgy-grain'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs | Agentic ERP & Model-Aware Orchestration',
+    default: 'Beag Labs | Superintelligent Solutions for Federal and SLED',
   },
   description:
     homeDescription,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   applicationName: 'Beag Labs',
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: 'Papyrus Agentic ERP — Beag Labs',
+    title: 'We build superintelligent solutions — Beag Labs',
     description: homeDescription,
     url: 'https://beaglabs.com',
     siteName: 'Beag Labs',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
         url: homeOgImage,
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Agentic ERP & Model-Aware Orchestration',
+        alt: 'Beag Labs — We build superintelligent solutions',
         type: 'image/png',
       },
     ],
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Agentic Solutions for SLED and Federal — Beag Labs',
+    title: 'We build superintelligent solutions — Beag Labs',
     description: homeDescription,
     images: [homeOgImage],
     creator: '@beaglabs',

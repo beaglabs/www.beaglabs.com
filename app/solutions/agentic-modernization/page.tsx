@@ -11,6 +11,10 @@ export const metadata: Metadata = pageMetadata({
 
 export default function Page() {
   return <SolutionPage content={{
+    headline: ["Modern interfaces for", "systems", "that still work."],
+    demo: "legacy",
+    highlights: ["Terminals and SOAP/XML services documented from how they actually behave.", "Governed APIs and modern screens in front of them, scoped per caller.", "Systems of record stay in place; writes go through approvals."],
+    projects: ["bridge", "migration", "dashboards", "voice"],
     eyebrow: "Agentic Modernization",
     title: "Modern interfaces for systems that still work.",
     description: "Preserve trusted legacy systems while exposing their workflows through modern APIs and interfaces.",

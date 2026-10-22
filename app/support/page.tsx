@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { SiteFooter } from '@/components/site-footer'
+import { EdgyHero } from '@/components/edgy-hero'
 import { pageMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = pageMetadata({
@@ -51,21 +52,16 @@ export default function SupportPage() {
     <main className="bg-[#FAFAF9] text-[#111]">
 
 
-      <section className="site-hero overflow-hidden border-b-[3px] border-[#111]">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[1.05fr_.95fr]">
-          <div className="flex min-h-[520px] flex-col justify-center px-6 py-20 lg:border-r-[3px] lg:border-[#111] lg:px-9 lg:py-24">
-            <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Support', url: '/support' }]} />
-            <p className="nb-label mb-5 inline-block">Papyrus support</p>
-            <h1 className="max-w-[760px] text-[length:min(52px,9vw)] font-extrabold leading-[.98] tracking-[-0.055em] sm:text-[66px] lg:text-[78px]">
-              Support starts with the right channel.
-            </h1>
-            <p className="mt-7 max-w-[680px] text-[18px] font-medium leading-[1.7] text-[#444]">
-              Papyrus runs inside your environment and does not stream appliance telemetry back to Beag Labs.
-              Choose the deployment path below so the right team receives your case with the right handling context.
-            </p>
-          </div>
-
-          <div className="grid min-h-[520px] border-t-[3px] border-[#111] bg-white lg:border-t-0">
+      <EdgyHero
+        background="daylight"
+        size="md"
+        breadcrumb={<Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Support', url: '/support' }]} />}
+        eyebrow="Papyrus support"
+        before="Support starts with"
+        slab="the right channel."
+        description="Papyrus runs inside your environment and does not stream appliance telemetry back to Beag Labs. Choose the deployment path below so the right team receives your case with the right handling context."
+        asideBare
+        aside={<div className="mr-2 border-[3px] border-[#111] bg-white shadow-[6px_6px_0_#111] sm:mr-0 sm:shadow-[10px_10px_0_#111]">
             {SUPPORT_PATHS.map((path, index) => (
               <div
                 key={path.id}
@@ -92,9 +88,8 @@ export default function SupportPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
+        </div>}
+      />
 
       <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-28">

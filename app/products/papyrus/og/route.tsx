@@ -1,4 +1,4 @@
-import { HOME_OG, renderOgImage } from '@/lib/og-image'
+import { renderOgImage } from '@/lib/og-image'
 
 // Satori image generation runs inside Cloudflare Workers.
 // Do not use node:fs / process.cwd() to read fonts or images here:
@@ -7,8 +7,11 @@ export const runtime = 'edge'
 
 export async function GET() {
   return renderOgImage({
-    title: 'Papyrus Agentic ERP',
-    description: 'Data-model-aware orchestration, enterprise Classes, durable agents and governed workflows over existing systems of record.',
-    label: 'PAPYRUS',
+    title: 'Backoffice superintelligence harness.',
+    before: 'Backoffice',
+    slab: 'superintelligence',
+    after: 'harness.',
+    description: 'Automate complex back-office operations across existing systems of record with data models, durable agents, approvals and governed workflows.',
+    label: 'Papyrus by Beag Labs',
   })
 }

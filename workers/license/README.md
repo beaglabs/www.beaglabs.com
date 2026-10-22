@@ -60,6 +60,8 @@ The CLI reads `AZURE_KEY_VAULT_TENANT_ID`, `AZURE_KEY_VAULT_CLIENT_ID`, `AZURE_K
 
 Use an Azure Key Vault **Premium** vault with an HSM-backed RSA key. Signing uses `RS256`; a 3072-bit `RSA-HSM` key keeps compatibility with Papyrus's SHA-256/RSA verification path while keeping the private key non-exportable.
 
+The vault can be in Azure public (`*.vault.azure.net`) or Azure Government (`*.vault.usgovcloudapi.net`); the signer reads the cloud from the key URI and signs in at `login.microsoftonline.com` or `login.microsoftonline.us` to match, so the Entra app must live in that cloud's tenant.
+
 Create the signing key with sign/verify operations only and pin `AZURE_KEY_VAULT_KEY_ID` to the returned key **version**, not merely the key name. Key rotation then produces a new `keyId`, while already-issued licenses continue to identify the exact public key that signed them.
 
 Authenticate with a dedicated Microsoft Entra service principal using client credentials. Grant it only `Microsoft.KeyVault/vaults/keys/sign/action` at the individual key scope (preferred custom role), or `Key Vault Crypto User` scoped to the individual key.

@@ -8,6 +8,8 @@ import { Breadcrumbs } from '@/components/breadcrumbs'
 import { capabilities, capabilityBySlug } from '@/data/capabilities'
 import { company } from '@/data/company'
 import { pageMetadata } from '@/lib/seo'
+import { splitHeadline } from '@/lib/headline'
+import { EdgyHero, heroButtonPrimary, heroButtonSecondary } from '@/components/edgy-hero'
 
 type Params = Promise<{ slug: string }>
 
@@ -38,39 +40,17 @@ export default async function CapabilityPage({ params }: { params: Params }) {
 
 
       {/* ─── HERO ─── */}
-      <section className="site-hero relative overflow-hidden border-b-[3px] border-[#111] bg-[#FAFAF9]">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 pb-20 pt-10 lg:grid-cols-[1.05fr_minmax(420px,560px)] lg:gap-16 lg:px-9 lg:pb-24 lg:pt-14">
-          <div className="max-w-[760px]">
-            <Breadcrumbs
-              items={[
-                { name: 'Home', url: '/' },
-                { name: 'Capabilities', url: '/capabilities' },
-                { name: cap.title, url: `/capability/${cap.slug}` },
-              ]}
-            />
-            <div className="mt-8 mb-6 flex items-center gap-3">
-              <span className="nb-label">{cap.eyebrow}</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">
-                {cap.number} / {String(capabilities.length).padStart(2, '0')}
-              </span>
-            </div>
-
-            <h1 className="mb-6 text-[length:min(44px,9vw)] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#111] sm:text-[56px] lg:text-[72px]">
-              {cap.title}
-            </h1>
-
-            <p className="mb-6 max-w-[640px] text-[20px] font-extrabold leading-[1.3] tracking-[-0.015em] text-[#111] sm:text-[22px]">
-              {cap.subtitle}
-            </p>
-
-            <p className="mb-10 max-w-[640px] text-[16px] leading-[1.65] text-[#404040] font-medium">
-              {cap.description}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <a
+      <EdgyHero
+        background="ember"
+        size="md"
+        breadcrumb={<Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Capabilities', url: '/capabilities' }, { name: cap.title, url: `/capability/${cap.slug}` }]} />}
+        eyebrow={`${cap.eyebrow} · ${cap.number} / ${String(capabilities.length).padStart(2, '0')}`}
+        before={splitHeadline(cap.title)[0]}
+        slab={splitHeadline(cap.title)[1]}
+        description={<><p className="text-[19px] font-extrabold leading-snug">{cap.subtitle}</p><p className="mt-3 font-medium text-[#d6d6d6]">{cap.description}</p></>}
+        actions={<><a
                 href="/contact"
-                className="nb-btn-orange group inline-flex items-center gap-2 px-6 py-3 text-[12px]"
+                className={heroButtonPrimary}
               >
                 {cap.cta.headline}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -86,7 +66,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
               <a
                 href="/capabilities/modernization.pdf"
                 download
-                className="inline-flex items-center gap-2 border-[3px] border-[#111] bg-white px-5 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[3px_3px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_#ff5f1f]"
+                className={heroButtonSecondary}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
@@ -98,12 +78,10 @@ export default async function CapabilityPage({ params }: { params: Params }) {
                   />
                 </svg>
                 Download PDF brief
-              </a>
-            </div>
-          </div>
+              </a></>}
+        asideBare
+        aside={<div className="relative mx-auto w-full max-w-[440px] pt-4">
 
-          {/* Brutalist photo */}
-          <div className="relative mx-auto w-full max-w-[560px]">
             <div className="absolute -top-4 -left-4 z-10 border-[3px] border-[#111] bg-[#ff5f1f] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[4px_4px_0px_0px_#111]">
               {cap.hero.badge}
             </div>
@@ -118,8 +96,8 @@ export default async function CapabilityPage({ params }: { params: Params }) {
               beaglabs / {cap.slug}
             </div>
           </div>
-        </div>
-      </section>
+        }
+      />
 
       {/* ─── INCLUDES ─── */}
       <section className="border-b-[3px] border-[#111] bg-white px-6 py-20 lg:px-9 lg:py-24">

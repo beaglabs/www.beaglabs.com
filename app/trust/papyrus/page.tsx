@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react'
+import { EdgyHero, heroButtonPrimary, heroButtonSecondary } from '@/components/edgy-hero'
 import { SiteFooter } from '@/components/site-footer'
 import { pageMetadata } from '@/lib/seo'
 
@@ -255,47 +256,24 @@ export default function PapyrusTrustCenter() {
     <main className="min-h-screen bg-[#FAFAF9] text-[#111]">
 
 
-      <section className="site-hero border-b-[3px] border-[#111]">
-        <div className="mx-auto max-w-[1440px] px-6 py-8 lg:px-9 lg:py-10">
-          <div className="overflow-hidden border-[3px] border-[#111] bg-white">
-            <div className="grid min-h-[440px] lg:grid-cols-[.92fr_1.08fr]">
-              <div className="flex flex-col justify-center px-7 py-14 lg:px-14">
-                <span className="nb-label mb-6 w-fit">Papyrus / Trust Center</span>
-                <h1 className="max-w-[700px] text-[length:min(46px,9vw)] font-extrabold leading-[1.02] tracking-[-0.055em] sm:text-[58px]">
-                  Security evidence, published in the open.
-                </h1>
-                <p className="mt-6 max-w-[650px] text-[17px] font-medium leading-[1.65] text-[#404040]">
-                  Papyrus is a customer-hosted durable agent runtime powered by Mastra. Entra ID is the identity
-                  authority. The product surface is a Mastra-native agent runtime with governed plugin lifecycle,
-                  offline licensing, sandboxed execution, and zero-inline-secrets architecture.
-                </p>
-                <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
-                  <a href="/contact" className="underline decoration-2 underline-offset-4">
-                    Request evidence
-                  </a>
-                  <a href="/privacy" className="underline decoration-2 underline-offset-4">
-                    Privacy policy
-                  </a>
-                </div>
-              </div>
-              <div className="relative min-h-[300px] border-t-[3px] border-[#111] lg:border-l-[3px] lg:border-t-0">
-                <img
-                  src="https://jamesnaderblog.co.uk/wp-content/uploads/2024/07/james-nader-banner.jpg"
-                  alt="Abstract reflective green and orange forms"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#ff5f1f]/20 to-transparent" />
-              </div>
-            </div>
-            <div className="border-t-[3px] border-[#111] bg-[#fff3e6] px-6 py-4">
-              <p className="text-xs font-semibold leading-5 text-[#444]">
-                Scope: potential software control contributions only. These materials are not a FedRAMP authorization, ATO, SSP, certification, or independent assessment.
-                Papyrus is not an authorization to operate, a cross-domain solution, or a claim of GCC High, DoD, IL4, IL6, or SIPR accreditation.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <EdgyHero
+        background="furnace"
+        size="lg"
+        eyebrow="Papyrus / Trust Center"
+        before="Security evidence,"
+        slab="published"
+        after="in the open."
+        description="Papyrus is a customer-hosted durable agent runtime powered by Mastra. Entra ID is the identity authority. The product surface is a Mastra-native agent runtime with governed plugin lifecycle, offline licensing, sandboxed execution, and zero-inline-secrets architecture."
+        actions={<>
+          <a href="/contact" className={heroButtonPrimary}>Request evidence <ArrowUpRight size={16} /></a>
+          <a href="/privacy" className={heroButtonSecondary}>Privacy policy</a>
+        </>}
+        asideLabel="Scope"
+        aside={<p className="text-[14px] font-semibold leading-6 text-[#333]">
+          Potential software control contributions only. These materials are not a FedRAMP authorization, ATO, SSP, certification, or independent assessment.
+          Papyrus is not an authorization to operate, a cross-domain solution, or a claim of GCC High, DoD, IL4, IL6, or SIPR accreditation.
+        </p>}
+      />
 
       <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
         <div className="mx-auto max-w-[1440px] px-6 py-12 lg:px-9">
