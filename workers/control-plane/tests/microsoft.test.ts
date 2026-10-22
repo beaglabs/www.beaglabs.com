@@ -31,12 +31,20 @@ function microsoft() {
     challenge: '' as string,
     nonce: () => '',
     calls: [] as string[],
+    /** The app-only token: its roles and tenant, or a Microsoft error status (no service principal, say). */
+    app: { roles: ['User.Read.All'] as string[], tid: TENANT, status: 200 },
   }
   const fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input instanceof Request ? input.url : input)
     state.calls.push(url)
     if (url.endsWith('/oauth2/v2.0/token')) {
       const body = new URLSearchParams(await new Response(init?.body).text())
+      if (body.get('grant_type') === 'client_credentials') {
+        if (body.get('client_secret') !== 'ms-secret' || body.get('scope') !== 'https://graph.microsoft.com/.default') return Response.json({ error: 'invalid_client' }, { status: 401 })
+        if (state.app.status !== 200) return Response.json({ error: 'invalid_request', error_description: 'AADSTS7000229: missing service principal' }, { status: state.app.status })
+        const claims = Buffer.from(JSON.stringify({ tid: state.app.tid, roles: state.app.roles })).toString('base64url')
+        return Response.json({ access_token: `header.${claims}.signature`, expires_in: 3599 })
+      }
       if (body.get('client_secret') !== 'ms-secret' || body.get('grant_type') !== 'authorization_code') return Response.json({ error: 'invalid_client' }, { status: 401 })
       if (createHash('sha256').update(body.get('code_verifier') ?? '').digest('base64url') !== state.challenge) return Response.json({ error: 'invalid_grant' }, { status: 400 })
       const tid = String(state.claims.tid)
@@ -448,5 +456,73 @@ describe('GET /api/microsoft/binding', () => {
       terms: { accepted_by_account_email: 'owner@example.com', organization: 'acme', termsVersion: '2026-10-16', privacyVersion: '2026-10-16', acceptedAt: 'now' },
       boundAt: '2026-10-18T00:00:00.000Z',
     })
+  })
+})
+
+describe('staff directory', () => {
+  it('sends an administrator to approve it in the bound tenant, then back to Papyrus’s Staff page', async () => {
+    const s = setup()
+    s.deployed()
+    expect((await s.papyrus('/api/microsoft/directory-consent', { method: 'POST' })).status).toBe(409)
+    s.bound()
+    expect((await s.papyrus('/api/microsoft/directory-consent', { method: 'POST', key: 'wrong' })).status).toBe(401)
+    const opened = await s.papyrus('/api/microsoft/directory-consent', { method: 'POST' })
+    expect(opened.status).toBe(200)
+    const consent = new URL(((await opened.json()) as { url: string }).url)
+    expect(consent.origin + consent.pathname).toBe(`${AUTHORITY}/${TENANT}/v2.0/adminconsent`)
+    expect(Object.fromEntries(consent.searchParams)).toMatchObject({ client_id: 'ms-client', scope: 'https://graph.microsoft.com/.default', redirect_uri: 'https://papyrus.beaglabs.test/microsoft/callback' })
+    const txn = consent.searchParams.get('state')!
+    // No control-plane account is needed: the administrator may be someone else in the organization.
+    const back = await s.h.call(`/microsoft/callback?admin_consent=True&tenant=${TENANT}&state=${txn}`)
+    expect(back.status).toBe(302)
+    expect(back.headers.get('location')).toBe('https://acme.papyrus.beaglabs.com/portal/staff?directory=allowed')
+    expect(s.events().map((e) => e.message)).toContain('Staff directory allowed · Papyrus can list everyone in the organization')
+    // Used once.
+    expect((await s.h.call(`/microsoft/callback?admin_consent=True&tenant=${TENANT}&state=${txn}`)).status).toBe(400)
+  })
+
+  it('says so when the approval is refused or comes from another organization', async () => {
+    const s = setup()
+    s.deployed()
+    s.bound()
+    const start = async () => new URL(((await (await s.papyrus('/api/microsoft/directory-consent', { method: 'POST' })).json()) as { url: string }).url).searchParams.get('state')!
+    const refused = await s.h.call(`/microsoft/callback?error=access_denied&error_description=${encodeURIComponent('AADSTS65004: declined')}&state=${await start()}`)
+    expect(refused.headers.get('location')).toBe('https://acme.papyrus.beaglabs.com/portal/staff?directory=denied')
+    const other = await s.h.call(`/microsoft/callback?admin_consent=True&tenant=${OTHER_TENANT}&state=${await start()}`)
+    expect(other.headers.get('location')).toBe('https://acme.papyrus.beaglabs.com/portal/staff?directory=wrong-tenant')
+    expect(s.events()).toEqual([])
+  })
+
+  it('hands a deployment an app-only token for its own tenant, once the directory is allowed', async () => {
+    const s = setup()
+    s.deployed()
+    expect((await s.papyrus('/api/microsoft/app-token', { method: 'POST' })).status).toBe(409)
+    s.bound()
+    expect((await s.papyrus('/api/microsoft/app-token', { method: 'POST', key: 'other-key' })).status).toBe(401)
+    const issued = await s.papyrus('/api/microsoft/app-token', { method: 'POST' })
+    expect(issued.status).toBe(200)
+    const token = (await issued.json()) as { accessToken: string; expiresAt: string }
+    expect(token.accessToken).toMatch(/^header\./)
+    expect(Date.parse(token.expiresAt) - Date.now()).toBeLessThanOrEqual(3600_000)
+    expect(s.ms.state.calls).toContain(`${AUTHORITY}/${TENANT}/oauth2/v2.0/token`)
+
+    s.ms.state.app.roles = []
+    const missing = await s.papyrus('/api/microsoft/app-token', { method: 'POST' })
+    expect(missing.status).toBe(409)
+    expect(await missing.json()).toEqual({ code: 'directory_not_allowed', error: 'An Entra administrator has not allowed the staff directory yet' })
+    s.ms.state.app = { roles: ['User.Read.All'], tid: TENANT, status: 400 }
+    expect((await s.papyrus('/api/microsoft/app-token', { method: 'POST' })).status).toBe(409)
+    s.ms.state.app = { roles: ['User.Read.All'], tid: OTHER_TENANT, status: 200 }
+    expect((await s.papyrus('/api/microsoft/app-token', { method: 'POST' })).status).toBe(502)
+  })
+
+  it('gives a suspended deployment no token', async () => {
+    const s = setup()
+    s.deployed()
+    s.bound()
+    s.h.sql.prepare("UPDATE deployments SET billing_state = 'past_due' WHERE id = 'dep_abc'").run()
+    const response = await s.papyrus('/api/microsoft/app-token', { method: 'POST' })
+    expect(response.status).toBe(403)
+    expect(s.ms.state.calls).toEqual([])
   })
 })

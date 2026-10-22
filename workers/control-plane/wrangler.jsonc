@@ -55,7 +55,8 @@
   // MICROSOFT_CLIENT_ID / MICROSOFT_CLIENT_SECRET (secrets below): Beag Labs' multi-tenant Entra app, used for
   // "Sign in with Microsoft" here and for one-click Connect Microsoft (src/microsoft.ts). The app needs the redirect
   // URIs ${BASE_URL}/login/microsoft/callback, ${BASE_URL}/microsoft/callback and ${BASE_URL}/microsoft/consented, and the
-  // delegated permissions openid, profile, email, User.Read. They stay secrets (a var of the same name would clash).
+  // delegated permissions openid, profile, email, User.Read, and the application permission User.Read.All (granted per
+  // tenant only when an administrator allows the staff directory). They stay secrets (a var of the same name would clash).
   "secrets": {
     "required": [
       "CREDENTIALS_KEY",
