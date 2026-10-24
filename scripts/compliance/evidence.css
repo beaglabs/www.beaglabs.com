@@ -1,0 +1,81 @@
+/* Papyrus evidence pack: the solution-brief look (scripts/briefs/brief.css) for long, flowing documents. */
+@font-face { font-family: 'Roboto Condensed'; font-weight: 900; src: url('../../public/fonts/RobotoCondensed-900.ttf'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url('../../public/fonts/JetBrainsMono-700.ttf'); }
+@font-face { font-family: 'Work Sans'; font-weight: 400; src: url('../../public/fonts/WorkSans-400.ttf'); }
+@font-face { font-family: 'Work Sans'; font-weight: 700; src: url('../../public/fonts/WorkSans-700.ttf'); }
+
+:root { --ink: #111; --orange: #ff5f1f; --orange-deep: #c2410c; --muted: #4a4a4a; --wash: #f4f2ef; --tint: #fff1e9; --green: #1a7f37; --amber: #9a6700; --red: #a12a22; }
+
+@page {
+  size: Letter; margin: 84px 48px 64px;
+  @top-left { content: 'BEAG LABS  /  PAPYRUS EVIDENCE PACK'; font-family: 'JetBrains Mono'; font-size: 7.5px; letter-spacing: .2em; vertical-align: bottom; padding-bottom: 12px; border-bottom: 3px solid #111; }
+  @top-right { font-family: 'JetBrains Mono'; font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; vertical-align: bottom; padding-bottom: 12px; border-bottom: 3px solid #111; }
+  @bottom-left { content: 'Beag Labs, Inc. · beaglabs.com'; font-family: 'JetBrains Mono'; font-size: 7px; letter-spacing: .18em; text-transform: uppercase; vertical-align: top; padding-top: 12px; border-top: 3px solid #111; }
+  @bottom-right { content: counter(page) ' / ' counter(pages); font-family: 'JetBrains Mono'; font-size: 7px; letter-spacing: .18em; vertical-align: top; padding-top: 12px; border-top: 3px solid #111; }
+}
+@page :first { margin: 0; @top-left { content: none; border: 0 } @top-right { content: none; border: 0 } @bottom-left { content: none; border: 0 } @bottom-right { content: none; border: 0 } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #fff; color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 10px; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* ---- cover ---- */
+.cover { width: 816px; height: 1056px; display: flex; flex-direction: column; break-after: page; position: relative; overflow: hidden; }
+.cover .top { display: flex; align-items: center; justify-content: space-between; height: 66px; padding: 0 40px; border-bottom: 3px solid var(--ink); flex: none; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.mark { background: var(--ink); color: #fff; font-weight: 700; font-size: 17px; letter-spacing: -.04em; padding: 5px 9px 6px; line-height: 1; }
+.brand-name { font-family: 'JetBrains Mono'; font-size: 10px; letter-spacing: .28em; }
+.crumbs { font-family: 'JetBrains Mono'; font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; display: flex; gap: 9px; }
+.crumbs .slash { color: var(--orange); }
+.cover .main { flex: 1; padding: 46px 40px 0; display: flex; flex-direction: column; }
+.chip { align-self: flex-start; display: inline-block; background: var(--orange); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-family: 'JetBrains Mono'; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; padding: 4px 9px; margin-bottom: 16px; }
+.cover h1 { font-family: 'Roboto Condensed'; font-weight: 900; text-transform: uppercase; letter-spacing: -.015em; line-height: .9; font-size: 64px; }
+.cover h1 .o { color: var(--orange); }
+.cover .lead { font-size: 14px; line-height: 1.5; color: #222; margin-top: 18px; max-width: 600px; }
+.banner { position: relative; height: 210px; border: 3px solid var(--ink); box-shadow: 9px 9px 0 var(--orange); background: #000; margin: 34px 9px 0 0; }
+.banner svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.facts { margin-top: 38px; display: grid; grid-template-columns: 1fr 1fr; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); margin-right: 6px; }
+.facts div { padding: 10px 14px; border-bottom: 2px solid var(--ink); }
+.facts div:nth-child(odd) { border-right: 2px solid var(--ink); }
+.facts div:nth-last-child(-n+2) { border-bottom: 0; }
+.facts dt { font-family: 'JetBrains Mono'; font-size: 7.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--orange-deep); }
+.facts dd { font-size: 10.5px; font-weight: 700; margin-top: 3px; overflow-wrap: anywhere; }
+.cover .note { margin-top: auto; padding: 0 0 18px; font-size: 8.5px; color: var(--muted); max-width: 640px; }
+.cover .foot { flex: none; height: 40px; margin: 0 40px; border-top: 3px solid var(--ink); display: flex; align-items: center; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; }
+
+/* ---- flowing body ---- */
+.doc h1, .doc h2 { font-family: 'Roboto Condensed'; font-weight: 900; text-transform: uppercase; line-height: 1; letter-spacing: -.005em; break-after: avoid; }
+.doc h1 { font-size: 30px; margin: 0 0 14px; }
+.doc h2 { display: flex; align-items: center; gap: 12px; font-size: 19px; margin: 26px 0 10px; padding-top: 4px; }
+.doc h2::after { content: ''; flex: 1; height: 3px; background: var(--ink); }
+.doc h3 { font-family: 'JetBrains Mono'; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--orange-deep); margin: 16px 0 6px; break-after: avoid; }
+.doc p { margin: 0 0 8px; }
+.doc ul, .doc ol { margin: 0 0 9px 18px; }
+.doc li { margin: 2px 0; }
+.doc li::marker { color: var(--orange-deep); font-weight: 700; }
+.doc code { font-family: 'JetBrains Mono'; font-size: 8px; background: var(--wash); padding: 0 3px; overflow-wrap: anywhere; }
+.doc pre { font-family: 'JetBrains Mono'; font-size: 7.6px; background: var(--wash); border: 2px solid var(--ink); padding: 8px 10px; margin: 0 0 10px; white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid; }
+.doc pre code { background: none; padding: 0; }
+.doc a { color: var(--ink); text-decoration-color: var(--orange); }
+.doc table { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: 8.6px; border: 2px solid var(--ink); }
+.doc thead { display: table-header-group; }
+.doc tr { break-inside: avoid; }
+.doc th { background: var(--ink); color: #fff; font-family: 'JetBrains Mono'; font-size: 7.4px; letter-spacing: .1em; text-transform: uppercase; text-align: left; padding: 5px 7px; }
+.doc th code { background: none; color: inherit; padding: 0; font-size: inherit; }
+/* A table whose last column is a profile (`disconnected`) gets that column tinted so it reads as its own case. */
+.doc table:has(th:last-child code) th:last-child { background: var(--orange); color: var(--ink); }
+.doc table:has(th:last-child code) td:last-child { background: var(--tint) !important; border-left: 2px solid var(--ink); }
+.doc td { padding: 5px 7px; border-top: 1px solid #d9d4cc; vertical-align: top; }
+.doc tbody tr:nth-child(even) td { background: #faf8f5; }
+.doc .diagram { border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--orange); padding: 12px; margin: 4px 6px 16px 0; break-inside: avoid; display: flex; justify-content: center; background: #fff; }
+.doc pre.mermaid { background: none; border: 0; padding: 0; margin: 0; width: 100%; display: flex; justify-content: center; font-family: 'Work Sans'; font-size: inherit; white-space: normal; }
+.doc .diagram svg { width: 100%; max-width: 100% !important; height: auto; max-height: 560px; }
+.doc .callout { border: 2px solid var(--ink); background: var(--tint); padding: 9px 12px; margin: 0 0 12px; break-inside: avoid; }
+.doc .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 14px; }
+.doc .stat { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); padding: 8px 10px; break-inside: avoid; }
+.doc .stat b { display: block; font-family: 'Roboto Condensed'; font-weight: 900; font-size: 26px; line-height: 1; }
+.doc .stat span { font-family: 'JetBrains Mono'; font-size: 7px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.pill { display: inline-block; font-family: 'JetBrains Mono'; font-size: 6.8px; letter-spacing: .08em; text-transform: uppercase; padding: 1px 5px; border: 1.5px solid currentColor; white-space: nowrap; }
+.pill.implemented { color: var(--green); } .pill.partial { color: var(--amber); } .pill.planned { color: var(--red); } .pill.customer { color: var(--muted); }
+.pill.high { color: var(--red); } .pill.moderate { color: var(--amber); } .pill.low { color: var(--green); }
+.doc .evidence { font-size: 7.6px; color: var(--muted); margin-top: 3px; }
+.doc .evidence code { font-size: 7px; }

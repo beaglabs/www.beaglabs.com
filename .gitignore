@@ -48,3 +48,7 @@ public/cookbook-preview.html
 
 # Brief page previews (node scripts/briefs/build.mjs --png)
 scripts/briefs/out/
+
+# Evidence pack page previews and intermediate HTML (node scripts/compliance/build.mjs)
+scripts/compliance/out/
+scripts/compliance/*.html

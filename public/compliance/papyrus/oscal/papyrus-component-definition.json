@@ -1,0 +1,1066 @@
+{
+  "component-definition": {
+    "uuid": "525a8140-5cc8-532d-a869-9a1f0fd88df8",
+    "metadata": {
+      "title": "Papyrus Component Definition",
+      "last-modified": "2026-10-20T13:03:06Z",
+      "version": "0.1.0+fd55e38",
+      "oscal-version": "1.2.3",
+      "roles": [
+        {
+          "id": "provider",
+          "title": "Component Provider"
+        }
+      ],
+      "parties": [
+        {
+          "uuid": "496b80ad-f294-59dc-91fb-d12c4f817a0b",
+          "type": "organization",
+          "name": "Beag Labs, Inc.",
+          "links": [
+            {
+              "href": "https://beaglabs.com",
+              "rel": "website"
+            }
+          ]
+        }
+      ],
+      "responsible-parties": [
+        {
+          "role-id": "provider",
+          "party-uuids": [
+            "496b80ad-f294-59dc-91fb-d12c4f817a0b"
+          ]
+        }
+      ],
+      "remarks": "Describes the security capabilities of the Papyrus software and the responsibilities left to a deploying organization. It is not a certification, an authorization, an assessment result or a System Security Plan, and it makes no claim that any deployment satisfies NIST SP 800-53. Control effectiveness must be assessed within the deploying organization's authorization boundary. Evidence paths refer to the Papyrus source tree at the stated revision."
+    },
+    "components": [
+      {
+        "uuid": "a12dbf45-4655-52aa-8145-b6bd4ac2e51b",
+        "type": "software",
+        "title": "Papyrus",
+        "description": "Papyrus is a single-tenant agent runtime that an organization deploys in its own environment as a hardened container image or an Azure VM appliance. It runs model-driven agents and workflows over the organization's documents and connected systems, authenticates people with Microsoft Entra ID, and routes consequential external actions through human approval and an append-only ledger. Deployments created through Beag Labs call an external control plane and license authority (papyrus.beaglabs.com, license.beaglabs.com) outbound only; those services are outside this repository and outside the scope of this file.",
+        "props": [
+          {
+            "name": "software-name",
+            "value": "Papyrus"
+          },
+          {
+            "name": "software-version",
+            "value": "0.1.0+fd55e38"
+          },
+          {
+            "name": "release-date",
+            "value": "2026-10-20"
+          }
+        ],
+        "responsible-roles": [
+          {
+            "role-id": "provider",
+            "party-uuids": [
+              "496b80ad-f294-59dc-91fb-d12c4f817a0b"
+            ]
+          }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "6d05d3fb-10b8-54b3-9c14-8423920b9da7",
+            "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+            "description": "Papyrus contributions to NIST SP 800-53 Rev. 5 controls, at revision fd55e3821fda9edf4c1519da6767f6f8240695fa.",
+            "implemented-requirements": [
+              {
+                "uuid": "0dd681e1-9239-5a64-a2a1-0c1315908b03",
+                "control-id": "ac-2",
+                "description": "Papyrus creates no local user accounts or passwords; every person is a Microsoft Entra identity (tenant ID and object ID) and authority comes only from the eleven declared Papyrus roles. On deployments that sign in through Beag Labs, roles live in a Papyrus role-assignment table: the consenting admin is seeded as the first System Owner, only a System Owner (never an API key) can grant or revoke roles, the last System Owner cannot be revoked, and every grant and revocation is written to an append-only event table protected by database triggers. Automation uses API keys, which are service identities with no roles that name the workflows they may run, expire after 1 to 365 days (default 90), and can be rotated or revoked with creation, rotation, revocation and last use recorded.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Own the account lifecycle in Entra ID: identity proofing, approval of app-role assignments, periodic access review, disabling departed users, and guest policy. Review Papyrus role assignments and API keys on the organization's review cadence.\n\n- Evidence: `apps/server/src/agent/entra-auth.ts` (principalFromClaims keeps only declared Papyrus app roles; withAssignedRoles reads Papyrus assignments on every request)\n- Evidence: `apps/server/src/agent/role-assignments.ts` (Role assignment table, append-only event log via UPDATE/DELETE triggers, last-System-Owner guard, first-owner seeding)\n- Evidence: `apps/server/src/agent/http.ts` (/api/access/assignments refuses API keys and requires Papyrus.System.Owner)\n- Evidence: `apps/server/src/agent/api-keys.ts` (API key service identities: expiry bounds, rotation, revocation, last-used tracking)\n- Evidence: `packages/contracts/src/index.ts` (ENTRA_APP_ROLES: the eleven declared Papyrus roles)\n- Verified by: `apps/server/tests/agent-auth.test.ts` (Maps only declared Entra app roles and never provisions local roles)\n- Verified by: `apps/server/tests/agent-microsoft-broker.test.ts` (Grants, lists and revokes assignments, never removes the last System Owner; a revoked role ends on the next request)\n- Verified by: `apps/server/tests/api-keys.test.ts` (Key expiry, revocation, rotation, last-use recording and roleless service identity)"
+              },
+              {
+                "uuid": "544c9525-2a12-5569-8af8-c2d93c158860",
+                "control-id": "ac-3",
+                "description": "Every protected HTTP route authenticates the caller server-side and rejects principals that hold no Papyrus role; administrative, integration, approval, audit and owner-only operations check the specific role on the server before acting. MCP servers, imported APIs, Resource Classes and API keys are scoped to the caller's tenant, and an API key is admitted only to start runs of the workflows it names and read the runs it started. Sensitive Resource Class fields are masked except for administrators and the Class's sensitive-reader groups.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "Deploying organization: Assign Papyrus roles in Entra (or on the Access page for brokered deployments) according to organizational need-to-know.\n\n- Evidence: `apps/server/src/agent/http.ts` (principal(), requireRole and requireAnyRole on each route; API key route restriction for /api/v1/workflows)\n- Evidence: `apps/server/src/agent/service.ts` (requirePortalAccess rejects principals with no role; approve/deny require Papyrus.Action.Approve)\n- Evidence: `apps/server/src/agent/mcp/servers.ts` (MCP server lookup enforces tenant match)\n- Evidence: `apps/server/src/agent/mastra/runtime.ts` (Sessions are owned by the tenant resource id (resourceId), not by individual users)\n- Verified by: `apps/server/tests/agent-integrations.test.ts` (Integration operations require Entra application roles)\n- Verified by: `apps/server/tests/agent-observability.test.ts` (Rejects an authenticated user without an observability role)\n- Verified by: `apps/server/tests/agent-api-keys-http.test.ts` (API keys refused everywhere except starting and reading their own workflow runs)\n- Verified by: `apps/server/tests/agent-mcp-http.test.ts` (People without Integration.Manage see only verified servers and no settings)\n\nKnown gap: Agent sessions, their messages, the AgentFS Library and generated artifacts are owned by the tenant, not by the person who created them. Any signed-in person holding any Papyrus role can list and read every session, Library file and artifact in the deployment. Remediation: Record an owner on each session and Library namespace, enforce owner or explicit-share checks in the session, workspace-file and artifact routes, and add tests for cross-user denial."
+              },
+              {
+                "uuid": "a7de6ad2-bdbf-5a09-9040-f7d44fd87884",
+                "control-id": "ac-4",
+                "description": "Papyrus enforces several fixed flow rules in code: agent workspace commands run with network access denied (Factory sidecar commands do not; see sc-39); Hosted App frames carry connect-src 'none' and reach data only through brokered, operation-specific connector grants; credentials are resolved by trusted runtime code and never passed to models, App source or workspace processes; MCP tool results are labeled as external content and truncated at 64 KiB; and public intake can write only an endpoint's allow-listed fields and never person, group or reference fields. Outbound HTTP from workflows, MCP, imported APIs and Class endpoint sends must use HTTPS to a public address unless the host is explicitly listed as internal, may not embed credentials, and never follows redirects.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Set PAPYRUS_WORKFLOW_HTTP_DENYLIST and PAPYRUS_WORKFLOW_HTTP_INTERNAL_HOSTS to match the authorization boundary, and enforce egress policy at the network layer.\n\n- Evidence: `apps/server/src/agent/mastra/workflow-runtime-tools.ts` (assertWorkflowHttpTarget: HTTPS, no URL credentials, denylist, refusal of non-public resolved addresses)\n- Evidence: `apps/server/src/agent/mcp/calls.ts` (Results labeled external-mcp-server and truncated at 64 KiB)\n- Evidence: `apps/server/src/agent/apps/http.ts` (Hosted App frame CSP with connect-src 'none')\n- Evidence: `apps/server/src/agent/mastra/workspace-nono-worker.ts` (Sandbox policy sets allowNetwork false and refuses to run unless network is resolved as restricted)\n- Evidence: `apps/server/src/agent/classes/endpoints.ts` (Endpoint field allow-lists and per-endpoint limits for public intake)\n- Verified by: `apps/server/tests/workflow-http-target.test.ts` (Rejects plain HTTP, embedded credentials, denylisted hosts and non-public addresses)\n- Verified by: `apps/server/tests/agent-app-runtime-boundary.test.ts` (Rejects ambient secrets, direct browser networking and credential literals in App source)\n- Verified by: `apps/server/tests/agent-workspace.test.ts` (Papyrus credentials are not passed into workspace child processes)\n- Verified by: `apps/server/tests/agent-class-endpoints-http.test.ts` (Public forms take only their configured fields)\n\nKnown gap: Outbound HTTP from workflow http-get/http-post steps and imported API tools is allowed to any public HTTPS host by default; the organization can block hosts with a denylist but there is no allow-list-only mode. Remediation: Add an allow-list mode (deny by default) for workflow and imported-API egress, selectable per deployment profile and on by default for the government and disconnected profiles."
+              },
+              {
+                "uuid": "3683aea1-3619-5fce-88a5-a4b8e9b2f93a",
+                "control-id": "ac-5",
+                "description": "The agent can propose but cannot approve: approveProposal, denyProposal and executeAction are rejected at the agent tool layer, and approval routes require a human Entra session holding Papyrus.Action.Approve. Workflow approval steps addressed to a person or group can be answered only by that person, a member of that group, or a System Owner, never by the person who started the run. Authority-weakening policy changes, non-additive Class changes and App publications wait for a Governance principal (System Owner, or Security.Manage plus Action.Approve).",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Assign Papyrus.Action.Approve, Papyrus.Security.Manage and Papyrus.System.Owner to different people according to organizational separation-of-duties policy.\n\n- Evidence: `apps/server/src/agent/mastra/tools.ts` (FORBIDDEN_AGENT_TOOLS lists approveProposal, denyProposal, executeAction)\n- Evidence: `apps/server/src/agent/workflow-approval.ts` (mayAnswerApproval: assigned approvals exclude the requester)\n- Evidence: `apps/server/src/agent/policies/store.ts` (requireGovernance and governed_changes approval)\n- Evidence: `apps/server/src/agent/service.ts` (approveProposal requires Papyrus.Action.Approve)\n- Verified by: `apps/server/tests/security-invariants.test.ts` (Keeps approval and execution out of the agent's tools)\n- Verified by: `apps/server/tests/workflow-approval.test.ts` (Requester cannot approve their own addressed request, even as an approver)\n\nKnown gap: Action proposals and governed changes do not check that the approver differs from the person who proposed or requested them, so one person holding the approving roles can approve their own request. Unaddressed workflow approval steps can be answered by the run's initiator. Remediation: Refuse approval when the approver's object ID equals the proposer or requester for action proposals, governed changes and unaddressed workflow steps, with an explicit single-operator override recorded in the audit log."
+              },
+              {
+                "uuid": "51576006-4e6a-5350-b10a-545f5c7a1d2e",
+                "control-id": "ac-6",
+                "description": "Papyrus splits authority into roles (integration view and manage, security manage, action approve, audit view and system owner) and checks the narrowest one per operation; Papyrus.System.Owner implies all of them. API keys hold no roles. Customer agents receive only read tools for their configured Classes and run as the requesting person. The container runs as a non-root user, and workspace commands run with the data directory unreadable and network denied.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Grant the narrowest role that fits each person, limit System Owner assignments, and do not run the container privileged.\n\n- Evidence: `packages/contracts/src/index.ts` (ENTRA_APP_ROLES and OBSERVABILITY_APP_ROLES)\n- Evidence: `apps/server/src/agent/entra-auth.ts` (hasAppRole: System Owner implies every role)\n- Evidence: `apps/server/src/agent/entra-app-setup.ts` (Role descriptions declared on the Entra app)\n- Evidence: `Dockerfile` (USER nonroot in the runtime stage)\n- Evidence: `apps/server/src/agent/customer-agents/store.ts` (Customer agents limited to configured Classes)\n- Verified by: `apps/server/tests/agent-auth.test.ts` (System Owner role is treated as all portal permissions)\n- Verified by: `apps/server/tests/agent-customer-agents.test.ts` (Customer agent tool and class scoping)\n\nKnown gap: Possession of any role, including narrow ones such as Papyrus.Audit.View, grants access to the shared agent workspace: all sessions, chat, Library files and artifacts. Workspace access is not itself a separately assignable privilege. Remediation: Introduce a distinct workspace-use role or per-session ownership (see ac-3) so that narrow roles do not carry workspace access."
+              },
+              {
+                "uuid": "48e7cc29-21aa-555b-9d2a-fc3193865f8a",
+                "control-id": "ac-7",
+                "description": "Papyrus accepts no passwords, so interactive logon attempts and lockout are handled by Microsoft Entra ID. For the one Papyrus-managed secret a member of the public can guess, Resource Class request links with a confirmation question lock permanently after five wrong answers. Invalid, expired, revoked and rotated API keys all receive the same 401 response.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Configure Entra smart lockout, Conditional Access and sign-in risk policies for the tenant.\n\n- Evidence: `apps/server/src/agent/classes/requests.ts` (MAX_FAILED_CHECKS = 5; request link status set to locked)\n- Evidence: `apps/server/src/agent/http.ts` (Uniform 401 API_KEY_INVALID for any unusable key)\n- Verified by: `apps/server/tests/agent-class-requests-webhooks.test.ts` (Request links lock after five wrong answers)\n- Verified by: `apps/server/tests/agent-api-keys-http.test.ts` (Missing, malformed, revoked or rotated-away keys get the same answer)"
+              },
+              {
+                "uuid": "a98fa951-75c7-5200-99c1-3b0887e31567",
+                "control-id": "ac-12",
+                "description": "The portal session is an HMAC-signed cookie with a one-hour lifetime whose expiry is checked server-side; after it expires the person must sign in through Entra again. Sign-out clears the cookie. On brokered deployments roles are re-read from the assignment table on every request, so revoking a person's roles ends their access on the next request.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Set Entra token lifetimes and Conditional Access sign-in frequency; use boundary controls if faster revocation is required.\n\n- Evidence: `apps/server/src/agent/entra-auth.ts` (portalCookie Max-Age=3600 with signed exp; verifyPortalCookie rejects expired cookies; clearCookie)\n- Evidence: `apps/server/src/agent/http.ts` (/api/auth/logout clears the cookie)\n- Verified by: `apps/server/tests/agent-microsoft-broker.test.ts` (A revoked role ends at once on brokered deployments)\n\nKnown gap: Sessions are stateless: there is no server-side session store, idle timeout, or revocation list. A copied cookie remains valid until its one-hour expiry after sign-out, and on deployments using their own app registration the roles carried in the cookie persist until expiry after an Entra role is removed. Remediation: Add a server-side session table with idle timeout, explicit revocation on sign-out, and an administrator action to end a person's sessions."
+              },
+              {
+                "uuid": "5c1a9352-c28d-5b67-b3ad-6837e97b40a6",
+                "control-id": "au-2",
+                "description": "Papyrus records integration lifecycle events and action-ledger decisions (proposed, approved, denied, executed) in a hash-chained event table; role grants and revocations; every MCP tool call and MCP administrative change; API key creation, rotation and revocation; policy versions and policy denials; governed change requests and approvals; and agent traces and logs in a separate observability store.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Decide which additional events the organization requires and collect Entra sign-in logs from Microsoft.\n\n- Evidence: `apps/server/src/agent/database.ts` (appendEvent and recordActionEvent write the SHA-256 chained agent_integration_events table)\n- Evidence: `apps/server/src/agent/role-assignments.ts` (papyrus_role_assignment_events)\n- Evidence: `apps/server/src/agent/mcp/calls.ts` (papyrus_mcp_calls records every MCP call)\n- Evidence: `apps/server/src/agent/mcp/tools.ts` (papyrus_mcp_admin_events records classification changes)\n- Evidence: `apps/server/src/agent/policies/store.ts` (policy_history, governed_changes and policy_decisions)\n- Evidence: `apps/server/src/agent/api-keys.ts` (API key events)\n- Verified by: `apps/server/tests/agent-integrations.test.ts` (Lifecycle events are appended and the chain verifies)\n- Verified by: `apps/server/tests/agent-mcp-stores.test.ts` (Records who classified an MCP tool)\n\nKnown gap: Successful and failed sign-ins and authorization denials (401/403) are not written to a local audit record. A successful sign-in is only sent as an analytics event to Beag Labs on registered deployments. Remediation: Write sign-in success, sign-in failure and authorization-denied events to an append-only local audit table with actor, time, route and outcome."
+              },
+              {
+                "uuid": "af0cac67-675c-5993-b3a2-09d45cb4307c",
+                "control-id": "au-3",
+                "description": "Audit rows carry an ISO 8601 UTC timestamp, the actor's Entra object ID, the action, the affected integration, tool or resource, and the outcome. MCP call records add session, workflow, tool classification, approval ID, duration and a SHA-256 of the arguments; write calls keep the approved arguments, while tokens and results are never stored. Configuration events exclude secret values.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "- Evidence: `apps/server/src/agent/database.ts` (Event payload: sequence, integration, actor, action, time, data, previous hash)\n- Evidence: `apps/server/src/agent/mcp/calls.ts` (McpCallAudit columns and the rule that tokens and results are not stored)\n- Verified by: `apps/server/tests/agent-local-secrets.test.ts` (Key create/replace/delete does not leak secret values into audit events)\n\nKnown gap: Audit records do not capture the client network address, and each log uses its own schema, so records cannot be correlated or exported in one format. Remediation: Add source address and request ID to audit writes and define a common audit event schema used by all append-only logs."
+              },
+              {
+                "uuid": "93fb6803-72c4-53fc-8ce5-c35072ec4724",
+                "control-id": "au-6",
+                "description": "Holders of Papyrus.Audit.View can read integration and action-ledger event history, and System Owners, Audit Viewers and Security Managers can read agent traces and logs through the observability API.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Set review cadence, alerting and escalation, and correlate Papyrus records with Entra and host logs in the organization's monitoring system.\n\n- Evidence: `apps/server/src/agent/service.ts` (Integration events require Papyrus.Audit.View)\n- Evidence: `apps/server/src/agent/http.ts` (/api/observability/traces and /logs gated by OBSERVABILITY_APP_ROLES)\n- Verified by: `apps/server/tests/agent-observability.test.ts` (Allows each observability role to read traces and logs and rejects others)\n\nKnown gap: There is no consolidated audit view and no export or forwarding of audit records to an external log store or SIEM; records stay in local SQLite databases. Remediation: Provide an audit export API and a streaming forwarder (syslog or OTLP) covering all append-only logs."
+              },
+              {
+                "uuid": "428c7726-05e1-59ba-9328-98915a816650",
+                "control-id": "au-8",
+                "description": "Papyrus writes audit timestamps as ISO 8601 UTC strings taken from the host clock.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Synchronize the host clock to an authoritative time source.\n\n- Evidence: `apps/server/src/agent/role-assignments.ts` (new Date().toISOString() on each event)\n- Evidence: `apps/server/src/agent/mcp/calls.ts` (Call timestamps in ISO 8601 UTC)"
+              },
+              {
+                "uuid": "f76e5d11-ce17-58b4-916b-c67728aa60bd",
+                "control-id": "au-9",
+                "description": "Audit tables are append-only at the database layer: SQLite triggers abort UPDATE and DELETE on integration events, model events, role assignment events, MCP admin events and settled MCP call records. Integration and action-ledger events are additionally SHA-256 hash-chained, and the chain can be recomputed to detect modification.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Restrict host and database-file access, protect backups, and copy audit records to independently controlled immutable storage.\n\n- Evidence: `apps/server/src/agent/database.ts` (No-update/no-delete triggers and verifyEventChain)\n- Evidence: `apps/server/src/agent/mcp/calls.ts` (Append-only triggers on papyrus_mcp_calls)\n- Evidence: `docs/security.md` (States that a host or database administrator can replace local state)\n- Verified by: `apps/server/tests/agent-integrations.test.ts` (verifyEventChain reports a valid chain after lifecycle changes)\n- Verified by: `apps/server/tests/agent-smoke.test.ts` (Event chain verifies after an end-to-end run)\n\nKnown gap: Triggers and the hash chain detect changes made through the application only; anyone with write access to the database file can rewrite them. Chain verification is not exposed through any API or run on a schedule, and logs other than integration and action events are not hash-chained. Remediation: Expose chain verification to Audit Viewers, run it periodically, extend chaining to all audit tables, and anchor chain heads in external storage."
+              },
+              {
+                "uuid": "2b806093-0417-5c4a-b7fc-a2c915473971",
+                "control-id": "au-12",
+                "description": "Audit records are generated server-side at the enforcement points themselves: the proposal approval and denial paths, the single MCP call path, role assignment changes, API key management and policy enforcement. They are therefore produced the same way regardless of which client made the request.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "- Evidence: `apps/server/src/agent/service.ts` (approveProposal and denyProposal call recordActionEvent)\n- Evidence: `apps/server/src/agent/mcp/calls.ts` (executeMcpTool writes start and finish records around every call)\n- Evidence: `apps/server/src/agent/policies/store.ts` (assert records each denial in policy_decisions)\n- Verified by: `apps/server/tests/agent-integrations.test.ts` (Event count and chain after integration operations)"
+              },
+              {
+                "uuid": "f35cba64-d001-52d1-a0ab-6c606c18a0e6",
+                "control-id": "cm-2",
+                "description": "Papyrus ships one Dockerfile that builds a Wolfi-based runtime image running as a non-root user with no browser engine, plus a DoD variant that defaults to the DoD Microsoft cloud and embeds the offline license authority key. The Azure Marketplace appliance is provisioned by script: the container listens only on 127.0.0.1 behind an nginx TLS edge. Three deployment profiles (commercial, government, disconnected) set runtime posture.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Document the approved deployment configuration: host OS, network, Entra registration, model endpoint, storage and the Papyrus image digest.\n\n- Evidence: `Dockerfile` (Build and runtime stages, nonroot user, dod target)\n- Evidence: `deploy/marketplace/vm/provision.sh` (Appliance provisioning, loopback port binding, nginx TLS edge)\n- Evidence: `docs/deployment.md` (Deployment profiles and required settings)\n- Verified by: `apps/server/tests/agent-app-connectors.test.ts` (Keeps Chromium and agent-browser out of the hardened core image)\n\nKnown gap: The baseline is not fully reproducible: base images are referenced by tag rather than digest, apk packages are not version-pinned, and several Python packages in the runtime image (pypdf, pypdfium2, reportlab, pillow) are unpinned. Remediation: Pin base images by digest and pin apk and pip package versions, with an automated update process that opens reviewed changes."
+              },
+              {
+                "uuid": "4e1badc0-7535-5d60-b5e2-65f99630d26c",
+                "control-id": "cm-3",
+                "description": "In-application changes that weaken policy, alter Classes non-additively, or publish Apps become digest-checked governed changes that apply only after a Governance principal approves them, and an approval is refused if the change's digest or expected version no longer matches. Papyrus software updates are announced by exact image digest from an allowed repository and installed only when a System Owner applies them or within an owner-configured maintenance window.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Operate organizational change control for deployment configuration, infrastructure and when updates are applied.\n\n- Evidence: `apps/server/src/agent/policies/store.ts` (propose/approve with digest and expected-version checks)\n- Evidence: `apps/server/src/agent/updates/service.ts` (Digest-only releases from allowed repositories; apply only the announced release)\n- Evidence: `apps/server/src/agent/apps/http.ts` (/api/governed-changes approval route)\n- Verified by: `apps/server/tests/agent-policies.test.ts` (Approved change commits atomically; a stale approval is rolled back without relaxing rules)\n- Verified by: `apps/server/tests/agent-updates.test.ts` (Accepts only exact digests from allowed repositories and applies only when asked or in the window)"
+              },
+              {
+                "uuid": "eb8a97cd-ca0c-543f-90d1-a3704c80700d",
+                "control-id": "cm-5",
+                "description": "Configuration endpoints require specific roles on the server: Integration.Manage for model gateways, MCP servers, imported APIs, package mirrors, browser and mainframe settings and branding; System Owner for role assignments, updates, license activation and skill approval; Governance for governed changes. Model API keys are accepted only over HTTPS from the portal origin.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Control access to the host, container runtime, data directory, secret stores and deployment pipeline.\n\n- Evidence: `apps/server/src/agent/http.ts` (requireRole checks on configuration routes; requireSecretTransport)\n- Evidence: `apps/server/src/agent/policies/store.ts` (requireGovernance)\n- Verified by: `apps/server/tests/agent-local-secrets-http.test.ts` (Requires identity and management permission; rejects cross-origin and non-HTTPS remote writes)\n- Verified by: `apps/server/tests/agent-updates.test.ts` (Only admins see and configure updates)"
+              },
+              {
+                "uuid": "c2c3148f-3a85-59e7-a2e0-1597a670d85d",
+                "control-id": "cm-6",
+                "description": "Configuration is validated at startup and fails closed: persistent mode requires an HTTPS public origin and an Entra tenant and client ID; the development identity is accepted only in local mode; unknown profiles, national clouds and sandbox backends are rejected; TLS certificate and key must be set together; and the former license-bypass setting is refused. Once an HTTPS origin is configured, Host and X-Forwarded-Host headers cannot change OAuth redirect URIs or cookies.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Choose values appropriate to the authorization boundary and verify them at deployment. In Azure Government or other national clouds, set PAPYRUS_AZURE_MANAGEMENT_ENDPOINT, PAPYRUS_AZURE_MANAGEMENT_RESOURCE, PAPYRUS_AZURE_KEYVAULT_DNS_SUFFIX and PAPYRUS_AZURE_KEYVAULT_RESOURCE; they default to Azure commercial endpoints and are not derived from PAPYRUS_ENTRA_CLOUD.\n\n- Evidence: `apps/server/src/agent/config.ts` (loadAgentConfig validation; deriveOrigin; rejectLicenseBypass)\n- Evidence: `apps/server/src/agent/azure-key-vault.ts` (Azure management and Key Vault endpoints default to commercial cloud unless overridden)\n- Verified by: `apps/server/tests/agent-config-origin.test.ts` (HTTPS configured origin is authoritative over Host headers)\n- Verified by: `apps/server/tests/security-invariants.test.ts` (Government cloud selection explicit; unknown sandbox backends rejected)"
+              },
+              {
+                "uuid": "2c1152be-57c3-5fb0-9634-4bb0db93ba9c",
+                "control-id": "cm-7",
+                "description": "The runtime image contains no browser engine. The Papyrus agent has no general shell: native programs run only through structured executors (Python, Pandoc, LibreOffice) with fixed executables. MCP has no stdio transport. The public scheduler CRUD surface is not exposed, and removed legacy connectors read back as retired and cannot be activated or executed. The Factory sidecar that builds Apps is a separate process with its own command sandbox (see sc-39).",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Expose only ports 80/443 (and SSH if needed), and disable integrations and model endpoints the organization does not use.\n\n- Evidence: `Dockerfile` (Runtime stage installs no Chromium or agent-browser)\n- Evidence: `apps/server/src/agent/mastra/workspace-executors.ts` (Structured executors with fixed executables)\n- Evidence: `apps/server/src/agent/mcp/servers.ts` (Server addresses must be HTTP(S) URLs; no stdio)\n- Evidence: `apps/server/src/agent/database.ts` (Rows for removed connectors read as retired)\n- Verified by: `apps/server/tests/agent-app-connectors.test.ts` (No Chromium or agent-browser in the core image; removed connectors are retired)\n- Verified by: `apps/server/tests/agent-workspace.test.ts` (Process execution kept behind structured executors)\n- Verified by: `apps/server/tests/agent-mcp-stores.test.ts` (Refuses stdio and private addresses)\n- Verified by: `apps/server/tests/agent-http.test.ts` (Scheduler portal APIs are not exposed)"
+              },
+              {
+                "uuid": "aeec12dd-737c-56d6-8dae-f8879141eef3",
+                "control-id": "cm-8",
+                "description": "A generator produces an SPDX 2.3 SBOM of every package in the pnpm lockfile, checked for drift by the pre-commit hook, and the container workflow generates a CycloneDX SBOM of the built image.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Inventory the host OS, container runtime, reverse proxy, model endpoints and other infrastructure in the boundary.\n\n- Evidence: `scripts/compliance/generate.mjs` (SPDX SBOM generation from pnpm-lock.yaml)\n- Evidence: `compliance/sbom.spdx.json` (Generated source SBOM)\n- Evidence: `.github/workflows/container.yml` (anchore/sbom-action CycloneDX image SBOM)\n\nKnown gap: The SPDX SBOM records name and version only (licenses and download locations are NOASSERTION) and omits OS and Python packages; the image SBOM is not attached to the published image as a signed attestation. Remediation: Publish the image SBOM as a signed attestation alongside the provenance attestation and include license data."
+              },
+              {
+                "uuid": "8334de73-93bf-55b2-b150-80182a143611",
+                "control-id": "cm-14",
+                "description": "Release images are signed with Cosign keyless signing in GitHub Actions. On the Azure Marketplace appliance the updater runs cosign verify against a pinned signer identity and issuer before pulling an update and installs nothing if verification fails; the Marketplace image pipeline verifies the signature and build provenance of the container digest before baking it.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: On self-hosted deployments, verify the image signature and digest before deployment.\n\n- Evidence: `deploy/marketplace/vm/papyrus-update.sh` (cosign verify with PAPYRUS_UPDATE_SIGNER_IDENTITY before install)\n- Evidence: `deploy/marketplace/vm/provision.sh` (Pinned cosign binary checksum and signer identity)\n- Evidence: `.github/workflows/marketplace-vm-image.yml` (Verifies Cosign signature and attestation of the source image)\n- Evidence: `.github/workflows/container.yml` (cosign sign and attest-build-provenance on push to main)\n- Evidence: `deploy/azure/main.bicep` (Azure template references ghcr.io/beaglabs/papyrus:0.1.1 by tag)\n- Verified by: `apps/server/tests/agent-updates.test.ts` (Update service accepts only exact digests from allowed repositories)\n\nKnown gap: Signature verification exists only on the Marketplace VM update and image-build paths; the shell updater has no automated test, and other deployment paths do not verify signatures in this repository. The Azure template (deploy/azure/main.bicep) references ghcr.io/beaglabs/papyrus:0.1.1 by tag, a different repository from the one CI publishes (ghcr.io/beaglabs/papyrus/papyrus). Two workflows (container.yml and container-multiarch.yml) sign images for the same repository while the updater trusts only the container.yml identity. Remediation: Settle on one signing workflow and identity, reference images by digest from the published repository in every deployment template, add an automated test for the updater verification step, and document signature verification for every supported deployment path."
+              },
+              {
+                "uuid": "20cea251-fa84-5138-ac37-f47d980ca9f7",
+                "control-id": "cp-9",
+                "description": "Papyrus keeps its state in the data directory (agent.db, mastra.db, jobs.db, observability.db, secrets.db and AgentFS) and documents which files must be backed up together and that the local master key must be backed up separately. It provides no backup tooling.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "customer"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "customer"
+                  }
+                ],
+                "remarks": "Deploying organization: Back up the data directory consistently, store the master key and Key Vault recovery separately, and test restoration.\n\n- Evidence: `docs/deployment.md` (Lists the databases to back up and master key handling)"
+              },
+              {
+                "uuid": "349561fb-91ed-5f49-a3db-39f50eee094e",
+                "control-id": "ia-2",
+                "description": "People authenticate only through Microsoft Entra ID. Direct sign-in uses the authorization code flow with PKCE (S256), single-use state and a nonce; ID tokens are verified against the tenant's published keys for issuer, audience (client ID or api:// form), expiry, nonce and tenant ID, and discovery metadata with an unexpected issuer is rejected. Brokered sign-in redeems a one-time handle server-to-server and accepts only an assertion signed by a configured license authority key, addressed to this deployment, matching the pending login nonce and bound tenant, and unexpired. Multi-factor and PIV/CAC requirements are enforced by Entra, not by Papyrus.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Require MFA or phishing-resistant authentication through Entra Conditional Access. Brokered deployments trust Beag Labs' control plane to run the Microsoft sign-in; organizations that cannot accept that should use their own app registration.\n\n- Evidence: `apps/server/src/agent/entra-auth.ts` (startLogin, completeLogin, verifyEntraToken, completeBrokeredLogin)\n- Evidence: `apps/server/src/agent/microsoft-broker.ts` (MicrosoftBroker.verify checks signature, aud, nonce, tenant and expiry)\n- Verified by: `apps/server/tests/agent-microsoft-broker.test.ts` (Accepts only a fresh assertion signed for this deployment, tenant and login)\n- Verified by: `apps/server/tests/agent-auth-profile.test.ts` (Interactive login requests the expected scopes per national cloud)\n- Verified by: `apps/server/tests/agent-api-keys-http.test.ts` (An API key is not accepted as an Entra sign-in)"
+              },
+              {
+                "uuid": "011d4160-fa5d-5d29-be5c-d3d42e915f16",
+                "control-id": "ia-4",
+                "description": "Papyrus identifies people by Entra object ID and tenant ID and creates no identifiers of its own for people. API keys receive a random 12-hex-character identifier, and each deployment has its own deployment ID.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Manage identifier issuance and reuse policy in Entra ID.\n\n- Evidence: `apps/server/src/agent/entra-auth.ts` (principalFromClaims requires oid and tid)\n- Evidence: `apps/server/src/agent/api-keys.ts` (Random key identifiers)\n- Verified by: `apps/server/tests/agent-auth.test.ts` (Identity derived from Entra claims only)"
+              },
+              {
+                "uuid": "8b980331-9e5d-54a6-bd96-b79377e886d5",
+                "control-id": "ia-5",
+                "description": "API key secrets are 32 random bytes, shown once with cache-control no-store, and stored only as an HMAC-SHA-256 keyed with the deployment secret, so a copied database cannot be used to call the API. Keys expire, can be rotated (the old secret stops immediately) and revoked. Integration settings reject inline passwords, tokens and keys and store only credential references, and model API keys are accepted only over HTTPS from the portal origin. The pre-commit hook scans staged changes for private keys and common token formats.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Manage Entra authenticators (MFA methods, certificates, client secrets) and rotate API keys on the organization's schedule.\n\n- Evidence: `apps/server/src/agent/api-keys.ts` (Secret generation, HMAC storage, expiry, rotation and revocation)\n- Evidence: `apps/server/src/agent/service.ts` (rejectInlineSecrets on integration settings)\n- Evidence: `apps/server/src/agent/http.ts` (requireSecretTransport for model API keys)\n- Evidence: `scripts/hooks/secret-scan.mjs` (Pre-commit secret pattern scan)\n- Verified by: `apps/server/tests/api-keys.test.ts` (Secret shown once and not stored; useless under another deployment secret; expiry, rotation, revocation)\n- Verified by: `apps/server/tests/agent-integrations.test.ts` (Rejects inline connector secrets and stores only references)"
+              },
+              {
+                "uuid": "3fbdb424-9ce8-5d0c-84d6-515788a4b7b1",
+                "control-id": "ia-8",
+                "description": "Only tokens issued for the bound Entra tenant are accepted, so any external person must exist in that tenant (for example as a guest). The only unauthenticated routes for the public are Resource Class public forms, single-use request links and signed webhooks; each answers only for an active endpoint, accepts only that endpoint's configured fields, and cannot write person, group or reference fields.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Decide whether guests may be assigned Papyrus roles, and approve which Class endpoints are public.\n\n- Evidence: `apps/server/src/agent/entra-auth.ts` (WRONG_ENTRA_TENANT check)\n- Evidence: `apps/server/src/agent/classes/http.ts` (handlePublicIntake, handlePublicRequest, handleWebhook)\n- Evidence: `apps/server/src/agent/classes/webhooks.ts` (Constant-time signature check with 300-second tolerance)\n- Verified by: `apps/server/tests/agent-class-endpoints-http.test.ts` (Public form takes only its fields; submitter sees only their own record)\n- Verified by: `apps/server/tests/agent-class-requests-webhooks.test.ts` (Request links single-use and lockable; webhooks signature-checked and deduplicated)"
+              },
+              {
+                "uuid": "361b4160-940f-5c37-83ac-10087b62bc6b",
+                "control-id": "ir-4",
+                "description": "Papyrus provides no incident handling capability or plan. Its audit and observability records are inputs to the deploying organization's process.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "customer"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "customer"
+                  }
+                ],
+                "remarks": "Deploying organization: Maintain and exercise an incident response plan covering the Papyrus deployment, including revoking roles, API keys and connector credentials and preserving audit databases."
+              },
+              {
+                "uuid": "b76270ee-f0b5-5a2d-9b65-cdf8e21c7b58",
+                "control-id": "ra-5",
+                "description": "Beag Labs does not currently run automated vulnerability scanning of dependencies, source code or container images in CI. The SBOMs described under cm-8 are available as scanning inputs.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "planned"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Scan hosts, the deployed image and surrounding infrastructure with the organization's tools.\n\n- Evidence: `.github/workflows/container.yml` (Generates an image SBOM; contains no scanning step)\n\nKnown gap: No dependency, static-analysis or image vulnerability scanning runs in CI, and there is no Dependabot or equivalent configuration. Remediation: Add image and dependency scanning (for example Grype or Trivy against the CycloneDX SBOM) and static analysis to CI, failing builds on critical findings, and enable automated dependency update pull requests."
+              },
+              {
+                "uuid": "5fe96ca8-fe65-5864-adfb-da3e0cd11b63",
+                "control-id": "sa-9",
+                "description": "Connected deployments call Beag Labs services outbound only: registration, signed deployment status, brokered sign-in, staff-directory Graph tokens, analytics, and on control-plane deployments hourly agent-execution usage reports to papyrus.beaglabs.com/api/deployments/usage. Status and identity responses are accepted only when signed by a configured license authority key and addressed to this deployment, and the control plane URL must be HTTPS. Registration is skipped for the disconnected profile or when PAPYRUS_BEAGLABS_REGISTRATION=0. Other outbound services the code can call are huggingface.co (embedding model download on first use unless PAPYRUS_EMBEDDING_DOWNLOAD=0), GitHub or GitLab from the Factory when configured, public package registries for skill and session installs unless PAPYRUS_PACKAGE_PUBLIC_REGISTRIES=false or the profile is disconnected, and Sentry only when a DSN is set (with sendDefaultPii disabled).",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Assess Beag Labs as an external service provider, or use the disconnected profile or set PAPYRUS_BEAGLABS_REGISTRATION=0 to avoid it.\n\n- Evidence: `apps/server/src/agent/control-plane.ts` (verifySignedStatus; HTTPS required for PAPYRUS_CONTROL_PLANE_URL)\n- Evidence: `apps/server/src/agent/microsoft-broker.ts` (All broker calls are outbound with the deployment key)\n- Evidence: `apps/server/src/agent/provisioning-control-plane.ts` (Registration disabled for disconnected profile or PAPYRUS_BEAGLABS_REGISTRATION=0)\n- Evidence: `apps/server/src/agent/beaglabs-analytics.ts` (Analytics batches sent to Beag Labs after registration)\n- Evidence: `apps/server/src/agent/sentry.ts` (Sentry initialized only with a DSN, sendDefaultPii false)\n- Evidence: `apps/server/src/agent/execution-usage.ts` (postUsage sends execution usage to /api/deployments/usage)\n- Evidence: `scripts/embedding-model.mjs` (Downloads the embedding model from huggingface.co unless PAPYRUS_EMBEDDING_DOWNLOAD=0)\n- Evidence: `apps/server/src/agent/mastra-factory/app-source.ts` (GitHub API default for Factory source)\n- Evidence: `apps/server/src/agent/http.ts` (analytics.identify on sign-in with display name and tenant ID)\n- Verified by: `apps/server/tests/agent-control-plane.test.ts` (Rejects bad signatures, expired status and other deployments' status)\n- Verified by: `apps/server/tests/agent-beaglabs-analytics.test.ts` (Queues until registered, then batches with deployment authentication)\n\nKnown gap: On registered deployments the server sends each person's Entra object ID, display name and tenant ID to Beag Labs as analytics on sign-in, and there is no setting to turn analytics off separately from registration. Deployments on the government profile register with Beag Labs unless PAPYRUS_BEAGLABS_REGISTRATION=0 is set. Several outbound destinations (embedding download, package registries) are not listed in docs/deployment.md. The control plane and license authority are not in this repository and are not covered by this assessment. Remediation: Add a separate analytics opt-out and stop sending display names, default registration off for the government profile, document every outbound destination with its switch, and publish a security description of the control plane and license authority."
+              },
+              {
+                "uuid": "67fedeea-1bef-5712-9a18-a09723b93c80",
+                "control-id": "sa-11",
+                "description": "The repository has workspace-wide TypeScript type checking and a Vitest suite for the server covering identity, authorization, MCP, Resource Classes, secrets, sandboxing and approvals. CI runs type checking and a fixed subset of tests (Factory, scoped workflows, mainframe guardrails and offline evaluations), and a local pre-commit hook runs secret, contract and compliance-drift checks plus security-invariant tests when related files change.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "- Evidence: `.github/workflows/factory-write-qualification.yml` (CI typecheck and the tests it runs)\n- Evidence: `scripts/hooks/precommit.mjs` (Pre-commit checks and conditional test runs)\n- Evidence: `apps/server/tests/security-invariants.test.ts` (Security invariant tests)\n\nKnown gap: Most security tests, including identity, MCP, Resource Class intake, Key Vault, broker and control-plane tests, do not run in CI, and the compliance drift check runs only in the local pre-commit hook, which can be skipped. compliance/ssp.md states that these checks run in CI. Remediation: Run the full server test suite and pnpm compliance:check in CI on every pull request and make them required checks."
+              },
+              {
+                "uuid": "32ceba3e-4ff7-514a-898c-847e73c25b54",
+                "control-id": "sc-5",
+                "description": "Request bodies are read under fixed byte ceilings and refused with 413 beyond them; public intake, request links and lookups are rate-limited per client and per endpoint; pending sign-ins are capped; and outbound workflow requests time out after 15 seconds with bodies limited to 256 KiB.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Provide network-layer DoS protection and rate limiting at the reverse proxy or gateway.\n\n- Evidence: `apps/server/src/agent/http.ts` (body() and rawBody() byte limits)\n- Evidence: `apps/server/src/agent/classes/endpoints.ts` (IntakeRateLimiter)\n- Evidence: `apps/server/src/agent/classes/http.ts` (Per-client limits for request links and lookups)\n- Verified by: `apps/server/tests/agent-class-endpoints-http.test.ts` (Rate-limits form submissions)\n- Verified by: `apps/server/tests/agent-http.test.ts` (Refuses an oversized chat body)\n\nKnown gap: Rate limits are in memory and keyed on the socket address; behind the appliance's nginx proxy every client shares one address, and the limiter clears all windows once it tracks 10,000 keys. The cap of 256 pending sign-ins can be exhausted by unauthenticated requests, blocking sign-in for up to 10 minutes. Remediation: Key limits on a trusted forwarded client address, bound memory without clearing all windows, and rate-limit /api/auth/entra/login per client instead of a global cap."
+              },
+              {
+                "uuid": "11599e43-1d44-58c2-b61d-a921b528e56f",
+                "control-id": "sc-7",
+                "description": "On the Marketplace appliance the container is published only on 127.0.0.1 and reached through nginx. Every outbound call made for MCP, OAuth discovery, workflows, imported APIs and Class endpoint sends passes one check: HTTPS, no embedded credentials, an organization denylist, and refusal of hosts that resolve to loopback, private or link-local addresses (including cloud metadata) unless listed as internal; redirects are not followed. Calls to the Beag Labs control plane are outbound only. Workspace commands have no network access.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Place the deployment behind the organization's firewalls and proxies, restrict inbound access to 443, and set the egress denylist and internal-host list.\n\n- Evidence: `apps/server/src/agent/mastra/workflow-runtime-tools.ts` (assertWorkflowHttpTarget)\n- Evidence: `apps/server/src/agent/mcp/oauth.ts` (mcpFetch applies the same check and redirect: manual)\n- Evidence: `deploy/marketplace/vm/provision.sh` (docker run -p 127.0.0.1:${PAPYRUS_PORT}; nginx proxy)\n- Evidence: `apps/server/src/agent/azure-key-vault.ts` (Deployment vault created with publicNetworkAccess Enabled)\n- Verified by: `apps/server/tests/workflow-http-target.test.ts` (Address classification, denylist and internal-host rules)\n- Verified by: `apps/server/tests/agent-mcp-stores.test.ts` (Refuses private addresses and plain HTTP to public hosts)\n\nKnown gap: The address check resolves DNS separately from the connection that follows, so a host that changes its DNS answer between the two can reach an internal address. The deployment Key Vault is created with public network access enabled. Remediation: Connect to the address that was checked (pinned lookup) for all outbound requests, and support private endpoints or firewall rules for the deployment Key Vault."
+              },
+              {
+                "uuid": "b213cd5e-9a2c-52a6-922e-04f9d8dfad60",
+                "control-id": "sc-8",
+                "description": "Persistent mode refuses to start without an HTTPS public origin. The daemon can terminate TLS itself with a TLS 1.2 minimum, and the Marketplace appliance's nginx edge allows only TLS 1.2 and 1.3 and sends HSTS. Portal cookies are Secure under HTTPS. Outbound connections to MCP servers, workflows, imported APIs, Class endpoints and the control plane require HTTPS except for hosts the organization explicitly lists as internal.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Provide certificates, TLS termination and cipher policy that meet organizational requirements.\n\n- Evidence: `apps/server/src/agent/config.ts` (Persistent deployments require an HTTPS PAPYRUS_PUBLIC_ORIGIN)\n- Evidence: `apps/server/src/agent/http.ts` (createHttpsServer with minVersion TLSv1.2)\n- Evidence: `deploy/marketplace/vm/provision.sh` (ssl_protocols TLSv1.2 TLSv1.3 and HSTS)\n- Evidence: `apps/server/src/agent/control-plane.ts` (PAPYRUS_CONTROL_PLANE_URL must use HTTPS)\n- Verified by: `apps/server/tests/workflow-http-target.test.ts` (Rejects plain HTTP to non-internal hosts)\n- Verified by: `apps/server/tests/agent-local-secrets-http.test.ts` (Rejects non-HTTPS remote secret entry even with spoofed forwarding headers)"
+              },
+              {
+                "uuid": "b5ebfdda-2376-5e2c-ab0d-f4dd3dc88969",
+                "control-id": "sc-12",
+                "description": "The local secrets master key must be a separately provisioned 32-byte file that is not group- or world-writable and is opened without following symlinks; the server never generates it. Where Azure Key Vault is configured, the portal secret, Entra client secret and model and provider keys are kept in a deployment Key Vault (RBAC mode, purge protection, 90-day soft delete) with only the VM's managed identity granted access, and each reader is limited to its own secret-name prefix. License authority public keys are supplied by configuration or baked into the DoD image.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Provision, back up and protect the master key and portal secret; manage Entra and TLS keys.\n\n- Evidence: `apps/server/src/agent/local-secrets.ts` (Master key checks)\n- Evidence: `apps/server/src/agent/deployment-vault.ts` (Core vault and purpose-prefix read guard)\n- Evidence: `apps/server/src/agent/azure-key-vault.ts` (Vault properties and single role assignment)\n- Evidence: `apps/server/src/agent/openapi/credentials.ts` (Connector credential key derived as SHA-256 of the portal secret)\n- Verified by: `apps/server/tests/agent-local-secrets.test.ts` (Fails closed with missing, insecure or incorrect master keys)\n- Verified by: `apps/server/tests/agent-deployment-vault.test.ts` (Each caller reads only its own secrets; references refused without an Azure identity)\n\nKnown gap: There is no rotation or key-versioning support for the portal secret or the local master key. Encryption keys for connector credentials are derived with a single SHA-256 of the portal secret, so changing that secret makes stored values unreadable. The Key Vault uses the Standard (software-protected) tier. Remediation: Introduce versioned data-encryption keys with a proper KDF, a re-encryption procedure for rotation, and an option for HSM-backed keys."
+              },
+              {
+                "uuid": "4ff18f9b-7b23-5ad5-b3a2-35ab281238d2",
+                "control-id": "sc-13",
+                "description": "Papyrus uses the Node.js crypto module (OpenSSL) for AES-256-GCM encryption of stored credentials, HMAC-SHA-256 for cookies, API key hashes and webhook signatures, SHA-256 hash chains, SHA-256 signature verification of license, status and identity documents, and TLS; JWTs are verified with the jose library. FIPS mode is not enabled anywhere in the repository or image.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Where FIPS 140 validated cryptography is required, run on a validated module and terminate TLS on validated infrastructure.\n\n- Evidence: `apps/server/src/agent/local-secrets.ts` (AES-256-GCM)\n- Evidence: `apps/server/src/license.ts` (verifyAuthoritySignature with sha256)\n- Evidence: `apps/server/src/agent/entra-auth.ts` (HMAC-SHA-256 portal cookie; jose jwtVerify)\n- Evidence: `Dockerfile` (Runtime installs Wolfi nodejs-24; no FIPS configuration)\n\nKnown gap: Papyrus does not enable OpenSSL FIPS mode or a FIPS provider, and the image is not built on a FIPS 140 validated cryptographic module. Algorithms in use are FIPS-approved, but no validated module is claimed. Remediation: Build a FIPS variant of the image on a FIPS 140-3 validated OpenSSL provider, enable FIPS mode at startup, fail startup if it is unavailable, and test that every code path works under it."
+              },
+              {
+                "uuid": "43f0a59f-06cb-59a2-b810-be8bc6d18e41",
+                "control-id": "sc-18",
+                "description": "Agent-built Hosted App and Factory preview code runs in an opaque iframe sandboxed to allow-scripts only, with a CSP of default-src 'none', connect-src 'none', form-action 'none' and base-uri 'none', loaded through a one-use frame ticket. App source that performs direct browser networking or contains credential literals or ambient secrets is rejected before release. HTML and SVG artifacts are served as attachments with a sandbox CSP.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "Deploying organization: Optionally route a separate HTTPS App origin (PAPYRUS_APP_ORIGIN) as defense in depth.\n\n- Evidence: `apps/server/src/agent/apps/http.ts` (Sandboxed frame CSP and nonce-checked message bridge)\n- Evidence: `apps/server/src/agent/apps/project.ts` (Rejects direct browser networking in App source)\n- Evidence: `apps/server/src/agent/factory-preview.ts` (Preview sandbox CSP)\n- Evidence: `apps/server/src/agent/http.ts` (Active artifact content served as attachment with sandbox CSP)\n- Verified by: `apps/server/tests/agent-app-runtime-boundary.test.ts` (Rejects ambient secrets, browser networking and credential literals)\n- Verified by: `apps/server/tests/agent-app-host.test.ts` (App content kept in an opaque sandbox)\n- Verified by: `apps/server/tests/agent-factory-publication.test.ts` (Public content served in a one-use opaque frame with no credentials)"
+              },
+              {
+                "uuid": "ea15aba2-ab5b-5a45-a4ee-f430c6907222",
+                "control-id": "sc-23",
+                "description": "The portal session cookie is HMAC-SHA-256 signed with the deployment secret, compared in constant time, and set HttpOnly, SameSite=Strict, Secure and with the __Host- prefix under HTTPS. OIDC state and nonce are random 32-byte values held server-side, single-use and expiring after 10 minutes; MCP OAuth sign-ins are likewise single-use, bound to the initiating person and checked against the discovered issuer. Once an HTTPS origin is configured, request headers cannot change the origin used for redirects or cookies.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "- Evidence: `apps/server/src/agent/entra-auth.ts` (portalCookie, verifyPortalCookie, pending login state)\n- Evidence: `apps/server/src/agent/mcp/oauth.ts` (10-minute single-use pending sign-ins with issuer check)\n- Evidence: `apps/server/src/agent/config.ts` (deriveOrigin)\n- Verified by: `apps/server/tests/agent-mcp-runtime.test.ts` (Refuses a callback from another person, a reused state and a different issuer)\n- Verified by: `apps/server/tests/agent-config-origin.test.ts` (HTTPS origin authoritative over Host headers)\n- Verified by: `apps/server/tests/agent-auth-profile.test.ts` (Signed cookie carries only the authority-bearing identity)"
+              },
+              {
+                "uuid": "cddee98a-2c36-5094-a866-0dc493d17108",
+                "control-id": "sc-28",
+                "description": "Papyrus encrypts secrets at the application layer with AES-256-GCM and per-record associated data: model gateway keys in a separate 0600 secrets database under a separately provisioned master key; and connector, imported-API and MCP credentials bound to their owner. Where Azure Key Vault is configured, platform secrets are stored there and configuration files hold only references.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Encrypt the volume that holds the data directory and its backups, and manage those keys.\n\n- Evidence: `apps/server/src/agent/local-secrets.ts` (secrets.db encryption and file permissions)\n- Evidence: `apps/server/src/agent/openapi/credentials.ts` (Owner-bound AES-256-GCM connector credentials)\n- Evidence: `apps/server/src/agent/deployment-vault.ts` (Key Vault storage of platform secrets)\n- Verified by: `apps/server/tests/agent-local-secrets.test.ts` (Encrypted persistence, tamper rejection and cross-profile binding)\n- Verified by: `apps/server/tests/agent-mcp-stores.test.ts` (Shared MCP token stored encrypted and never returned)\n- Verified by: `apps/server/tests/agent-deployment-vault.test.ts` (bootstrap.json holds only references)\n\nKnown gap: Agent sessions, Library documents, Resource Class records, audit logs and traces are stored in unencrypted SQLite and AgentFS files; their protection at rest depends entirely on volume encryption that Papyrus neither provides nor checks. Remediation: Document volume encryption as a deployment requirement and verify it on supported deployment configurations, or add database-level encryption for the main data stores."
+              },
+              {
+                "uuid": "7d211b45-e598-5785-955b-69c77a95095d",
+                "control-id": "sc-39",
+                "description": "Commands the Papyrus agent runs in its workspace run in a separate worker process under landstrip (Landlock and seccomp on Linux, Seatbelt on macOS) with writes limited to a temporary materialized workspace, the Papyrus data directory unreadable and network denied. The worker validates and resolves the effective policy before starting the command and refuses to run if the write root, network restriction or data-directory denial is not in effect; unsupported platforms run no workspace commands. Credential-like environment variables are removed before the command starts.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "Deploying organization: Run on a Linux host with Landlock enabled and do not run the container privileged.\n\n- Evidence: `apps/server/src/agent/mastra/workspace-nono-worker.ts` (landstrip policy, validate/resolve checks, fail-closed exits)\n- Evidence: `apps/server/src/agent/mastra/workspace-nono.ts` (Worker launch and sensitiveEnvironmentKey stripping)\n- Evidence: `apps/server/src/agent/mastra/workspace-landstrip.ts` (Read-confinement check of the resolved policy)\n- Evidence: `apps/factory/src/mastra/index.ts` (Factory sidecar constructs a Mastra LocalSandbox with only an environment allow-list, no native isolation)\n- Verified by: `apps/server/tests/security-invariants.test.ts` (Fails closed without OS isolation; strips credential-like environment values; rejects cwd traversal)\n- Verified by: `apps/server/tests/agent-workspace.test.ts` (Reports landstrip isolation and refuses escaping working directories)\n- Verified by: `apps/server/tests/agent-session-workspace.test.ts` (Rejects snapshots that include daemon data or parent roots)\n\nKnown gap: The Factory sidecar, enabled by default in the image (PAPYRUS_FACTORY_SIDECAR=1), runs commands for App builds in Mastra's LocalSandbox with no kernel isolation: only its environment is restricted to an allow-list. Those commands run as the same user as the daemon, can read files that user can read, including the Papyrus data directory, and have network access. Remediation: Run Factory sidecar commands under the same landstrip policy as agent workspace commands (data directory denied, network denied or limited to package mirrors and source control), or disable the sidecar by default until that is in place."
+              },
+              {
+                "uuid": "84493ee1-d12b-577d-bb96-10d2d628ba2c",
+                "control-id": "si-2",
+                "description": "Beag Labs publishes fixes as new signed images. A deployment learns of a release through an HMAC-signed, timestamped webhook with replay protection, and a System Owner applies it or allows it to apply within a maintenance window; the Marketplace updater verifies the image signature before installing.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Set patch windows, test updates and apply them within organizational timeframes.\n\n- Evidence: `apps/server/src/agent/updates/service.ts` (verifyWebhook, announce, apply, maintenance window)\n- Evidence: `deploy/marketplace/vm/papyrus-update.sh` (Signature verification and install)\n- Verified by: `apps/server/tests/agent-updates.test.ts` (Signature over timestamp and body, replay refusal, window-limited auto-apply)\n\nKnown gap: Beag Labs has no documented flaw remediation timeframes by severity, and no published security advisory or vulnerability disclosure process (no SECURITY.md). Remediation: Publish a vulnerability disclosure policy and severity-based remediation SLAs, and announce fixed vulnerabilities in release notes."
+              },
+              {
+                "uuid": "4dc11c00-9c68-5e0c-9c7b-faaed9e70280",
+                "control-id": "si-4",
+                "description": "Papyrus records agent traces and logs in a separate observability database readable by System Owners, Audit Viewers and Security Managers, writes structured JSON warnings to standard output, and can send errors to a customer-supplied Sentry DSN. The container health check verifies that the landstrip sandbox enforces its boundary; it does not check that the HTTP service is answering.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Collect container output and audit data into the organization's monitoring platform and alert on it.\n\n- Evidence: `apps/server/src/agent/http.ts` (Observability trace and log routes)\n- Evidence: `apps/server/src/agent/sentry.ts` (Optional Sentry reporting)\n- Evidence: `Dockerfile` (HEALTHCHECK)\n- Evidence: `deploy/container/healthcheck.mjs` (Health check probes landstrip write confinement only)\n- Verified by: `apps/server/tests/agent-observability.test.ts` (Role-gated access to traces and logs)"
+              },
+              {
+                "uuid": "87a7bda1-a92a-5e61-ad87-2517e1d3d8cf",
+                "control-id": "si-7",
+                "description": "Releases are referenced by image digest and signature-verified before the Marketplace updater installs them. Hosted App publication approves an immutable, digest-checked build. Governed changes are re-hashed at approval and refused if the digest differs. The stored control-plane status is re-verified against its signature on every read, so editing the file cannot lift a suspension. Integration and action events are hash-chained.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Verify image digests and signatures on deployment paths other than the Marketplace appliance.\n\n- Evidence: `apps/server/src/agent/updates/service.ts` (Exact digest references only)\n- Evidence: `apps/server/src/agent/factory-publication.ts` (Digest-checked publication)\n- Evidence: `apps/server/src/agent/policies/store.ts` (CHANGE_TAMPERED digest check)\n- Evidence: `apps/server/src/agent/control-plane.ts` (readStored re-verifies the signed status)\n- Verified by: `apps/server/tests/agent-control-plane.test.ts` (An edited status file does not lift a suspension)\n- Verified by: `apps/server/tests/agent-factory-publication.test.ts` (Stale or forged publication authority is refused)\n- Verified by: `apps/server/tests/agent-policies.test.ts` (Stale approvals roll back)"
+              },
+              {
+                "uuid": "ad792ead-a3b8-5735-bfdf-63f2b30cf2fb",
+                "control-id": "si-10",
+                "description": "Request bodies must be JSON objects under per-route byte limits; required strings are length-bounded; policy rules are validated against a fixed schema; public forms accept only allow-listed fields and bounded uploads of permitted types and cannot reference Library paths; outbound addresses are validated before use; and webhook payloads are signature-checked over the exact raw bytes.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "implemented"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "provider"
+                  }
+                ],
+                "remarks": "- Evidence: `apps/server/src/agent/http.ts` (body(), rawBody(), requiredString(), boundedInteger())\n- Evidence: `apps/server/src/agent/policies/evaluator.ts` (validateRules)\n- Evidence: `apps/server/src/agent/classes/endpoints.ts` (Endpoint field validation)\n- Verified by: `apps/server/tests/agent-policies.test.ts` (Fails closed for missing context and invalid rules)\n- Verified by: `apps/server/tests/agent-class-endpoints-http.test.ts` (Refuses other file types and Library paths)\n- Verified by: `apps/server/tests/agent-http.test.ts` (Bounds session IDs and chat bodies)"
+              },
+              {
+                "uuid": "048dbd38-d592-5363-a5ae-d6cd5de3b9e0",
+                "control-id": "si-11",
+                "description": "Errors are returned as JSON with a code and a per-request ID. Known error types map to specific status codes, sign-in error pages do not echo request input, the browser connection address is masked in error text, and imported-API credentials are redacted from errors.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Configure log handling so diagnostic output is not exposed beyond administrators.\n\n- Evidence: `apps/server/src/agent/http.ts` (Central error mapping with requestId; INTERNAL_ERROR branch)\n- Verified by: `apps/server/tests/agent-mcp-http.test.ts` (A cancelled sign-in page does not echo anything from the address)\n\nKnown gap: Unexpected exceptions are returned to the client as 500 INTERNAL_ERROR with the exception's message text, which can disclose internal details. Remediation: Return a generic message for unmapped errors and log the detail server-side under the request ID."
+              },
+              {
+                "uuid": "6f4425f5-cf52-5ad5-bdce-8293b1e7d2f0",
+                "control-id": "sr-4",
+                "description": "Container images built from main are signed with Cosign and receive a GitHub build provenance attestation. Dependencies are locked in pnpm-lock.yaml and installed with --frozen-lockfile in CI, and the pnpm version is pinned with a hash in packageManager.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "partial"
+                  },
+                  {
+                    "name": "responsibility",
+                    "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                    "value": "shared"
+                  }
+                ],
+                "remarks": "Deploying organization: Retain the image digests and attestations for deployed releases and verify them at intake.\n\n- Evidence: `.github/workflows/container.yml` (cosign sign and actions/attest-build-provenance)\n- Evidence: `pnpm-lock.yaml` (Locked dependency graph)\n- Evidence: `package.json` (packageManager pnpm pinned with hash)\n- Evidence: `.github/workflows/factory-write-qualification.yml` (pnpm install --frozen-lockfile)\n\nKnown gap: GitHub Actions are referenced by mutable version tags rather than commit SHAs, and base images and OS and Python packages in the Dockerfile are not pinned, so build inputs are not fully traceable. Remediation: Pin all Actions to commit SHAs and pin image and package inputs (see cm-2), recording them in the provenance attestation."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "f65fee17-8896-515b-98d6-7c6034a36f12",
+          "title": "Security controls matrix",
+          "rlinks": [
+            {
+              "href": "../papyrus-controls-matrix.xlsx",
+              "media-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "8ec426ebd50fe9729518d3ba2e6e951c9d2be171ae9c0dc33d51d32ce4e9dbaf"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "309e94ba-7e17-51a5-a68d-1132b567b6c4",
+          "title": "POA&M (spreadsheet)",
+          "rlinks": [
+            {
+              "href": "../papyrus-poam.xlsx",
+              "media-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "b3332522b55671d3c7ed91ccdb798a16e9a484086a7204bb927c5c551ee73379"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "90b1290d-fb1c-5eba-bbe3-016951c1b220",
+          "title": "CycloneDX SBOM (linux/amd64)",
+          "rlinks": [
+            {
+              "href": "../sbom/papyrus-linux-amd64.cdx.json",
+              "media-type": "application/vnd.cyclonedx+json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "8d8dcdd7876ab1e253f6db5263745eb4c5d27b63dbde60e1c314f70f4b6a242c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "a2387f26-f607-51ca-9463-b4151ddc72e2",
+          "title": "SPDX SBOM (linux/amd64)",
+          "rlinks": [
+            {
+              "href": "../sbom/papyrus-linux-amd64.spdx.json",
+              "media-type": "application/spdx+json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "13a8f38684567d5f4b02fc6369b323f3a6903f0537268a5f97cc8f4c522ccfa4"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "3bd0867e-ef90-529d-9f82-bdaacfab7a97",
+          "title": "CycloneDX SBOM (linux/arm64)",
+          "rlinks": [
+            {
+              "href": "../sbom/papyrus-linux-arm64.cdx.json",
+              "media-type": "application/vnd.cyclonedx+json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "4c6f5548118b38901db82d594e8c860cad16f9fa65e145fe97cb72200647d8cc"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "e579f682-b731-587a-8a5b-87b654a01a2e",
+          "title": "SPDX SBOM (linux/arm64)",
+          "rlinks": [
+            {
+              "href": "../sbom/papyrus-linux-arm64.spdx.json",
+              "media-type": "application/spdx+json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "92cb96d55082a1e1bcc791822bd03ba99f8f87dc74538c47ebb6d26fed09f168"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "042c9e91-bd90-55e3-9bc3-32f4de2f1fb6",
+          "title": "OCI image index",
+          "rlinks": [
+            {
+              "href": "../supply-chain/image-index.json",
+              "media-type": "application/vnd.oci.image.index.v1+json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "2adf3fbe144a427bfcc6cbc42ebb910df8068e1fd0e545054a7543e998d579c9"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "d42888ff-52c0-5789-b136-89262cd8e9c1",
+          "title": "Provenance verification result",
+          "rlinks": [
+            {
+              "href": "../supply-chain/provenance-verification.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "49d7598b0860155151fccce8a3e2030b76d8556b6cc76b8e4a992bca179f9177"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "b5dda912-d86e-5023-b348-1fc0fa5fca66",
+          "title": "SLSA provenance (Sigstore bundle)",
+          "rlinks": [
+            {
+              "href": "../supply-chain/provenance.sigstore.json",
+              "media-type": "application/vnd.dev.sigstore.bundle.v0.3+json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "fb8d9008e2481a2c078c318c4e6683d7d08579a8b3ad0b46f2359589782e521e"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "f6a5ff5f-d80b-57a2-a935-5f87c513fe93",
+          "title": "Cosign signature verification result",
+          "rlinks": [
+            {
+              "href": "../supply-chain/signature-verification.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "a7985f95730cbb76f4e98abaa640e8948c81e902f715d9d73191ccd39b38bacc"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "d0b9fb58-1e9d-5a08-8961-8dd5b8a45661",
+          "title": "Trivy vulnerability scan (linux/amd64)",
+          "rlinks": [
+            {
+              "href": "../supply-chain/vulnerabilities-linux-amd64.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "bb5db34ec8829a086d0cc6075fc630fd47dc7848a448bdc552a9fcaf7a1ddd0d"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "1ffe322b-4e80-50a6-ba45-0a0e3d06fa32",
+          "title": "Trivy vulnerability scan (linux/arm64)",
+          "rlinks": [
+            {
+              "href": "../supply-chain/vulnerabilities-linux-arm64.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "d27561ef3ac7414e982058d4fda43c9d06152f41896e9c2a0caded3837cea47c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
