@@ -31,6 +31,6 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - run: npm ci --no-audit --no-fund
+      - run: npm ci --legacy-peer-deps --no-audit --no-fund
       - run: npm run build:vinext
       - run: npm run deploy:cloudflare -- --skip-build
