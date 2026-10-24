@@ -39,24 +39,6 @@ export async function subscribeToNewsletter(email: string) {
   }
 }
 
-/** A requested credit email, using Customer.io's public form action integration. */
-export async function sendComputeCreditEmail(email: string, code: string) {
-  const siteId = process.env.CUSTOMERIO_SITE_ID
-  if (!siteId) throw new Error('Customer.io site ID is not configured')
-  const endpoint = new URL('https://customerioforms.com/forms/submit_action')
-  endpoint.searchParams.set('site_id', siteId)
-  endpoint.searchParams.set('form_id', '01m58bc66mcrg961h9q49bv0tc')
-  endpoint.searchParams.set('success_url', 'https://beaglabs.com/')
-  const response = await fetch(endpoint, {
-    method: 'POST', redirect: 'manual',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ email, credit_code: code }),
-  })
-  if (response.status !== 302 || response.headers.get('location') !== 'https://beaglabs.com/') {
-    throw new Error('Customer.io did not accept the credit request')
-  }
-}
-
 export type BriefType = 'papyrus' | 'services'
 
 export const BRIEFS: Record<BriefType, { title: string; path: string }> = {

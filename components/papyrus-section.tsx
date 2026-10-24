@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { papyrusSignupUrl } from "@/lib/papyrus-links"
 
 const PILLARS = [
   ["Configurable data models", "Classes for your own record types, mapped to the systems that hold them."],
@@ -34,7 +33,7 @@ export function PapyrusSection() {
             <Link href="/products/papyrus" className="inline-flex items-center gap-2 border-[3px] border-white bg-[#ff5f1f] px-6 py-3 text-xs font-black uppercase tracking-wide text-[#111] shadow-[5px_5px_0_#fff] hover:bg-white">
               Explore Papyrus <ArrowRight className="h-4 w-4" strokeWidth={3} />
             </Link>
-            <a href={papyrusSignupUrl()} className="inline-flex items-center gap-2 border-b-2 border-white pb-0.5 text-[12px] font-extrabold uppercase tracking-[.08em] hover:border-[#ff5f1f] hover:text-[#ff5f1f]">
+            <a href="/contact" className="inline-flex items-center gap-2 border-b-2 border-white pb-0.5 text-[12px] font-extrabold uppercase tracking-[.08em] hover:border-[#ff5f1f] hover:text-[#ff5f1f]">
               Get started with commercial <ArrowRight className="h-3.5 w-3.5" strokeWidth={3} />
             </a>
           </div>

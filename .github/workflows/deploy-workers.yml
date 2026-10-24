@@ -1,15 +1,13 @@
 name: Deploy Workers
 
-# Deploys the backend Workers (license, control-plane, connect) from main. The website (workers/web) is not
-# deployed here: its build needs site secrets and its Worker is still a preview. On a push, only Workers whose files changed are deployed;
-# run it by hand (workflow_dispatch) to deploy all of them. The license Worker goes first because the
-# control plane binds to its LicenseRpc entrypoint. Each Worker is checked (typecheck, tests, dry run)
-# before its database schema is applied and it is deployed.
+# Deploys the backend Worker (connect) from main. The website (workers/web) is not deployed here: its build needs
+# site secrets and its Worker is still a preview. On a push, it deploys only when its files changed; run it by hand
+# (workflow_dispatch) to deploy regardless. It is checked (typecheck, tests, dry run) before its database schema is
+# applied and it is deployed.
 #
 # Repository secrets:
-#   CLOUDFLARE_API_TOKEN          Workers Scripts:Edit, D1:Edit, Workers Routes/Custom Domains:Edit (account + beaglabs.com zone)
+#   CLOUDFLARE_API_TOKEN          Workers Scripts:Edit, Workers Routes/Custom Domains:Edit (account + beaglabs.com zone)
 #   CLOUDFLARE_ACCOUNT_ID
-#   LICENSE_TURSO_DATABASE_URL, LICENSE_TURSO_AUTH_TOKEN   schema for workers/license
 #   CONNECT_TURSO_DATABASE_URL, CONNECT_TURSO_AUTH_TOKEN   schema for workers/connect
 # Worker runtime secrets stay in Cloudflare (wrangler secret put); this workflow never sets them.
 
@@ -19,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: 'Deploy just one Worker (license, control-plane, connect); empty deploys all'
+        description: 'Deploy just one Worker (connect); empty deploys all'
         required: false
         default: ''
 
@@ -38,8 +36,6 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      license: ${{ steps.pick.outputs.license }}
-      control-plane: ${{ steps.pick.outputs.control-plane }}
       connect: ${{ steps.pick.outputs.connect }}
     steps:
       - uses: actions/checkout@v4
@@ -47,10 +43,6 @@ jobs:
         id: filter
         with:
           filters: |
-            license:
-              - 'workers/license/**'
-            control-plane:
-              - 'workers/control-plane/**'
             connect:
               - 'workers/connect/**'
             workflow:
@@ -61,10 +53,8 @@ jobs:
           ONLY: ${{ inputs.only }}
           WORKFLOW: ${{ steps.filter.outputs.workflow }}
         run: |
-          for w in license control-plane connect; do
+          for w in connect; do
             case "$w" in
-              license) changed='${{ steps.filter.outputs.license }}' ;;
-              control-plane) changed='${{ steps.filter.outputs.control-plane }}' ;;
               connect) changed='${{ steps.filter.outputs.connect }}' ;;
             esac
             if [ "$DISPATCH" = "true" ]; then
@@ -75,67 +65,6 @@ jobs:
             echo "$w=$changed" >> "$GITHUB_OUTPUT"
             echo "$w: $changed"
           done
-
-  license:
-    needs: changes
-    if: needs.changes.outputs.license == 'true'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: workers/license
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: workers/license/package-lock.json
-      - run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Check
-        # Same placeholders as license-worker.yml: tests and the dry run need the names, not real values.
-        env:
-          TURSO_DATABASE_URL: libsql://example.turso.io
-          TURSO_AUTH_TOKEN: ci-placeholder
-          BETTER_AUTH_SECRET: ci-placeholder-ci-placeholder-ci-placeholder
-          MICROSOFT_CLIENT_ID: 00000000-0000-0000-0000-000000000000
-          MICROSOFT_CLIENT_SECRET: ci-placeholder
-          MICROSOFT_TENANT_ID: 00000000-0000-0000-0000-000000000000
-          ADMIN_MICROSOFT_OIDS: 00000000-0000-0000-0000-000000000000
-          AZURE_KEY_VAULT_TENANT_ID: 00000000-0000-0000-0000-000000000000
-          AZURE_KEY_VAULT_CLIENT_ID: 00000000-0000-0000-0000-000000000000
-          AZURE_KEY_VAULT_CLIENT_SECRET: ci-placeholder
-          AZURE_KEY_VAULT_KEY_ID: https://ci-license.vault.azure.net/keys/papyrus-license/00000000000000000000000000000000
-        run: npm run check
-      - name: Apply schema
-        env:
-          TURSO_DATABASE_URL: ${{ secrets.LICENSE_TURSO_DATABASE_URL }}
-          TURSO_AUTH_TOKEN: ${{ secrets.LICENSE_TURSO_AUTH_TOKEN }}
-        run: npm run db:apply
-      - name: Deploy
-        run: npm run deploy:worker
-
-  control-plane:
-    needs: [changes, license]
-    # Runs after the license Worker when both changed, or on its own when only it changed.
-    if: always() && needs.changes.outputs.control-plane == 'true' && needs.license.result != 'failure' && needs.license.result != 'cancelled'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: workers/control-plane
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: workers/control-plane/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      - name: Check
-        run: npm run check
-      - name: Apply schema
-        run: npm run db:apply
-      - name: Deploy
-        run: npx wrangler deploy --config wrangler.jsonc
 
   connect:
     needs: changes

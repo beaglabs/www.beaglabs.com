@@ -150,8 +150,8 @@ const papyrus = [
 
     <div class="sec">Deployment options</div>
     <div class="grid g3">
-      <div class="card shadow"><span class="num">01</span><h3>Commercial</h3><p class="s">Self-serve from papyrus.beaglabs.com.</p><ul class="ticks">
-        <li>One-click deploy into your AWS account (Fargate on Graviton)</li><li>Microsoft sign-in connected in one step</li><li>14-day trial, usage-based billing</li><li>Updates delivered as signed images</li></ul></div>
+      <div class="card shadow"><span class="num">01</span><h3>Commercial</h3><p class="s">Runs in your own cloud account.</p><ul class="ticks">
+        <li>Deploys into your AWS or Azure account</li><li>Sign-in through your own Microsoft Entra app</li><li>Starts with a scoped pilot</li><li>Updates delivered as signed images</li></ul></div>
       <div class="card shadow"><span class="num">02</span><h3>Government cloud</h3><p class="s">Deployed with our team.</p><ul class="ticks">
         <li>GCC and GCC High Microsoft tenants</li><li>AWS GovCloud or Azure Government</li><li>Deployment profile set per environment</li><li>Runbook and customer-controlled handoff</li></ul></div>
       <div class="card dark"><span class="num">03</span><h3>DoD + disconnected</h3><p class="s">A dedicated DoD container.</p><ul class="ticks">
@@ -213,7 +213,7 @@ const papyrus = [
       ['Your stack, kept', 'Systems of record stay in place and in charge.'],
       ['Room to grow', 'Add Classes, apps and workflows without a rebuild.'],
     ], 'tint')}</div>
-    ${cta('Put Papyrus on a real workflow.', 'Commercial teams can start a trial at papyrus.beaglabs.com · james@beaglabs.com', 'Book a walkthrough', 'beaglabs.com/contact')}`),
+    ${cta('Put Papyrus on a real workflow.', 'Talk to us about a pilot · james@beaglabs.com', 'Book a walkthrough', 'beaglabs.com/contact')}`),
 ]
 
 // ---------------------------------------------------------------------------
@@ -345,7 +345,7 @@ const services = [
     ${company}
     <div class="grid g2" style="margin-top:9px">
       <div class="card"><h3>Contact</h3><p class="s"><b>James Bohrman</b>, Founder &amp; CEO · james@beaglabs.com · beaglabs.com/contact</p></div>
-      <div class="card"><h3>Commercial</h3><p class="s">Commercial teams can deploy Papyrus themselves at <b>papyrus.beaglabs.com</b> with a 14-day trial.</p></div>
+      <div class="card"><h3>Commercial</h3><p class="s">Commercial teams run Papyrus in their own AWS or Azure account, starting with a pilot.</p></div>
     </div>
     ${cta('Bring us the hard problem.', 'We will come back with an approach, a prototype plan and a path to production.', 'Start a project', 'beaglabs.com/contact')}`),
 ]
