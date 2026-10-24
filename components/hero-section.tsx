@@ -3,7 +3,6 @@
 import { ArrowRight } from "lucide-react"
 import { EdgyHero } from "@/components/edgy-hero"
 import { BriefRequestForm } from "@/components/brief-request-form"
-import { papyrusSignupUrl } from "@/lib/papyrus-links"
 
 export function HeroSection() {
   return (
@@ -22,7 +21,7 @@ export function HeroSection() {
       aside={<>
         <BriefRequestForm briefType="services" placement="hero" stacked />
         <a
-          href={papyrusSignupUrl()}
+          href="/contact"
           className="mt-6 inline-flex items-center gap-2 border-b-2 border-[#111] pb-0.5 text-[12px] font-extrabold uppercase tracking-[.08em] text-[#111] hover:border-[#c2410c] hover:text-[#c2410c]"
         >
           Get started with commercial <ArrowRight className="h-3.5 w-3.5" strokeWidth={3} />

@@ -36,7 +36,7 @@ export function PapyrusDemos() {
       </div>
 
       <div>
-        <Intro n="04 / Deployment" title="One codebase. Three ways to run it." copy="Commercial teams deploy from papyrus.beaglabs.com in minutes. Government cloud and DoD installs run the same build inside your boundary, with offline licensing and no callback to us." />
+        <Intro n="04 / Deployment" title="One codebase. Three ways to run it." copy="Commercial teams run the hardened image in their own AWS or Azure account. Government cloud and DoD installs run the same build inside your boundary, with offline licensing and no callback to us." />
         <DeployTerminal />
       </div>
     </div>

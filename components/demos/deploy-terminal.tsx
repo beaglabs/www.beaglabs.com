@@ -8,9 +8,9 @@ type Line = [kind: 'cmd' | 'ok' | 'info', text: string]
 
 const SCRIPTS: Record<Target, Line[]> = {
   commercial: [
-    ['cmd', 'papyrus.beaglabs.com → Deploy to AWS · us-east-1'],
-    ['info', 'Assuming role BeagLabsPapyrusControlPlane'],
-    ['ok', 'Encrypted EFS volume created'],
+    ['cmd', 'docker run ghcr.io/beaglabs/papyrus/papyrus@sha256:… · acme AWS account'],
+    ['info', 'OpenSSL FIPS 140-3 provider active'],
+    ['ok', 'Encrypted EFS volume mounted'],
     ['ok', 'Fargate service papyrus-acme running on Graviton'],
     ['ok', 'Certificate issued for papyrus.acme.com'],
     ['ok', 'Microsoft sign-in connected · tenant acme.onmicrosoft.com'],
@@ -27,7 +27,7 @@ const SCRIPTS: Record<Target, Line[]> = {
   ],
   dod: [
     ['cmd', 'docker run ghcr.io/beaglabs/papyrus/papyrus-dod@sha256:…'],
-    ['info', 'PAPYRUS_ENTRA_CLOUD=USGovDoD · no control plane'],
+    ['info', 'PAPYRUS_ENTRA_CLOUD=USGovDoD · disconnected'],
     ['ok', 'Offline license verified against built-in key'],
     ['ok', 'Graph host dod-graph.microsoft.us'],
     ['ok', 'Agent sandbox: network denied by default'],

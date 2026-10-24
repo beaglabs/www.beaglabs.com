@@ -1,6 +1,0 @@
-.wrangler/
-.wrangler-dry-run/
-.dev.vars
-node_modules/
-public/assets/deploy-ui.js
-screenshots/
