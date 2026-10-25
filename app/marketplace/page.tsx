@@ -181,7 +181,7 @@ export default function PublisherWorkspace(){
       {billingModel,amountCents,currency:'usd'});setPricingOpen(false)},'Listing price updated.')
   }
   function editPrice(a:Artifact){
-    setPricingArtifact(a.id);setBillingModel(a.billing_model||'free')
+    setError('');setPricingArtifact(a.id);setBillingModel(a.billing_model||'free')
     setPriceUsd(((a.amount_cents||0)/100).toFixed(2));setPricingOpen(true)
   }
   async function createKey(event:React.FormEvent){
@@ -327,7 +327,7 @@ export default function PublisherWorkspace(){
                           <td className="px-4 py-4"><span className="inline-block border border-[#111] bg-[#faf6f2] px-2 py-1 font-mono text-[11px] font-bold uppercase">{a.type}</span></td>
                           <td className="px-4 py-4"><span className="font-bold">{a.version?'v'+a.version:'—'}</span><span className="mt-1 block text-xs text-[#666]">{a.version_status?releaseText(a.version_status):'No releases yet'}</span></td>
                           <td className="px-4 py-4 font-semibold">{!a.billing_model?'Not set':a.billing_model==='free'?'Free':`${((a.amount_cents||0)/100).toFixed(2)} ${a.billing_model==='one_time'?'once':a.billing_model==='monthly'?'/mo':'/yr'}`}</td>
-                          <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button onClick={e=>{e.stopPropagation();editPrice(a)}} className={`${btn} bg-[#ffbd98]`}>Set price</button><button onClick={e=>{e.stopPropagation();setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button aria-expanded={expanded} aria-controls={`releases-${a.id}`} onClick={e=>{e.stopPropagation();toggleVersions(a.id)}} className={`${btn} inline-flex items-center gap-2 ${expanded?'bg-[#ffbd98]':'bg-white'}`}>Releases ({releaseCount}) <ChevronDown size={14} className={`transition-transform duration-200 motion-reduce:transition-none ${expanded?'rotate-180':''}`}/></button></div></td>
+                          <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button type="button" onClick={e=>{e.stopPropagation();editPrice(a)}} className={`${btn} bg-[#ffbd98]`}>Set price</button><button onClick={e=>{e.stopPropagation();setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button aria-expanded={expanded} aria-controls={`releases-${a.id}`} onClick={e=>{e.stopPropagation();toggleVersions(a.id)}} className={`${btn} inline-flex items-center gap-2 ${expanded?'bg-[#ffbd98]':'bg-white'}`}>Releases ({releaseCount}) <ChevronDown size={14} className={`transition-transform duration-200 motion-reduce:transition-none ${expanded?'rotate-180':''}`}/></button></div></td>
                         </tr>
                         {expanded&&<tr id={`releases-${a.id}`} className="border-b-2 border-[#111] bg-[#fff9f4]">
                           <td colSpan={5} className="p-0">
