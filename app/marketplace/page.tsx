@@ -11,7 +11,7 @@ import { ArrowRight, ChevronDown, Copy, Download, Fingerprint, KeyRound, Message
 const API = 'https://api.beaglabs.com'
 type Publisher = { id:string; slug:string; display_name:string; type:'company'|'individual'; status:string; verified_at:number|null; role:string;has_logo?:number;logo_updated_at?:number }
 type StripeState = {status:string; configured?:boolean; stale?:boolean; detailsSubmitted?:boolean; payoutsEnabled?:boolean; requirementsDue?:string[]}
-type Artifact = {id:string;slug:string;name:string;type:'mcpb'|'skill';description:string;created_at:number;version_id:string|null;version:string|null;version_status:string|null;sha256:string|null;image_url?:string|null;has_image?:number;image_updated_at?:number|null}
+type Artifact = {id:string;slug:string;name:string;type:'mcpb'|'skill';description:string;created_at:number;version_id:string|null;version:string|null;version_status:string|null;sha256:string|null;image_url?:string|null;has_image?:number;image_updated_at?:number|null;billing_model?:'free'|'one_time'|'monthly'|'annual'|null;amount_cents?:number|null;currency?:string|null}
 type Version = {id:string;version:string;sha256:string;status:string;created_at:number}
 type ReleaseEvidence = {version?:string;sha256?:string;scan?:{outcome?:string;file_count?:number;findings?:Array<{rule?:string;severity?:string;path?:string;detail?:string}>};sigstoreBundle?:unknown}
 type ApiKey = {id:string;name:string;key_prefix:string;created_at:number;last_used_at:number|null;revoked_at:number|null}
@@ -26,7 +26,7 @@ const input = 'w-full border-2 border-[#111] bg-white px-3 py-2.5 text-sm outlin
 const btn = 'border-2 border-[#111] px-3 py-2 text-xs font-black uppercase transition-colors hover:bg-[#ffe6d6] disabled:cursor-not-allowed disabled:opacity-40'
 const fmt = (n:number|null|undefined) => n?new Date(n*1000).toLocaleString():'Never'
 const status = (s:string) => s.replaceAll('_',' ')
-const releaseText = (s:string) => ({submitted:'Queued for automated scan',scanning:'Scanning and signing',review:'Security checks complete · awaiting approval',published:'Approved and downloadable',rejected:'Review required · publication blocked'} as Record<string,string>)[s]||status(s)
+const releaseText = (s:string) => ({submitted:'Queued for automated scan',scanning:'Scanning and signing',review:'Security review pending · not public',published:'PASS · Public listing',rejected:'FAIL · Publication blocked',suspended:'Suspended · Hidden'} as Record<string,string>)[s]||status(s)
 const stripeText = (s?:StripeState) => !s?'Checking':s.stale?'Temporarily unavailable':s.status==='complete'?'Payout setup complete (sandbox)':status(s.status)
 async function api<T>(path:string,init:RequestInit={}):Promise<T>{
   const r=await fetch(API+path,{credentials:'include',cache:'no-store',...init,headers:{...(init.body?{'content-type':'application/json'}:{}),...init.headers}})
@@ -71,6 +71,8 @@ export default function PublisherWorkspace(){
   const [createOpen,setCreateOpen]=useState(false)
   const [dropActive,setDropActive]=useState(false)
   const [logoOpen,setLogoOpen]=useState(false),[logoFile,setLogoFile]=useState<File|null>(null),[logoDomain,setLogoDomain]=useState('')
+  const [pricingOpen,setPricingOpen]=useState(false),[pricingArtifact,setPricingArtifact]=useState('')
+  const [billingModel,setBillingModel]=useState<'free'|'one_time'|'monthly'|'annual'>('free'),[priceUsd,setPriceUsd]=useState('0')
   const [imageOpen,setImageOpen]=useState(false),[imageTarget,setImageTarget]=useState(''),[imageFile,setImageFile]=useState<File|null>(null),[imageUrl,setImageUrl]=useState('')
   const [busy,setBusy]=useState(false),[loaded,setLoaded]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('')
   const [isAdmin,setIsAdmin]=useState(false),[lastSync,setLastSync]=useState<Date|null>(null)
@@ -168,6 +170,19 @@ export default function PublisherWorkspace(){
       await put(`/v1/artifacts/${encodeURIComponent(imageTarget)}/image`,payload)
       setImageOpen(false);setImageTarget('');setImageFile(null);setImageUrl('')
     },'Artifact image updated.')
+  }
+  async function savePrice(event:React.FormEvent){
+    event.preventDefault()
+    const amountCents=billingModel==='free'?0:Math.round(Number(priceUsd)*100)
+    if(!Number.isSafeInteger(amountCents)||(billingModel!=='free'&&amountCents<100)){
+      setError('Paid prices must be at least $1.00.');return
+    }
+    await mutate(async()=>{await put(`/v1/artifacts/${encodeURIComponent(pricingArtifact)}/pricing`,
+      {billingModel,amountCents,currency:'usd'});setPricingOpen(false)},'Listing price updated.')
+  }
+  function editPrice(a:Artifact){
+    setPricingArtifact(a.id);setBillingModel(a.billing_model||'free')
+    setPriceUsd(((a.amount_cents||0)/100).toFixed(2));setPricingOpen(true)
   }
   async function createKey(event:React.FormEvent){
     event.preventDefault()
@@ -301,7 +316,7 @@ export default function PublisherWorkspace(){
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[690px] text-left text-sm">
                     <thead className="border-b-2 border-[#111] bg-[#f5f0e9] text-[11px] uppercase tracking-wide">
-                      <tr><th className="px-4 py-3">Artifact</th><th className="px-4 py-3">Format</th><th className="px-4 py-3">Latest release</th><th className="px-4 py-3 text-right">Manage</th></tr>
+                      <tr><th className="px-4 py-3">Artifact</th><th className="px-4 py-3">Format</th><th className="px-4 py-3">Latest release</th><th className="px-4 py-3">Price</th><th className="px-4 py-3 text-right">Manage</th></tr>
                     </thead>
                     <tbody>{distinctArtifacts.map(a=>{
                       const expanded=selectedArtifact===a.id
@@ -311,10 +326,11 @@ export default function PublisherWorkspace(){
                           <td className="px-4 py-4"><div className="flex items-center gap-3"><ArtifactMark artifact={a}/><div className="min-w-0"><span className="block font-black">{a.name}</span><span className="mt-1 block break-all font-mono text-[11px] text-[#777]">{a.slug}</span></div></div></td>
                           <td className="px-4 py-4"><span className="inline-block border border-[#111] bg-[#faf6f2] px-2 py-1 font-mono text-[11px] font-bold uppercase">{a.type}</span></td>
                           <td className="px-4 py-4"><span className="font-bold">{a.version?'v'+a.version:'—'}</span><span className="mt-1 block text-xs text-[#666]">{a.version_status?releaseText(a.version_status):'No releases yet'}</span></td>
-                          <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button onClick={e=>{e.stopPropagation();setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button aria-expanded={expanded} aria-controls={`releases-${a.id}`} onClick={e=>{e.stopPropagation();toggleVersions(a.id)}} className={`${btn} inline-flex items-center gap-2 ${expanded?'bg-[#ffbd98]':'bg-white'}`}>Releases ({releaseCount}) <ChevronDown size={14} className={`transition-transform duration-200 motion-reduce:transition-none ${expanded?'rotate-180':''}`}/></button></div></td>
+                          <td className="px-4 py-4 font-semibold">{!a.billing_model?'Not set':a.billing_model==='free'?'Free':`${((a.amount_cents||0)/100).toFixed(2)} ${a.billing_model==='one_time'?'once':a.billing_model==='monthly'?'/mo':'/yr'}`}</td>
+                          <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button onClick={e=>{e.stopPropagation();editPrice(a)}} className={`${btn} bg-[#ffbd98]`}>Set price</button><button onClick={e=>{e.stopPropagation();setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button aria-expanded={expanded} aria-controls={`releases-${a.id}`} onClick={e=>{e.stopPropagation();toggleVersions(a.id)}} className={`${btn} inline-flex items-center gap-2 ${expanded?'bg-[#ffbd98]':'bg-white'}`}>Releases ({releaseCount}) <ChevronDown size={14} className={`transition-transform duration-200 motion-reduce:transition-none ${expanded?'rotate-180':''}`}/></button></div></td>
                         </tr>
                         {expanded&&<tr id={`releases-${a.id}`} className="border-b-2 border-[#111] bg-[#fff9f4]">
-                          <td colSpan={4} className="p-0">
+                          <td colSpan={5} className="p-0">
                             <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 duration-200">
                               <div className="flex items-center justify-between border-b border-[#dfcfc3] px-5 py-3"><span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#a14b24]">Release history · {a.name}</span><span className="text-xs text-[#777]">{releaseCount} release{releaseCount===1?'':'s'}</span></div>
                               {versions.length===0?<p className="px-5 py-6 text-sm text-[#666]">No versions have been submitted for this artifact. <button onClick={()=>{setUploadArtifact(a.id);setSection('publish')}} className="font-bold underline underline-offset-4">Publish the first version →</button></p>:<div className="divide-y divide-[#eaded4]">
