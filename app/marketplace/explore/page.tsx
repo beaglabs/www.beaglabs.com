@@ -9,7 +9,7 @@ type Release = {
   id:string;version:string;sha256:string;artifact_id:string;name:string;
   type:'mcpb'|'skill';publisher_slug:string;publisher:string;
   billing_model:'free'|'one_time'|'monthly'|'annual'|null;
-  amount_cents:number|null;currency:string|null;
+  amount_cents:number|null;currency:string|null;hosted_ready?:number;
 }
 const API='https://api.beaglabs.com'
 function price(release:Release){
@@ -81,8 +81,10 @@ export default function MarketplaceExplorePage(){
           <div className="flex items-center justify-between gap-2"><span className="font-mono text-[10px] font-black uppercase text-[#666]">{item.type==='mcpb'?'MCP Bundle':'Agent Skill'} · v{item.version}</span><span className="inline-flex items-center gap-1 border border-[#111] bg-[#dff0df] px-2 py-1 text-[10px] font-black"><ShieldCheck size={12}/> PASS</span></div>
           <h2 className="mt-4 text-xl font-black">{item.name}</h2>
           <p className="mt-1 text-xs text-[#666]">by {item.publisher}</p>
+          {!!item.hosted_ready&&<p className="mt-3 inline-flex border border-[#111] bg-[#dff0df] px-2 py-1 text-[10px] font-black uppercase">Remote MCP available</p>}
           <p className="mt-auto pt-6 text-xl font-black">{price(item)}</p>
           <p className="mt-3 truncate font-mono text-[10px] text-[#888]">SHA-256 {item.sha256}</p>
+          {!!item.hosted_ready&&<p className="mt-2 break-all font-mono text-[11px]">Connect: <code>https://mcp.beaglabs.com/mcp</code> · OAuth consent required</p>}
           <a href={API+'/v1/public/releases/'+encodeURIComponent(item.id)+'/evidence'} target="_blank" rel="noopener noreferrer" className="mt-4 border-2 border-[#111] bg-[#ffbd98] px-3 py-2 text-center text-xs font-black uppercase">View security evidence</a>
           <button disabled={!!busyRelease} onClick={()=>void acquire(item)} className="mt-2 border-2 border-[#111] bg-[#fff0e4] px-3 py-2 text-xs font-black uppercase disabled:opacity-50">{busyRelease===item.id?'Please wait…':item.billing_model==='free'||owned.includes(item.artifact_id)?'Download':`Purchase · ${price(item)}`}</button>
         </article>)}</div>}
