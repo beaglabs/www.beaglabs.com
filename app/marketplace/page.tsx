@@ -1,8 +1,9 @@
 'use client'
 
-import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { marketplaceAuth } from '@/lib/marketplace-auth'
 import { SiteFooter } from '@/components/site-footer'
+import { ConversationWorkspace } from '@/components/marketplace/conversation-workspace'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { unzipSync, strFromU8 } from 'fflate'
 import { ArrowRight, ChevronDown, Copy, Download, Fingerprint, KeyRound, MessageSquare, Package, Plus, RefreshCw, Shield, UploadCloud } from 'lucide-react'
@@ -59,6 +60,8 @@ export default function PublisherWorkspace(){
   const [conversations,setConversations]=useState<Conversation[]>([])
   const [conversationId,setConversationId]=useState('')
   const [messages,setMessages]=useState<Message[]>([])
+  const [messageLoading,setMessageLoading]=useState(false)
+  const messageRequest=useRef(0)
   const [versions,setVersions]=useState<Version[]>([])
   const [selectedArtifact,setSelectedArtifact]=useState('')
   const [newName,setNewName]=useState(''),[newType,setNewType]=useState<'mcpb'|'skill'>('mcpb'),[newDescription,setNewDescription]=useState('')
@@ -235,13 +238,25 @@ export default function PublisherWorkspace(){
     await mutate(async()=>{const r=await post<{url:string}>(`/v1/onboarding/publishers/${encodeURIComponent(publisherId)}/connect`,{});window.location.assign(r.url)},'Opening Stripe')
   }
   async function openConversation(id:string){
-    setConversationId(id);setMessages([])
-    try{const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(id)}/messages`);setMessages(r.items)}
-    catch(e){setError(e instanceof Error?e.message:'Unable to load messages')}
+    const request=++messageRequest.current
+    setConversationId(id);setMessages([]);setMessageLoading(true)
+    try{const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(id)}/messages`);if(request===messageRequest.current)setMessages(r.items||[])}
+    catch(e){if(request===messageRequest.current)setError(e instanceof Error?e.message:'Unable to load messages')}
+    finally{if(request===messageRequest.current)setMessageLoading(false)}
   }
+  useEffect(()=>{
+    if(section!=='messages'||!conversationId||!session?.user)return
+    const timer=window.setInterval(async()=>{
+      if(document.visibilityState!=='visible')return
+      const id=conversationId
+      try{const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(id)}/messages`);if(id===conversationId)setMessages(r.items||[])}catch{/* preserve visible conversation on transient failure */}
+    },10000)
+    return()=>window.clearInterval(timer)
+  },[section,conversationId,session?.user])
+
   async function sendReply(event:React.FormEvent){
     event.preventDefault()
-    await mutate(async()=>{await post(`/v1/conversations/${encodeURIComponent(conversationId)}/messages`,{body:reply});setReply('');await openConversation(conversationId)},'Message sent.')
+    await mutate(async()=>{await post(`/v1/conversations/${encodeURIComponent(conversationId)}/messages`,{body:reply});setReply('');const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(conversationId)}/messages`);setMessages(r.items||[])},'Message sent.')
   }
 
   return <><main className="site-page-grid min-h-[calc(100svh-67px)] bg-[#fffaf6] px-4 py-8 text-[#111]">
@@ -371,7 +386,21 @@ export default function PublisherWorkspace(){
               </aside>
             </div>}
             {section==='credentials'&&<><div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_300px]"><div className="overflow-x-auto"><table className="w-full min-w-[480px] text-left text-sm"><thead className="border-b-2 border-[#111] bg-[#f8f4ef] text-[11px] uppercase"><tr><th className="p-3">Key</th><th className="p-3">Created</th><th className="p-3">Last used</th><th className="p-3">Action</th></tr></thead><tbody>{keys.map(k=><tr key={k.id} className="border-b border-[#ddd]"><td className="p-3"><strong>{k.name}</strong><code className="block text-[10px] text-[#777]">{k.key_prefix}…</code></td><td className="p-3 text-xs">{fmt(k.created_at)}</td><td className="p-3 text-xs">{fmt(k.last_used_at)}</td><td className="p-3">{k.revoked_at?<span className="text-xs text-[#777]">Revoked</span>:<button disabled={busy} onClick={()=>void revokeKey(k.id)} className={`${btn} bg-white`}>Revoke</button>}</td></tr>)}</tbody></table>{keys.length===0&&<p className="p-5 text-sm text-[#666]">No publishing keys yet.</p>}</div><form onSubmit={createKey} className="self-start border-2 border-[#111] bg-[#fff7f1] p-4"><h3 className="font-black">Issue a publishing key</h3><p className="mt-1 text-xs leading-5 text-[#666]">Use a separate key per CI workflow or publishing machine.</p><input required maxLength={80} value={keyName} onChange={e=>setKeyName(e.target.value)} placeholder="e.g. release-workflow" className={`${input} mt-3`}/><button disabled={busy||current?.status!=='approved'} className={`${btn} mt-3 w-full bg-[#ffbd98]`}>Generate key</button></form></div>{oneTimeKey&&<div className="mt-5 border-2 border-[#205c39] bg-[#e5f5e6] p-4"><p className="font-black">Copy this key now. It will not be shown again.</p><code className="mt-2 block break-all bg-white p-3 text-xs">{oneTimeKey}</code><button className={`${btn} mt-3 bg-white`} onClick={()=>void navigator.clipboard.writeText(oneTimeKey)}>Copy key</button><button className={`${btn} ml-2 bg-white`} onClick={()=>setOneTimeKey('')}>Dismiss</button></div>}</>}
-            {section==='messages'&&<div className="grid gap-5 md:grid-cols-[260px_minmax(0,1fr)]"><div className="border-r-2 border-[#111] pr-4"><h3 className="mb-3 text-xs font-black uppercase">Conversations</h3>{conversations.filter(c=>c.publisher_id===publisherId).map(c=><button key={c.id} onClick={()=>void openConversation(c.id)} className={`mb-2 w-full border-2 border-[#111] p-3 text-left text-sm font-bold ${conversationId===c.id?'bg-[#ffbd98]':'bg-white'}`}>{c.subject}</button>)}{!conversations.some(c=>c.publisher_id===publisherId)&&<p className="text-xs leading-6 text-[#777]">No messages yet. Beag Labs can start a thread with you.</p>}</div><div>{!currentConversation||currentConversation.publisher_id!==publisherId?<p className="text-sm text-[#666]">Select a conversation to read and reply.</p>:<><h3 className="font-black">{currentConversation.subject}</h3><div className="mt-4 max-h-80 min-h-32 space-y-3 overflow-y-auto border-y border-[#ddd] py-4">{messages.map(m=><div key={m.id} className={`max-w-[90%] border-l-[3px] p-3 ${m.sender_user_id===session.user.id?'ml-auto border-[#e96830] bg-[#fff1e6]':'border-[#111] bg-[#f5f4f1]'}`}><p className="whitespace-pre-wrap break-words text-sm">{m.body}</p><p className="mt-2 text-[10px] text-[#777]">{m.sender_user_id===session.user.id?'You':'Beag Labs'} · {fmt(m.created_at)}</p></div>)}</div><form onSubmit={sendReply} className="mt-4 grid gap-2"><textarea required rows={3} maxLength={10000} value={reply} onChange={e=>setReply(e.target.value)} placeholder="Reply to Beag Labs…" className={input}/><button disabled={busy} className={`${btn} bg-[#ffbd98]`}>Send reply <MessageSquare size={13} className="inline"/></button></form></>}</div></div>}
+            {section==='messages'&&<ConversationWorkspace
+              threads={conversations.filter(c=>c.publisher_id===publisherId)}
+              selectedId={currentConversation?.publisher_id===publisherId?conversationId:''}
+              messages={messages}
+              selfUserId={session.user.id}
+              selfLabel="You"
+              otherLabel="Beag Labs"
+              draft={reply}
+              onDraftChange={setReply}
+              onSelect={id=>void openConversation(id)}
+              onSend={sendReply}
+              busy={busy}
+              loading={messageLoading}
+              title="Your conversations"
+            />}
             
           </div>
         </div>

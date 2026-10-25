@@ -1,9 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { marketplaceAuth } from '@/lib/marketplace-auth'
 import { SiteFooter } from '@/components/site-footer'
-import { ArrowLeft, CheckCircle2, ClipboardCopy, Fingerprint, RefreshCw, ShieldAlert } from 'lucide-react'
+import { ConversationWorkspace } from '@/components/marketplace/conversation-workspace'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { ArrowLeft, CheckCircle2, ClipboardCopy, Fingerprint, Plus, RefreshCw, ShieldAlert } from 'lucide-react'
 
 const API = 'https://api.beaglabs.com'
 type Section = 'dashboard' | 'publishers' | 'users' | 'invitations' | 'publications' | 'messages'
@@ -41,6 +43,9 @@ export default function MarketplaceAdminPage(){
   const [conversations,setConversations]=useState<Conversation[]>([])
   const [conversationId,setConversationId]=useState('')
   const [messages,setMessages]=useState<Message[]>([])
+  const [messageLoading,setMessageLoading]=useState(false)
+  const [newConversationOpen,setNewConversationOpen]=useState(false)
+  const messageRequest=useRef(0)
   const [newSubject,setNewSubject]=useState('')
   const [newConversationPublisher,setNewConversationPublisher]=useState('')
   const [messageText,setMessageText]=useState('')
@@ -106,15 +111,27 @@ export default function MarketplaceAdminPage(){
     })
   }
   async function chooseConversation(id:string){
-    setConversationId(id);setMessages([])
-    try{const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(id)}/messages`);setMessages(r.items)}
-    catch(e){setError(e instanceof Error?e.message:'Cannot load messages')}
+    const request=++messageRequest.current
+    setConversationId(id);setMessages([]);setMessageLoading(true)
+    try{const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(id)}/messages`);if(request===messageRequest.current)setMessages(r.items||[])}
+    catch(e){if(request===messageRequest.current)setError(e instanceof Error?e.message:'Cannot load messages')}
+    finally{if(request===messageRequest.current)setMessageLoading(false)}
   }
+  useEffect(()=>{
+    if(section!=='messages'||!conversationId||!authorized)return
+    const timer=window.setInterval(async()=>{
+      if(document.visibilityState!=='visible')return
+      const id=conversationId
+      try{const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(id)}/messages`);if(id===conversationId)setMessages(r.items||[])}catch{/* preserve visible messages on intermittent errors */}
+    },10000)
+    return()=>window.clearInterval(timer)
+  },[section,conversationId,authorized])
+
   async function startConversation(event:React.FormEvent){
     event.preventDefault()
     await mutation(async()=>{
       const result=await post<{id:string}>('/v1/conversations',{publisherId:newConversationPublisher,subject:newSubject})
-      setNewSubject('');await chooseConversation(result.id)
+      setNewSubject('');setNewConversationPublisher('');setNewConversationOpen(false);await chooseConversation(result.id)
     })
   }
   async function sendMessage(event:React.FormEvent){
@@ -122,7 +139,7 @@ export default function MarketplaceAdminPage(){
     if(!conversationId)return
     await mutation(async()=>{
       await post(`/v1/conversations/${encodeURIComponent(conversationId)}/messages`,{body:messageText})
-      setMessageText('');await chooseConversation(conversationId)
+      setMessageText('');const r=await api<{items:Message[]}>(`/v1/conversations/${encodeURIComponent(conversationId)}/messages`);setMessages(r.items||[])
     })
   }
   async function loadEvidence(id:string){
@@ -157,7 +174,33 @@ export default function MarketplaceAdminPage(){
           {section==='invitations'&&<><form onSubmit={createInvite} className="flex flex-wrap gap-2"><input type="email" required value={inviteEmail} onChange={e=>setInviteEmail(e.target.value)} placeholder="publisher@example.com" aria-label="Invite email" className={`${field} flex-1`}/><button disabled={busy} className={`${button} bg-[#f9e2d5]`}>Create invitation</button></form><p className="mt-2 text-xs text-[#777]">Invitations expire after seven days. Creating one does not send an email automatically.</p>{oneTimeInvite&&<div className="mt-4 border-2 border-[#216a40] bg-[#e8f5e9] p-4"><p className="font-bold">Invitation created for {oneTimeInvite.email}</p><p className="mt-1 text-xs">Copy this one-time token now; it won't be shown again.</p><code className="mt-3 block break-all bg-white p-2 text-xs">{oneTimeInvite.inviteToken}</code><button onClick={()=>void navigator.clipboard.writeText(oneTimeInvite.inviteToken)} className={`${button} mt-2 inline-flex items-center gap-2 bg-white`}><ClipboardCopy className="h-4 w-4"/> Copy token</button></div>}<div className="mt-5 grid gap-2">{invitations.map(i=><div key={i.id} className="flex flex-wrap justify-between gap-2 border-b border-[#ddd] py-2 text-sm"><span>{i.email}</span><span className="text-[#666]">{i.used_at?'Accepted':i.expires_at<Date.now()/1000?'Expired':`Expires ${stamp(i.expires_at)}`}</span></div>)}</div></>}
           {section==='publications'&&<div className="overflow-x-auto"><table className="w-full min-w-[790px] text-left text-sm"><thead className="border-b-2 border-[#111] bg-[#f8f4ef] text-[11px] uppercase"><tr><th className="p-3">Artifact / Version</th><th className="p-3">Publisher</th><th className="p-3">State</th><th className="p-3">Review</th></tr></thead><tbody>{publications.map(p=><tr key={p.id} className="border-b border-[#ddd] align-top"><td className="p-3"><strong>{p.artifact}</strong><span className="ml-2 font-mono text-xs">v{p.version}</span><code className="mt-1 block max-w-[290px] break-all text-[10px] text-[#777]">{p.sha256}</code></td><td className="p-3">{p.publisher}<div className="text-xs text-[#777]">{stamp(p.created_at)}</div></td><td className="p-3"><span className="border border-[#111] bg-[#ffe6d5] px-2 py-1 text-xs font-bold uppercase">{p.status}</span></td><td className="p-3"><div className="flex flex-wrap gap-1.5"><button disabled={busy} onClick={()=>void loadEvidence(p.id)} className={`${button} bg-white`}>Evidence</button><button disabled={busy||p.status!=='review'||evidenceVersion!==p.id||!evidencePassing} onClick={()=>void publicationAction(p,'approve')} className={`${button} bg-[#e5f4e7]`}>Approve</button><button disabled={busy||p.status!=='review'} onClick={()=>void publicationAction(p,'reject')} className={`${button} bg-white`}>Reject</button><button disabled={busy||!['review','rejected','scanning'].includes(p.status)} onClick={()=>void publicationAction(p,'retry')} className={`${button} bg-white`}>Retry</button></div></td></tr>)}</tbody></table>{publications.length===0&&<p className="p-5 text-sm text-[#666]">No publication submissions yet.</p>}</div>}
           {section==='publications'&&evidence&&<div className="mt-5 border-[3px] border-[#111] bg-[#faf8f3] p-4"><h3 className="font-black">Security evidence · {evidence.version.version}</h3><p className="mt-2 text-xs">{evidence.assessments.length} assessment(s) · {evidence.scan?'Scan present':'No scan'} · {evidence.sigstore?'Sigstore bundle present':'No Sigstore bundle'}</p><div className="mt-3 max-h-72 overflow-auto border border-[#999] bg-white p-3"><pre className="whitespace-pre-wrap break-words text-[11px]">{JSON.stringify({assessments:evidence.assessments,scan:evidence.scan,sigstore:evidence.sigstore},null,2)}</pre></div></div>}
-          {section==='messages'&&<div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)]"><div><form onSubmit={startConversation} className="grid gap-2 border-2 border-[#111] bg-[#fff6ef] p-3"><label className="text-xs font-bold uppercase">New conversation</label><select required value={newConversationPublisher} onChange={e=>setNewConversationPublisher(e.target.value)} className={field}><option value="">Choose publisher</option>{publishers.map(p=><option value={p.id} key={p.id}>{p.display_name}</option>)}</select><input required value={newSubject} onChange={e=>setNewSubject(e.target.value)} placeholder="Subject" maxLength={250} className={field}/><button disabled={busy} className={`${button} bg-[#f9e2d5]`}>Create thread</button></form><div className="mt-3 grid gap-2">{conversations.map(c=><button key={c.id} onClick={()=>void chooseConversation(c.id)} className={`border-2 border-[#111] p-3 text-left ${conversationId===c.id?'bg-[#f9e2d5]':'bg-white'}`}><span className="block text-xs font-bold">{c.subject}</span><span className="mt-1 block text-[10px] text-[#666]">{publishers.find(p=>p.id===c.publisher_id)?.display_name||c.publisher_id}</span></button>)}</div></div><div className="min-w-0 border-2 border-[#111] p-4">{!conversationId?<p className="text-sm text-[#666]">Select a thread or create one to message a publisher.</p>:<><h3 className="font-black">{selectedConversation?.subject}</h3><p className="mt-1 text-xs text-[#777]">{selectedPublisher?.display_name||'Publisher conversation'}</p><div className="mt-4 flex max-h-80 min-h-32 flex-col gap-3 overflow-auto">{messages.map(m=><div key={m.id} className="bg-[#f6f3ee] p-3"><p className="text-sm whitespace-pre-wrap break-words">{m.body}</p><p className="mt-2 text-[10px] text-[#777]">{stamp(m.created_at)}</p></div>)}</div><form onSubmit={sendMessage} className="mt-4 grid gap-2"><textarea required value={messageText} onChange={e=>setMessageText(e.target.value)} placeholder="Write a message to the publisher…" maxLength={10000} rows={3} className={field}/><button disabled={busy} className={`${button} bg-[#f9e2d5]`}>Send message</button></form></>}</div></div>}
+          {section==='messages'&&<ConversationWorkspace
+            threads={conversations}
+            selectedId={conversationId}
+            messages={messages}
+            selfUserId={session.user.id}
+            selfLabel="You"
+            otherLabel={selectedPublisher?.display_name||'Publisher'}
+            publisherName={c=>publishers.find(p=>p.id===c.publisher_id)?.display_name||'Publisher'}
+            draft={messageText}
+            onDraftChange={setMessageText}
+            onSelect={id=>void chooseConversation(id)}
+            onSend={sendMessage}
+            busy={busy}
+            loading={messageLoading}
+            title="Publisher inbox"
+            toolbar={<Dialog open={newConversationOpen} onOpenChange={setNewConversationOpen}>
+              <DialogTrigger asChild><button type="button" title="New conversation" aria-label="New conversation" className="flex h-9 w-9 items-center justify-center border-2 border-[#111] bg-[#ffbd98] hover:bg-[#ffa77a]"><Plus size={19}/></button></DialogTrigger>
+              <DialogContent className="rounded-none border-[3px] border-[#111] bg-[#fffaf6] shadow-[6px_6px_0_#111] sm:max-w-md">
+                <DialogHeader><DialogTitle className="text-xl font-black">New conversation</DialogTitle><DialogDescription>Send a new message thread to a verified publisher.</DialogDescription></DialogHeader>
+                <form onSubmit={startConversation} className="grid gap-4">
+                  <label className="text-xs font-black uppercase">Publisher<select required value={newConversationPublisher} onChange={e=>setNewConversationPublisher(e.target.value)} className={`${field} mt-1`}><option value="">Choose publisher</option>{publishers.map(p=><option key={p.id} value={p.id}>{p.display_name}</option>)}</select></label>
+                  <label className="text-xs font-black uppercase">Subject<input required maxLength={250} value={newSubject} onChange={e=>setNewSubject(e.target.value)} placeholder="What is this about?" className={`${field} mt-1`}/></label>
+                  <DialogFooter><DialogClose asChild><button type="button" className={`${button} bg-white`}>Cancel</button></DialogClose><button disabled={busy} className={`${button} bg-[#ffbd98]`}>Create conversation</button></DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>}
+          />}
         </div>
       </div>:null}
       {error&&<p role="alert" className="mt-5 border-2 border-[#9d331c] bg-[#fff0e8] p-3 text-sm font-bold text-[#9d331c]">{error}</p>}
