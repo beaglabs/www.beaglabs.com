@@ -351,6 +351,33 @@ export default function PublisherWorkspace(){
                 </div>
                 {distinctArtifacts.length===0&&<div className="bg-white px-5 py-10 text-center"><Package className="mx-auto h-7 w-7 text-[#b05a33]"/><h4 className="mt-2 font-black">No artifacts yet</h4><p className="mt-1 text-sm text-[#666]">Create your first MCP bundle or Agent Skill listing to get started.</p></div>}
               </div>
+              <Dialog open={pricingOpen} onOpenChange={setPricingOpen}>
+                <DialogContent className="rounded-none border-[3px] border-[#111] bg-[#fffaf6] shadow-[7px_7px_0_#111] sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-black">Set artifact price</DialogTitle>
+                    <DialogDescription>Choose the price buyers will see. Payment checkout is not yet enabled.</DialogDescription>
+                  </DialogHeader>
+                  <form className="grid gap-4" onSubmit={savePrice}>
+                    {error&&<p role="alert" className="border-l-4 border-[#b83220] bg-[#ffe8df] p-3 text-sm">{error}</p>}
+                    <label className="text-xs font-bold uppercase">Billing model
+                      <select className={`${input} mt-1`} value={billingModel} onChange={e=>setBillingModel(e.target.value as typeof billingModel)}>
+                        <option value="free">Free</option>
+                        <option value="one_time">One-time purchase</option>
+                        <option value="monthly">Monthly subscription</option>
+                        <option value="annual">Annual subscription</option>
+                      </select>
+                    </label>
+                    {billingModel!=='free'&&<label className="text-xs font-bold uppercase">Price (USD)
+                      <input type="number" min="1" max="100000" step="0.01" required value={priceUsd}
+                        onChange={e=>setPriceUsd(e.target.value)} className={`${input} mt-1`}/>
+                    </label>}
+                    <DialogFooter>
+                      <DialogClose asChild><button type="button" className={btn}>Cancel</button></DialogClose>
+                      <button type="submit" disabled={busy} className={`${btn} bg-[#ffbd98]`}>{busy?'Saving…':'Save price'}</button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
               <Dialog open={imageOpen} onOpenChange={setImageOpen}><DialogContent className="rounded-none border-[3px] border-[#111] bg-[#fffaf6] shadow-[7px_7px_0_#111] sm:max-w-md"><DialogHeader><DialogTitle className="text-xl font-black">Artifact image</DialogTitle><DialogDescription>Choose a logo file or use a hosted image URL. The listing will show a placeholder until you set one.</DialogDescription></DialogHeader><form className="grid gap-4" onSubmit={saveArtifactImage}><label className="text-xs font-bold uppercase">Upload logo<input type="file" accept="image/png,image/jpeg,image/webp" className={`${input} mt-1`} onChange={e=>setImageFile(e.target.files?.[0]||null)}/></label><label className="text-xs font-bold uppercase">Or HTTPS image URL<input type="url" placeholder="https://example.com/logo.png" className={`${input} mt-1`} value={imageUrl} disabled={!!imageFile} onChange={e=>setImageUrl(e.target.value)}/></label><p className="text-xs text-[#666]">Uploads must be PNG, JPEG or WebP under 700 KB. Images are displayed in artifact listings.</p><DialogFooter><DialogClose asChild><button type="button" className={btn}>Cancel</button></DialogClose><button disabled={busy||(!imageFile&&!imageUrl.trim())} className={`${btn} bg-[#ffbd98]`}>Save image</button></DialogFooter></form></DialogContent></Dialog>
               <Dialog open={evidenceOpen} onOpenChange={setEvidenceOpen}>
                 <DialogContent className="max-h-[min(90svh,900px)] overflow-y-auto rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[7px_7px_0_#111] sm:max-w-2xl">
