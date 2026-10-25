@@ -8,9 +8,9 @@ import { unzipSync, strFromU8 } from 'fflate'
 import { ArrowRight, Download, Fingerprint, KeyRound, MessageSquare, Package, Plus, RefreshCw, Shield, UploadCloud } from 'lucide-react'
 
 const API = 'https://api.beaglabs.com'
-type Publisher = { id:string; slug:string; display_name:string; type:'company'|'individual'; status:string; verified_at:number|null; role:string;has_logo?:number }
+type Publisher = { id:string; slug:string; display_name:string; type:'company'|'individual'; status:string; verified_at:number|null; role:string;has_logo?:number;logo_updated_at?:number }
 type StripeState = {status:string; configured?:boolean; stale?:boolean; detailsSubmitted?:boolean; payoutsEnabled?:boolean; requirementsDue?:string[]}
-type Artifact = {id:string;slug:string;name:string;type:'mcpb'|'skill';description:string;created_at:number;version_id:string|null;version:string|null;version_status:string|null;sha256:string|null}
+type Artifact = {id:string;slug:string;name:string;type:'mcpb'|'skill';description:string;created_at:number;version_id:string|null;version:string|null;version_status:string|null;sha256:string|null;image_url?:string|null;has_image?:number;image_updated_at?:number|null}
 type Version = {id:string;version:string;sha256:string;status:string;created_at:number}
 type ReleaseEvidence = {version?:string;sha256?:string;scan?:{outcome?:string;file_count?:number;findings?:Array<{rule?:string;severity?:string;path?:string;detail?:string}>};sigstoreBundle?:unknown}
 type ApiKey = {id:string;name:string;key_prefix:string;created_at:number;last_used_at:number|null;revoked_at:number|null}
@@ -34,6 +34,18 @@ async function api<T>(path:string,init:RequestInit={}):Promise<T>{
   return value as T
 }
 const post=<T,>(path:string,body:unknown)=>api<T>(path,{method:'POST',body:JSON.stringify(body)})
+const put=<T,>(path:string,body:unknown)=>api<T>(path,{method:'PUT',body:JSON.stringify(body)})
+async function imagePayload(file:File){
+  if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size<50||file.size>700000)throw Error('Choose a PNG, JPEG, or WebP image between 50 bytes and 700 KB.')
+  const data=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');reader.onerror=()=>reject(Error('Cannot read the image'));reader.readAsDataURL(file)})
+  return {source:'upload' as const,mimeType:file.type,data}
+}
+function ArtifactMark({artifact}:{artifact:Artifact}){
+  const src=artifact.has_image?`${API}/v1/public/artifacts/${encodeURIComponent(artifact.id)}/image?v=${artifact.image_updated_at||0}`:artifact.image_url||''
+  const [failed,setFailed]=useState(false)
+  useEffect(()=>setFailed(false),[src])
+  return <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden border-2 border-[#111] bg-[#fff2e8]">{src&&!failed?<img src={src} alt="" className="h-full w-full object-contain" onError={()=>setFailed(true)}/>:<Package size={23} aria-hidden="true" className="text-[#ab542c]"/>}</span>
+}
 
 export default function PublisherWorkspace(){
   const {data:session,isPending}=marketplaceAuth.useSession()
@@ -54,6 +66,8 @@ export default function PublisherWorkspace(){
   const [uploadArtifact,setUploadArtifact]=useState(''),[uploadVersion,setUploadVersion]=useState(''),[uploadFile,setUploadFile]=useState<File|null>(null)
   const [reply,setReply]=useState(''),[evidence,setEvidence]=useState<ReleaseEvidence|null>(null),[evidenceId,setEvidenceId]=useState(''),[evidenceOpen,setEvidenceOpen]=useState(false)
   const [createOpen,setCreateOpen]=useState(false)
+  const [logoOpen,setLogoOpen]=useState(false),[logoFile,setLogoFile]=useState<File|null>(null),[logoDomain,setLogoDomain]=useState('')
+  const [imageOpen,setImageOpen]=useState(false),[imageTarget,setImageTarget]=useState(''),[imageFile,setImageFile]=useState<File|null>(null),[imageUrl,setImageUrl]=useState('')
   const [busy,setBusy]=useState(false),[loaded,setLoaded]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('')
   const [isAdmin,setIsAdmin]=useState(false),[lastSync,setLastSync]=useState<Date|null>(null)
   const current=publishers.find(p=>p.id===publisherId)
@@ -126,6 +140,31 @@ export default function PublisherWorkspace(){
       const r=await post<{id:string}>('/v1/artifacts',{publisherId,type:newType,name:newName,description:newDescription})
       setNewName('');setNewDescription('');setCreateOpen(false);setUploadArtifact(r.id);setSection('publish')
     },'Artifact created. Upload its first version from the Publish tab.')
+  }
+  async function savePublisherLogo(event:React.FormEvent){
+    event.preventDefault()
+    if(!publisherId)return
+    await mutate(async()=>{
+      let payload:unknown
+      if(logoFile)payload={logo:await imagePayload(logoFile)}
+      else {
+        let hostname=''
+        try{const u=new URL(logoDomain);if(!['https:','http:'].includes(u.protocol))throw Error();hostname=u.hostname.toLowerCase().replace(/^www\./,'')}catch{throw Error('Upload a logo or enter a valid website URL for Logo.dev.')}
+        payload={logo:{source:'logo_dev',domain:hostname},website:logoDomain}
+      }
+      await put(`/v1/publishers/${encodeURIComponent(publisherId)}/logo`,payload)
+      setLogoOpen(false);setLogoFile(null);setLogoDomain('');await refresh()
+    },'Publisher logo updated.')
+  }
+  async function saveArtifactImage(event:React.FormEvent){
+    event.preventDefault()
+    if(!imageTarget)return
+    await mutate(async()=>{
+      const payload=imageFile?{logo:await imagePayload(imageFile)}:{imageUrl:imageUrl.trim()}
+      if(!imageFile&&!imageUrl.trim())throw Error('Choose an image or enter an HTTPS image URL.')
+      await put(`/v1/artifacts/${encodeURIComponent(imageTarget)}/image`,payload)
+      setImageOpen(false);setImageTarget('');setImageFile(null);setImageUrl('')
+    },'Artifact image updated.')
   }
   async function createKey(event:React.FormEvent){
     event.preventDefault()
@@ -218,9 +257,10 @@ export default function PublisherWorkspace(){
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#111] pb-3"><h2 className="text-2xl font-black">{sections.find(s=>s.id===section)?.label}</h2><span className="font-mono text-[10px] uppercase text-[#777]">{current?.display_name} / {status(current?.status||'')}</span></div>
             {section==='publisher'&&<div className="grid gap-5">
               <div className="flex flex-wrap items-center gap-5 border-2 border-[#111] bg-[#fff7f1] p-5">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden border-2 border-[#111] bg-white text-3xl font-black">
-                  {current?.has_logo?<img src={`${API}/v1/public/publishers/${encodeURIComponent(current.slug)}/logo`} alt={`${current.display_name} logo`} className="h-full w-full object-contain"/>:<span aria-label="Publisher initials">{(current?.display_name||'?').slice(0,2).toUpperCase()}</span>}
-                </div>
+                <Dialog open={logoOpen} onOpenChange={setLogoOpen}><DialogTrigger asChild><button type="button" title="Change publisher logo" aria-label="Change publisher logo" className="group relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden border-2 border-[#111] bg-white text-3xl font-black hover:outline hover:outline-2 hover:outline-[#f17842]">
+                  {current?.has_logo?<img src={`${API}/v1/public/publishers/${encodeURIComponent(current.slug)}/logo?v=${current.logo_updated_at||0}`} alt={`${current.display_name} logo`} className="h-full w-full object-contain"/>:<span aria-label="Publisher initials">{(current?.display_name||'?').slice(0,2).toUpperCase()}</span>}
+                  <span className="absolute inset-x-0 bottom-0 bg-[#111] py-1 text-center text-[10px] font-black uppercase text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">Edit logo</span>
+                </button></DialogTrigger><DialogContent className="rounded-none border-[3px] border-[#111] bg-[#fffaf6] shadow-[7px_7px_0_#111] sm:max-w-md"><DialogHeader><DialogTitle className="text-xl font-black">Publisher logo</DialogTitle><DialogDescription>Upload an image or use Logo.dev for your website domain.</DialogDescription></DialogHeader><form className="grid gap-4" onSubmit={savePublisherLogo}><label className="text-xs font-bold uppercase">Upload PNG, JPEG or WebP<input className={`${input} mt-1`} type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>setLogoFile(e.target.files?.[0]||null)}/></label><label className="text-xs font-bold uppercase">Website URL (Logo.dev fallback)<input className={`${input} mt-1`} type="url" placeholder="https://beaglabs.com" value={logoDomain} onChange={e=>setLogoDomain(e.target.value)} disabled={!!logoFile}/></label><p className="text-xs text-[#666]">Uploads take priority. Maximum 700 KB. Changes appear across your publisher profile.</p><DialogFooter><DialogClose asChild><button type="button" className={btn}>Cancel</button></DialogClose><button disabled={busy||(!logoFile&&!logoDomain.trim())} className={`${btn} bg-[#ffbd98]`}>Save logo</button></DialogFooter></form></DialogContent></Dialog>
                 <div className="min-w-0 flex-1"><h3 className="text-xl font-black">{current?.display_name}</h3><p className="mt-1 font-mono text-xs text-[#666]">/{current?.slug} · {current?.type}</p><p className="mt-2 text-xs">Identity: <strong className="capitalize">{status(current?.status||'unknown')}</strong> · Stripe: <strong>{stripeText(stripe[publisherId])}</strong></p></div>
                 <button disabled={busy} onClick={()=>void connectStripe()} className={`${btn} bg-[#ffbd98]`}>Manage Stripe Connect ↗</button>
               </div>
@@ -246,16 +286,17 @@ export default function PublisherWorkspace(){
                     </thead>
                     <tbody>{distinctArtifacts.map(a=>
                       <tr key={a.id} className={`border-b border-[#ded8d0] last:border-0 ${selectedArtifact===a.id?'bg-[#fff0e7]':'bg-white'}`}>
-                        <td className="px-4 py-4"><span className="block font-black">{a.name}</span><span className="mt-1 block font-mono text-[11px] text-[#777]">{a.slug}</span></td>
+                        <td className="px-4 py-4"><div className="flex items-center gap-3"><ArtifactMark artifact={a}/><div className="min-w-0"><span className="block font-black">{a.name}</span><span className="mt-1 block break-all font-mono text-[11px] text-[#777]">{a.slug}</span></div></div></td>
                         <td className="px-4 py-4"><span className="inline-block border border-[#111] bg-[#faf6f2] px-2 py-1 font-mono text-[11px] font-bold uppercase">{a.type}</span></td>
                         <td className="px-4 py-4"><span className="font-bold">{a.version?'v'+a.version:'—'}</span><span className="mt-1 block text-xs text-[#666]">{a.version_status?releaseText(a.version_status):'No releases yet'}</span></td>
-                        <td className="px-4 py-4 text-right"><button onClick={()=>void loadVersions(a.id)} className={`${btn} ${selectedArtifact===a.id?'bg-[#ffbd98]':'bg-white'}`}>{selectedArtifact===a.id?'Selected':'View versions'}</button></td>
+                        <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button onClick={()=>{setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button onClick={()=>void loadVersions(a.id)} className={`${btn} ${selectedArtifact===a.id?'bg-[#ffbd98]':'bg-white'}`}>{selectedArtifact===a.id?'Selected':'View versions'}</button></div></td>
                       </tr>
                     )}</tbody>
                   </table>
                 </div>
                 {distinctArtifacts.length===0&&<div className="bg-white px-5 py-10 text-center"><Package className="mx-auto h-7 w-7 text-[#b05a33]"/><h4 className="mt-2 font-black">No artifacts yet</h4><p className="mt-1 text-sm text-[#666]">Create your first MCP bundle or Agent Skill listing to get started.</p></div>}
               </div>
+              <Dialog open={imageOpen} onOpenChange={setImageOpen}><DialogContent className="rounded-none border-[3px] border-[#111] bg-[#fffaf6] shadow-[7px_7px_0_#111] sm:max-w-md"><DialogHeader><DialogTitle className="text-xl font-black">Artifact image</DialogTitle><DialogDescription>Choose a logo file or use a hosted image URL. The listing will show a placeholder until you set one.</DialogDescription></DialogHeader><form className="grid gap-4" onSubmit={saveArtifactImage}><label className="text-xs font-bold uppercase">Upload logo<input type="file" accept="image/png,image/jpeg,image/webp" className={`${input} mt-1`} onChange={e=>setImageFile(e.target.files?.[0]||null)}/></label><label className="text-xs font-bold uppercase">Or HTTPS image URL<input type="url" placeholder="https://example.com/logo.png" className={`${input} mt-1`} value={imageUrl} disabled={!!imageFile} onChange={e=>setImageUrl(e.target.value)}/></label><p className="text-xs text-[#666]">Uploads must be PNG, JPEG or WebP under 700 KB. Images are displayed in artifact listings.</p><DialogFooter><DialogClose asChild><button type="button" className={btn}>Cancel</button></DialogClose><button disabled={busy||(!imageFile&&!imageUrl.trim())} className={`${btn} bg-[#ffbd98]`}>Save image</button></DialogFooter></form></DialogContent></Dialog>
               {selectedArtifact&&<section className="mt-6 overflow-hidden border-[3px] border-[#111] bg-white">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-[#111] bg-[#fff0e5] px-5 py-4">
                   <div><p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#99461e]">Release history</p><h3 className="mt-1 text-xl font-black">{currentArtifact?.name}</h3><p className="mt-1 font-mono text-[11px] text-[#666]">{currentArtifact?.slug}</p></div>
