@@ -1,11 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { marketplaceAuth } from '@/lib/marketplace-auth'
 import { SiteFooter } from '@/components/site-footer'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { unzipSync, strFromU8 } from 'fflate'
-import { ArrowRight, Download, Fingerprint, KeyRound, MessageSquare, Package, Plus, RefreshCw, Shield, UploadCloud } from 'lucide-react'
+import { ArrowRight, ChevronDown, Copy, Download, Fingerprint, KeyRound, MessageSquare, Package, Plus, RefreshCw, Shield, UploadCloud } from 'lucide-react'
 
 const API = 'https://api.beaglabs.com'
 type Publisher = { id:string; slug:string; display_name:string; type:'company'|'individual'; status:string; verified_at:number|null; role:string;has_logo?:number;logo_updated_at?:number }
@@ -74,7 +74,6 @@ export default function PublisherWorkspace(){
   const current=publishers.find(p=>p.id===publisherId)
   const distinctArtifacts=artifacts.filter((a,i,all)=>all.findIndex(x=>x.id===a.id)===i)
   const currentConversation=conversations.find(c=>c.id===conversationId)
-  const currentArtifact=distinctArtifacts.find(a=>a.id===selectedArtifact)
   const uploadKind=distinctArtifacts.find(a=>a.id===uploadArtifact)?.type
   const activeVersions=artifacts.some(a=>a.version_status==='submitted'||a.version_status==='scanning'||a.version_status==='review')
 
@@ -209,9 +208,13 @@ export default function PublisherWorkspace(){
     },'Upload received. Queued for the automatic scanner; the release state will refresh as it progresses.')
   }
   async function loadVersions(id:string){
-    setSelectedArtifact(id);setEvidence(null);setEvidenceId('')
+    setSelectedArtifact(id);setVersions([]);setEvidence(null);setEvidenceId('')
     try{const result=await api<{items:Version[]}>(`/v1/artifacts/${encodeURIComponent(id)}/versions`);setVersions(result.items||[])}
     catch(e){setError(e instanceof Error?e.message:'Unable to load versions')}
+  }
+  function toggleVersions(id:string){
+    if(selectedArtifact===id){setSelectedArtifact('');setVersions([]);setEvidence(null);setEvidenceId('');return}
+    void loadVersions(id)
   }
   async function viewEvidence(id:string){
     setEvidence(null);setEvidenceId(id)
@@ -281,42 +284,43 @@ export default function PublisherWorkspace(){
               </div>
               <div className="overflow-hidden border-2 border-[#111]">
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[640px] text-left text-sm">
+                  <table className="w-full min-w-[690px] text-left text-sm">
                     <thead className="border-b-2 border-[#111] bg-[#f5f0e9] text-[11px] uppercase tracking-wide">
                       <tr><th className="px-4 py-3">Artifact</th><th className="px-4 py-3">Format</th><th className="px-4 py-3">Latest release</th><th className="px-4 py-3 text-right">Manage</th></tr>
                     </thead>
-                    <tbody>{distinctArtifacts.map(a=>
-                      <tr key={a.id} className={`border-b border-[#ded8d0] last:border-0 ${selectedArtifact===a.id?'bg-[#fff0e7]':'bg-white'}`}>
-                        <td className="px-4 py-4"><div className="flex items-center gap-3"><ArtifactMark artifact={a}/><div className="min-w-0"><span className="block font-black">{a.name}</span><span className="mt-1 block break-all font-mono text-[11px] text-[#777]">{a.slug}</span></div></div></td>
-                        <td className="px-4 py-4"><span className="inline-block border border-[#111] bg-[#faf6f2] px-2 py-1 font-mono text-[11px] font-bold uppercase">{a.type}</span></td>
-                        <td className="px-4 py-4"><span className="font-bold">{a.version?'v'+a.version:'—'}</span><span className="mt-1 block text-xs text-[#666]">{a.version_status?releaseText(a.version_status):'No releases yet'}</span></td>
-                        <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button onClick={()=>{setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button onClick={()=>void loadVersions(a.id)} className={`${btn} ${selectedArtifact===a.id?'bg-[#ffbd98]':'bg-white'}`}>{selectedArtifact===a.id?'Selected':'View versions'}</button></div></td>
-                      </tr>
-                    )}</tbody>
+                    <tbody>{distinctArtifacts.map(a=>{
+                      const expanded=selectedArtifact===a.id
+                      const releaseCount=artifacts.filter(row=>row.id===a.id&&row.version_id).length
+                      return <Fragment key={a.id}>
+                        <tr onClick={()=>toggleVersions(a.id)} onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleVersions(a.id)}}} tabIndex={0} aria-expanded={expanded} aria-controls={`releases-${a.id}`} className={`cursor-pointer border-b border-[#ded8d0] outline-offset-[-3px] transition-colors hover:bg-[#fff3e9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#e96830] ${expanded?'bg-[#fff0e7]':'bg-white'}`}>
+                          <td className="px-4 py-4"><div className="flex items-center gap-3"><ArtifactMark artifact={a}/><div className="min-w-0"><span className="block font-black">{a.name}</span><span className="mt-1 block break-all font-mono text-[11px] text-[#777]">{a.slug}</span></div></div></td>
+                          <td className="px-4 py-4"><span className="inline-block border border-[#111] bg-[#faf6f2] px-2 py-1 font-mono text-[11px] font-bold uppercase">{a.type}</span></td>
+                          <td className="px-4 py-4"><span className="font-bold">{a.version?'v'+a.version:'—'}</span><span className="mt-1 block text-xs text-[#666]">{a.version_status?releaseText(a.version_status):'No releases yet'}</span></td>
+                          <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button onClick={e=>{e.stopPropagation();setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button aria-expanded={expanded} aria-controls={`releases-${a.id}`} onClick={e=>{e.stopPropagation();toggleVersions(a.id)}} className={`${btn} inline-flex items-center gap-2 ${expanded?'bg-[#ffbd98]':'bg-white'}`}>Releases ({releaseCount}) <ChevronDown size={14} className={`transition-transform duration-200 motion-reduce:transition-none ${expanded?'rotate-180':''}`}/></button></div></td>
+                        </tr>
+                        {expanded&&<tr id={`releases-${a.id}`} className="border-b-2 border-[#111] bg-[#fff9f4]">
+                          <td colSpan={4} className="p-0">
+                            <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 duration-200">
+                              <div className="flex items-center justify-between border-b border-[#dfcfc3] px-5 py-3"><span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#a14b24]">Release history · {a.name}</span><span className="text-xs text-[#777]">{releaseCount} release{releaseCount===1?'':'s'}</span></div>
+                              {versions.length===0?<p className="px-5 py-6 text-sm text-[#666]">No versions have been submitted for this artifact. <button onClick={()=>{setUploadArtifact(a.id);setSection('publish')}} className="font-bold underline underline-offset-4">Publish the first version →</button></p>:<div className="divide-y divide-[#eaded4]">
+                                {versions.map(v=><div key={v.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6">
+                                  <div className="min-w-0">
+                                    <div className="flex flex-wrap items-center gap-3"><span className="font-black">v{v.version}</span><span className={`border border-[#111] px-2 py-1 text-[10px] font-black uppercase ${v.status==='published'?'bg-[#dff0df]':v.status==='rejected'?'bg-[#ffe0d8]':'bg-[#fff0d9]'}`}>{releaseText(v.status)}</span><span className="text-xs text-[#777]">Submitted {fmt(v.created_at)}</span></div>
+                                    <div className="mt-2 flex items-center gap-2 font-mono text-[11px] text-[#777]"><span className="truncate">SHA-256 · {v.sha256.slice(0,18)}…{v.sha256.slice(-8)}</span><button title="Copy full SHA-256" aria-label={`Copy SHA-256 for version ${v.version}`} onClick={()=>void navigator.clipboard.writeText(v.sha256).then(()=>setNotice('SHA-256 copied')).catch(()=>setError('Could not copy SHA-256'))} className="rounded-sm p-1 hover:bg-[#f7e0d2]"><Copy size={13}/></button></div>
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-2">{v.status==='published'&&<><button onClick={()=>void viewEvidence(v.id)} className={`${btn} bg-white`}>Inspect evidence</button><button disabled={busy} onClick={()=>void downloadVersion(v.id,a.type,v.version)} className={`${btn} inline-flex items-center gap-2 bg-[#ffbd98]`}><Download size={13}/> Download</button></>}</div>
+                                </div>)}
+                              </div>}
+                            </div>
+                          </td>
+                        </tr>}
+                      </Fragment>
+                    })}</tbody>
                   </table>
                 </div>
                 {distinctArtifacts.length===0&&<div className="bg-white px-5 py-10 text-center"><Package className="mx-auto h-7 w-7 text-[#b05a33]"/><h4 className="mt-2 font-black">No artifacts yet</h4><p className="mt-1 text-sm text-[#666]">Create your first MCP bundle or Agent Skill listing to get started.</p></div>}
               </div>
               <Dialog open={imageOpen} onOpenChange={setImageOpen}><DialogContent className="rounded-none border-[3px] border-[#111] bg-[#fffaf6] shadow-[7px_7px_0_#111] sm:max-w-md"><DialogHeader><DialogTitle className="text-xl font-black">Artifact image</DialogTitle><DialogDescription>Choose a logo file or use a hosted image URL. The listing will show a placeholder until you set one.</DialogDescription></DialogHeader><form className="grid gap-4" onSubmit={saveArtifactImage}><label className="text-xs font-bold uppercase">Upload logo<input type="file" accept="image/png,image/jpeg,image/webp" className={`${input} mt-1`} onChange={e=>setImageFile(e.target.files?.[0]||null)}/></label><label className="text-xs font-bold uppercase">Or HTTPS image URL<input type="url" placeholder="https://example.com/logo.png" className={`${input} mt-1`} value={imageUrl} disabled={!!imageFile} onChange={e=>setImageUrl(e.target.value)}/></label><p className="text-xs text-[#666]">Uploads must be PNG, JPEG or WebP under 700 KB. Images are displayed in artifact listings.</p><DialogFooter><DialogClose asChild><button type="button" className={btn}>Cancel</button></DialogClose><button disabled={busy||(!imageFile&&!imageUrl.trim())} className={`${btn} bg-[#ffbd98]`}>Save image</button></DialogFooter></form></DialogContent></Dialog>
-              {selectedArtifact&&<section className="mt-6 overflow-hidden border-[3px] border-[#111] bg-white">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-[#111] bg-[#fff0e5] px-5 py-4">
-                  <div><p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#99461e]">Release history</p><h3 className="mt-1 text-xl font-black">{currentArtifact?.name}</h3><p className="mt-1 font-mono text-[11px] text-[#666]">{currentArtifact?.slug}</p></div>
-                  <button onClick={()=>{setSelectedArtifact('');setVersions([]);setEvidence(null);setEvidenceId('')}} className={`${btn} bg-white`}>Close details</button>
-                </div>
-                <div className="divide-y divide-[#ded8d0]">
-                  {versions.length===0&&<p className="px-5 py-8 text-sm text-[#666]">No versions have been submitted for this artifact.</p>}
-                  {versions.map(v=><div key={v.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-3"><span className="text-lg font-black">v{v.version}</span><span className={`border border-[#111] px-2 py-1 text-[11px] font-black uppercase ${v.status==='published'?'bg-[#dff0df]':v.status==='rejected'?'bg-[#ffe0d8]':'bg-[#fff0d9]'}`}>{releaseText(v.status)}</span></div>
-                      <p className="mt-2 font-mono text-[11px] text-[#777]">SHA-256 · <span className="break-all">{v.sha256.slice(0,24)}…{v.sha256.slice(-10)}</span></p>
-                    </div>
-                    {v.status==='published'&&<div className="flex shrink-0 flex-wrap gap-2">
-                      <button onClick={()=>void viewEvidence(v.id)} className={`${btn} bg-white`}>Inspect evidence</button>
-                      <button disabled={busy} onClick={()=>void downloadVersion(v.id,currentArtifact?.type||'mcpb',v.version)} className={`${btn} inline-flex items-center gap-2 bg-[#ffbd98]`}><Download size={13}/> Download</button>
-                    </div>}
-                  </div>)}
-                </div>
-              </section>}
               <Dialog open={evidenceOpen} onOpenChange={setEvidenceOpen}>
                 <DialogContent className="max-h-[min(90svh,900px)] overflow-y-auto rounded-none border-[3px] border-[#111] bg-white p-0 shadow-[7px_7px_0_#111] sm:max-w-2xl">
                   <DialogHeader className="border-b-[3px] border-[#111] bg-[#f9e2d5] px-6 py-5 text-left">
