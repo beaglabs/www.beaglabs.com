@@ -11,7 +11,7 @@ import { ArrowRight, ChevronDown, Copy, Download, Fingerprint, KeyRound, Message
 const API = 'https://api.beaglabs.com'
 type Publisher = { id:string; slug:string; display_name:string; type:'company'|'individual'; status:string; verified_at:number|null; role:string;has_logo?:number;logo_updated_at?:number }
 type StripeState = {status:string; configured?:boolean; stale?:boolean; detailsSubmitted?:boolean; payoutsEnabled?:boolean; requirementsDue?:string[]}
-type Artifact = {id:string;slug:string;name:string;type:'mcpb'|'skill';description:string;created_at:number;version_id:string|null;version:string|null;version_status:string|null;sha256:string|null;image_url?:string|null;has_image?:number;image_updated_at?:number|null;billing_model?:'free'|'one_time'|'monthly'|'annual'|null;amount_cents?:number|null;currency?:string|null}
+type Artifact = {id:string;slug:string;name:string;type:'mcpb'|'skill';description:string;created_at:number;version_id:string|null;version:string|null;version_status:string|null;sha256:string|null;image_url?:string|null;has_image?:number;image_updated_at?:number|null;billing_model?:'free'|'one_time'|'monthly'|'annual'|null;amount_cents?:number|null;currency?:string|null;hosting_enabled?:number|null;hosting_status?:'pending'|'PASS'|'FAIL'|null;hosting_tested_version?:string|null}
 type Version = {id:string;version:string;sha256:string;status:string;created_at:number}
 type ReleaseEvidence = {version?:string;sha256?:string;scan?:{outcome?:string;file_count?:number;findings?:Array<{rule?:string;severity?:string;path?:string;detail?:string}>};sigstoreBundle?:unknown}
 type ApiKey = {id:string;name:string;key_prefix:string;created_at:number;last_used_at:number|null;revoked_at:number|null}
@@ -180,6 +180,16 @@ export default function PublisherWorkspace(){
     await mutate(async()=>{await put(`/v1/artifacts/${encodeURIComponent(pricingArtifact)}/pricing`,
       {billingModel,amountCents,currency:'usd'});setPricingOpen(false)},'Listing price updated.')
   }
+  async function manageHosting(a:Artifact,action:'enable'|'disable'|'test'){
+    setBusy(true);setError('');setNotice('')
+    try{
+      const path=`/v1/artifacts/${encodeURIComponent(a.id)}/hosting${action==='test'?'/test':''}`
+      await post(path,action==='test'?{}:{enabled:action==='enable'})
+      await refreshPublisher()
+      setNotice(action==='test'?'Remote MCP compatibility test completed.':'Hosting settings updated.')
+    }catch(e){setError(e instanceof Error?e.message:'Unable to update hosting.')}
+    finally{setBusy(false)}
+  }
   function editPrice(a:Artifact){
     setError('');setPricingArtifact(a.id);setBillingModel(a.billing_model||'free')
     setPriceUsd(((a.amount_cents||0)/100).toFixed(2));setPricingOpen(true)
@@ -290,6 +300,7 @@ export default function PublisherWorkspace(){
           <div className="min-w-0 p-4 sm:p-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#111] pb-3"><h2 className="text-2xl font-black">{sections.find(s=>s.id===section)?.label}</h2><span className="font-mono text-[10px] uppercase text-[#777]">{current?.display_name} / {status(current?.status||'')}</span></div>
             {section==='publisher'&&<div className="grid gap-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-2 border-[#111] bg-[#fff0e4] p-4"><div><p className="font-black">Publisher billing</p><p className="mt-1 text-xs text-[#555]">$199/month Publisher or $499/month Hosted Publisher. Your artifact prices remain independent through Stripe Connect.</p></div><a href={`/marketplace/billing?publisherId=${encodeURIComponent(publisherId)}`} className={`${btn} bg-[#ffbd98]`}>Manage plan</a></div>
               <div className="flex flex-wrap items-center gap-5 border-2 border-[#111] bg-[#fff7f1] p-5">
                 <Dialog open={logoOpen} onOpenChange={setLogoOpen}><DialogTrigger asChild><button type="button" title="Change publisher logo" aria-label="Change publisher logo" className="group relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden border-2 border-[#111] bg-white text-3xl font-black hover:outline hover:outline-2 hover:outline-[#f17842]">
                   {current?.has_logo?<img src={`${API}/v1/public/publishers/${encodeURIComponent(current.slug)}/logo?v=${current.logo_updated_at||0}`} alt={`${current.display_name} logo`} className="h-full w-full object-contain"/>:<span aria-label="Publisher initials">{(current?.display_name||'?').slice(0,2).toUpperCase()}</span>}
@@ -323,11 +334,11 @@ export default function PublisherWorkspace(){
                       const releaseCount=artifacts.filter(row=>row.id===a.id&&row.version_id).length
                       return <Fragment key={a.id}>
                         <tr onClick={()=>toggleVersions(a.id)} onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleVersions(a.id)}}} tabIndex={0} aria-expanded={expanded} aria-controls={`releases-${a.id}`} className={`cursor-pointer border-b border-[#ded8d0] outline-offset-[-3px] transition-colors hover:bg-[#fff3e9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#e96830] ${expanded?'bg-[#fff0e7]':'bg-white'}`}>
-                          <td className="px-4 py-4"><div className="flex items-center gap-3"><ArtifactMark artifact={a}/><div className="min-w-0"><span className="block font-black">{a.name}</span><span className="mt-1 block break-all font-mono text-[11px] text-[#777]">{a.slug}</span></div></div></td>
+                          <td className="px-4 py-4"><div className="flex items-center gap-3"><ArtifactMark artifact={a}/><div className="min-w-0"><span className="block font-black">{a.name}</span><span className="mt-1 block break-all font-mono text-[11px] text-[#777]">{a.slug}</span>{a.type==='mcpb'&&!!a.hosting_enabled&&<span className="mt-1 block text-[10px] font-black uppercase text-[#a14b24]">Remote MCP: {a.hosting_status||'pending'}{a.hosting_status==='PASS'&&a.hosting_tested_version===a.version_id?' · Ready':''}</span>}</div></div></td>
                           <td className="px-4 py-4"><span className="inline-block border border-[#111] bg-[#faf6f2] px-2 py-1 font-mono text-[11px] font-bold uppercase">{a.type}</span></td>
                           <td className="px-4 py-4"><span className="font-bold">{a.version?'v'+a.version:'—'}</span><span className="mt-1 block text-xs text-[#666]">{a.version_status?releaseText(a.version_status):'No releases yet'}</span></td>
                           <td className="px-4 py-4 font-semibold">{!a.billing_model?'Not set':a.billing_model==='free'?'Free':`${((a.amount_cents||0)/100).toFixed(2)} ${a.billing_model==='one_time'?'once':a.billing_model==='monthly'?'/mo':'/yr'}`}</td>
-                          <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button type="button" onClick={e=>{e.stopPropagation();editPrice(a)}} className={`${btn} bg-[#ffbd98]`}>Set price</button><button onClick={e=>{e.stopPropagation();setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button aria-expanded={expanded} aria-controls={`releases-${a.id}`} onClick={e=>{e.stopPropagation();toggleVersions(a.id)}} className={`${btn} inline-flex items-center gap-2 ${expanded?'bg-[#ffbd98]':'bg-white'}`}>Releases ({releaseCount}) <ChevronDown size={14} className={`transition-transform duration-200 motion-reduce:transition-none ${expanded?'rotate-180':''}`}/></button></div></td>
+                          <td className="px-4 py-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button type="button" onClick={e=>{e.stopPropagation();editPrice(a)}} className={`${btn} bg-[#ffbd98]`}>Set price</button>{a.type==='mcpb'&&<><button disabled={busy} type="button" onClick={e=>{e.stopPropagation();void manageHosting(a,a.hosting_enabled?'disable':'enable')}} className={`${btn} bg-white`}>{a.hosting_enabled?'Disable hosting':'Enable hosting'}</button>{!!a.hosting_enabled&&<button disabled={busy||a.version_status!=='published'} type="button" onClick={e=>{e.stopPropagation();void manageHosting(a,'test')}} className={`${btn} bg-[#ffdfc9]`}>Test hosting</button>}</>}<button onClick={e=>{e.stopPropagation();setImageTarget(a.id);setImageFile(null);setImageUrl(a.image_url||'');setImageOpen(true)}} className={`${btn} bg-white`}>Edit image</button><button aria-expanded={expanded} aria-controls={`releases-${a.id}`} onClick={e=>{e.stopPropagation();toggleVersions(a.id)}} className={`${btn} inline-flex items-center gap-2 ${expanded?'bg-[#ffbd98]':'bg-white'}`}>Releases ({releaseCount}) <ChevronDown size={14} className={`transition-transform duration-200 motion-reduce:transition-none ${expanded?'rotate-180':''}`}/></button></div></td>
                         </tr>
                         {expanded&&<tr id={`releases-${a.id}`} className="border-b-2 border-[#111] bg-[#fff9f4]">
                           <td colSpan={5} className="p-0">
