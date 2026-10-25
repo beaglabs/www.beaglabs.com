@@ -57,7 +57,7 @@ export function ConversationWorkspace({threads,selectedId,messages,selfUserId,se
       atBottom.current=true
       setShowJump(false)
     }
-    if(atBottom.current)requestAnimationFrame(()=>scrollToEnd('instant'))
+    if(atBottom.current&&typeof window!=='undefined'&&window.matchMedia('(min-width: 1024px)').matches)requestAnimationFrame(()=>scrollToEnd('auto'))
   },[selectedId,messages])
   function onComposerKeyDown(event:KeyboardEvent<HTMLTextAreaElement>){
     if(event.key==='Enter'&&(event.metaKey||event.ctrlKey)&&!event.nativeEvent.isComposing){
@@ -66,8 +66,8 @@ export function ConversationWorkspace({threads,selectedId,messages,selfUserId,se
     }
   }
 
-  return <div className="grid min-h-[540px] min-w-0 overflow-hidden border-[3px] border-[#111] bg-white lg:h-[min(690px,calc(100svh-190px))] lg:min-h-[520px] lg:grid-cols-[300px_minmax(0,1fr)]">
-    <aside aria-label="Conversation sidebar" className="flex min-h-0 min-w-0 flex-col border-b-[3px] border-[#111] bg-[#faf5ef] lg:border-b-0 lg:border-r-[3px]">
+  return <div className="grid min-w-0 border-[3px] border-[#111] bg-white lg:h-[clamp(520px,calc(100dvh-230px),740px)] lg:min-h-0 lg:grid-cols-[300px_minmax(0,1fr)] lg:overflow-hidden">
+    <aside aria-label="Conversation sidebar" className="flex min-w-0 flex-col border-b-[3px] lg:min-h-0 border-[#111] bg-[#faf5ef] lg:border-b-0 lg:border-r-[3px]">
       <div className="border-b-2 border-[#111] px-4 py-4">
         <div className="flex items-center justify-between gap-2">
           <div><p className="font-mono text-[10px] font-black uppercase tracking-[.14em] text-[#a14b24]">Inbox</p><h3 className="mt-1 text-lg font-black">{title} <span className="font-mono text-xs text-[#777]">({threads.length})</span></h3></div>
@@ -75,7 +75,7 @@ export function ConversationWorkspace({threads,selectedId,messages,selfUserId,se
         </div>
         <label className="relative mt-3 block"><Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#666]"/><span className="sr-only">Search conversations</span><input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search conversations" className="w-full border-2 border-[#111] bg-white py-2 pl-9 pr-3 text-xs outline-none focus:shadow-[3px_3px_0_#f4b48e]"/></label>
       </div>
-      <nav aria-label="Threads" className="max-h-[240px] min-h-[120px] flex-1 overflow-y-auto overscroll-contain lg:max-h-none">
+      <nav aria-label="Threads" className="flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain">
         {filtered.map(thread=><button key={thread.id} type="button" onClick={()=>onSelect(thread.id)} aria-current={selectedId===thread.id?'true':undefined} className={`flex w-full items-start gap-3 border-b border-[#e0d3ca] px-4 py-4 text-left transition-colors hover:bg-[#ffe8d9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#111] ${selectedId===thread.id?'border-l-[5px] border-l-[#111] bg-[#ffcfb2] pl-[11px]':'bg-transparent'}`}>
           <span className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-[#111] bg-white"><MessageSquare size={17}/></span>
           <span className="min-w-0 flex-1"><span className="block truncate text-sm font-black">{thread.subject}</span>{publisherName&&<span className="mt-1 block truncate text-xs text-[#6b625c]">{publisherName(thread)}</span>}<span className="mt-1 block font-mono text-[10px] text-[#8a7a70]">{formatTime(thread.created_at)}</span></span>
@@ -83,11 +83,11 @@ export function ConversationWorkspace({threads,selectedId,messages,selfUserId,se
         {filtered.length===0&&<div className="px-5 py-10 text-center text-sm text-[#72645b]"><Inbox size={23} className="mx-auto mb-3"/>{threads.length?'No matching conversations.':'No conversations yet.'}</div>}
       </nav>
     </aside>
-    <section aria-label="Message thread" className="flex min-h-[440px] min-w-0 flex-col bg-white lg:min-h-0">
+    <section aria-label="Message thread" className="flex min-w-0 flex-col bg-white lg:min-h-0 lg:overflow-hidden">
       {!selected?<div className="flex flex-1 flex-col items-center justify-center px-6 py-14 text-center"><span className="flex h-16 w-16 items-center justify-center border-[3px] border-[#111] bg-[#ffdfcc] shadow-[4px_4px_0_#111]"><MessageSquare size={28}/></span><h3 className="mt-7 text-xl font-black">Your inbox is ready.</h3><p className="mt-2 max-w-sm text-sm leading-6 text-[#777]">{threads.length?'Choose a conversation on the left to read and reply.':'New conversations from Beag Labs will appear here.'}</p></div>:<>
         <header className="flex shrink-0 items-center justify-between gap-3 border-b-2 border-[#111] bg-[#fff8f1] px-5 py-4"><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#a14b24]">{publisherName?.(selected)||'Secure publisher messaging'}</p><h3 className="mt-1 truncate text-lg font-black">{selected.subject}</h3></div><span className="flex shrink-0 items-center gap-1.5 border border-[#111] bg-[#e6f4e5] px-2 py-1 font-mono text-[10px] font-bold uppercase"><Check size={12}/> Active</span></header>
-        <div className="relative min-h-0 flex-1">
-          <div ref={viewport} onScroll={onScroll} role="log" aria-live="polite" aria-relevant="additions" className="h-full min-h-[220px] max-h-[430px] overflow-y-auto overscroll-contain px-4 py-6 sm:px-6 lg:max-h-none">
+        <div className="relative flex-1 lg:min-h-0">
+          <div ref={viewport} onScroll={onScroll} role="log" aria-live="polite" aria-relevant="additions" className="px-4 py-6 sm:px-6 lg:absolute lg:inset-0 lg:h-full lg:overflow-y-auto lg:overscroll-contain">
             {loading?<p className="py-12 text-center text-xs text-[#777]">Loading conversation…</p>:messages.length===0?<div className="flex h-full min-h-[200px] flex-col items-center justify-center text-center"><p className="font-black">Start the conversation</p><p className="mt-2 max-w-xs text-xs leading-5 text-[#777]">Messages are kept in this thread, so you can pick up where you left off.</p></div>:<div className="space-y-5">{messages.map(m=>{
               const own=m.sender_user_id===selfUserId
               return <article key={m.id} className={`flex max-w-full items-end gap-2.5 ${own?'flex-row-reverse':''}`}>
@@ -96,7 +96,7 @@ export function ConversationWorkspace({threads,selectedId,messages,selfUserId,se
               </article>
             })}</div>}
           </div>
-          {showJump&&<button type="button" onClick={()=>scrollToEnd()} className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 border-2 border-[#111] bg-white px-3 py-2 text-xs font-black shadow-[3px_3px_0_#111]"><ArrowDown size={14}/> Latest messages</button>}
+          {showJump&&<button type="button" onClick={()=>scrollToEnd()} className="absolute bottom-3 left-1/2 z-10 hidden -translate-x-1/2 lg:flex items-center gap-2 border-2 border-[#111] bg-white px-3 py-2 text-xs font-black shadow-[3px_3px_0_#111]"><ArrowDown size={14}/> Latest messages</button>}
         </div>
         <form onSubmit={onSend} className="shrink-0 border-t-[3px] border-[#111] bg-[#fffaf6] px-4 py-3 sm:px-5">
           <label htmlFor={`message-composer-${selectedId}`} className="mb-2 block font-mono text-[10px] font-black uppercase tracking-widest">Reply</label>
