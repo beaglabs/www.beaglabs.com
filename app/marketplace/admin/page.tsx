@@ -160,7 +160,6 @@ export default function MarketplaceAdminPage(){
   }
   const selectedConversation=conversations.find(c=>c.id===conversationId)
   const selectedPublisher=publishers.find(p=>p.id===selectedConversation?.publisher_id)
-  const evidencePassing=evidence?.assessments.some(x=>x.outcome==='PASS')&&!!evidence.scan&&!!evidence.sigstore
 
   return <><main className="site-page-grid min-h-[calc(100svh-67px)] bg-[#fffaf6] px-4 py-8 text-[#111]">
     <div className="mx-auto max-w-[1440px]">
