@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, ShieldCheck, Package, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
+import { marketplaceAuth } from '@/lib/marketplace-auth'
 
 type Release = {
   id:string;version:string;sha256:string;artifact_id:string;name:string;
@@ -19,6 +20,31 @@ function price(release:Release){
 }
 
 export default function MarketplaceExplorePage(){
+  const {data:session}=marketplaceAuth.useSession()
+  const [busyRelease,setBusyRelease]=useState('')
+  const [purchaseError,setPurchaseError]=useState('')
+  const [owned,setOwned]=useState<string[]>([])
+  useEffect(()=>{if(!session?.user)return;void fetch(`${API}/v1/billing/entitlements`,{credentials:'include',cache:'no-store'}).then(r=>r.ok?r.json():null).then((value:{artifactPurchases?:Array<{artifact_id:string}>}|null)=>setOwned(value?.artifactPurchases?.map(x=>x.artifact_id)||[])).catch(()=>setOwned([]))},[session?.user])
+  async function acquire(item:Release){
+    if(!session?.user){window.location.assign('/marketplace/billing');return}
+    setBusyRelease(item.id);setPurchaseError('')
+    try{
+      if(item.billing_model==='free'||owned.includes(item.artifact_id)){
+        const response=await fetch(`${API}/v1/releases/${encodeURIComponent(item.id)}/download`,{credentials:'include'})
+        if(!response.ok){const info=await response.json().catch(()=>({})) as {error?:string};throw Error(info.error||'Download unavailable')}
+        const blob=await response.blob(),url=URL.createObjectURL(blob),anchor=document.createElement('a')
+        anchor.href=url;anchor.download=`${item.name.replace(/[^a-z0-9_-]/gi,'-')}.${item.type==='mcpb'?'mcpb':'zip'}`
+        document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),10000)
+      }else{
+        const response=await fetch(`${API}/v1/artifacts/${encodeURIComponent(item.artifact_id)}/checkout`,{method:'POST',credentials:'include'})
+        const result=await response.json().catch(()=>({})) as {url?:string;error?:string}
+        if(!response.ok||!result.url)throw Error(result.error||'Checkout unavailable')
+        if(!result.url.startsWith('https://'))throw Error('Invalid payment destination')
+        window.location.assign(result.url)
+      }
+    }catch(e){setPurchaseError(e instanceof Error?e.message:'Unable to continue.')}
+    finally{setBusyRelease('')}
+  }
   const [items,setItems]=useState<Release[]>([])
   const [loading,setLoading]=useState(true)
   const [error,setError]=useState('')
@@ -48,6 +74,7 @@ export default function MarketplaceExplorePage(){
         <button onClick={()=>void refresh()} className="flex items-center gap-2 border-2 border-[#111] bg-white px-3 py-2 text-xs font-black uppercase"><RefreshCw size={13}/> Refresh</button>
       </div>
       {error&&<p role="alert" className="border-2 border-[#9d2c12] bg-[#ffe6dd] p-4 text-sm">{error}</p>}
+      {purchaseError&&<div role="alert" className="mb-4 border-2 border-[#9d2c12] bg-[#ffe6dd] p-4 text-sm">{purchaseError} <Link href="/marketplace/billing" className="font-black underline">Manage buyer subscription</Link></div>}
       {loading?<p className="py-16 text-center text-sm">Loading verified listings…</p>:
         visible.length===0?<div className="border-[3px] border-[#111] bg-white p-12 text-center"><Package className="mx-auto text-[#df7238]"/><h2 className="mt-3 text-xl font-black">No passing releases yet</h2><p className="mt-2 text-sm text-[#666]">New listings appear only after their automated review passes.</p></div>:
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{visible.map(item=><article key={item.id} className="flex flex-col border-[3px] border-[#111] bg-white p-5 shadow-[5px_5px_0_#111]">
@@ -57,7 +84,7 @@ export default function MarketplaceExplorePage(){
           <p className="mt-auto pt-6 text-xl font-black">{price(item)}</p>
           <p className="mt-3 truncate font-mono text-[10px] text-[#888]">SHA-256 {item.sha256}</p>
           <a href={API+'/v1/public/releases/'+encodeURIComponent(item.id)+'/evidence'} target="_blank" rel="noopener noreferrer" className="mt-4 border-2 border-[#111] bg-[#ffbd98] px-3 py-2 text-center text-xs font-black uppercase">View security evidence</a>
-          <p className="mt-2 text-[11px] text-[#777]">Checkout and buyer entitlements are not yet enabled.</p>
+          <button disabled={!!busyRelease} onClick={()=>void acquire(item)} className="mt-2 border-2 border-[#111] bg-[#fff0e4] px-3 py-2 text-xs font-black uppercase disabled:opacity-50">{busyRelease===item.id?'Please wait…':item.billing_model==='free'||owned.includes(item.artifact_id)?'Download':`Purchase · ${price(item)}`}</button>
         </article>)}</div>}
     </div>
   </main>
