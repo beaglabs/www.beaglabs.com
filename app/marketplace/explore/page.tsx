@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, ShieldCheck, Package, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { marketplaceAuth } from '@/lib/marketplace-auth'
-import { displayUsdCents } from '@/lib/marketplace-money'
 
 type Release = {
   id:string;version:string;sha256:string;artifact_id:string;name:string;
@@ -16,7 +15,7 @@ const API='https://api.beaglabs.com'
 function price(release:Release){
   if(!release.billing_model)return 'Pricing pending'
   if(release.billing_model==='free')return 'Free'
-  const amount=displayUsdCents(release.amount_cents||0)
+  const amount='$'+((release.amount_cents||0)/100).toFixed(2)
   return amount+(release.billing_model==='one_time'?' one-time':release.billing_model==='monthly'?'/month':'/year')
 }
 
