@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { marketplaceAuth } from '@/lib/marketplace-auth'
-import { MarketplaceSelect } from '@/components/marketplace/marketplace-select'
 import { SiteFooter } from '@/components/site-footer'
 import { ConversationWorkspace } from '@/components/marketplace/conversation-workspace'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -200,7 +199,7 @@ export default function MarketplaceAdminPage(){
               <DialogContent className="rounded-none border-[3px] border-[#111] bg-[#fffaf6] shadow-[6px_6px_0_#111] sm:max-w-md">
                 <DialogHeader><DialogTitle className="text-xl font-black">New conversation</DialogTitle><DialogDescription>Send a new message thread to a verified publisher.</DialogDescription></DialogHeader>
                 <form onSubmit={startConversation} className="grid gap-4">
-                  <label className="text-xs font-black uppercase">Publisher<MarketplaceSelect label="Publisher" placeholder="Choose publisher" value={newConversationPublisher} onValueChange={setNewConversationPublisher} options={publishers.map(p=>({value:p.id,label:p.display_name}))} className="mt-1"/></label>
+                  <label className="text-xs font-black uppercase">Publisher<select required value={newConversationPublisher} onChange={e=>setNewConversationPublisher(e.target.value)} className={`${field} mt-1`}><option value="">Choose publisher</option>{publishers.map(p=><option key={p.id} value={p.id}>{p.display_name}</option>)}</select></label>
                   <label className="text-xs font-black uppercase">Subject<input required maxLength={250} value={newSubject} onChange={e=>setNewSubject(e.target.value)} placeholder="What is this about?" className={`${field} mt-1`}/></label>
                   <DialogFooter><DialogClose asChild><button type="button" className={`${button} bg-white`}>Cancel</button></DialogClose><button disabled={busy} className={`${button} bg-[#ffbd98]`}>Create conversation</button></DialogFooter>
                 </form>
