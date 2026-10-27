@@ -2,22 +2,22 @@
   "product": "Papyrus",
   "provider": "Beag Labs, Inc.",
   "release": {
-    "revision": "a3d9ded116d8b3bee11c2ee6e9cd8b918566e720",
-    "version": "0.1.0+a3d9ded",
-    "date": "2026-10-27T11:47:12Z"
+    "revision": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
+    "version": "0.1.0+3e23d44",
+    "date": "2026-10-27T15:00:32Z"
   },
   "image": {
     "repository": "ghcr.io/beaglabs/papyrus/papyrus",
-    "digest": "sha256:83b1fb85aafc8c58fb481c5048f074f9e11aedbba82bbca4a1ee78bc88c91105",
+    "digest": "sha256:d399de55560bdac84b62c098284781fd4910d3396834ca2629ebdfaa2dd0f86d",
     "platforms": [
       {
         "platform": "linux/amd64",
-        "digest": "sha256:7d5e27a6ca4e60607321ee2b134e99cf8066b49db4a27ed4db48d567aa8a1dfb",
-        "created": "2026-10-27T11:47:12.228066539Z",
+        "digest": "sha256:acf7f65e70bf5b107fce73ee73b8430c1b1c510383851b933766d38a17e031ee",
+        "created": "2026-10-27T15:02:02.520272175Z",
         "user": "65532:65532",
         "layers": 10,
-        "components": 893,
-        "packages": 894,
+        "components": 883,
+        "packages": 884,
         "vulnerabilities": {
           "counts": {
             "CRITICAL": 0,
@@ -37,12 +37,12 @@
       },
       {
         "platform": "linux/arm64",
-        "digest": "sha256:1e72ab27629544f5d8ce23acfdc7c4eac5146220792307e7053dea7309cea449",
-        "created": "2026-10-27T12:12:32.83985305Z",
+        "digest": "sha256:0ccbe9d7755d7daf1b430abcc084935bb171c88c918f7aefd0b8f7cf4bb9ed9c",
+        "created": "2026-10-27T15:00:32.852842981Z",
         "user": "65532:65532",
         "layers": 10,
-        "components": 893,
-        "packages": 894,
+        "components": 883,
+        "packages": 884,
         "vulnerabilities": {
           "counts": {
             "CRITICAL": 0,
@@ -63,7 +63,7 @@
     ]
   },
   "controlsReview": {
-    "sourceRevision": "597e13d6327739b09896ba1111e328e34aab2ff4",
+    "sourceRevision": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
     "localChanges": false,
     "catalog": "NIST SP 800-53 Rev. 5",
     "counts": {
@@ -82,15 +82,15 @@
     "verified": true,
     "identity": "^https://github\\.com/beaglabs/papyrus/\\.github/workflows/container(-multiarch)?\\.yml@refs/heads/main$",
     "issuer": "https://token.actions.githubusercontent.com",
-    "workflowSha": "a3d9ded116d8b3bee11c2ee6e9cd8b918566e720",
+    "workflowSha": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
     "ref": "refs/heads/main",
     "transparencyLog": "Sigstore public-good Rekor"
   },
   "provenance": {
     "verified": true,
     "predicateType": "https://slsa.dev/provenance/v1",
-    "signer": "https://github.com/beaglabs/papyrus/.github/workflows/container.yml@refs/heads/main",
-    "sourceSha": "a3d9ded116d8b3bee11c2ee6e9cd8b918566e720",
+    "signer": "https://github.com/beaglabs/papyrus/.github/workflows/container-multiarch.yml@refs/heads/main",
+    "sourceSha": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
     "runner": "github-hosted",
     "trustRoot": "GitHub Sigstore (private repository)"
   },
@@ -109,8 +109,8 @@
     "oscal": "1.2.3"
   },
   "verify": {
-    "signature": "cosign verify --certificate-identity-regexp '^https://github\\.com/beaglabs/papyrus/\\.github/workflows/container(-multiarch)?\\.yml@refs/heads/main$' --certificate-oidc-issuer https://token.actions.githubusercontent.com ghcr.io/beaglabs/papyrus/papyrus@sha256:83b1fb85aafc8c58fb481c5048f074f9e11aedbba82bbca4a1ee78bc88c91105",
-    "provenance": "gh attestation verify oci://ghcr.io/beaglabs/papyrus/papyrus@sha256:83b1fb85aafc8c58fb481c5048f074f9e11aedbba82bbca4a1ee78bc88c91105 --bundle supply-chain/provenance.sigstore.json --repo beaglabs/papyrus",
+    "signature": "cosign verify --certificate-identity-regexp '^https://github\\.com/beaglabs/papyrus/\\.github/workflows/container(-multiarch)?\\.yml@refs/heads/main$' --certificate-oidc-issuer https://token.actions.githubusercontent.com ghcr.io/beaglabs/papyrus/papyrus@sha256:d399de55560bdac84b62c098284781fd4910d3396834ca2629ebdfaa2dd0f86d",
+    "provenance": "gh attestation verify oci://ghcr.io/beaglabs/papyrus/papyrus@sha256:d399de55560bdac84b62c098284781fd4910d3396834ca2629ebdfaa2dd0f86d --bundle supply-chain/provenance.sigstore.json --repo beaglabs/papyrus",
     "sbom": "trivy image --format cyclonedx ghcr.io/beaglabs/papyrus/papyrus@<platform digest>"
   }
 }

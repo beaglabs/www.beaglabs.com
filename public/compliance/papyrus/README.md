@@ -1,6 +1,6 @@
 # Papyrus evidence pack
 
-Release 0.1.0+a3d9ded, image `ghcr.io/beaglabs/papyrus/papyrus@sha256:83b1fb85aafc8c58fb481c5048f074f9e11aedbba82bbca4a1ee78bc88c91105`, built 2026-10-27T11:47:12Z.
+Release 0.1.0+3e23d44, image `ghcr.io/beaglabs/papyrus/papyrus@sha256:d399de55560bdac84b62c098284781fd4910d3396834ca2629ebdfaa2dd0f86d`, built 2026-10-27T15:00:32Z.
 
 | File | Contents |
 | --- | --- |

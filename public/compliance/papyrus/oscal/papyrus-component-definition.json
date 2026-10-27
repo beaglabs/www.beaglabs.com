@@ -1,10 +1,10 @@
 {
   "component-definition": {
-    "uuid": "65eda2c3-2f3d-5f0f-9595-48e106ad2fa7",
+    "uuid": "ef4a886f-23e4-528e-b7b7-38a065e21d4c",
     "metadata": {
       "title": "Papyrus Component Definition",
-      "last-modified": "2026-10-27T11:47:12Z",
-      "version": "0.1.0+a3d9ded",
+      "last-modified": "2026-10-27T15:00:32Z",
+      "version": "0.1.0+3e23d44",
       "oscal-version": "1.2.3",
       "roles": [
         {
@@ -48,7 +48,7 @@
           },
           {
             "name": "software-version",
-            "value": "0.1.0+a3d9ded"
+            "value": "0.1.0+3e23d44"
           },
           {
             "name": "release-date",
@@ -67,7 +67,7 @@
           {
             "uuid": "6d05d3fb-10b8-54b3-9c14-8423920b9da7",
             "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
-            "description": "Papyrus contributions to NIST SP 800-53 Rev. 5 controls, at revision a3d9ded116d8b3bee11c2ee6e9cd8b918566e720.",
+            "description": "Papyrus contributions to NIST SP 800-53 Rev. 5 controls, at revision 3e23d4432d3e52dda99c433ee48e3d702896e63c.",
             "implemented-requirements": [
               {
                 "uuid": "0dd681e1-9239-5a64-a2a1-0c1315908b03",
@@ -977,7 +977,7 @@
     "back-matter": {
       "resources": [
         {
-          "uuid": "8efe1e94-ea5f-53f3-83ce-f4f2ed560522",
+          "uuid": "0a206997-12c3-51d2-b993-0855274bf4eb",
           "title": "NIST AI RMF mapping",
           "rlinks": [
             {
@@ -993,7 +993,7 @@
           ]
         },
         {
-          "uuid": "8c556781-c308-5461-9f3e-3a77e829e0ed",
+          "uuid": "796b9213-681a-5625-9cd1-fc7d49f70f3d",
           "title": "Security controls matrix",
           "rlinks": [
             {
@@ -1009,7 +1009,7 @@
           ]
         },
         {
-          "uuid": "4d7daa13-282e-5495-b938-ef26bd82c9f3",
+          "uuid": "370cb045-4771-5d6a-96d6-21b9191a1e64",
           "title": "POA&M (spreadsheet)",
           "rlinks": [
             {
@@ -1018,14 +1018,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "9c6559618721c51ab829963c27c455c8fc3878dddf23cb20d5b943100adbe635"
+                  "value": "f1b61247747ff9283b8d42a84490ef22f50064fbe22f08e997de3f0760c74eb2"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "277a3841-e2b1-5553-96d0-13c8adfe43b0",
+          "uuid": "858789d9-26e8-5f0d-b81c-b62b5f7fc979",
           "title": "CycloneDX SBOM (linux/amd64)",
           "rlinks": [
             {
@@ -1034,14 +1034,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "3b90555499abf5d8be4e3888bbe174ac69034b31bfa9ddfc45ac40cf44466850"
+                  "value": "d9d5416f7417f45d89187f1d68a5945e8ce4770a6089efccd8f3c6fb47c9a626"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "6ee36054-7b53-50ef-9897-5628f8d85a67",
+          "uuid": "d2ba393a-ef17-599e-9131-a8d63113a1d3",
           "title": "SPDX SBOM (linux/amd64)",
           "rlinks": [
             {
@@ -1050,14 +1050,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "486f53410ffa16586362c991b1e509d290322a7eab35f286748618f58fcc7020"
+                  "value": "ce68976fa4b29c099d609ef9c273716d3040a90620f147925edf16f5eb77a551"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "f15f1446-beeb-5524-b215-07ae6906fc08",
+          "uuid": "a5149d16-1427-574c-a93c-9ad268470d56",
           "title": "CycloneDX SBOM (linux/arm64)",
           "rlinks": [
             {
@@ -1066,14 +1066,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "cf736285d6e46e69bf471b288b72ede2f5f579ae198138c271f3f6e3b66b41ad"
+                  "value": "f5f5a08d779e92d2e81b80f0a8db970b4b94e9269fbbcad680028507e51bdf0f"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "e1cc024f-2123-5c26-b7f6-018d25f8f9a5",
+          "uuid": "44af1737-2cd0-57dc-937d-e86b0b90e352",
           "title": "SPDX SBOM (linux/arm64)",
           "rlinks": [
             {
@@ -1082,14 +1082,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "93e0d9a9e2f24b0c93ad5ad571749c7eb47a7ad6a7b13605e59749a93ae51d73"
+                  "value": "fd5913a61b4c720a09661d5b2543b2843c9a6f331205909df1e44cc570e474fb"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "736ec5a8-0326-535a-b5ab-18a728b1d3ea",
+          "uuid": "1eb82ce2-4b39-51a3-b463-b230312d66fe",
           "title": "OCI image index",
           "rlinks": [
             {
@@ -1098,14 +1098,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "d530740c6008708b415640ffd8fb5c5e23e319a8630da497caa064c7e36340ec"
+                  "value": "1ac55a2e21466d9a3c391262d25228b404ae6766ec28d0a585724c230604772b"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "24662014-b3af-54bc-9256-b31685852ae9",
+          "uuid": "5185893b-e0cb-5d02-a6ba-989752d808d5",
           "title": "Provenance verification result",
           "rlinks": [
             {
@@ -1114,14 +1114,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "dabfbf4d39d07188749ba8bf1f2ca12fc8972497e04a0cb95eb700d99e6ad6b2"
+                  "value": "6e98e9c4e1fbfa504b15b94db100d2433d250f36112a3966f99b7c4d23faf93c"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "3568949e-f0cc-5bf0-af80-7b6a12a3b1c4",
+          "uuid": "a7cf9323-2a0d-5d69-b2ed-bed15e119626",
           "title": "SLSA provenance (Sigstore bundle)",
           "rlinks": [
             {
@@ -1130,14 +1130,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "7e4d7e5477d744614241bbecc78afb33d84f71bca0a86ab0ce294c2f12105151"
+                  "value": "36c1dac1792ee9924b025a595c23b0eea3aa3b2bfaf9703efe83220f93b986d8"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "7d206b55-9fb1-5f06-8019-d77b8b68e009",
+          "uuid": "6cc82342-df1a-5736-91c9-595d1771c19f",
           "title": "Cosign signature verification result",
           "rlinks": [
             {
@@ -1146,14 +1146,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "1c55a75620db5dcab41d2788a3f9222853e37d930ab0f403a213198b369b0f54"
+                  "value": "b57bf8c8cf11e2ef2bd232f04e36e9ceff6d13b0c44aef054bda40c51ead9550"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "87356000-e1fb-5a46-b2ad-ab2bdc5f95d8",
+          "uuid": "58cde7b1-feb9-52c0-aea8-f03dcaf86113",
           "title": "Trivy vulnerability scan (linux/amd64)",
           "rlinks": [
             {
@@ -1162,14 +1162,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "d27a92d2962298c9b43e20cde9707f7e921e01a768f69ae8d28c392814cd9d32"
+                  "value": "1d0c8ef5e00a0d52987e8f840478f3b22ca44f7baf0507870fabbb3ee142288c"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "c0e03206-f9fa-583d-ab97-df2ff00eadb8",
+          "uuid": "b9897834-bcc2-51ca-9455-63cf821dae7f",
           "title": "Trivy vulnerability scan (linux/arm64)",
           "rlinks": [
             {
@@ -1178,7 +1178,7 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "44ce390528d5ceb119a9b01bb5d687440b1caa4f6ee5db5f3f43c90b7f76a872"
+                  "value": "41447e4319ad7fa55a3c55eff0ba059aed90e332019b57cb7e31dfe14b3cc11e"
                 }
               ]
             }
