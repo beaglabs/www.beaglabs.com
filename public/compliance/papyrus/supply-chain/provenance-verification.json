@@ -5,22 +5,22 @@
         "mediaType": "application/vnd.dev.sigstore.bundle.v0.3+json",
         "verificationMaterial": {
           "certificate": {
-            "rawBytes": "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"
+            "rawBytes": "MIIGpzCCBi6gAwIBAgIUNSIul0m2SFnvhICoJBK1ptD7Xe4wCgYIKoZIzj0EAwMwODEVMBMGA1UEChMMR2l0SHViLCBJbmMuMR8wHQYDVQQDExZGdWxjaW8gSW50ZXJtZWRpYXRlIGwyMB4XDTI2MTAyNzE1MjgyNloXDTI2MTAyNzE1MzgyNlowADBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIWfJUoRa3X7O1ie/yJr05t2/LX6jSxz6e8XGaKoQ2CJrVT/WenZx8vUlrxXgp2nWEACUuaV2j45SjHpT5LNL0GjggVMMIIFSDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0OBBYEFCxr/WufqYNBhIdiQurBX7RwNFP5MB8GA1UdIwQYMBaAFIHjTsG/Xu4ILqbvj2S+p69FoJvPMGsGA1UdEQEB/wRhMF+GXWh0dHBzOi8vZ2l0aHViLmNvbS9iZWFnbGFicy9wYXB5cnVzLy5naXRodWIvd29ya2Zsb3dzL2NvbnRhaW5lci1tdWx0aWFyY2gueW1sQHJlZnMvaGVhZHMvbWFpbjA5BgorBgEEAYO/MAEBBCtodHRwczovL3Rva2VuLmFjdGlvbnMuZ2l0aHVidXNlcmNvbnRlbnQuY29tMBIGCisGAQQBg78wAQIEBHB1c2gwNgYKKwYBBAGDvzABAwQoM2UyM2Q0NDMyZDNlNTJkZGE5OWM0MzNlZTQ4ZTNkNzAyODk2ZTYzYzA0BgorBgEEAYO/MAEEBCZoYXJkZW5lZC1jb250YWluZXIgKG5hdGl2ZSBtdWx0aS1hcmNoKTAeBgorBgEEAYO/MAEFBBBiZWFnbGFicy9wYXB5cnVzMB0GCisGAQQBg78wAQYED3JlZnMvaGVhZHMvbWFpbjA7BgorBgEEAYO/MAEIBC0MK2h0dHBzOi8vdG9rZW4uYWN0aW9ucy5naXRodWJ1c2VyY29udGVudC5jb20wbQYKKwYBBAGDvzABCQRfDF1odHRwczovL2dpdGh1Yi5jb20vYmVhZ2xhYnMvcGFweXJ1cy8uZ2l0aHViL3dvcmtmbG93cy9jb250YWluZXItbXVsdGlhcmNoLnltbEByZWZzL2hlYWRzL21haW4wOAYKKwYBBAGDvzABCgQqDCgzZTIzZDQ0MzJkM2U1MmRkYTk5YzQzM2VlNDhlM2Q3MDI4OTZlNjNjMB0GCisGAQQBg78wAQsEDwwNZ2l0aHViLWhvc3RlZDAzBgorBgEEAYO/MAEMBCUMI2h0dHBzOi8vZ2l0aHViLmNvbS9iZWFnbGFicy9wYXB5cnVzMDgGCisGAQQBg78wAQ0EKgwoM2UyM2Q0NDMyZDNlNTJkZGE5OWM0MzNlZTQ4ZTNkNzAyODk2ZTYzYzAfBgorBgEEAYO/MAEOBBEMD3JlZnMvaGVhZHMvbWFpbjAaBgorBgEEAYO/MAEPBAwMCjEzMjYyNjUxMjcwKwYKKwYBBAGDvzABEAQdDBtodHRwczovL2dpdGh1Yi5jb20vYmVhZ2xhYnMwGQYKKwYBBAGDvzABEQQLDAkyMTU3MzIyMjIwbQYKKwYBBAGDvzABEgRfDF1odHRwczovL2dpdGh1Yi5jb20vYmVhZ2xhYnMvcGFweXJ1cy8uZ2l0aHViL3dvcmtmbG93cy9jb250YWluZXItbXVsdGlhcmNoLnltbEByZWZzL2hlYWRzL21haW4wOAYKKwYBBAGDvzABEwQqDCgzZTIzZDQ0MzJkM2U1MmRkYTk5YzQzM2VlNDhlM2Q3MDI4OTZlNjNjMBQGCisGAQQBg78wARQEBgwEcHVzaDBXBgorBgEEAYO/MAEVBEkMR2h0dHBzOi8vZ2l0aHViLmNvbS9iZWFnbGFicy9wYXB5cnVzL2FjdGlvbnMvcnVucy80MDUyNjI2NDcwMy9hdHRlbXB0cy8xMBcGCisGAQQBg78wARYECQwHcHJpdmF0ZTBOBgorBgEEAYO/MAEYBEAMPnJlcG86YmVhZ2xhYnNAMjE1NzMyMjIyL3BhcHlydXNAMTMyNjI2NTEyNzpyZWY6cmVmcy9oZWFkcy9tYWluMAoGCCqGSM49BAMDA2cAMGQCMFDwBuIfAIj9TH9Tjr8izJjGBujykRbAw4xvJq442I7Lnw6cKAKoYKCNuSkAbOdgOQIwUtMGBCbVfFPvi4EFP67UA93Jo0BCKrYhHLXDfHO3yObgbKu1nc3uf+jdqbBao6JA"
           },
           "timestampVerificationData": {
             "rfc3161Timestamps": [
               {
-                "signedTimestamp": "MIICzzADAgEAMIICxgYJKoZIhvcNAQcCoIICtzCCArMCAQMxDTALBglghkgBZQMEAgIwgbsGCyqGSIb3DQEJEAEEoIGrBIGoMIGlAgEBBgkrBgEEAYO/MAIwMTANBglghkgBZQMEAgEFAAQgqY24uSq4jNKhbD2feaaG/wc1IFKFtD+JZLbdWKydn3MCFChyOKe0Z9K6Wop8GgIPDyR4s5YwGA8yMDI2MTAyMDEzMzYwM1owAwIBAaA2pDQwMjEVMBMGA1UEChMMR2l0SHViLCBJbmMuMRkwFwYDVQQDExBUU0EgVGltZXN0YW1waW5noAAxggHdMIIB2QIBATBKMDIxFTATBgNVBAoTDEdpdEh1YiwgSW5jLjEZMBcGA1UEAxMQVFNBIGludGVybWVkaWF0ZQIUFzPb1un+DvofqFPzAXiB5slHM1IwCwYJYIZIAWUDBAICoIIBBTAaBgkqhkiG9w0BCQMxDQYLKoZIhvcNAQkQAQQwHAYJKoZIhvcNAQkFMQ8XDTI2MTAyMDEzMzYwM1owPwYJKoZIhvcNAQkEMTIEMBbj5rF19X8BAvH0rLojA8EJklpoHo160RPdfwinaGX34pMg1Wh2LTsgFlcri7odiDCBhwYLKoZIhvcNAQkQAi8xeDB2MHQwcgQgRBbIrnMUamOhN8LlW+jecOPJrzBzvzmLqrqo2wgXztcwTjA2pDQwMjEVMBMGA1UEChMMR2l0SHViLCBJbmMuMRkwFwYDVQQDExBUU0EgaW50ZXJtZWRpYXRlAhQXM9vW6f4O+h+oU/MBeIHmyUczUjAKBggqhkjOPQQDAwRmMGQCMH20RZ5eNGpi+QWU53zWRxUz+ECytsca/ziyly16mrjGHUIkcppgf08JEeIMuZDGOQIwBeBI3EenoM9BFLR3Oa0N8B9Z8Ez/K1mofORlsXnVaL35u0Qe5AYepJGkQSS1jjmq"
+                "signedTimestamp": "MIIC0TADAgEAMIICyAYJKoZIhvcNAQcCoIICuTCCArUCAQMxDTALBglghkgBZQMEAgIwgbsGCyqGSIb3DQEJEAEEoIGrBIGoMIGlAgEBBgkrBgEEAYO/MAIwMTANBglghkgBZQMEAgEFAAQgsrULSPlvRKGFrNrErgFQqyBEs+Uxr28pkyhIT+LUi0cCFAZ1tYaCckIDNK8fD6ZL3SJaoLKyGA8yMDI2MTAyNzE1MjgyNlowAwIBAaA2pDQwMjEVMBMGA1UEChMMR2l0SHViLCBJbmMuMRkwFwYDVQQDExBUU0EgVGltZXN0YW1waW5noAAxggHfMIIB2wIBATBKMDIxFTATBgNVBAoTDEdpdEh1YiwgSW5jLjEZMBcGA1UEAxMQVFNBIGludGVybWVkaWF0ZQIUFzPb1un+DvofqFPzAXiB5slHM1IwCwYJYIZIAWUDBAICoIIBBTAaBgkqhkiG9w0BCQMxDQYLKoZIhvcNAQkQAQQwHAYJKoZIhvcNAQkFMQ8XDTI2MTAyNzE1MjgyNlowPwYJKoZIhvcNAQkEMTIEMNi6AgPpkeTzDx01V/ze3C1z95A+DYDdcywDqfssTHHy3trVA/XyDqucBJBcyzK/zzCBhwYLKoZIhvcNAQkQAi8xeDB2MHQwcgQgRBbIrnMUamOhN8LlW+jecOPJrzBzvzmLqrqo2wgXztcwTjA2pDQwMjEVMBMGA1UEChMMR2l0SHViLCBJbmMuMRkwFwYDVQQDExBUU0EgaW50ZXJtZWRpYXRlAhQXM9vW6f4O+h+oU/MBeIHmyUczUjAKBggqhkjOPQQDAwRoMGYCMQDf8a7FPccn2a3YmLnNaarp9vRME/NkmZWJQ3R5xEBr0nDaYK5QTCysgGq2OOri+4ACMQDLUcxPeSSgciAqBaxAswm4arxHeXh6GF+xn7U/WBpzbNx7OjykV18Cpy5Bo5PaTRc="
               }
             ]
           }
         },
         "dsseEnvelope": {
-          "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJzdWJqZWN0IjpbeyJuYW1lIjoiZ2hjci5pby9iZWFnbGFicy9wYXB5cnVzL3BhcHlydXMiLCJkaWdlc3QiOnsic2hhMjU2IjoiYjM4ZmFjZjQ5NTAyNzA0NDNhYzM5ZGM1YmJhZWI0ZWQ1NjUzMzQxYjYxNjA4NTI2MTYzZTkyOWE0NDllYmQ4YSJ9fV0sInByZWRpY2F0ZVR5cGUiOiJodHRwczovL3Nsc2EuZGV2L3Byb3ZlbmFuY2UvdjEiLCJwcmVkaWNhdGUiOnsiYnVpbGREZWZpbml0aW9uIjp7ImJ1aWxkVHlwZSI6Imh0dHBzOi8vYWN0aW9ucy5naXRodWIuaW8vYnVpbGR0eXBlcy93b3JrZmxvdy92MSIsImV4dGVybmFsUGFyYW1ldGVycyI6eyJ3b3JrZmxvdyI6eyJyZWYiOiJyZWZzL2hlYWRzL21haW4iLCJyZXBvc2l0b3J5IjoiaHR0cHM6Ly9naXRodWIuY29tL2JlYWdsYWJzL3BhcHlydXMiLCJwYXRoIjoiLmdpdGh1Yi93b3JrZmxvd3MvY29udGFpbmVyLnltbCJ9fSwiaW50ZXJuYWxQYXJhbWV0ZXJzIjp7ImdpdGh1YiI6eyJldmVudF9uYW1lIjoicHVzaCIsInJlcG9zaXRvcnlfaWQiOiIxMzI2MjY1MTI3IiwicmVwb3NpdG9yeV9vd25lcl9pZCI6IjIxNTczMjIyMiIsInJ1bm5lcl9lbnZpcm9ubWVudCI6ImdpdGh1Yi1ob3N0ZWQifX0sInJlc29sdmVkRGVwZW5kZW5jaWVzIjpbeyJ1cmkiOiJnaXQraHR0cHM6Ly9naXRodWIuY29tL2JlYWdsYWJzL3BhcHlydXNAcmVmcy9oZWFkcy9tYWluIiwiZGlnZXN0Ijp7ImdpdENvbW1pdCI6ImZkNTVlMzgyMWZkYTllZGY0YzE1MTlkYTY3NjdmNmY4MjQwNjk1ZmEifX1dfSwicnVuRGV0YWlscyI6eyJidWlsZGVyIjp7ImlkIjoiaHR0cHM6Ly9naXRodWIuY29tL2JlYWdsYWJzL3BhcHlydXMvLmdpdGh1Yi93b3JrZmxvd3MvY29udGFpbmVyLnltbEByZWZzL2hlYWRzL21haW4ifSwibWV0YWRhdGEiOnsiaW52b2NhdGlvbklkIjoiaHR0cHM6Ly9naXRodWIuY29tL2JlYWdsYWJzL3BhcHlydXMvYWN0aW9ucy9ydW5zLzM5NDI0MDQzODM4L2F0dGVtcHRzLzEifX19fQ==",
+          "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJzdWJqZWN0IjpbeyJuYW1lIjoiZ2hjci5pby9iZWFnbGFicy9wYXB5cnVzL3BhcHlydXMiLCJkaWdlc3QiOnsic2hhMjU2IjoiZDM5OWRlNTU1NjBiZGFjODRiNjJjMDk4Mjg0NzgxZmQ0OTEwZDMzOTY4MzRjYTI2MjllYmRmYWEyZGQwZjg2ZCJ9fV0sInByZWRpY2F0ZVR5cGUiOiJodHRwczovL3Nsc2EuZGV2L3Byb3ZlbmFuY2UvdjEiLCJwcmVkaWNhdGUiOnsiYnVpbGREZWZpbml0aW9uIjp7ImJ1aWxkVHlwZSI6Imh0dHBzOi8vYWN0aW9ucy5naXRodWIuaW8vYnVpbGR0eXBlcy93b3JrZmxvdy92MSIsImV4dGVybmFsUGFyYW1ldGVycyI6eyJ3b3JrZmxvdyI6eyJyZWYiOiJyZWZzL2hlYWRzL21haW4iLCJyZXBvc2l0b3J5IjoiaHR0cHM6Ly9naXRodWIuY29tL2JlYWdsYWJzL3BhcHlydXMiLCJwYXRoIjoiLmdpdGh1Yi93b3JrZmxvd3MvY29udGFpbmVyLW11bHRpYXJjaC55bWwifX0sImludGVybmFsUGFyYW1ldGVycyI6eyJnaXRodWIiOnsiZXZlbnRfbmFtZSI6InB1c2giLCJyZXBvc2l0b3J5X2lkIjoiMTMyNjI2NTEyNyIsInJlcG9zaXRvcnlfb3duZXJfaWQiOiIyMTU3MzIyMjIiLCJydW5uZXJfZW52aXJvbm1lbnQiOiJnaXRodWItaG9zdGVkIn19LCJyZXNvbHZlZERlcGVuZGVuY2llcyI6W3sidXJpIjoiZ2l0K2h0dHBzOi8vZ2l0aHViLmNvbS9iZWFnbGFicy9wYXB5cnVzQHJlZnMvaGVhZHMvbWFpbiIsImRpZ2VzdCI6eyJnaXRDb21taXQiOiIzZTIzZDQ0MzJkM2U1MmRkYTk5YzQzM2VlNDhlM2Q3MDI4OTZlNjNjIn19XX0sInJ1bkRldGFpbHMiOnsiYnVpbGRlciI6eyJpZCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9iZWFnbGFicy9wYXB5cnVzLy5naXRodWIvd29ya2Zsb3dzL2NvbnRhaW5lci1tdWx0aWFyY2gueW1sQHJlZnMvaGVhZHMvbWFpbiJ9LCJtZXRhZGF0YSI6eyJpbnZvY2F0aW9uSWQiOiJodHRwczovL2dpdGh1Yi5jb20vYmVhZ2xhYnMvcGFweXJ1cy9hY3Rpb25zL3J1bnMvNDA1MjYyNjQ3MDMvYXR0ZW1wdHMvMSJ9fX19",
           "payloadType": "application/vnd.in-toto+json",
           "signatures": [
             {
-              "sig": "MEQCIAEg6ocg7PS+B7QBazYDZ61FTGvutv9RyYxHeOuAyZnUAiAGQFAGV9XX4qyi8l648Zoy2RalIItP5+f4/s0+TMSizA=="
+              "sig": "MEQCICjDMLTq3v6rLdzHAqB4AWYNFeRN1O+Gd2GuPXNkwWKGAiBsWw3DX2831FqSNjd7zwqDQLIp54+qo3gVcKA/Yr5MhA=="
             }
           ]
         }
@@ -33,26 +33,26 @@
       "signature": {
         "certificate": {
           "certificateIssuer": "CN=Fulcio Intermediate l2,O=GitHub\\, Inc.",
-          "subjectAlternativeName": "https://github.com/beaglabs/papyrus/.github/workflows/container.yml@refs/heads/main",
+          "subjectAlternativeName": "https://github.com/beaglabs/papyrus/.github/workflows/container-multiarch.yml@refs/heads/main",
           "issuer": "https://token.actions.githubusercontent.com",
           "githubWorkflowTrigger": "push",
-          "githubWorkflowSHA": "fd55e3821fda9edf4c1519da6767f6f8240695fa",
-          "githubWorkflowName": "hardened-container",
+          "githubWorkflowSHA": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
+          "githubWorkflowName": "hardened-container (native multi-arch)",
           "githubWorkflowRepository": "beaglabs/papyrus",
           "githubWorkflowRef": "refs/heads/main",
-          "buildSignerURI": "https://github.com/beaglabs/papyrus/.github/workflows/container.yml@refs/heads/main",
-          "buildSignerDigest": "fd55e3821fda9edf4c1519da6767f6f8240695fa",
+          "buildSignerURI": "https://github.com/beaglabs/papyrus/.github/workflows/container-multiarch.yml@refs/heads/main",
+          "buildSignerDigest": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
           "runnerEnvironment": "github-hosted",
           "sourceRepositoryURI": "https://github.com/beaglabs/papyrus",
-          "sourceRepositoryDigest": "fd55e3821fda9edf4c1519da6767f6f8240695fa",
+          "sourceRepositoryDigest": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
           "sourceRepositoryRef": "refs/heads/main",
           "sourceRepositoryIdentifier": "1326265127",
           "sourceRepositoryOwnerURI": "https://github.com/beaglabs",
           "sourceRepositoryOwnerIdentifier": "215732222",
-          "buildConfigURI": "https://github.com/beaglabs/papyrus/.github/workflows/container.yml@refs/heads/main",
-          "buildConfigDigest": "fd55e3821fda9edf4c1519da6767f6f8240695fa",
+          "buildConfigURI": "https://github.com/beaglabs/papyrus/.github/workflows/container-multiarch.yml@refs/heads/main",
+          "buildConfigDigest": "3e23d4432d3e52dda99c433ee48e3d702896e63c",
           "buildTrigger": "push",
-          "runInvocationURI": "https://github.com/beaglabs/papyrus/actions/runs/39424043838/attempts/1",
+          "runInvocationURI": "https://github.com/beaglabs/papyrus/actions/runs/40526264703/attempts/1",
           "sourceRepositoryVisibilityAtSigning": "private"
         }
       },
@@ -60,7 +60,7 @@
         {
           "type": "TimestampAuthority",
           "uri": "timestamp.githubapp.com",
-          "timestamp": "2026-10-20T13:36:03Z"
+          "timestamp": "2026-10-27T15:28:26Z"
         }
       ],
       "verifiedIdentity": {
@@ -79,7 +79,7 @@
           {
             "name": "ghcr.io/beaglabs/papyrus/papyrus",
             "digest": {
-              "sha256": "b38facf4950270443ac39dc5bbaeb4ed5653341b61608526163e929a449ebd8a"
+              "sha256": "d399de55560bdac84b62c098284781fd4910d3396834ca2629ebdfaa2dd0f86d"
             }
           }
         ],
@@ -89,7 +89,7 @@
             "buildType": "https://actions.github.io/buildtypes/workflow/v1",
             "externalParameters": {
               "workflow": {
-                "path": ".github/workflows/container.yml",
+                "path": ".github/workflows/container-multiarch.yml",
                 "ref": "refs/heads/main",
                 "repository": "https://github.com/beaglabs/papyrus"
               }
@@ -105,7 +105,7 @@
             "resolvedDependencies": [
               {
                 "digest": {
-                  "gitCommit": "fd55e3821fda9edf4c1519da6767f6f8240695fa"
+                  "gitCommit": "3e23d4432d3e52dda99c433ee48e3d702896e63c"
                 },
                 "uri": "git+https://github.com/beaglabs/papyrus@refs/heads/main"
               }
@@ -113,10 +113,10 @@
           },
           "runDetails": {
             "builder": {
-              "id": "https://github.com/beaglabs/papyrus/.github/workflows/container.yml@refs/heads/main"
+              "id": "https://github.com/beaglabs/papyrus/.github/workflows/container-multiarch.yml@refs/heads/main"
             },
             "metadata": {
-              "invocationId": "https://github.com/beaglabs/papyrus/actions/runs/39424043838/attempts/1"
+              "invocationId": "https://github.com/beaglabs/papyrus/actions/runs/40526264703/attempts/1"
             }
           }
         }
