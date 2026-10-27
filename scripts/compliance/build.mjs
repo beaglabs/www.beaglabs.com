@@ -16,6 +16,7 @@ const pack = join(root, 'public', 'compliance', 'papyrus')
 const reviewDir = join(here, 'out')
 const manifest = JSON.parse(readFileSync(join(pack, 'index.json'), 'utf8'))
 const controls = JSON.parse(readFileSync(join(pack, 'source', 'controls.json'), 'utf8'))
+const aiRmf = JSON.parse(readFileSync(join(pack, 'source', 'ai-rmf.json'), 'utf8'))
 const escape = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const short = (digest) => digest.replace('sha256:', '').slice(0, 12)
 const day = manifest.release.date.slice(0, 10)
@@ -86,6 +87,24 @@ function controlsBody() {
   </tbody></table>`).join('')}`
 }
 
+function aiRmfBody() {
+  const functions = ['Govern', 'Map', 'Measure', 'Manage']
+  const count = (status) => aiRmf.subcategories.filter(item => item.status === status).length
+  return `<h1>NIST AI RMF mapping</h1>
+  <p>${escape(aiRmf.scope)} ${reviewed}</p>
+  ${stats([[aiRmf.subcategories.length, 'Subcategories mapped'], [count('supported'), 'Supported'], [count('partial'), 'Partial'], [count('customer'), 'Customer owned']])}
+  <div class="callout"><b>Reading this mapping.</b> The AI RMF describes outcomes for the organization that uses AI. <i>Supported</i> means Papyrus provides the mechanism and its records; <i>partial</i> items have a gap noted; <i>customer owned</i> outcomes rest with the deploying organization. The spreadsheet form, with source evidence for every row, is <code>papyrus-ai-rmf.xlsx</code>.</div>
+  ${functions.map(fn => `<h2>${fn}</h2>
+  <table><thead><tr><th style="width:15%">Subcategory</th><th style="width:11%">Status</th><th style="width:46%">Papyrus support</th><th>Deploying organization</th></tr></thead><tbody>
+  ${aiRmf.subcategories.filter(item => item.function === fn).map(item => `<tr><td><b>${escape(item.id)}</b><br>${escape(item.title)}</td><td><span class="pill ${item.status === 'supported' ? 'implemented' : escape(item.status)}">${escape(item.status)}</span><br><span class="evidence">${escape(item.responsibility)}</span></td>
+    <td>${escape(item.statement)}${item.gap ? `<div class="evidence"><b>Gap:</b> ${escape(item.gap)}</div>` : ''}<div class="evidence">Evidence: ${paths([...item.evidence, ...(item.verification ?? [])])}</div></td><td>${escape(item.customer)}</td></tr>`).join('')}
+  </tbody></table>`).join('')}
+  <h2>Generative AI Profile (NIST AI 600-1)</h2>
+  <table><thead><tr><th style="width:30%">Risk</th><th>How Papyrus addresses it</th></tr></thead><tbody>
+  ${aiRmf.generativeAi.map(item => `<tr><td><b>${escape(item.risk)}</b></td><td>${escape(item.response)}</td></tr>`).join('')}
+  </tbody></table>`
+}
+
 function gapsBody() {
   const gaps = [
     ...controls.controls.filter(control => control.gap).map(control => ({ controls: control.id.toUpperCase(), title: `${control.id.toUpperCase()} ${control.title}`, ...control.gap })),
@@ -134,6 +153,7 @@ const DOCS = [
   { file: 'papyrus-architecture', name: 'Architecture', title: 'Papyrus <span class="o">architecture</span>', lead: 'System boundaries, runtime components, model gateways, integrations, data flows and deployment topology.', seed: 11, body: () => `<h1>Architecture</h1>${markdown('architecture.md')}` },
   { file: 'papyrus-deployment-requirements', name: 'Deployment requirements', title: 'Deployment <span class="o">requirements</span>', lead: 'Compute, storage, networking, runtime dependencies, offline constraints and external services.', seed: 23, body: () => `<h1>Deployment requirements</h1>${markdown('deployment-requirements.md')}` },
   { file: 'papyrus-security-controls', name: 'Security controls', title: 'Security <span class="o">controls</span> matrix', lead: 'Authentication, RBAC, encryption, isolation, auditing, secrets handling and known gaps, mapped to NIST SP 800-53 Rev. 5.', seed: 37, body: controlsBody },
+  { file: 'papyrus-ai-rmf', name: 'AI RMF', title: 'NIST <span class="o">AI RMF</span> mapping', lead: 'How Papyrus supports the Govern, Map, Measure and Manage functions of NIST AI 100-1, and the Generative AI Profile.', seed: 47, body: aiRmfBody },
   { file: 'papyrus-supply-chain-evidence', name: 'Supply chain', title: 'Supply-chain <span class="o">evidence</span>', lead: 'Image digests, signatures, build provenance, SBOMs and vulnerability scans for this release.', seed: 41, body: supplyChainBody },
   { file: 'papyrus-known-gaps', name: 'Known gaps', title: 'Known gaps <span class="o">and plan</span>', lead: 'Controls awaiting verification, incomplete testing and dependencies on an authorized hosting environment.', seed: 53, body: gapsBody },
 ]
@@ -173,6 +193,8 @@ Release ${manifest.release.version}, image \`${manifest.image.repository}@${mani
 | \`papyrus-architecture.pdf\` | System boundaries, runtime components, model gateways, integrations, data flows and deployment topology |
 | \`papyrus-deployment-requirements.pdf\` | Compute, storage, networking, runtime dependencies, offline constraints and external services |
 | \`papyrus-security-controls.pdf\`, \`papyrus-controls-matrix.xlsx\` | NIST SP 800-53 Rev. 5 controls matrix with source evidence |
+| \`papyrus-ai-rmf.pdf\`, \`papyrus-ai-rmf.xlsx\` | NIST AI RMF 1.0 mapping (Govern, Map, Measure, Manage) and Generative AI Profile risks |
+| \`papyrus-capabilities.pdf\` | Capabilities overview with screenshots, by control family |
 | \`oscal/papyrus-component-definition.json\` | OSCAL ${manifest.tools.oscal} component definition, validated with oscal-cli ${manifest.tools.oscalCli} |
 | \`papyrus-known-gaps.pdf\`, \`papyrus-poam.xlsx\`, \`oscal/papyrus-poam.json\` | Known gaps and remediation plan (POA&M) |
 | \`papyrus-supply-chain-evidence.pdf\` | Digests, signature and provenance verification, vulnerability scan summary |

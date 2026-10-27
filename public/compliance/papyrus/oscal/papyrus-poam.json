@@ -1,10 +1,10 @@
 {
   "plan-of-action-and-milestones": {
-    "uuid": "155bf3b0-32ac-5578-a570-dc6921eb6d5c",
+    "uuid": "a6262a13-87fa-52c1-a85e-3d10a8315f2e",
     "metadata": {
       "title": "Papyrus Known Gaps and Remediation Plan",
-      "last-modified": "2026-10-20T13:03:06Z",
-      "version": "0.1.0+fd55e38",
+      "last-modified": "2026-10-27T11:47:12Z",
+      "version": "0.1.0+a3d9ded",
       "oscal-version": "1.2.3",
       "roles": [
         {
@@ -40,6 +40,40 @@
       "id": "a12dbf45-4655-52aa-8145-b6bd4ac2e51b"
     },
     "risks": [
+      {
+        "uuid": "07a5e2d7-b126-5786-8992-767462bdb259",
+        "title": "AC-2 Account Management",
+        "description": "A person who holds System Owner through a Papyrus role assignment keeps access while SCIM reports them deprovisioned (intended as break-glass), and there is no administrator action to end a person's active sessions.",
+        "statement": "Risk rating moderate. Affects AC-2.",
+        "props": [
+          {
+            "name": "risk-rating",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "moderate"
+          },
+          {
+            "name": "milestone",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "Before first federal ATO package"
+          }
+        ],
+        "status": "open",
+        "remediations": [
+          {
+            "uuid": "a62090b7-7291-59bb-8fd8-8bed89aa57d6",
+            "lifecycle": "planned",
+            "title": "Remediate AC-2 Account Management",
+            "description": "Limit the SCIM bypass to accounts named in papyrus.yaml and audit each use; add a System Owner action to revoke a person's sessions.",
+            "props": [
+              {
+                "name": "milestone",
+                "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                "value": "Before first federal ATO package"
+              }
+            ]
+          }
+        ]
+      },
       {
         "uuid": "98638cd7-89c4-558a-acb0-213a63168e57",
         "title": "AC-3 Access Enforcement",
@@ -77,7 +111,7 @@
       {
         "uuid": "ae63d6cd-4f16-54b6-abcf-a47936202869",
         "title": "AC-4 Information Flow Enforcement",
-        "description": "Outbound HTTP from workflow http-get/http-post steps and imported API tools is allowed to any public HTTPS host by default; the organization can block hosts with a denylist but there is no allow-list-only mode.",
+        "description": "Model gateway, identity provider discovery and Sentry connections do not pass the egress gate (they are configured endpoints), and the gate does not pin the resolved address, so a host that changes its DNS answer between check and connect could reach an internal address.",
         "statement": "Risk rating moderate. Affects AC-4.",
         "props": [
           {
@@ -88,7 +122,7 @@
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal pilot"
+            "value": "Before first federal ATO package"
           }
         ],
         "status": "open",
@@ -97,12 +131,12 @@
             "uuid": "f09f02b4-9ae6-5c67-a7b8-d0112b697dd9",
             "lifecycle": "planned",
             "title": "Remediate AC-4 Information Flow Enforcement",
-            "description": "Add an allow-list mode (deny by default) for workflow and imported-API egress, selectable per deployment profile and on by default for the government and disconnected profiles.",
+            "description": "Route every outbound connection through the gate and connect to the address that was checked.",
             "props": [
               {
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal pilot"
+                "value": "Before first federal ATO package"
               }
             ]
           }
@@ -177,10 +211,10 @@
         ]
       },
       {
-        "uuid": "2ce15f4a-3b9c-55a3-b5f9-11196bf711e2",
-        "title": "AC-12 Session Termination",
-        "description": "Sessions are stateless: there is no server-side session store, idle timeout, or revocation list. A copied cookie remains valid until its one-hour expiry after sign-out, and on deployments using their own app registration the roles carried in the cookie persist until expiry after an Entra role is removed.",
-        "statement": "Risk rating moderate. Affects AC-12.",
+        "uuid": "81dfb0ec-3c38-5a90-83a6-39a0e8c2a207",
+        "title": "AC-16 Security and Privacy Attributes",
+        "description": "Files Papyrus generates (PDF, DOCX, XLSX, exports) are not marked, and records carry no per-item classification.",
+        "statement": "Risk rating moderate. Affects AC-16.",
         "props": [
           {
             "name": "risk-rating",
@@ -190,21 +224,21 @@
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal ATO package"
+            "value": "Before first classified deployment"
           }
         ],
         "status": "open",
         "remediations": [
           {
-            "uuid": "a39c54dd-48fd-57fa-9f60-c2cd05b4028a",
+            "uuid": "63137db0-8ca0-5c4c-994d-4ce3e6c54127",
             "lifecycle": "planned",
-            "title": "Remediate AC-12 Session Termination",
-            "description": "Add a server-side session table with idle timeout, explicit revocation on sign-out, and an administrator action to end a person's sessions.",
+            "title": "Remediate AC-16 Security and Privacy Attributes",
+            "description": "Stamp the system-high marking on generated files and exports.",
             "props": [
               {
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal ATO package"
+                "value": "Before first classified deployment"
               }
             ]
           }
@@ -213,7 +247,7 @@
       {
         "uuid": "bfa0dbbf-ff6a-5c30-9f32-719b1225b5b1",
         "title": "AU-2 Event Logging",
-        "description": "Successful and failed sign-ins and authorization denials (401/403) are not written to a local audit record. A successful sign-in is only sent as an analytics event to Beag Labs on registered deployments.",
+        "description": "Document downloads, session and workflow deletions, and agent tool calls are recorded in their own stores or not at all, rather than in the unified audit trail.",
         "statement": "Risk rating moderate. Affects AU-2.",
         "props": [
           {
@@ -224,7 +258,7 @@
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal ATO package"
+            "value": "Next release"
           }
         ],
         "status": "open",
@@ -233,22 +267,22 @@
             "uuid": "814e1e32-ec37-5ccd-b538-236be8c78182",
             "lifecycle": "planned",
             "title": "Remediate AU-2 Event Logging",
-            "description": "Write sign-in success, sign-in failure and authorization-denied events to an append-only local audit table with actor, time, route and outcome.",
+            "description": "Write these events to the unified audit trail.",
             "props": [
               {
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal ATO package"
+                "value": "Next release"
               }
             ]
           }
         ]
       },
       {
-        "uuid": "518a45bf-292c-50e3-9e7c-13370e55791b",
-        "title": "AU-3 Content of Audit Records",
-        "description": "Audit records do not capture the client network address, and each log uses its own schema, so records cannot be correlated or exported in one format.",
-        "statement": "Risk rating low. Affects AU-3.",
+        "uuid": "b09241b8-aaf5-5f2a-8b82-3ed0c77c6072",
+        "title": "AU-4 Audit Log Storage Capacity",
+        "description": "Papyrus does not watch free space on the data volume or alert when it runs low.",
+        "statement": "Risk rating low. Affects AU-4.",
         "props": [
           {
             "name": "risk-rating",
@@ -258,55 +292,21 @@
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal ATO package"
+            "value": "Next release"
           }
         ],
         "status": "open",
         "remediations": [
           {
-            "uuid": "980f319e-9939-5381-9f2b-5479218d74aa",
+            "uuid": "19b8ddc5-44be-554d-9d06-07c7c1227941",
             "lifecycle": "planned",
-            "title": "Remediate AU-3 Content of Audit Records",
-            "description": "Add source address and request ID to audit writes and define a common audit event schema used by all append-only logs.",
+            "title": "Remediate AU-4 Audit Log Storage Capacity",
+            "description": "Add capacity monitoring and an alert.",
             "props": [
               {
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal ATO package"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "uuid": "c663fc8c-b522-544a-8ea8-2af8a8c85efe",
-        "title": "AU-6 Audit Record Review, Analysis, and Reporting",
-        "description": "There is no consolidated audit view and no export or forwarding of audit records to an external log store or SIEM; records stay in local SQLite databases.",
-        "statement": "Risk rating moderate. Affects AU-6.",
-        "props": [
-          {
-            "name": "risk-rating",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "moderate"
-          },
-          {
-            "name": "milestone",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal ATO package"
-          }
-        ],
-        "status": "open",
-        "remediations": [
-          {
-            "uuid": "df5f3518-fe86-59f9-af1e-0d0bb61ba0a5",
-            "lifecycle": "planned",
-            "title": "Remediate AU-6 Audit Record Review, Analysis, and Reporting",
-            "description": "Provide an audit export API and a streaming forwarder (syslog or OTLP) covering all append-only logs.",
-            "props": [
-              {
-                "name": "milestone",
-                "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal ATO package"
+                "value": "Next release"
               }
             ]
           }
@@ -315,7 +315,7 @@
       {
         "uuid": "23ea0fd5-77ca-5860-8d9c-4841a22c47a1",
         "title": "AU-9 Protection of Audit Information",
-        "description": "Triggers and the hash chain detect changes made through the application only; anyone with write access to the database file can rewrite them. Chain verification is not exposed through any API or run on a schedule, and logs other than integration and action events are not hash-chained.",
+        "description": "Triggers detect changes made through the application only; anyone with write access to the database file can rewrite local records, and the unified trail is not hash-chained or signed. Off-host export mitigates this only when configured.",
         "statement": "Risk rating moderate. Affects AU-9.",
         "props": [
           {
@@ -335,7 +335,7 @@
             "uuid": "f3dcb9c8-894a-5564-81d3-dbb7425fbfc3",
             "lifecycle": "planned",
             "title": "Remediate AU-9 Protection of Audit Information",
-            "description": "Expose chain verification to Audit Viewers, run it periodically, extend chaining to all audit tables, and anchor chain heads in external storage.",
+            "description": "Chain and sign the unified trail with a key held outside the data directory and verify it on a schedule; require OTLP export on classified deployments.",
             "props": [
               {
                 "name": "milestone",
@@ -449,9 +449,43 @@
         ]
       },
       {
+        "uuid": "54b81939-7c51-5d14-bb78-bca1d0e53c9e",
+        "title": "IA-2 Identification and Authentication (Organizational Users)",
+        "description": "Papyrus does not itself require multi-factor or certificate-based authentication (it trusts the identity provider's policy) and cannot accept client certificates (CAC/PIV or SIPR tokens) directly.",
+        "statement": "Risk rating moderate. Affects IA-2.",
+        "props": [
+          {
+            "name": "risk-rating",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "moderate"
+          },
+          {
+            "name": "milestone",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "Before first classified deployment"
+          }
+        ],
+        "status": "open",
+        "remediations": [
+          {
+            "uuid": "2ba092f7-e2f9-5d1d-8447-9a4a60b7c0b2",
+            "lifecycle": "planned",
+            "title": "Remediate IA-2 Identification and Authentication (Organizational Users)",
+            "description": "Optionally require MFA or smart-card authentication methods in the token (amr/acr), and support mutual TLS with NSS PKI where the enclave requires it.",
+            "props": [
+              {
+                "name": "milestone",
+                "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                "value": "Before first classified deployment"
+              }
+            ]
+          }
+        ]
+      },
+      {
         "uuid": "e46f8a9b-f5c0-5495-8478-0394b75fd10e",
         "title": "RA-5 Vulnerability Monitoring and Scanning",
-        "description": "No dependency, static-analysis or image vulnerability scanning runs in CI, and there is no Dependabot or equivalent configuration.",
+        "description": "No dependency or static-analysis scanning runs in CI, and there are no severity-based remediation timeframes.",
         "statement": "Risk rating high. Affects RA-5.",
         "props": [
           {
@@ -462,7 +496,7 @@
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Next release"
+            "value": "Before first federal pilot"
           }
         ],
         "status": "open",
@@ -471,41 +505,7 @@
             "uuid": "2c751d13-f2dd-5430-abb4-b28582589439",
             "lifecycle": "planned",
             "title": "Remediate RA-5 Vulnerability Monitoring and Scanning",
-            "description": "Add image and dependency scanning (for example Grype or Trivy against the CycloneDX SBOM) and static analysis to CI, failing builds on critical findings, and enable automated dependency update pull requests.",
-            "props": [
-              {
-                "name": "milestone",
-                "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Next release"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "uuid": "0a085b26-7f65-5c7b-b6c6-b7540ef1af41",
-        "title": "SA-9 External System Services",
-        "description": "On registered deployments the server sends each person's Entra object ID, display name and tenant ID to Beag Labs as analytics on sign-in, and there is no setting to turn analytics off separately from registration. Deployments on the government profile register with Beag Labs unless PAPYRUS_BEAGLABS_REGISTRATION=0 is set. Several outbound destinations (embedding download, package registries) are not listed in docs/deployment.md. The control plane and license authority are not in this repository and are not covered by this assessment.",
-        "statement": "Risk rating moderate. Affects SA-9.",
-        "props": [
-          {
-            "name": "risk-rating",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "moderate"
-          },
-          {
-            "name": "milestone",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal pilot"
-          }
-        ],
-        "status": "open",
-        "remediations": [
-          {
-            "uuid": "8202d127-7fac-5633-a9c4-427bab2ef302",
-            "lifecycle": "planned",
-            "title": "Remediate SA-9 External System Services",
-            "description": "Add a separate analytics opt-out and stop sending display names, default registration off for the government profile, document every outbound destination with its switch, and publish a security description of the control plane and license authority.",
+            "description": "Add dependency and code scanning to CI and publish remediation timeframes.",
             "props": [
               {
                 "name": "milestone",
@@ -519,7 +519,7 @@
       {
         "uuid": "c33601ac-64c9-523b-b1c0-a725f185a4b4",
         "title": "SA-11 Developer Testing and Evaluation",
-        "description": "Most security tests, including identity, MCP, Resource Class intake, Key Vault, broker and control-plane tests, do not run in CI, and the compliance drift check runs only in the local pre-commit hook, which can be skipped. compliance/ssp.md states that these checks run in CI.",
+        "description": "Most security tests, including identity, MCP and Key Vault tests, do not run in CI, and the compliance drift check runs only in the local pre-commit hook, which can be skipped. compliance/ssp.md states that these checks run in CI.",
         "statement": "Risk rating moderate. Affects SA-11.",
         "props": [
           {
@@ -545,6 +545,40 @@
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
                 "value": "Next release"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "92d5cd10-ed65-5488-a4fd-4465fcd92c55",
+        "title": "SC-4 Information in Shared System Resources",
+        "description": "Deleting a session does not remove every copy of its content (workspace files, traces, embeddings), and there is no administrator purge for spillage.",
+        "statement": "Risk rating moderate. Affects SC-4.",
+        "props": [
+          {
+            "name": "risk-rating",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "moderate"
+          },
+          {
+            "name": "milestone",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "Before first classified deployment"
+          }
+        ],
+        "status": "open",
+        "remediations": [
+          {
+            "uuid": "b434e98a-6288-5f5e-8eba-3a1045a53c41",
+            "lifecycle": "planned",
+            "title": "Remediate SC-4 Information in Shared System Resources",
+            "description": "Add a cascading purge with verification.",
+            "props": [
+              {
+                "name": "milestone",
+                "ns": "https://beaglabs.com/ns/oscal/papyrus",
+                "value": "Before first classified deployment"
               }
             ]
           }
@@ -655,42 +689,8 @@
       {
         "uuid": "539a9e06-a315-5ad2-a0f2-a7269f62e4ac",
         "title": "SC-13 Cryptographic Protection",
-        "description": "Papyrus does not enable OpenSSL FIPS mode or a FIPS provider, and the image is not built on a FIPS 140 validated cryptographic module. Algorithms in use are FIPS-approved, but no validated module is claimed.",
-        "statement": "Risk rating high. Affects SC-13.",
-        "props": [
-          {
-            "name": "risk-rating",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "high"
-          },
-          {
-            "name": "milestone",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal ATO package"
-          }
-        ],
-        "status": "open",
-        "remediations": [
-          {
-            "uuid": "6d20847a-dce2-5a04-9485-44617ee145ce",
-            "lifecycle": "planned",
-            "title": "Remediate SC-13 Cryptographic Protection",
-            "description": "Build a FIPS variant of the image on a FIPS 140-3 validated OpenSSL provider, enable FIPS mode at startup, fail startup if it is unavailable, and test that every code path works under it.",
-            "props": [
-              {
-                "name": "milestone",
-                "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal ATO package"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "uuid": "01d367a3-4a59-5743-8e3e-f2670a4e8f69",
-        "title": "SC-28 Protection of Information at Rest",
-        "description": "Agent sessions, Library documents, Resource Class records, audit logs and traces are stored in unencrypted SQLite and AgentFS files; their protection at rest depends entirely on volume encryption that Papyrus neither provides nor checks.",
-        "statement": "Risk rating moderate. Affects SC-28.",
+        "description": "Signatures and MACs use P-256 and SHA-256 rather than the CNSA suite (P-384, SHA-384) that national security systems may require.",
+        "statement": "Risk rating moderate. Affects SC-13.",
         "props": [
           {
             "name": "risk-rating",
@@ -700,31 +700,31 @@
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal ATO package"
+            "value": "Before first classified deployment"
           }
         ],
         "status": "open",
         "remediations": [
           {
-            "uuid": "84bcbb78-07ed-5648-8b80-7559d3d118a6",
+            "uuid": "6d20847a-dce2-5a04-9485-44617ee145ce",
             "lifecycle": "planned",
-            "title": "Remediate SC-28 Protection of Information at Rest",
-            "description": "Document volume encryption as a deployment requirement and verify it on supported deployment configurations, or add database-level encryption for the main data stores.",
+            "title": "Remediate SC-13 Cryptographic Protection",
+            "description": "Move Papyrus-generated signatures and MACs to CNSA algorithms while still verifying existing ones.",
             "props": [
               {
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal ATO package"
+                "value": "Before first classified deployment"
               }
             ]
           }
         ]
       },
       {
-        "uuid": "69478662-74fd-58dc-a8b9-27563db285ab",
-        "title": "SC-39 Process Isolation",
-        "description": "The Factory sidecar, enabled by default in the image (PAPYRUS_FACTORY_SIDECAR=1), runs commands for App builds in Mastra's LocalSandbox with no kernel isolation: only its environment is restricted to an allow-list. Those commands run as the same user as the daemon, can read files that user can read, including the Papyrus data directory, and have network access.",
-        "statement": "Risk rating high. Affects SC-39.",
+        "uuid": "01d367a3-4a59-5743-8e3e-f2670a4e8f69",
+        "title": "SC-28 Protection of Information at Rest",
+        "description": "Agent sessions, Library documents, audit records and traces are stored in unencrypted SQLite and AgentFS files; their confidentiality at rest depends on volume encryption the deploying organization provides.",
+        "statement": "Risk rating high. Affects SC-28.",
         "props": [
           {
             "name": "risk-rating",
@@ -734,21 +734,21 @@
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal pilot"
+            "value": "Before first classified deployment"
           }
         ],
         "status": "open",
         "remediations": [
           {
-            "uuid": "fae717d2-aae7-5f24-b1bb-3bd1e273f5ba",
+            "uuid": "84bcbb78-07ed-5648-8b80-7559d3d118a6",
             "lifecycle": "planned",
-            "title": "Remediate SC-39 Process Isolation",
-            "description": "Run Factory sidecar commands under the same landstrip policy as agent workspace commands (data directory denied, network denied or limited to package mirrors and source control), or disable the sidecar by default until that is in place.",
+            "title": "Remediate SC-28 Protection of Information at Rest",
+            "description": "Require and verify an encrypted volume for the data directory on classified deployments.",
             "props": [
               {
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal pilot"
+                "value": "Before first classified deployment"
               }
             ]
           }
@@ -925,40 +925,6 @@
         ]
       },
       {
-        "uuid": "5566b9a8-b36a-5bc0-9df2-1921e5062448",
-        "title": "FIPS 140 validated cryptography not enabled",
-        "description": "No code, configuration or image in the repository enables OpenSSL FIPS mode or a FIPS provider. Papyrus uses FIPS-approved algorithms through Node.js crypto but does not run on a validated module.",
-        "statement": "Risk rating high. Program-level item.",
-        "props": [
-          {
-            "name": "risk-rating",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "high"
-          },
-          {
-            "name": "milestone",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal ATO package"
-          }
-        ],
-        "status": "open",
-        "remediations": [
-          {
-            "uuid": "08c1c602-4d06-5cd0-9ebd-0f9fcbba9e05",
-            "lifecycle": "planned",
-            "title": "Remediate FIPS 140 validated cryptography not enabled",
-            "description": "Produce a FIPS image variant on a FIPS 140-3 validated provider with FIPS mode enforced at startup (see sc-13).",
-            "props": [
-              {
-                "name": "milestone",
-                "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal ATO package"
-              }
-            ]
-          }
-        ]
-      },
-      {
         "uuid": "4746b152-f2b1-5029-9f11-2aa0264c8fa8",
         "title": "Vulnerability scanning and remediation SLAs not formalized",
         "description": "CI performs no dependency, static or image vulnerability scanning; there are no severity-based remediation timeframes and no published vulnerability disclosure policy.",
@@ -1061,43 +1027,9 @@
         ]
       },
       {
-        "uuid": "6ade792e-b633-554f-a8f8-20d67c072e26",
-        "title": "First-run setup is not authenticated",
-        "description": "Before identity is configured, the setup server accepts the Entra tenant and client configuration from any caller that can reach it, with no setup token, once Terms are accepted and an entitlement is present. HTTPS is required for this step only on verified Marketplace deployments in persistent mode; elsewhere setup can run over plain HTTP.",
-        "statement": "Risk rating high. Program-level item.",
-        "props": [
-          {
-            "name": "risk-rating",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "high"
-          },
-          {
-            "name": "milestone",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Before first federal pilot"
-          }
-        ],
-        "status": "open",
-        "remediations": [
-          {
-            "uuid": "0dfb3689-085b-5231-bce4-e0581e282cc1",
-            "lifecycle": "planned",
-            "title": "Remediate First-run setup is not authenticated",
-            "description": "Require a one-time setup token printed to the host console or delivered through the deployment channel, and require HTTPS for setup in persistent mode on every deployment path.",
-            "props": [
-              {
-                "name": "milestone",
-                "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Before first federal pilot"
-              }
-            ]
-          }
-        ]
-      },
-      {
         "uuid": "4f33bf97-4cdc-5187-ab55-c2f6aa2d97cf",
-        "title": "Beag Labs control plane and license authority outside assessment scope",
-        "description": "Control-plane deployments trust papyrus.beaglabs.com and license.beaglabs.com to entitle and suspend them, bind their tenant and first System Owner, broker Microsoft sign-in, and issue Graph tokens. That code is not in this repository and none of its controls are documented here.",
+        "title": "License signing-key custody outside assessment scope",
+        "description": "Licenses are signed offline with Beag Labs' Azure Key Vault keys (beag-master, beag-dev). Custody of and access to those keys is not documented here.",
         "statement": "Risk rating moderate. Program-level item.",
         "props": [
           {
@@ -1116,8 +1048,8 @@
           {
             "uuid": "5e16886a-4037-5edd-afaf-7102aee9696b",
             "lifecycle": "planned",
-            "title": "Remediate Beag Labs control plane and license authority outside assessment scope",
-            "description": "Produce a separate control description for the control plane and license authority, including signing-key custody, or document the self-registration and disconnected deployment modes as the path for organizations that cannot accept the dependency.",
+            "title": "Remediate License signing-key custody outside assessment scope",
+            "description": "Produce a control description for the license signing keys, including custody, access and rotation.",
             "props": [
               {
                 "name": "milestone",
@@ -1129,34 +1061,34 @@
         ]
       },
       {
-        "uuid": "7bc77c79-927b-5793-96c9-0aafdd159269",
-        "title": "Security documentation does not match the implementation in places",
-        "description": "compliance/ssp.md and docs/workspace-security-model.md describe the workspace sandbox as nono, while the code applies landstrip (Landlock and seccomp) through files still named workspace-nono; docs/security.md describes the current behavior.",
-        "statement": "Risk rating low. Program-level item.",
+        "uuid": "fc4832ae-d326-5306-86c6-e40f37b2d699",
+        "title": "Agent tool lists do not limit tool use",
+        "description": "Within an active agent session any tool the deployment offers may be used; the tools listed in an agent's signed revision record intent but are not enforced. Approval prompts, budgets and channel approvals still apply.",
+        "statement": "Risk rating moderate. Program-level item.",
         "props": [
           {
             "name": "risk-rating",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "low"
+            "value": "moderate"
           },
           {
             "name": "milestone",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "Next release"
+            "value": "Before first classified deployment"
           }
         ],
         "status": "open",
         "remediations": [
           {
-            "uuid": "425befde-6e7f-5938-97fe-38850309207d",
+            "uuid": "ed109f0f-66ab-5711-9cfb-b1f96cee04de",
             "lifecycle": "planned",
-            "title": "Remediate Security documentation does not match the implementation in places",
-            "description": "Update the SSP generator text and workspace documentation to name landstrip, and rename the files.",
+            "title": "Remediate Agent tool lists do not limit tool use",
+            "description": "Where an enclave requires per-agent least functionality, restore enforcement of the signed tool list or restrict the deployment-wide tool set.",
             "props": [
               {
                 "name": "milestone",
                 "ns": "https://beaglabs.com/ns/oscal/papyrus",
-                "value": "Next release"
+                "value": "Before first classified deployment"
               }
             ]
           }
@@ -1165,6 +1097,23 @@
     ],
     "poam-items": [
       {
+        "uuid": "ff198717-7621-50fd-b860-461c3d51a192",
+        "title": "AC-2 Account Management",
+        "description": "A person who holds System Owner through a Papyrus role assignment keeps access while SCIM reports them deprovisioned (intended as break-glass), and there is no administrator action to end a person's active sessions.",
+        "props": [
+          {
+            "name": "POAM-ID",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "PAP-001"
+          }
+        ],
+        "related-risks": [
+          {
+            "risk-uuid": "07a5e2d7-b126-5786-8992-767462bdb259"
+          }
+        ]
+      },
+      {
         "uuid": "d35705e2-a3aa-5a16-83e7-eab1d0658d1b",
         "title": "AC-3 Access Enforcement",
         "description": "Agent sessions, their messages, the AgentFS Library and generated artifacts are owned by the tenant, not by the person who created them. Any signed-in person holding any Papyrus role can list and read every session, Library file and artifact in the deployment.",
@@ -1172,7 +1121,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-001"
+            "value": "PAP-002"
           }
         ],
         "related-risks": [
@@ -1184,12 +1133,12 @@
       {
         "uuid": "eefc4009-5b6d-58fc-8601-110422601ffe",
         "title": "AC-4 Information Flow Enforcement",
-        "description": "Outbound HTTP from workflow http-get/http-post steps and imported API tools is allowed to any public HTTPS host by default; the organization can block hosts with a denylist but there is no allow-list-only mode.",
+        "description": "Model gateway, identity provider discovery and Sentry connections do not pass the egress gate (they are configured endpoints), and the gate does not pin the resolved address, so a host that changes its DNS answer between check and connect could reach an internal address.",
         "props": [
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-002"
+            "value": "PAP-003"
           }
         ],
         "related-risks": [
@@ -1206,7 +1155,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-003"
+            "value": "PAP-004"
           }
         ],
         "related-risks": [
@@ -1223,7 +1172,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-004"
+            "value": "PAP-005"
           }
         ],
         "related-risks": [
@@ -1233,26 +1182,9 @@
         ]
       },
       {
-        "uuid": "3335ee5a-a02d-501b-8210-8da8d76ef083",
-        "title": "AC-12 Session Termination",
-        "description": "Sessions are stateless: there is no server-side session store, idle timeout, or revocation list. A copied cookie remains valid until its one-hour expiry after sign-out, and on deployments using their own app registration the roles carried in the cookie persist until expiry after an Entra role is removed.",
-        "props": [
-          {
-            "name": "POAM-ID",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-005"
-          }
-        ],
-        "related-risks": [
-          {
-            "risk-uuid": "2ce15f4a-3b9c-55a3-b5f9-11196bf711e2"
-          }
-        ]
-      },
-      {
-        "uuid": "54ec820b-3e19-5ead-928d-b6d04e2c1e86",
-        "title": "AU-2 Event Logging",
-        "description": "Successful and failed sign-ins and authorization denials (401/403) are not written to a local audit record. A successful sign-in is only sent as an analytics event to Beag Labs on registered deployments.",
+        "uuid": "461119c5-2483-541c-bae0-c8b9ed7748f6",
+        "title": "AC-16 Security and Privacy Attributes",
+        "description": "Files Papyrus generates (PDF, DOCX, XLSX, exports) are not marked, and records carry no per-item classification.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1262,14 +1194,14 @@
         ],
         "related-risks": [
           {
-            "risk-uuid": "bfa0dbbf-ff6a-5c30-9f32-719b1225b5b1"
+            "risk-uuid": "81dfb0ec-3c38-5a90-83a6-39a0e8c2a207"
           }
         ]
       },
       {
-        "uuid": "fc1efbfe-1992-5587-97c6-042a5c348775",
-        "title": "AU-3 Content of Audit Records",
-        "description": "Audit records do not capture the client network address, and each log uses its own schema, so records cannot be correlated or exported in one format.",
+        "uuid": "54ec820b-3e19-5ead-928d-b6d04e2c1e86",
+        "title": "AU-2 Event Logging",
+        "description": "Document downloads, session and workflow deletions, and agent tool calls are recorded in their own stores or not at all, rather than in the unified audit trail.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1279,14 +1211,14 @@
         ],
         "related-risks": [
           {
-            "risk-uuid": "518a45bf-292c-50e3-9e7c-13370e55791b"
+            "risk-uuid": "bfa0dbbf-ff6a-5c30-9f32-719b1225b5b1"
           }
         ]
       },
       {
-        "uuid": "cc742c62-c35e-53c2-b2b3-5de3c2a4fa9d",
-        "title": "AU-6 Audit Record Review, Analysis, and Reporting",
-        "description": "There is no consolidated audit view and no export or forwarding of audit records to an external log store or SIEM; records stay in local SQLite databases.",
+        "uuid": "49629d3c-50f9-5e76-afd5-ee80f35f5697",
+        "title": "AU-4 Audit Log Storage Capacity",
+        "description": "Papyrus does not watch free space on the data volume or alert when it runs low.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1296,14 +1228,14 @@
         ],
         "related-risks": [
           {
-            "risk-uuid": "c663fc8c-b522-544a-8ea8-2af8a8c85efe"
+            "risk-uuid": "b09241b8-aaf5-5f2a-8b82-3ed0c77c6072"
           }
         ]
       },
       {
         "uuid": "131835d9-fb24-5701-8c99-f16f71cd0dfe",
         "title": "AU-9 Protection of Audit Information",
-        "description": "Triggers and the hash chain detect changes made through the application only; anyone with write access to the database file can rewrite them. Chain verification is not exposed through any API or run on a schedule, and logs other than integration and action events are not hash-chained.",
+        "description": "Triggers detect changes made through the application only; anyone with write access to the database file can rewrite local records, and the unified trail is not hash-chained or signed. Off-host export mitigates this only when configured.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1369,9 +1301,9 @@
         ]
       },
       {
-        "uuid": "5a08d4f9-fbdb-51a1-8005-5f3b77c32384",
-        "title": "RA-5 Vulnerability Monitoring and Scanning",
-        "description": "No dependency, static-analysis or image vulnerability scanning runs in CI, and there is no Dependabot or equivalent configuration.",
+        "uuid": "d37f2653-0d0a-5a5b-bb74-864936b1e16a",
+        "title": "IA-2 Identification and Authentication (Organizational Users)",
+        "description": "Papyrus does not itself require multi-factor or certificate-based authentication (it trusts the identity provider's policy) and cannot accept client certificates (CAC/PIV or SIPR tokens) directly.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1381,14 +1313,14 @@
         ],
         "related-risks": [
           {
-            "risk-uuid": "e46f8a9b-f5c0-5495-8478-0394b75fd10e"
+            "risk-uuid": "54b81939-7c51-5d14-bb78-bca1d0e53c9e"
           }
         ]
       },
       {
-        "uuid": "c05992a2-a750-5c1a-befa-49e8119ffd19",
-        "title": "SA-9 External System Services",
-        "description": "On registered deployments the server sends each person's Entra object ID, display name and tenant ID to Beag Labs as analytics on sign-in, and there is no setting to turn analytics off separately from registration. Deployments on the government profile register with Beag Labs unless PAPYRUS_BEAGLABS_REGISTRATION=0 is set. Several outbound destinations (embedding download, package registries) are not listed in docs/deployment.md. The control plane and license authority are not in this repository and are not covered by this assessment.",
+        "uuid": "5a08d4f9-fbdb-51a1-8005-5f3b77c32384",
+        "title": "RA-5 Vulnerability Monitoring and Scanning",
+        "description": "No dependency or static-analysis scanning runs in CI, and there are no severity-based remediation timeframes.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1398,14 +1330,14 @@
         ],
         "related-risks": [
           {
-            "risk-uuid": "0a085b26-7f65-5c7b-b6c6-b7540ef1af41"
+            "risk-uuid": "e46f8a9b-f5c0-5495-8478-0394b75fd10e"
           }
         ]
       },
       {
         "uuid": "16409911-0a32-5e45-84ec-e7564d01b2d1",
         "title": "SA-11 Developer Testing and Evaluation",
-        "description": "Most security tests, including identity, MCP, Resource Class intake, Key Vault, broker and control-plane tests, do not run in CI, and the compliance drift check runs only in the local pre-commit hook, which can be skipped. compliance/ssp.md states that these checks run in CI.",
+        "description": "Most security tests, including identity, MCP and Key Vault tests, do not run in CI, and the compliance drift check runs only in the local pre-commit hook, which can be skipped. compliance/ssp.md states that these checks run in CI.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1420,6 +1352,23 @@
         ]
       },
       {
+        "uuid": "7a8fe233-8b62-5956-b0f6-4c6473a471ea",
+        "title": "SC-4 Information in Shared System Resources",
+        "description": "Deleting a session does not remove every copy of its content (workspace files, traces, embeddings), and there is no administrator purge for spillage.",
+        "props": [
+          {
+            "name": "POAM-ID",
+            "ns": "https://beaglabs.com/ns/oscal/papyrus",
+            "value": "PAP-016"
+          }
+        ],
+        "related-risks": [
+          {
+            "risk-uuid": "92d5cd10-ed65-5488-a4fd-4465fcd92c55"
+          }
+        ]
+      },
+      {
         "uuid": "e5a0114b-0355-5567-bcfa-0b76b9d7cd82",
         "title": "SC-5 Denial-of-Service Protection",
         "description": "Rate limits are in memory and keyed on the socket address; behind the appliance's nginx proxy every client shares one address, and the limiter clears all windows once it tracks 10,000 keys. The cap of 256 pending sign-ins can be exhausted by unauthenticated requests, blocking sign-in for up to 10 minutes.",
@@ -1427,7 +1376,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-016"
+            "value": "PAP-017"
           }
         ],
         "related-risks": [
@@ -1444,7 +1393,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-017"
+            "value": "PAP-018"
           }
         ],
         "related-risks": [
@@ -1461,7 +1410,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-018"
+            "value": "PAP-019"
           }
         ],
         "related-risks": [
@@ -1473,12 +1422,12 @@
       {
         "uuid": "13db83dc-ee08-556d-8d33-f0ce6847f4b2",
         "title": "SC-13 Cryptographic Protection",
-        "description": "Papyrus does not enable OpenSSL FIPS mode or a FIPS provider, and the image is not built on a FIPS 140 validated cryptographic module. Algorithms in use are FIPS-approved, but no validated module is claimed.",
+        "description": "Signatures and MACs use P-256 and SHA-256 rather than the CNSA suite (P-384, SHA-384) that national security systems may require.",
         "props": [
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-019"
+            "value": "PAP-020"
           }
         ],
         "related-risks": [
@@ -1490,24 +1439,7 @@
       {
         "uuid": "dc03959d-2ef8-536b-9ae1-3795bf11681d",
         "title": "SC-28 Protection of Information at Rest",
-        "description": "Agent sessions, Library documents, Resource Class records, audit logs and traces are stored in unencrypted SQLite and AgentFS files; their protection at rest depends entirely on volume encryption that Papyrus neither provides nor checks.",
-        "props": [
-          {
-            "name": "POAM-ID",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-020"
-          }
-        ],
-        "related-risks": [
-          {
-            "risk-uuid": "01d367a3-4a59-5743-8e3e-f2670a4e8f69"
-          }
-        ]
-      },
-      {
-        "uuid": "522e5a62-d983-5297-9f1c-87468ae3e811",
-        "title": "SC-39 Process Isolation",
-        "description": "The Factory sidecar, enabled by default in the image (PAPYRUS_FACTORY_SIDECAR=1), runs commands for App builds in Mastra's LocalSandbox with no kernel isolation: only its environment is restricted to an allow-list. Those commands run as the same user as the daemon, can read files that user can read, including the Papyrus data directory, and have network access.",
+        "description": "Agent sessions, Library documents, audit records and traces are stored in unencrypted SQLite and AgentFS files; their confidentiality at rest depends on volume encryption the deploying organization provides.",
         "props": [
           {
             "name": "POAM-ID",
@@ -1517,7 +1449,7 @@
         ],
         "related-risks": [
           {
-            "risk-uuid": "69478662-74fd-58dc-a8b9-27563db285ab"
+            "risk-uuid": "01d367a3-4a59-5743-8e3e-f2670a4e8f69"
           }
         ]
       },
@@ -1607,23 +1539,6 @@
         ]
       },
       {
-        "uuid": "80d39e61-610d-5af9-a948-50dd942d65d2",
-        "title": "FIPS 140 validated cryptography not enabled",
-        "description": "No code, configuration or image in the repository enables OpenSSL FIPS mode or a FIPS provider. Papyrus uses FIPS-approved algorithms through Node.js crypto but does not run on a validated module.",
-        "props": [
-          {
-            "name": "POAM-ID",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-027"
-          }
-        ],
-        "related-risks": [
-          {
-            "risk-uuid": "5566b9a8-b36a-5bc0-9df2-1921e5062448"
-          }
-        ]
-      },
-      {
         "uuid": "ffd4e6cb-56cd-506e-aa02-a4f887443dc7",
         "title": "Vulnerability scanning and remediation SLAs not formalized",
         "description": "CI performs no dependency, static or image vulnerability scanning; there are no severity-based remediation timeframes and no published vulnerability disclosure policy.",
@@ -1631,7 +1546,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-028"
+            "value": "PAP-027"
           }
         ],
         "related-risks": [
@@ -1648,7 +1563,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-029"
+            "value": "PAP-028"
           }
         ],
         "related-risks": [
@@ -1665,7 +1580,7 @@
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-030"
+            "value": "PAP-029"
           }
         ],
         "related-risks": [
@@ -1675,31 +1590,14 @@
         ]
       },
       {
-        "uuid": "c341851a-98f1-57dd-a539-7eb9120f2982",
-        "title": "First-run setup is not authenticated",
-        "description": "Before identity is configured, the setup server accepts the Entra tenant and client configuration from any caller that can reach it, with no setup token, once Terms are accepted and an entitlement is present. HTTPS is required for this step only on verified Marketplace deployments in persistent mode; elsewhere setup can run over plain HTTP.",
-        "props": [
-          {
-            "name": "POAM-ID",
-            "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-031"
-          }
-        ],
-        "related-risks": [
-          {
-            "risk-uuid": "6ade792e-b633-554f-a8f8-20d67c072e26"
-          }
-        ]
-      },
-      {
         "uuid": "90ad93dc-fae3-52d4-a4a2-8da70c4e024d",
-        "title": "Beag Labs control plane and license authority outside assessment scope",
-        "description": "Control-plane deployments trust papyrus.beaglabs.com and license.beaglabs.com to entitle and suspend them, bind their tenant and first System Owner, broker Microsoft sign-in, and issue Graph tokens. That code is not in this repository and none of its controls are documented here.",
+        "title": "License signing-key custody outside assessment scope",
+        "description": "Licenses are signed offline with Beag Labs' Azure Key Vault keys (beag-master, beag-dev). Custody of and access to those keys is not documented here.",
         "props": [
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-032"
+            "value": "PAP-030"
           }
         ],
         "related-risks": [
@@ -1709,19 +1607,19 @@
         ]
       },
       {
-        "uuid": "0102905e-aaf5-5ea6-bdd8-cf4f1b90d975",
-        "title": "Security documentation does not match the implementation in places",
-        "description": "compliance/ssp.md and docs/workspace-security-model.md describe the workspace sandbox as nono, while the code applies landstrip (Landlock and seccomp) through files still named workspace-nono; docs/security.md describes the current behavior.",
+        "uuid": "27bd31c0-73e0-5415-90b9-3cde8d1ac7be",
+        "title": "Agent tool lists do not limit tool use",
+        "description": "Within an active agent session any tool the deployment offers may be used; the tools listed in an agent's signed revision record intent but are not enforced. Approval prompts, budgets and channel approvals still apply.",
         "props": [
           {
             "name": "POAM-ID",
             "ns": "https://beaglabs.com/ns/oscal/papyrus",
-            "value": "PAP-033"
+            "value": "PAP-031"
           }
         ],
         "related-risks": [
           {
-            "risk-uuid": "7bc77c79-927b-5793-96c9-0aafdd159269"
+            "risk-uuid": "fc4832ae-d326-5306-86c6-e40f37b2d699"
           }
         ]
       }
@@ -1729,7 +1627,23 @@
     "back-matter": {
       "resources": [
         {
-          "uuid": "f65fee17-8896-515b-98d6-7c6034a36f12",
+          "uuid": "8efe1e94-ea5f-53f3-83ce-f4f2ed560522",
+          "title": "NIST AI RMF mapping",
+          "rlinks": [
+            {
+              "href": "../papyrus-ai-rmf.xlsx",
+              "media-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "f91d46dc770c840145de600318ff9c889e2f7c18490a58518f893a136109b3b0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "8c556781-c308-5461-9f3e-3a77e829e0ed",
           "title": "Security controls matrix",
           "rlinks": [
             {
@@ -1738,14 +1652,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "8ec426ebd50fe9729518d3ba2e6e951c9d2be171ae9c0dc33d51d32ce4e9dbaf"
+                  "value": "d9a25c93667f70c6af7012493d5a8221fbb2f2bd1840a0b7d066e8a94e1e6723"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "309e94ba-7e17-51a5-a68d-1132b567b6c4",
+          "uuid": "4d7daa13-282e-5495-b938-ef26bd82c9f3",
           "title": "POA&M (spreadsheet)",
           "rlinks": [
             {
@@ -1754,14 +1668,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "b3332522b55671d3c7ed91ccdb798a16e9a484086a7204bb927c5c551ee73379"
+                  "value": "9c6559618721c51ab829963c27c455c8fc3878dddf23cb20d5b943100adbe635"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "90b1290d-fb1c-5eba-bbe3-016951c1b220",
+          "uuid": "277a3841-e2b1-5553-96d0-13c8adfe43b0",
           "title": "CycloneDX SBOM (linux/amd64)",
           "rlinks": [
             {
@@ -1770,14 +1684,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "8d8dcdd7876ab1e253f6db5263745eb4c5d27b63dbde60e1c314f70f4b6a242c"
+                  "value": "3b90555499abf5d8be4e3888bbe174ac69034b31bfa9ddfc45ac40cf44466850"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "a2387f26-f607-51ca-9463-b4151ddc72e2",
+          "uuid": "6ee36054-7b53-50ef-9897-5628f8d85a67",
           "title": "SPDX SBOM (linux/amd64)",
           "rlinks": [
             {
@@ -1786,14 +1700,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "13a8f38684567d5f4b02fc6369b323f3a6903f0537268a5f97cc8f4c522ccfa4"
+                  "value": "486f53410ffa16586362c991b1e509d290322a7eab35f286748618f58fcc7020"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "3bd0867e-ef90-529d-9f82-bdaacfab7a97",
+          "uuid": "f15f1446-beeb-5524-b215-07ae6906fc08",
           "title": "CycloneDX SBOM (linux/arm64)",
           "rlinks": [
             {
@@ -1802,14 +1716,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "4c6f5548118b38901db82d594e8c860cad16f9fa65e145fe97cb72200647d8cc"
+                  "value": "cf736285d6e46e69bf471b288b72ede2f5f579ae198138c271f3f6e3b66b41ad"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "e579f682-b731-587a-8a5b-87b654a01a2e",
+          "uuid": "e1cc024f-2123-5c26-b7f6-018d25f8f9a5",
           "title": "SPDX SBOM (linux/arm64)",
           "rlinks": [
             {
@@ -1818,14 +1732,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "92cb96d55082a1e1bcc791822bd03ba99f8f87dc74538c47ebb6d26fed09f168"
+                  "value": "93e0d9a9e2f24b0c93ad5ad571749c7eb47a7ad6a7b13605e59749a93ae51d73"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "042c9e91-bd90-55e3-9bc3-32f4de2f1fb6",
+          "uuid": "736ec5a8-0326-535a-b5ab-18a728b1d3ea",
           "title": "OCI image index",
           "rlinks": [
             {
@@ -1834,14 +1748,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "2adf3fbe144a427bfcc6cbc42ebb910df8068e1fd0e545054a7543e998d579c9"
+                  "value": "d530740c6008708b415640ffd8fb5c5e23e319a8630da497caa064c7e36340ec"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "d42888ff-52c0-5789-b136-89262cd8e9c1",
+          "uuid": "24662014-b3af-54bc-9256-b31685852ae9",
           "title": "Provenance verification result",
           "rlinks": [
             {
@@ -1850,14 +1764,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "49d7598b0860155151fccce8a3e2030b76d8556b6cc76b8e4a992bca179f9177"
+                  "value": "dabfbf4d39d07188749ba8bf1f2ca12fc8972497e04a0cb95eb700d99e6ad6b2"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "b5dda912-d86e-5023-b348-1fc0fa5fca66",
+          "uuid": "3568949e-f0cc-5bf0-af80-7b6a12a3b1c4",
           "title": "SLSA provenance (Sigstore bundle)",
           "rlinks": [
             {
@@ -1866,14 +1780,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "fb8d9008e2481a2c078c318c4e6683d7d08579a8b3ad0b46f2359589782e521e"
+                  "value": "7e4d7e5477d744614241bbecc78afb33d84f71bca0a86ab0ce294c2f12105151"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "f6a5ff5f-d80b-57a2-a935-5f87c513fe93",
+          "uuid": "7d206b55-9fb1-5f06-8019-d77b8b68e009",
           "title": "Cosign signature verification result",
           "rlinks": [
             {
@@ -1882,14 +1796,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "a7985f95730cbb76f4e98abaa640e8948c81e902f715d9d73191ccd39b38bacc"
+                  "value": "1c55a75620db5dcab41d2788a3f9222853e37d930ab0f403a213198b369b0f54"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "d0b9fb58-1e9d-5a08-8961-8dd5b8a45661",
+          "uuid": "87356000-e1fb-5a46-b2ad-ab2bdc5f95d8",
           "title": "Trivy vulnerability scan (linux/amd64)",
           "rlinks": [
             {
@@ -1898,14 +1812,14 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "bb5db34ec8829a086d0cc6075fc630fd47dc7848a448bdc552a9fcaf7a1ddd0d"
+                  "value": "d27a92d2962298c9b43e20cde9707f7e921e01a768f69ae8d28c392814cd9d32"
                 }
               ]
             }
           ]
         },
         {
-          "uuid": "1ffe322b-4e80-50a6-ba45-0a0e3d06fa32",
+          "uuid": "c0e03206-f9fa-583d-ab97-df2ff00eadb8",
           "title": "Trivy vulnerability scan (linux/arm64)",
           "rlinks": [
             {
@@ -1914,7 +1828,7 @@
               "hashes": [
                 {
                   "algorithm": "SHA-256",
-                  "value": "d27561ef3ac7414e982058d4fda43c9d06152f41896e9c2a0caded3837cea47c"
+                  "value": "44ce390528d5ceb119a9b01bb5d687440b1caa4f6ee5db5f3f43c90b7f76a872"
                 }
               ]
             }

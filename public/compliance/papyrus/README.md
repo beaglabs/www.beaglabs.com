@@ -1,12 +1,14 @@
 # Papyrus evidence pack
 
-Release 0.1.0+fd55e38, image `ghcr.io/beaglabs/papyrus/papyrus@sha256:b38facf4950270443ac39dc5bbaeb4ed5653341b61608526163e929a449ebd8a`, built 2026-10-20T13:03:06Z.
+Release 0.1.0+a3d9ded, image `ghcr.io/beaglabs/papyrus/papyrus@sha256:83b1fb85aafc8c58fb481c5048f074f9e11aedbba82bbca4a1ee78bc88c91105`, built 2026-10-27T11:47:12Z.
 
 | File | Contents |
 | --- | --- |
 | `papyrus-architecture.pdf` | System boundaries, runtime components, model gateways, integrations, data flows and deployment topology |
 | `papyrus-deployment-requirements.pdf` | Compute, storage, networking, runtime dependencies, offline constraints and external services |
 | `papyrus-security-controls.pdf`, `papyrus-controls-matrix.xlsx` | NIST SP 800-53 Rev. 5 controls matrix with source evidence |
+| `papyrus-ai-rmf.pdf`, `papyrus-ai-rmf.xlsx` | NIST AI RMF 1.0 mapping (Govern, Map, Measure, Manage) and Generative AI Profile risks |
+| `papyrus-capabilities.pdf` | Capabilities overview with screenshots, by control family |
 | `oscal/papyrus-component-definition.json` | OSCAL 1.2.3 component definition, validated with oscal-cli 3.2.0 |
 | `papyrus-known-gaps.pdf`, `papyrus-poam.xlsx`, `oscal/papyrus-poam.json` | Known gaps and remediation plan (POA&M) |
 | `papyrus-supply-chain-evidence.pdf` | Digests, signature and provenance verification, vulnerability scan summary |
