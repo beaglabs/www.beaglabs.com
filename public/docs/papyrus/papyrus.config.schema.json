@@ -1,0 +1,1159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://beaglabs.com/schemas/papyrus.config.schema.json",
+  "title": "Papyrus configuration",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number",
+      "const": 1
+    },
+    "server": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "local",
+            "persistent"
+          ]
+        },
+        "profile": {
+          "type": "string",
+          "enum": [
+            "commercial",
+            "government",
+            "disconnected"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "publicOrigin": {
+          "type": "string",
+          "format": "uri"
+        },
+        "organizationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "dataDir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "databasePath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "toolchainDir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agentfsId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "sandboxRuntime": {
+          "type": "string",
+          "enum": [
+            "bwrap",
+            "seatbelt"
+          ]
+        },
+        "tls": {
+          "type": "object",
+          "properties": {
+            "cert": {
+              "type": "string",
+              "minLength": 1
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ca": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "cert",
+            "key"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "secrets": {
+      "type": "object",
+      "properties": {
+        "portalSecret": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "file"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "env": {
+                  "type": "string",
+                  "pattern": "^[A-Z_][A-Z0-9_]*$"
+                }
+              },
+              "required": [
+                "env"
+              ],
+              "additionalProperties": false
+            }
+          ],
+          "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+        },
+        "masterKeyFile": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "properties": {
+        "entra": {
+          "type": "object",
+          "properties": {
+            "tenantId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "clientId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "clientSecret": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "env": {
+                      "type": "string",
+                      "pattern": "^[A-Z_][A-Z0-9_]*$"
+                    }
+                  },
+                  "required": [
+                    "env"
+                  ],
+                  "additionalProperties": false
+                }
+              ],
+              "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cloud": {
+              "type": "string",
+              "enum": [
+                "Public",
+                "USGov",
+                "USGovDoD"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "oidc": {
+          "type": "object",
+          "properties": {
+            "issuer": {
+              "type": "string",
+              "format": "uri"
+            },
+            "clientId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "clientSecret": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "env": {
+                      "type": "string",
+                      "pattern": "^[A-Z_][A-Z0-9_]*$"
+                    }
+                  },
+                  "required": [
+                    "env"
+                  ],
+                  "additionalProperties": false
+                }
+              ],
+              "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+            },
+            "scopes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "subjectClaim": {
+              "type": "string",
+              "minLength": 1
+            },
+            "groupsClaim": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rolesClaim": {
+              "type": "string",
+              "minLength": 1
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "tenantId": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "issuer",
+            "clientId"
+          ],
+          "additionalProperties": false
+        },
+        "groupRoles": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "Papyrus.Integration.View",
+                "Papyrus.Integration.Manage",
+                "Papyrus.Security.Manage",
+                "Papyrus.Action.Approve",
+                "Papyrus.Agents.Create",
+                "Papyrus.Agents.Approve",
+                "Papyrus.Agents.Activate",
+                "Papyrus.Agents.Configure",
+                "Papyrus.Agents.Execute",
+                "Papyrus.Agents.ViewAudit",
+                "Papyrus.Audit.View",
+                "Papyrus.System.Owner",
+                "Papyrus.Payments.View",
+                "Papyrus.Payments.Initiate",
+                "Papyrus.Payments.Approve",
+                "Papyrus.Ledger.View",
+                "Papyrus.Ledger.Manage"
+              ]
+            }
+          }
+        },
+        "owners": {
+          "minItems": 1,
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 320
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "notice": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "dow"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "file"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "unclassified",
+            "cui",
+            "confidential",
+            "secret",
+            "top-secret",
+            "top-secret-sci"
+          ]
+        },
+        "sessions": {
+          "type": "object",
+          "properties": {
+            "idleMinutes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440
+            },
+            "maxHours": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 168
+            },
+            "concurrent": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "audit": {
+      "type": "object",
+      "properties": {
+        "otlp": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "format": "uri"
+            },
+            "headers": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9-]+$"
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "file"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "env": {
+                        "type": "string",
+                        "pattern": "^[A-Z_][A-Z0-9_]*$"
+                      }
+                    },
+                    "required": [
+                      "env"
+                    ],
+                    "additionalProperties": false
+                  }
+                ],
+                "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+              }
+            },
+            "ca": {
+              "type": "string",
+              "minLength": 1
+            },
+            "clientCert": {
+              "type": "string",
+              "minLength": 1
+            },
+            "clientKey": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "endpoint"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "repositories": {
+      "type": "object",
+      "properties": {
+        "tokens": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[a-z0-9.-]+$"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "env": {
+                    "type": "string",
+                    "pattern": "^[A-Z_][A-Z0-9_]*$"
+                  }
+                },
+                "required": [
+                  "env"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "license": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "file"
+      ],
+      "additionalProperties": false
+    },
+    "legal": {
+      "type": "object",
+      "properties": {
+        "terms": {
+          "type": "string",
+          "minLength": 1
+        },
+        "privacy": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "directory": {
+      "type": "object",
+      "properties": {
+        "scim": {
+          "type": "object",
+          "properties": {
+            "token": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "env": {
+                      "type": "string",
+                      "pattern": "^[A-Z_][A-Z0-9_]*$"
+                    }
+                  },
+                  "required": [
+                    "env"
+                  ],
+                  "additionalProperties": false
+                }
+              ],
+              "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+            },
+            "matchBy": {
+              "type": "string",
+              "enum": [
+                "externalId",
+                "userName",
+                "email",
+                "id"
+              ]
+            }
+          },
+          "required": [
+            "token"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "workflows": {
+          "type": "boolean"
+        },
+        "factories": {
+          "type": "boolean"
+        },
+        "factorySidecar": {
+          "type": "boolean"
+        },
+        "factors": {
+          "type": "boolean"
+        },
+        "factorRuntime": {
+          "type": "boolean"
+        },
+        "resourceWorkloads": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "egress": {
+      "type": "object",
+      "properties": {
+        "workflowHttp": {
+          "type": "object",
+          "properties": {
+            "denylist": {
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 253
+              }
+            },
+            "internalHosts": {
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 253
+              }
+            },
+            "allowlist": {
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 253
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "fetchAllowedHosts": {
+          "maxItems": 1000,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          }
+        },
+        "tn3270AllowedHosts": {
+          "maxItems": 1000,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          }
+        },
+        "allowedHosts": {
+          "maxItems": 1000,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "packages": {
+      "type": "object",
+      "properties": {
+        "npmRegistry": {
+          "type": "string",
+          "format": "uri"
+        },
+        "pypiIndex": {
+          "type": "string",
+          "format": "uri"
+        },
+        "mavenRepository": {
+          "type": "string",
+          "format": "uri"
+        },
+        "nugetFeed": {
+          "type": "string",
+          "format": "uri"
+        },
+        "publicRegistries": {
+          "type": "boolean"
+        },
+        "mirrorCaFile": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "registration": {
+      "type": "object",
+      "properties": {
+        "beaglabs": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "observability": {
+      "type": "object",
+      "properties": {
+        "sentryDsn": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "file"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "env": {
+                  "type": "string",
+                  "pattern": "^[A-Z_][A-Z0-9_]*$"
+                }
+              },
+              "required": [
+                "env"
+              ],
+              "additionalProperties": false
+            }
+          ],
+          "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+        },
+        "sentryEnvironment": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "models": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,63}$"
+        },
+        "gateways": {
+          "minItems": 1,
+          "maxItems": 32,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,63}$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "openai-compatible",
+                  "azure-openai"
+                ]
+              },
+              "baseUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "model": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "apiKey": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "file"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "env": {
+                        "type": "string",
+                        "pattern": "^[A-Z_][A-Z0-9_]*$"
+                      }
+                    },
+                    "required": [
+                      "env"
+                    ],
+                    "additionalProperties": false
+                  }
+                ],
+                "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+              },
+              "capabilities": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "chat",
+                    "streaming",
+                    "tools",
+                    "structured_outputs",
+                    "reasoning",
+                    "embeddings"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "id",
+              "baseUrl",
+              "model"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "gateways"
+      ],
+      "additionalProperties": false
+    },
+    "agents": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "type": "object",
+          "properties": {
+            "maxSteps": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "timeoutSeconds": {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 86400
+            },
+            "maxToolCalls": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000
+            },
+            "maxRuns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "storageMb": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400
+            },
+            "computeSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400
+            },
+            "taskDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90
+            },
+            "concurrentTasks": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "signing": {
+          "type": "object",
+          "properties": {
+            "hsmKey": {
+              "type": "string",
+              "format": "uri"
+            },
+            "mfa": {
+              "type": "string",
+              "enum": [
+                "amr",
+                "idp"
+              ]
+            },
+            "sigstore": {
+              "type": "object",
+              "properties": {
+                "trustRoot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "issuer": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "cosignPath": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "trustRoot",
+                "issuer"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "channels": {
+          "type": "object",
+          "properties": {
+            "teams": {
+              "type": "object",
+              "properties": {
+                "appId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tenantId": {
+                  "type": "string",
+                  "pattern": "^[a-fA-F0-9-]{36}$"
+                },
+                "password": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "file": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "file"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "env": {
+                          "type": "string",
+                          "pattern": "^[A-Z_][A-Z0-9_]*$"
+                        }
+                      },
+                      "required": [
+                        "env"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ],
+                  "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+                },
+                "federatedClientId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "botName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 30
+                }
+              },
+              "required": [
+                "appId",
+                "tenantId"
+              ],
+              "additionalProperties": false
+            },
+            "github": {
+              "type": "object",
+              "properties": {
+                "appId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "slug": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$"
+                },
+                "clientId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "clientSecret": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "file": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "file"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "env": {
+                          "type": "string",
+                          "pattern": "^[A-Z_][A-Z0-9_]*$"
+                        }
+                      },
+                      "required": [
+                        "env"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ],
+                  "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+                },
+                "privateKey": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "file": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "file"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "env": {
+                          "type": "string",
+                          "pattern": "^[A-Z_][A-Z0-9_]*$"
+                        }
+                      },
+                      "required": [
+                        "env"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ],
+                  "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+                },
+                "webhookSecret": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "file": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "file"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "env": {
+                          "type": "string",
+                          "pattern": "^[A-Z_][A-Z0-9_]*$"
+                        }
+                      },
+                      "required": [
+                        "env"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ],
+                  "description": "A secret is referenced, never written here: { file: /run/secrets/name } or { env: VARIABLE_NAME }"
+                },
+                "apiUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "appId",
+                "slug",
+                "clientId",
+                "clientSecret",
+                "privateKey",
+                "webhookSecret"
+              ],
+              "additionalProperties": false
+            },
+            "credentials": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "env": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^PAPYRUS_[A-Z0-9_]+$"
+      },
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
+    }
+  },
+  "required": [
+    "version"
+  ],
+  "additionalProperties": false
+}
