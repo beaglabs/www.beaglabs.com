@@ -17,6 +17,7 @@ const GROUPS = [
   ] },
   { name: 'Resources', links: [
     { title: 'Blog', href: '/blog', description: 'Ideas, announcements, and engineering notes.' },
+    { title: 'Papyrus Docs', href: '/docs/papyrus', description: 'YAML configuration and the authenticated OpenAPI reference.' },
     { title: 'Comparisons', href: '/compare', description: 'Compare approaches and technologies.' },
   ] },
   { name: 'Company', links: [
