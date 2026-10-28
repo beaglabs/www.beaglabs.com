@@ -1,0 +1,215 @@
+# papyrus.yaml: Papyrus's configuration file.
+#
+# Where Papyrus looks: the path in PAPYRUS_CONFIG_FILE, else /etc/papyrus/papyrus.yaml, else ./papyrus.yaml.
+# Check a file without starting:  node apps/server/dist/index.js --check-config
+#   It prints every setting, where its value comes from, and every problem with its path. Startup runs the same check:
+#   an unknown key, a wrong type or an out-of-range value stops Papyrus rather than being guessed at.
+# Editor completion: point your YAML language server at papyrus.config.schema.json (next to this file), e.g.
+#   # yaml-language-server: $schema=./papyrus.config.schema.json
+#
+# Secrets are never written here. A secret setting takes a reference instead:
+#   { file: /run/secrets/name }   a file (Docker/Kubernetes secrets, Key Vault CSI mounts); relative paths are relative to this file
+#   { env: VARIABLE_NAME }        an environment variable you control
+# A missing or empty secret stops startup and names the setting. So the file can be reviewed, kept in version control
+# and attached to an evidence pack.
+#
+# Precedence: built-in defaults, then this file, then the environment. A PAPYRUS_* variable that is set wins over the
+# matching setting here, and --check-config shows the override.
+#
+# Everything below that is commented out shows its default, or an example where there is none. Uncomment what you need.
+
+version: 1                               # required; always 1
+
+# ─── Server ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+server:
+  mode: persistent                       # local (default; a workstation) or persistent (a server; needs an https publicOrigin)
+  profile: government                    # commercial (default), government, or disconnected (no outbound access except egress.allowedHosts)
+  host: 0.0.0.0                          # address to listen on; default localhost
+  port: 3210                             # default 3210
+  publicOrigin: https://papyrus.agency.example.gov   # the address people use; sign-in redirects and channel webhooks are built from it
+  organizationName: Agency Operations    # shown in the app
+  dataDir: /var/lib/papyrus              # default ./papyrus-agent-data
+  # databasePath: /var/lib/papyrus/agent.db          # default <dataDir>/agent.db
+  # toolchainDir: /opt/papyrus/toolchain             # default /opt/papyrus/toolchain
+  # agentfsId: papyrus-workspace                     # name of the agent workspace store; letters, digits, - and _
+  # sandboxRuntime: bwrap                            # bwrap (Linux) or seatbelt (macOS, for development)
+  # tls:                                             # serve HTTPS directly; leave out when a proxy terminates TLS
+  #   cert: /etc/papyrus/tls/cert.pem                # cert and key together
+  #   key: /etc/papyrus/tls/key.pem
+  #   ca: /etc/papyrus/tls/ca.pem                    # optional CA bundle
+
+# ─── Secrets ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+secrets:
+  portalSecret: { file: /run/secrets/papyrus-portal-secret }   # protects sign-in sessions, API keys and stored credentials; a long
+                                                               # random value. Left out, one is generated and kept in the data directory.
+  # masterKeyFile: /etc/papyrus/secrets/master.key             # key for the local encrypted secret store; this is the default.
+  #                                                            # Back it up apart from the data directory: without it, stored secrets are lost.
+
+# ─── License ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+# license:
+#   file: /etc/papyrus/license.json      # the signed license activated at startup; one that doesn't verify stops startup
+
+# ─── Sign-in ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Required: configure entra or oidc, not both.
+identity:
+  entra:
+    tenantId: 00000000-0000-0000-0000-000000000000
+    clientId: 00000000-0000-0000-0000-000000000000
+    clientSecret: { env: PAPYRUS_ENTRA_CLIENT_SECRET_VALUE }
+    cloud: USGov                         # Public (default), USGov (GCC High) or USGovDoD
+    # scope: api://<clientId>/access_as_user   # the API scope requested at sign-in; this is the default
+  # oidc:                                # any other OpenID Connect provider
+  #   issuer: https://idp.agency.example.gov
+  #   clientId: papyrus
+  #   clientSecret: { file: /run/secrets/oidc-client-secret }
+  #   scopes: [offline_access]           # added to openid, profile and email
+  #   subjectClaim: sub                  # default sub
+  #   groupsClaim: groups                # default groups
+  #   rolesClaim: roles                  # default roles
+  #   displayName: Agency SSO            # the sign-in button's label; default the issuer's host name
+  #   tenantId: agency                   # the organization id Papyrus records for this provider's people; default the issuer's host name
+  owners:                                # System Owners from the first start, by subject (oid/sub) or email. There is no setup page.
+    - jane.doe@agency.example.gov
+  # groupRoles:                          # directory group (name or id, from the sign-in token or SCIM) → Papyrus roles
+  #   Papyrus Admins: [Papyrus.System.Owner]
+  #   Auditors: [Papyrus.Audit.View, Papyrus.Agents.ViewAudit]
+  #   Analysts: [Papyrus.Agents.Execute, Papyrus.Integration.View]
+  # Roles: Papyrus.System.Owner, Papyrus.Security.Manage, Papyrus.Audit.View, Papyrus.Action.Approve,
+  #   Papyrus.Integration.View, Papyrus.Integration.Manage, Papyrus.Agents.Create, Papyrus.Agents.Approve,
+  #   Papyrus.Agents.Activate, Papyrus.Agents.Configure, Papyrus.Agents.Execute, Papyrus.Agents.ViewAudit,
+  #   Papyrus.Payments.View, Papyrus.Payments.Initiate, Papyrus.Payments.Approve, Papyrus.Ledger.View, Papyrus.Ledger.Manage
+
+# directory:
+#   scim:                                # user and group provisioning at <publicOrigin>/scim/v2
+#     token: { file: /run/secrets/scim-token }   # the bearer token your identity provider presents; at least 32 characters
+#     matchBy: externalId                # how a provisioned user is matched to the person signing in:
+#                                        # externalId (default), userName, email or id
+
+# ─── Security ────────────────────────────────────────────────────────────────────────────────────────────────────────
+security:
+  notice: dow                            # the notice everyone acknowledges before signing in: dow (the standard Department
+                                         # of War notice) or { file: /etc/papyrus/notice.txt }. Leave out for none.
+  classification: unclassified           # system-high marking on every page and everything Papyrus produces:
+                                         # unclassified, cui, confidential, secret, top-secret, top-secret-sci.
+                                         # Shown only when the license includes classification banners.
+  # sessions:
+  #   idleMinutes: 15                    # inactivity before a session locks
+  #   maxHours: 12                       # longest a session lasts, however active
+  #   concurrent: 3                      # sessions one person may hold; the oldest ends when a new one starts
+
+# legal:                                 # leave out to use the Terms of Service and Privacy Policy built into Papyrus
+#   terms: /etc/papyrus/terms.md         # a negotiated Terms of Service (Markdown); its version is the file's digest
+#   privacy: /etc/papyrus/privacy.md
+
+# ─── Audit ───────────────────────────────────────────────────────────────────────────────────────────────────────────
+# The audit trail is always kept in Papyrus. Add an OTLP collector to also send it out.
+# audit:
+#   otlp:
+#     endpoint: https://collector.agency.example.gov:4318/v1/logs   # OTLP/HTTP logs endpoint
+#     headers:
+#       Authorization: { file: /run/secrets/otlp-authorization }
+#     ca: /etc/papyrus/otlp-ca.pem       # CA bundle for the collector's certificate
+#     clientCert: /etc/papyrus/otlp-client.pem   # mutual TLS
+#     clientKey: /etc/papyrus/otlp-client.key
+
+# observability:
+#   sentryDsn: { file: /run/secrets/sentry-dsn }   # send errors to your Sentry
+#   sentryEnvironment: production        # default production
+
+# ─── Network egress ──────────────────────────────────────────────────────────────────────────────────────────────────
+egress:
+  # allowedHosts:                        # every host Papyrus may connect to outside itself (identity, models, MCP servers,
+  #   - login.microsoftonline.us         # package mirrors, workflow targets, channels). Host names or *.suffix wildcards.
+  #   - "*.openai.azure.us"              # When set, anything not listed is refused. Required on the disconnected profile.
+  workflowHttp:
+    denylist: [pastebin.com]             # hosts or origins workflows may not call; a bare host also blocks its subdomains
+    # internalHosts: [erp.agency.example.gov]   # internal systems workflows may reach although they have private addresses
+  # fetchAllowedHosts: [wiki.agency.example.gov]   # private hosts agents may read web pages from; review before adding
+  tn3270AllowedHosts: [mainframe.agency.example.gov]   # mainframes agents may open terminal sessions to
+
+# repositories:                          # Git hosts agents import repositories from; add their addresses to egress.allowedHosts
+#   tokens:
+#     github.com: { file: /run/secrets/github-token }   # a read-only token per host, for private repositories
+
+# ─── Package mirrors ─────────────────────────────────────────────────────────────────────────────────────────────────
+# Where agents install packages from.
+packages:
+  npmRegistry: https://artifacts.agency.example.gov/npm/
+  pypiIndex: https://artifacts.agency.example.gov/pypi/simple/
+  # mavenRepository: https://artifacts.agency.example.gov/maven2/
+  # nugetFeed: https://artifacts.agency.example.gov/nuget/v3/index.json
+  publicRegistries: false                # fall back to public registries when no mirror is set; default true (always false when disconnected)
+  # mirrorCaFile: /etc/papyrus/dod-pki.pem   # CA bundle for mirrors signed by a private root, such as DoD PKI
+
+# ─── Models ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# The model gateways agents use, set here and nowhere else: the Models page lists and tests them but can't change them.
+# At startup Papyrus makes its gateways exactly these, removing any that aren't listed. A gateway whose address, model or
+# key changed shows as untested until someone tests it; only tested gateways' models can be picked.
+models:
+  default: gov                           # the gateway new sessions start on; default the first one
+  gateways:
+    - id: gov                            # letters, digits and dashes; never change it once in use (sessions store papyrus/<id>/<model>)
+      name: Azure OpenAI (Government)
+      kind: azure-openai                 # azure-openai, or openai-compatible (default; vLLM, Ollama, LiteLLM, NIM and most gateways)
+      baseUrl: https://agency-openai.openai.azure.us/openai/v1
+      model: gpt-5.4                     # used when the gateway can't list its models
+      apiKey: { file: /run/secrets/model-key }   # leave out for a gateway with no authentication
+      # capabilities: [chat, streaming, tools]   # the default; also structured_outputs, reasoning, embeddings
+    # - id: local-vllm
+    #   baseUrl: http://localhost:8000/v1        # plain HTTP only on loopback
+    #   model: qwen3-32b
+
+# ─── Agents ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+agents:
+  # limits:                              # organization ceilings no agent can exceed
+  #   maxSteps: 100                      # steps in one run
+  #   timeoutSeconds: 3600               # length of one run
+  #   maxToolCalls: 200                  # tool calls in one run
+  #   maxRuns: 20                        # runs at once
+  #   storageMb: 2048                    # workspace storage
+  #   computeSeconds: 3600               # sandbox compute per run
+  #   taskDays: 7                        # longest a background task may run
+  #   concurrentTasks: 5                 # background tasks one person may have waiting or running per agent
+  # retentionDays: 365                   # days to keep finished runs and settled channel deliveries.
+  #                                      # Approvals, signatures and evidence are never pruned.
+  # policyVersion: '1'                   # changing it invalidates every earlier agent approval
+  signing:
+    hsmKey: https://papyrus-hsm.vault.usgovcloudapi.net/keys/agent-signing-ca/0123456789abcdef0123456789abcdef
+                                         # Key Vault Premium EC-HSM P-256 key for the agent signing CA
+    mfa: amr                             # idp (default): your identity provider's policy decides the factors for the fresh
+                                         # sign-in before signing. amr: the token must also report MFA, a smart card (CAC/PIV)
+                                         # or a hardware key.
+    # sigstore:                          # also accept agent bundles signed with your organization's Sigstore identity
+    #   trustRoot: /etc/papyrus/sigstore/trusted_root.json
+    #   issuer: https://login.microsoftonline.us/00000000-0000-0000-0000-000000000000/v2.0
+    #   cosignPath: /usr/local/bin/cosign
+
+  # Channels let people talk to agents from Teams and GitHub. Leave a channel out and it isn't offered.
+  # Webhook channels need nothing here: each generates its own signing secret in the app.
+  channels:
+    # Your Teams bot (Azure Bot, single tenant). Messaging endpoint:
+    #   <publicOrigin>/api/agent-controllers/papyrus/channels/teams/webhook
+    # The Teams app package to upload is generated in the app. Government clouds follow identity.entra.cloud.
+    teams:
+      appId: 00000000-0000-0000-0000-000000000000
+      tenantId: 00000000-0000-0000-0000-000000000000
+      federatedClientId: 00000000-0000-0000-0000-000000000000   # a managed identity (no secret)...
+      # password: { file: /run/secrets/teams-bot-secret }       # ...or the bot's client secret
+      apiUrl: https://smba.infra.gov.teams.microsoft.us/teams    # GCC High / DoD; leave out for commercial Teams
+      # botName: Papyrus                                         # the bot's name in the app package; default Papyrus
+    # Your GitHub App.
+    #   Webhook URL:  <publicOrigin>/api/agent-controllers/papyrus/channels/github/webhook
+    #   Callback URL: <publicOrigin>/api/agent-channels/github/callback
+    github:
+      appId: '123456'
+      slug: papyrus-agents               # the app's URL name
+      clientId: Iv23liExampleClient
+      clientSecret: { file: /run/secrets/github-client-secret }
+      privateKey: { file: /run/secrets/github-app.pem }
+      webhookSecret: { file: /run/secrets/github-webhook }
+      # apiUrl: https://github.agency.example.gov/api/v3        # GitHub Enterprise Server
+
+# ─── Anything else ───────────────────────────────────────────────────────────────────────────────────────────────────
+# A PAPYRUS_* setting that has no section above yet, by its variable name. Naming one that has a section is an error.
+# env:
+#   PAPYRUS_ATTACHMENT_MAX_MIB: 64

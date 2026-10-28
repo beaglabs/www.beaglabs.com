@@ -1,0 +1,109 @@
+---
+title: Papyrus Developer Documentation
+description: Source-backed configuration and API reference for customer-hosted Papyrus.
+---
+
+# Build inside your boundary.
+
+Papyrus is a customer-hosted agent runtime with governed integrations, workflows, and model endpoints. This guide is paired with the rendered documentation at [/docs/papyrus](/docs/papyrus).
+
+> **Version note:** Verified against the Papyrus source on October 28, 2026. An individual deployment's OpenAPI document and workflow visibility depend on the runtime release and the caller's identity.
+
+## Configuration
+
+Papyrus accepts an optional YAML file named `papyrus.yaml`. Resolution order:
+
+1. `PAPYRUS_CONFIG_FILE` (fails startup if specified but missing).
+2. `/etc/papyrus/papyrus.yaml`.
+3. `./papyrus.yaml` in the working directory.
+
+Precedence: **built-in defaults → YAML → environment**. `PAPYRUS_*` environment values override the corresponding YAML values.
+
+```yaml
+version: 1
+server:
+  mode: persistent
+  profile: commercial
+models:
+  default: local
+  gateways:
+    - id: local
+      kind: openai-compatible
+      baseUrl: http://localhost:8000/v1
+      model: qwen3-32b
+secrets:
+  portalSecret: { file: /run/secrets/papyrus-portal-secret }
+```
+
+This is a deployment illustration. Replace the local gateway, secret path, and profile for your authorized environment.
+
+The source-backed [annotated YAML example](/docs/papyrus/papyrus.example.yaml) and [complete JSON Schema](/docs/papyrus/papyrus.config.schema.json) are downloadable.
+
+### Selected fields
+
+| Property | Values / meaning |
+| --- | --- |
+| `version` | Required constant `1` |
+| `server.mode` | `local`, `persistent` |
+| `server.profile` | `commercial`, `government`, `disconnected` |
+| `server.host`, `server.port` | Listener address and port |
+| `server.publicOrigin` | Public-facing URI |
+| `identity.entra.cloud` | `Public`, `USGov`, `USGovDoD` |
+| `models.default`, `models.gateways[]` | Customer-controlled model gateways |
+| `egress.allowedHosts` | Permitted outbound hosts |
+| `directory.scim.token` | Secret reference for SCIM |
+| `secrets.portalSecret` | Secret reference for portal sessions |
+
+Secrets use `{ file: /path }` or `{ env: VARIABLE_NAME }` and cannot be embedded as plain strings. Relative secret file paths are resolved relative to the YAML file.
+
+### Validate before deployment
+
+```bash
+node apps/server/dist/index.js --check-config
+```
+
+Validation rejects unknown keys, incorrect types, and out-of-range values. It displays the effective source of each setting, redacts secret values, and exits without starting the service. Startup records configuration evidence with a SHA-256 hash and effective-setting digest. Authorized roles can read the evidence at `GET /api/configuration`.
+
+## OpenAPI reference
+
+Papyrus generates an **OpenAPI 3.1** description at:
+
+```http
+GET /api/v1/openapi.json
+```
+
+This document is **caller scoped**. A bearer API key sees only the published workflows granted to it, including typed run operations. A signed-in portal user additionally receives the general route reference and accessible workflows.
+
+```bash
+curl -H "Authorization: Bearer <pap_key_token>" \
+  https://<your-papyrus-origin>/api/v1/openapi.json
+```
+
+Import this result into a Scalar API Reference instance **hosted within the authorized deployment boundary**. The public documentation site does not proxy API keys or customer workflow schemas.
+
+### Credential types
+
+- Portal session cookie: `__Host-papyrus_portal` on HTTPS installations.
+- API key: `Authorization: Bearer pap_key_…`, limited to granted workflows.
+- Signed webhooks: operation-specific signature headers.
+- SCIM: separate bearer token configured at `directory.scim.token`.
+
+### Selected operations
+
+| Method | Route | Function |
+| --- | --- | --- |
+| GET | `/api/v1/openapi.json` | Caller-scoped specification |
+| GET | `/api/v1/workflows` | List visible workflows |
+| POST | `/api/v1/workflows` | Create workflow draft |
+| POST | `/api/v1/workflows/validate` | Validate a workflow definition |
+| GET | `/api/agent-roster` | Governed agent roster |
+| GET | `/api/configuration` | Configuration evidence |
+| GET | `/api/me` | Current portal principal |
+
+Consult the generated OpenAPI response for required schemas, complete operations, security requirements, and error responses. It is authoritative for the running release.
+
+## Operational notes
+
+Papyrus has commercial, government, and disconnected deployment profiles, but a profile is not an authorization to operate or an accreditation. The customer supplies network boundaries, model endpoints, identity services, storage protection, approved cryptographic configuration, and operational controls.
+
+For troubleshooting, see [support](/support). For the product overview, see [Papyrus](/products/papyrus).
