@@ -35,7 +35,7 @@ export default async function CapabilityPage({ params }: { params: Params }) {
   if (!cap) notFound()
 
   return (
-    <main className="bg-[#FAFAF9] text-[#111]">
+    <main className="bg-[#FDEEE1] text-[#1a1714]">
       <AnnouncementBanner />
 
 
@@ -82,17 +82,17 @@ export default async function CapabilityPage({ params }: { params: Params }) {
         asideBare
         aside={<div className="relative mx-auto w-full max-w-[440px] pt-4">
 
-            <div className="absolute -top-4 -left-4 z-10 border-[3px] border-[#111] bg-[#ff5f1f] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[4px_4px_0px_0px_#111]">
+            <div className="absolute -top-4 -left-4 z-10 border-[3px] border-[#1a1714] bg-[#e5632f] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#1a1714] shadow-[4px_4px_0px_0px_#1a1714]">
               {cap.hero.badge}
             </div>
-            <div className="aspect-square overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[10px_10px_0px_0px_#ff5f1f]">
+            <div className="aspect-square overflow-hidden border-[3px] border-[#1a1714] bg-[#1a1714] shadow-[10px_10px_0px_0px_#e5632f]">
               <img
                 src={cap.hero.src}
                 alt={cap.hero.alt}
                 className="h-full w-full object-cover grayscale-[15%] contrast-[1.05]"
               />
             </div>
-            <div className="absolute -bottom-3 -right-3 z-10 border-[3px] border-[#111] bg-white px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#111] shadow-[4px_4px_0px_0px_#111]">
+            <div className="absolute -bottom-3 -right-3 z-10 border-[3px] border-[#1a1714] bg-[#fffaf3] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#1a1714] shadow-[4px_4px_0px_0px_#1a1714]">
               beaglabs / {cap.slug}
             </div>
           </div>
@@ -100,18 +100,18 @@ export default async function CapabilityPage({ params }: { params: Params }) {
       />
 
       {/* ─── INCLUDES ─── */}
-      <section className="border-b-[3px] border-[#111] bg-white px-6 py-20 lg:px-9 lg:py-24">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#fffaf3] px-6 py-20 lg:px-9 lg:py-24">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
                 What&apos;s included
               </span>
-              <h2 className="max-w-[640px] text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#111] sm:text-[40px]">
+              <h2 className="max-w-[640px] text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#1a1714] sm:text-[40px]">
                 The whole vertical slice, not a fragment.
               </h2>
             </div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#555]">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#5b4a3d]">
               {cap.includes.length} sections
             </span>
           </div>
@@ -120,18 +120,18 @@ export default async function CapabilityPage({ params }: { params: Params }) {
             {cap.includes.map((card) => (
               <article
                 key={card.title}
-                className="flex flex-col border-[3px] border-[#111] bg-[#FAFAF9] p-7 shadow-[6px_6px_0px_0px_#111]"
+                className="flex flex-col border-[3px] border-[#1a1714] bg-[#FDEEE1] p-7 shadow-[6px_6px_0px_0px_#1a1714]"
               >
-                <h3 className="mb-3 text-[20px] font-extrabold tracking-[-0.02em] text-[#111]">
+                <h3 className="mb-3 text-[20px] font-extrabold tracking-[-0.02em] text-[#1a1714]">
                   {card.title}
                 </h3>
-                <p className="mb-5 text-[14px] leading-[1.65] text-[#404040] font-medium">
+                <p className="mb-5 text-[14px] leading-[1.65] text-[#4a3d33] font-medium">
                   {card.blurb}
                 </p>
                 <ul className="mt-auto space-y-2.5">
                   {card.bullets.map((b) => (
-                    <li key={b} className="flex gap-2.5 text-[13px] leading-[1.5] text-[#111]">
-                      <span className="mt-1.5 inline-block size-2 shrink-0 bg-[#ff5f1f]" />
+                    <li key={b} className="flex gap-2.5 text-[13px] leading-[1.5] text-[#1a1714]">
+                      <span className="mt-1.5 inline-block size-2 shrink-0 bg-[#e5632f]" />
                       <span className="font-medium">{b}</span>
                     </li>
                   ))}
@@ -143,13 +143,13 @@ export default async function CapabilityPage({ params }: { params: Params }) {
       </section>
 
       {/* ─── PROCESS ─── */}
-      <section className="border-b-[3px] border-[#111] bg-[#FAFAF9] px-6 py-20 lg:px-9 lg:py-24">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#FDEEE1] px-6 py-20 lg:px-9 lg:py-24">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-12">
-            <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+            <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
               How we work
             </span>
-            <h2 className="max-w-[640px] text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#111] sm:text-[40px]">
+            <h2 className="max-w-[640px] text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#1a1714] sm:text-[40px]">
               Three steps. No surprises.
             </h2>
           </div>
@@ -158,20 +158,20 @@ export default async function CapabilityPage({ params }: { params: Params }) {
             {cap.process.map((p, i) => (
               <li
                 key={p.step}
-                className="relative flex flex-col border-[3px] border-[#111] bg-white p-7 shadow-[6px_6px_0px_0px_#111]"
+                className="relative flex flex-col border-[3px] border-[#1a1714] bg-[#fffaf3] p-7 shadow-[6px_6px_0px_0px_#1a1714]"
               >
                 <div className="mb-5 flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center border-[3px] border-[#111] bg-[#ff5f1f] font-mono text-[14px] font-extrabold text-[#111]">
+                  <span className="flex h-10 w-10 items-center justify-center border-[3px] border-[#1a1714] bg-[#e5632f] font-mono text-[14px] font-extrabold text-[#1a1714]">
                     {p.step}
                   </span>
                   {i < cap.process.length - 1 && (
-                    <span className="hidden h-[3px] flex-1 bg-[#111] md:block" />
+                    <span className="hidden h-[3px] flex-1 bg-[#1a1714] md:block" />
                   )}
                 </div>
-                <h3 className="mb-2 text-[22px] font-extrabold tracking-[-0.02em] text-[#111]">
+                <h3 className="mb-2 text-[22px] font-extrabold tracking-[-0.02em] text-[#1a1714]">
                   {p.title}
                 </h3>
-                <p className="text-[14px] leading-[1.6] text-[#404040] font-medium">
+                <p className="text-[14px] leading-[1.6] text-[#4a3d33] font-medium">
                   {p.blurb}
                 </p>
               </li>
@@ -181,14 +181,14 @@ export default async function CapabilityPage({ params }: { params: Params }) {
       </section>
 
       {/* ─── PROOF ─── */}
-      <section className="border-b-[3px] border-[#111] bg-[#111] text-white px-6 py-16 lg:px-9 lg:py-20">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#1a1714] text-[#fffaf3] px-6 py-16 lg:px-9 lg:py-20">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 md:grid-cols-3">
           {cap.proof.map((m) => (
-            <div key={m.label} className="flex flex-col items-start border-l-[3px] border-[#ff5f1f] pl-5">
+            <div key={m.label} className="flex flex-col items-start border-l-[3px] border-[#e5632f] pl-5">
               <span className="text-[56px] font-extrabold leading-[0.95] tracking-[-0.04em] sm:text-[68px]">
                 {m.metric}
               </span>
-              <span className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-[#ff5f1f]">
+              <span className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-[#e5632f]">
                 {m.label}
               </span>
             </div>
@@ -197,24 +197,24 @@ export default async function CapabilityPage({ params }: { params: Params }) {
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#ff5f1f] px-6 py-20 lg:px-9 lg:py-28">
-        <div className="absolute -right-20 -top-20 size-[360px] border-[3px] border-[#111] bg-white shadow-[8px_8px_0px_0px_#111] rotate-6 hidden lg:block" />
-        <div className="absolute -right-10 bottom-10 size-[180px] border-[3px] border-[#111] bg-[#111] shadow-[8px_8px_0px_0px_#111] -rotate-6 hidden lg:block" />
+      <section className="relative overflow-hidden border-b-[3px] border-[#1a1714] bg-[#e5632f] px-6 py-20 lg:px-9 lg:py-28">
+        <div className="absolute -right-20 -top-20 size-[360px] border-[3px] border-[#1a1714] bg-[#fffaf3] shadow-[8px_8px_0px_0px_#1a1714] rotate-6 hidden lg:block" />
+        <div className="absolute -right-10 bottom-10 size-[180px] border-[3px] border-[#1a1714] bg-[#1a1714] shadow-[8px_8px_0px_0px_#1a1714] -rotate-6 hidden lg:block" />
 
         <div className="relative mx-auto max-w-[1440px]">
-          <span className="mb-4 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#111]">
+          <span className="mb-4 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1714]">
             Next step
           </span>
-          <h2 className="mb-5 max-w-[820px] text-[length:min(36px,9vw)] font-extrabold leading-[1.05] tracking-[-0.04em] text-[#111] sm:text-[48px]">
+          <h2 className="mb-5 max-w-[820px] text-[length:min(36px,9vw)] font-extrabold leading-[1.05] tracking-[-0.04em] text-[#1a1714] sm:text-[48px]">
             {cap.cta.headline}
           </h2>
-          <p className="mb-10 max-w-[640px] text-[16px] leading-[1.6] text-[#111] font-medium">
+          <p className="mb-10 max-w-[640px] text-[16px] leading-[1.6] text-[#1a1714] font-medium">
             {cap.cta.blurb}
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/contact"
-              className="nb-btn group inline-flex items-center gap-2 bg-[#111] px-6 py-3 text-[12px] text-white"
+              className="nb-btn group inline-flex items-center gap-2 bg-[#1a1714] px-6 py-3 text-[12px] text-[#fffaf3]"
             >
               Email james@beaglabs.com
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -232,13 +232,13 @@ export default async function CapabilityPage({ params }: { params: Params }) {
       </section>
 
       {/* ─── OTHER CAPABILITIES ─── */}
-      <section className="border-b-[3px] border-[#111] bg-[#FAFAF9] px-6 py-20 lg:px-9 lg:py-24">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#FDEEE1] px-6 py-20 lg:px-9 lg:py-24">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-10">
-            <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+            <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
               Other capabilities
             </span>
-            <h2 className="text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#111] sm:text-[32px]">
+            <h2 className="text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#1a1714] sm:text-[32px]">
               {cap.number === '05' ? 'Start at the beginning' : 'Pick the next one'}
             </h2>
           </div>
@@ -249,9 +249,9 @@ export default async function CapabilityPage({ params }: { params: Params }) {
                 <Link
                   key={c.slug}
                   href={`/capability/${c.slug}`}
-                  className="group flex flex-col border-[3px] border-[#111] bg-white p-5 shadow-[5px_5px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[7px_7px_0px_0px_#ff5f1f]"
+                  className="group flex flex-col border-[3px] border-[#1a1714] bg-[#fffaf3] p-5 shadow-[5px_5px_0px_0px_#1a1714] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[7px_7px_0px_0px_#e5632f]"
                 >
-                  <div className="mb-3 aspect-[4/3] overflow-hidden border-[2px] border-[#111]">
+                  <div className="mb-3 aspect-[4/3] overflow-hidden border-[2px] border-[#1a1714]">
                     <img
                       src={c.hero.src}
                       alt={c.hero.alt}
@@ -259,13 +259,13 @@ export default async function CapabilityPage({ params }: { params: Params }) {
                       loading="lazy"
                     />
                   </div>
-                  <span className="mb-1 font-mono text-[9px] uppercase tracking-[0.18em] text-[#555]">
+                  <span className="mb-1 font-mono text-[9px] uppercase tracking-[0.18em] text-[#5b4a3d]">
                     {c.number} · {c.eyebrow.replace('Capability · ', '')}
                   </span>
-                  <h3 className="mb-2 text-[16px] font-extrabold leading-[1.2] tracking-[-0.015em] text-[#111]">
+                  <h3 className="mb-2 text-[16px] font-extrabold leading-[1.2] tracking-[-0.015em] text-[#1a1714]">
                     {c.title}
                   </h3>
-                  <span className="mt-auto inline-flex items-center gap-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#ff5f1f] group-hover:gap-2 transition-all">
+                  <span className="mt-auto inline-flex items-center gap-1 font-mono text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#e5632f] group-hover:gap-2 transition-all">
                     Open →
                   </span>
                 </Link>
@@ -275,48 +275,48 @@ export default async function CapabilityPage({ params }: { params: Params }) {
       </section>
 
       {/* ─── COMPANY INFO ─── */}
-      <section className="border-b-[3px] border-[#111] bg-[#FAFAF9] px-6 py-20 lg:px-9 lg:py-24">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#FDEEE1] px-6 py-20 lg:px-9 lg:py-24">
         <div className="mx-auto max-w-[1440px]">
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[1.2fr_1fr]">
             <div>
-              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
                 Company information
               </span>
-              <h2 className="mb-6 text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#111] sm:text-[40px]">
+              <h2 className="mb-6 text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#1a1714] sm:text-[40px]">
                 Registered, certified, and ready to contract.
               </h2>
-              <p className="mb-10 max-w-[560px] text-[15px] leading-[1.65] text-[#404040] font-medium">
+              <p className="mb-10 max-w-[560px] text-[15px] leading-[1.65] text-[#4a3d33] font-medium">
                 Beag Labs is a HUBZone-certified small business. We hold an active
                 SBA profile and are registered in SAM.gov with the UEI and CAGE
                 codes below. Send procurement or contracting questions to the
                 email listed.
               </p>
 
-              <dl className="grid grid-cols-1 gap-px bg-[#111] sm:grid-cols-2">
-                <div className="bg-white px-5 py-5">
-                  <dt className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">
+              <dl className="grid grid-cols-1 gap-px bg-[#1a1714] sm:grid-cols-2">
+                <div className="bg-[#fffaf3] px-5 py-5">
+                  <dt className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#5b4a3d]">
                     UEI
                   </dt>
-                  <dd className="font-mono text-[18px] font-extrabold tracking-[0.04em] text-[#111]">
+                  <dd className="font-mono text-[18px] font-extrabold tracking-[0.04em] text-[#1a1714]">
                     {company.uei}
                   </dd>
                 </div>
-                <div className="bg-white px-5 py-5">
-                  <dt className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">
+                <div className="bg-[#fffaf3] px-5 py-5">
+                  <dt className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#5b4a3d]">
                     CAGE
                   </dt>
-                  <dd className="font-mono text-[18px] font-extrabold tracking-[0.04em] text-[#111]">
+                  <dd className="font-mono text-[18px] font-extrabold tracking-[0.04em] text-[#1a1714]">
                     {company.cage}
                   </dd>
                 </div>
-                <div className="bg-white px-5 py-5 sm:col-span-2">
-                  <dt className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#555]">
+                <div className="bg-[#fffaf3] px-5 py-5 sm:col-span-2">
+                  <dt className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#5b4a3d]">
                     Contact
                   </dt>
                   <dd>
                     <a
                       href={`mailto:${company.email}`}
-                      className="font-mono text-[16px] font-extrabold text-[#111] underline decoration-[#ff5f1f] decoration-2 underline-offset-4 transition-colors hover:text-[#ff5f1f]"
+                      className="font-mono text-[16px] font-extrabold text-[#1a1714] underline decoration-[#e5632f] decoration-2 underline-offset-4 transition-colors hover:text-[#e5632f]"
                     >
                       {company.email}
                     </a>
@@ -326,15 +326,15 @@ export default async function CapabilityPage({ params }: { params: Params }) {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="border-[3px] border-[#111] bg-white p-7 shadow-[6px_6px_0px_0px_#111]">
-                <span className="mb-5 block font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+              <div className="border-[3px] border-[#1a1714] bg-[#fffaf3] p-7 shadow-[6px_6px_0px_0px_#1a1714]">
+                <span className="mb-5 block font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
                   Certifications
                 </span>
                 <div className="grid grid-cols-2 gap-4">
                   {(company.certs ?? []).map((cert) => (
                     <div
                       key={cert.label}
-                      className="flex h-28 items-center justify-center border-[2px] border-[#111] bg-[#FAFAF9] p-3"
+                      className="flex h-28 items-center justify-center border-[2px] border-[#1a1714] bg-[#FDEEE1] p-3"
                     >
                       <img
                         src={cert.src}
@@ -347,19 +347,19 @@ export default async function CapabilityPage({ params }: { params: Params }) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 border-[3px] border-[#111] bg-[#111] p-5 text-white shadow-[6px_6px_0px_0px_#ff5f1f]">
-                <span className="flex h-12 w-12 items-center justify-center bg-[#ff5f1f] font-mono text-[20px] font-extrabold text-[#111]">
+              <div className="flex items-center gap-4 border-[3px] border-[#1a1714] bg-[#1a1714] p-5 text-[#fffaf3] shadow-[6px_6px_0px_0px_#e5632f]">
+                <span className="flex h-12 w-12 items-center justify-center bg-[#e5632f] font-mono text-[20px] font-extrabold text-[#1a1714]">
                   {company.logoMark}
                 </span>
                 <div className="flex-1">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#e5632f]">
                     Prepared by
                   </p>
                   <p className="text-[16px] font-extrabold tracking-[-0.015em]">
                     {company.name}
                   </p>
                 </div>
-                <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/50">
+                <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#fffaf3]/50">
                   {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </span>
               </div>
@@ -367,17 +367,17 @@ export default async function CapabilityPage({ params }: { params: Params }) {
               <a
                 href="/capabilities/modernization.pdf"
                 download
-                className="group flex items-center justify-between gap-4 border-[3px] border-[#111] bg-[#ff5f1f] p-5 text-[#111] shadow-[6px_6px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[8px_8px_0px_0px_#111]"
+                className="group flex items-center justify-between gap-4 border-[3px] border-[#1a1714] bg-[#e5632f] p-5 text-[#1a1714] shadow-[6px_6px_0px_0px_#1a1714] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[8px_8px_0px_0px_#1a1714]"
               >
                 <div>
-                  <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.22em] text-[#111]/70">
+                  <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.22em] text-[#1a1714]/70">
                     One-pager
                   </p>
                   <p className="text-[16px] font-extrabold tracking-[-0.015em]">
                     Download PDF brief
                   </p>
                 </div>
-                <span className="flex size-12 items-center justify-center border-[2px] border-[#111] bg-white transition-colors group-hover:bg-[#111] group-hover:text-white">
+                <span className="flex size-12 items-center justify-center border-[2px] border-[#1a1714] bg-[#fffaf3] transition-colors group-hover:bg-[#1a1714] group-hover:text-[#fffaf3]">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
                       d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"

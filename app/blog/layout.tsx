@@ -8,7 +8,7 @@ export default function BlogLayout({
   return (
     <>
 
-      <div className="min-h-screen bg-[#FAFAF9]">
+      <div className="min-h-screen bg-[#FDEEE1]">
         {children}
       </div>
       <SiteFooter />

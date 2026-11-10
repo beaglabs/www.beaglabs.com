@@ -87,7 +87,7 @@ export default async function UseCaseDetailPage({
   }
 
   return (
-    <main className="bg-[#FAFAF9] text-[#111]">
+    <main className="bg-[#FDEEE1] text-[#1a1714]">
       <AnnouncementBanner />
 
 
@@ -99,7 +99,7 @@ export default async function UseCaseDetailPage({
       <EdgyHero
         background="dusk"
         size="md"
-        breadcrumb={<div className="[&_a]:!text-white [&_li]:!text-white [&_ol]:!text-white [&_nav]:!mb-0"><Breadcrumbs
+        breadcrumb={<div className="[&_a]:!text-[#fffaf3] [&_li]:!text-[#fffaf3] [&_ol]:!text-[#fffaf3] [&_nav]:!mb-0"><Breadcrumbs
             items={[
               { name: "Home", url: "/" },
               { name: "Use Cases", url: "/use-cases" },
@@ -111,21 +111,21 @@ export default async function UseCaseDetailPage({
         description={industry.heroDescription}
       />
 
-      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+      <section className="nb-section-divider bg-[#FDEEE1] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#e5632f]">
             Use Cases
           </div>
-          <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+          <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#1a1714] lg:text-[48px]">
             What you can automate.
           </h2>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {industry.useCases.map((uc) => (
-              <div key={uc.title} className="nb-card group bg-white p-8">
-                <h3 className="mb-3 text-[22px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[#111]">
+              <div key={uc.title} className="nb-card group bg-[#fffaf3] p-8">
+                <h3 className="mb-3 text-[22px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[#1a1714]">
                   {uc.title}
                 </h3>
-                <p className="text-[14px] leading-[1.7] text-[#444] font-medium">
+                <p className="text-[14px] leading-[1.7] text-[#4a3d33] font-medium">
                   {uc.description}
                 </p>
               </div>
@@ -134,14 +134,14 @@ export default async function UseCaseDetailPage({
         </div>
       </section>
 
-      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+      <section className="nb-section-divider bg-[#FDEEE1] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <div>
-              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#e5632f]">
                 Benefits
               </div>
-              <h2 className="max-w-[470px] text-[34px] font-extrabold leading-[1.03] tracking-[-0.045em] text-[#111] lg:text-[42px]">
+              <h2 className="max-w-[470px] text-[34px] font-extrabold leading-[1.03] tracking-[-0.045em] text-[#1a1714] lg:text-[42px]">
                 Why teams choose Beag Labs.
               </h2>
             </div>
@@ -151,10 +151,10 @@ export default async function UseCaseDetailPage({
                   key={benefit}
                   className="flex items-start gap-3 border-b border-[rgba(17,17,17,0.08)] pb-4"
                 >
-                  <span className="mt-0.5 text-[#ff5f1f] shrink-0 text-[18px]">
+                  <span className="mt-0.5 text-[#e5632f] shrink-0 text-[18px]">
                     &#10003;
                   </span>
-                  <span className="text-[16px] font-bold leading-[1.5] text-[#111]">
+                  <span className="text-[16px] font-bold leading-[1.5] text-[#1a1714]">
                     {benefit}
                   </span>
                 </li>
@@ -164,24 +164,24 @@ export default async function UseCaseDetailPage({
         </div>
       </section>
 
-      <section className="nb-section-divider bg-[#FAFAF9] px-6 py-24 lg:px-9 lg:py-28">
+      <section className="nb-section-divider bg-[#FDEEE1] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
-          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+          <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#e5632f]">
             Compliance &amp; Security
           </div>
-          <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#111] lg:text-[48px]">
+          <h2 className="mb-12 max-w-[600px] text-[length:min(38px,9vw)] font-extrabold leading-[1.0] tracking-[-0.04em] text-[#1a1714] lg:text-[48px]">
             Built for your security requirements.
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {industry.compliance.map((item) => (
               <div
                 key={item}
-                className="flex items-center gap-3 border-[3px] border-[#111] bg-white px-6 py-5"
+                className="flex items-center gap-3 border-[3px] border-[#1a1714] bg-[#fffaf3] px-6 py-5"
               >
-                <span className="flex h-8 w-8 flex-none items-center justify-center border-[2px] border-[#111] bg-[#ff5f1f] text-[14px] font-extrabold text-[#111]">
+                <span className="flex h-8 w-8 flex-none items-center justify-center border-[2px] border-[#1a1714] bg-[#e5632f] text-[14px] font-extrabold text-[#1a1714]">
                   &#10003;
                 </span>
-                <span className="text-[15px] font-bold leading-[1.4] text-[#111]">
+                <span className="text-[15px] font-bold leading-[1.4] text-[#1a1714]">
                   {item}
                 </span>
               </div>
@@ -190,13 +190,13 @@ export default async function UseCaseDetailPage({
         </div>
       </section>
 
-      <section className="border-t-[3px] border-[#111] bg-[#111] text-white px-6 py-24 lg:px-9 lg:py-28">
+      <section className="border-t-[3px] border-[#1a1714] bg-[#1a1714] text-[#fffaf3] px-6 py-24 lg:px-9 lg:py-28">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.26em] text-[#FFB074]">
               Get started
             </div>
-            <h2 className="mb-4 max-w-[720px] text-[length:min(42px,9vw)] font-extrabold leading-[0.96] tracking-[-0.05em] text-white lg:text-[56px]">
+            <h2 className="mb-4 max-w-[720px] text-[length:min(42px,9vw)] font-extrabold leading-[0.96] tracking-[-0.05em] text-[#fffaf3] lg:text-[56px]">
               {industry.ctaText}
             </h2>
             <p className="max-w-[560px] text-[18px] leading-[1.65] text-[#C9C9C9] font-medium">

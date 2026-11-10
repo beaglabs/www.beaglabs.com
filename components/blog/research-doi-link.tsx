@@ -17,7 +17,7 @@ export function ResearchDoiLink({ doi, title }: ResearchDoiLinkProps) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-full bg-[#111] px-4 py-2 text-[12px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-[#2a2a2a]"
+        className="inline-flex items-center gap-2 rounded-full bg-[#1a1714] px-4 py-2 text-[12px] font-bold uppercase tracking-[0.08em] text-[#fffaf3] transition-colors hover:bg-[#2e2620]"
         onClick={() => posthog.capture('research_pdf_downloaded', { doi, title })}
       >
         <Download className="w-4 h-4" />
@@ -27,7 +27,7 @@ export function ResearchDoiLink({ doi, title }: ResearchDoiLinkProps) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#777] underline underline-offset-2 transition-colors hover:text-[#ff5f1f]"
+        className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#8f7a68] underline underline-offset-2 transition-colors hover:text-[#e5632f]"
       >
         DOI: {doi}
       </a>

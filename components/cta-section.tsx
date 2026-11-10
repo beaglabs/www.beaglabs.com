@@ -4,14 +4,14 @@ import posthog from "posthog-js"
 
 export function CTASection() {
   return (
-    <section id="contact" className="relative bg-white py-32 px-6 lg:px-8 border-t border-[#E5E7EB]">
+    <section id="contact" className="relative bg-[#fffaf3] py-32 px-6 lg:px-8 border-t border-[#E5E7EB]">
       <div className="max-w-4xl mx-auto">
         <div className="border border-[#E5E7EB] p-12 lg:p-20">
-          <div className="font-mono text-xs tracking-widest text-[#ff5f1f] uppercase mb-8">
+          <div className="font-mono text-xs tracking-widest text-[#e5632f] uppercase mb-8">
             Engage With Us
           </div>
 
-          <h2 className="text-3xl lg:text-4xl font-bold text-[#0a0a0a] tracking-[-0.03em] mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-[#120f0d] tracking-[-0.03em] mb-6">
             Ready to solve hard problems
             <br />
             with applied AI research?
@@ -24,7 +24,7 @@ export function CTASection() {
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <a
               href="/contact"
-              className="inline-flex items-center gap-3 font-mono text-xs tracking-wide text-white bg-[#0a0a0a] px-7 py-4 hover:bg-[#ff5f1f] transition-colors"
+              className="inline-flex items-center gap-3 font-mono text-xs tracking-wide text-[#fffaf3] bg-[#120f0d] px-7 py-4 hover:bg-[#e5632f] transition-colors"
               onClick={() => posthog.capture('contact_email_clicked', { location: 'cta_section' })}
             >
               CONTACT US

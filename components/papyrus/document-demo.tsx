@@ -9,7 +9,7 @@ import { DynamicIsland, DynamicIslandProvider, DynamicContainer, useDynamicIslan
 function DocumentStatus({ busy, complete }: { busy: boolean; complete: boolean }) {
   const { setSize } = useDynamicIslandSize()
   useEffect(() => { setSize(busy ? 'large' : 'compactLong') }, [busy, setSize])
-  return <DynamicIsland id="document-status"><DynamicContainer className="flex h-full items-center justify-center gap-3 px-4 font-mono text-xs font-bold"><span className={`h-2 w-2 bg-[#111] ${busy ? 'animate-pulse motion-reduce:animate-none' : ''}`} />{busy ? 'Reading → comparing → drafting' : complete ? 'Source-linked output ready' : 'Your documents. Ready to query.'}</DynamicContainer></DynamicIsland>
+  return <DynamicIsland id="document-status"><DynamicContainer className="flex h-full items-center justify-center gap-3 px-4 font-mono text-xs font-bold"><span className={`h-2 w-2 bg-[#1a1714] ${busy ? 'animate-pulse motion-reduce:animate-none' : ''}`} />{busy ? 'Reading → comparing → drafting' : complete ? 'Source-linked output ready' : 'Your documents. Ready to query.'}</DynamicContainer></DynamicIsland>
 }
 
 const examples = [
@@ -50,36 +50,36 @@ export function DocumentDemo() {
   }
 
   return (
-    <div className="border-[3px] border-[#111] bg-[#f0eee8] shadow-[8px_8px_0_#111]">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-[#111] bg-white px-5 py-3 font-mono text-[10px] font-bold uppercase tracking-[.12em]">
-        <span>01 / Document automation</span><span className="flex items-center gap-2"><span className="h-2 w-2 bg-[#ff5f1f]" />Interactive example · sample documents</span>
+    <div className="border-[3px] border-[#1a1714] bg-[#f0eee8] shadow-[8px_8px_0_#1a1714]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-[#1a1714] bg-[#fffaf3] px-5 py-3 font-mono text-[10px] font-bold uppercase tracking-[.12em]">
+        <span>01 / Document automation</span><span className="flex items-center gap-2"><span className="h-2 w-2 bg-[#e5632f]" />Interactive example · sample documents</span>
       </div>
       <div className="grid items-center gap-7 p-5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:p-7">
         <div className="min-w-0">
           <p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-widest">Your existing knowledge → working context</p>
-          <FluidRendering className="h-auto w-full overflow-visible" cardFill="white" cardStroke="#111" connectorFill="#ff5f1f" connectorStroke="#111" connectorLineColor="#111" mutedTextColor="#111" textColor="#111" topIcon={<text y="10" fontSize="12" fill="#111">✓</text>} upperMidIcon={<text y="10" fontSize="12" fill="#111">?</text>} lowerMidIcon={<text y="10" fontSize="12" fill="#111">↗</text>} bottomIcon={<text y="10" fontSize="12" fill="#111">✓</text>} />
-          <p className="mt-4 text-xs leading-5 text-[#555]">Program brief.pdf · Intake policy.docx · Delivery plan.xlsx / CSV</p>
-          <p className="mt-2 text-[10px] text-[#777]">File icons: <a href="https://www.flaticon.com/free-icon/pdf_337946" className="underline">Dimitry Miroliubov</a>, <a href="https://www.flaticon.com/free-icon/docx_7817499" className="underline">Freepik (DOCX)</a> &amp; <a href="https://www.flaticon.com/free-icon/csv_8242984" className="underline">mpanicon (CSV)</a> via Flaticon.</p>
+          <FluidRendering className="h-auto w-full overflow-visible" cardFill="white" cardStroke="#1a1714" connectorFill="#e5632f" connectorStroke="#1a1714" connectorLineColor="#1a1714" mutedTextColor="#1a1714" textColor="#1a1714" topIcon={<text y="10" fontSize="12" fill="#1a1714">✓</text>} upperMidIcon={<text y="10" fontSize="12" fill="#1a1714">?</text>} lowerMidIcon={<text y="10" fontSize="12" fill="#1a1714">↗</text>} bottomIcon={<text y="10" fontSize="12" fill="#1a1714">✓</text>} />
+          <p className="mt-4 text-xs leading-5 text-[#5b4a3d]">Program brief.pdf · Intake policy.docx · Delivery plan.xlsx / CSV</p>
+          <p className="mt-2 text-[10px] text-[#8f7a68]">File icons: <a href="https://www.flaticon.com/free-icon/pdf_337946" className="underline">Dimitry Miroliubov</a>, <a href="https://www.flaticon.com/free-icon/docx_7817499" className="underline">Freepik (DOCX)</a> &amp; <a href="https://www.flaticon.com/free-icon/csv_8242984" className="underline">mpanicon (CSV)</a> via Flaticon.</p>
         </div>
-        <div className="min-w-0 border-[3px] border-[#111] bg-white p-4">
-          <p className="mb-3 flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest"><span className="h-2 w-2 bg-[#ff5f1f]" />Ask Papyrus</p>
+        <div className="min-w-0 border-[3px] border-[#1a1714] bg-[#fffaf3] p-4">
+          <p className="mb-3 flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest"><span className="h-2 w-2 bg-[#e5632f]" />Ask Papyrus</p>
           <form onSubmit={event => { event.preventDefault(); run() }}>
             <label htmlFor="document-prompt" className="sr-only">Document prompt</label>
-            <textarea id="document-prompt" value={query} onChange={event => setQuery(event.target.value)} rows={3} maxLength={300} required className="w-full resize-none border-2 border-[#111] bg-[#fafaf9] p-3 text-sm leading-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff5f1f]" />
+            <textarea id="document-prompt" value={query} onChange={event => setQuery(event.target.value)} rows={3} maxLength={300} required className="w-full resize-none border-2 border-[#1a1714] bg-[#fdeee1] p-3 text-sm leading-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e5632f]" />
             <button disabled={busy} type="submit" className="nb-btn-orange mt-3 flex w-full items-center justify-between px-3 py-3 text-xs disabled:opacity-60">{busy ? 'Reading sample sources…' : 'Run example'}<Send className="h-4 w-4" aria-hidden="true" /></button>
           </form>
         </div>
       </div>
       <div className="px-5 pb-6"><DynamicIslandProvider initialSize="compactLong"><DocumentStatus busy={busy} complete={result !== null} /></DynamicIslandProvider></div>
       <div className="flex flex-wrap items-center gap-2 px-5 pb-5 lg:px-7">
-        <span className="mr-1 font-mono text-[10px] uppercase text-[#555]">Try a prompt</span>
-        {examples.map((example, index) => <button key={example.prompt} disabled={busy} onClick={() => { setQuery(example.prompt); setResult(null) }} className="border-2 border-[#111] bg-white px-3 py-2 text-[11px] font-bold transition-colors hover:bg-[#ff5f1f] disabled:opacity-60">{['Requirements', 'Find gaps', 'Acceptance criteria'][index]}<ArrowRight className="ml-2 inline h-3 w-3" aria-hidden="true" /></button>)}
+        <span className="mr-1 font-mono text-[10px] uppercase text-[#5b4a3d]">Try a prompt</span>
+        {examples.map((example, index) => <button key={example.prompt} disabled={busy} onClick={() => { setQuery(example.prompt); setResult(null) }} className="border-2 border-[#1a1714] bg-[#fffaf3] px-3 py-2 text-[11px] font-bold transition-colors hover:bg-[#e5632f] disabled:opacity-60">{['Requirements', 'Find gaps', 'Acceptance criteria'][index]}<ArrowRight className="ml-2 inline h-3 w-3" aria-hidden="true" /></button>)}
       </div>
-      <div aria-live="polite" aria-busy={busy} className="border-t-[3px] border-[#111] bg-white p-5 lg:p-7">
-        {result === null ? <p className="text-sm text-[#555]">{busy ? 'Organizing context → comparing source documents → drafting an output.' : 'Run an example to see source-linked requirements, gaps, or acceptance criteria.'}</p> : <>
+      <div aria-live="polite" aria-busy={busy} className="border-t-[3px] border-[#1a1714] bg-[#fffaf3] p-5 lg:p-7">
+        {result === null ? <p className="text-sm text-[#5b4a3d]">{busy ? 'Organizing context → comparing source documents → drafting an output.' : 'Run an example to see source-linked requirements, gaps, or acceptance criteria.'}</p> : <>
           <div className="mb-5 flex items-start justify-between gap-3"><h3 className="text-lg font-extrabold">{examples[result].heading}</h3><button aria-label="Reset document example" onClick={() => { setResult(null); setQuery(examples[0].prompt) }} className="p-1"><RotateCcw className="h-4 w-4" /></button></div>
-          <div className="grid gap-3 md:grid-cols-3">{examples[result].rows.map(([id, requirement, source]) => <article key={id} className="border-2 border-[#111] bg-[#fafaf9] p-4"><p className="flex items-center gap-2 font-mono text-[10px] font-bold text-[#b63700]"><Check className="h-3 w-3" aria-hidden="true" />{id}</p><p className="my-3 text-sm font-semibold leading-6">{requirement}</p><p className="border-t border-[#ccc] pt-3 font-mono text-[10px] leading-5 text-[#555]">{source}</p></article>)}</div>
-          <p className="mt-4 text-xs text-[#666]">Illustrative outputs from the sample documents. In Papyrus, your source material becomes the working context.</p>
+          <div className="grid gap-3 md:grid-cols-3">{examples[result].rows.map(([id, requirement, source]) => <article key={id} className="border-2 border-[#1a1714] bg-[#fdeee1] p-4"><p className="flex items-center gap-2 font-mono text-[10px] font-bold text-[#b63700]"><Check className="h-3 w-3" aria-hidden="true" />{id}</p><p className="my-3 text-sm font-semibold leading-6">{requirement}</p><p className="border-t border-[#dcc6ab] pt-3 font-mono text-[10px] leading-5 text-[#5b4a3d]">{source}</p></article>)}</div>
+          <p className="mt-4 text-xs text-[#6f5a4b]">Illustrative outputs from the sample documents. In Papyrus, your source material becomes the working context.</p>
         </>}
       </div>
     </div>

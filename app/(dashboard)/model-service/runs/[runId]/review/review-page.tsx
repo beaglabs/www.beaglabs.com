@@ -33,7 +33,7 @@ function highlightMatches(text: string, highlights: string[]): React.ReactNode {
 
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} style={{ backgroundColor: "#FFE0C0", color: "#111", borderRadius: "2px", padding: "0 1px" }}>
+      <mark key={i} style={{ backgroundColor: "#FFE0C0", color: "#1a1714", borderRadius: "2px", padding: "0 1px" }}>
         {part}
       </mark>
     ) : (
@@ -58,20 +58,20 @@ function ReviewProgressBar({ reviewed, total, startTime }: { reviewed: number; t
     <div className="mb-6">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-[#111]">
+          <span className="text-sm font-semibold text-[#1a1714]">
             {reviewed} / {total}
           </span>
-          <span className="text-[11px] text-[#999]">reviewed</span>
+          <span className="text-[11px] text-[#a08b78]">reviewed</span>
           {etaMinutes != null && etaMinutes > 0 && (
-            <span className="text-[11px] text-[#ff5f1f]">{formatEstimate(etaMinutes)} remaining</span>
+            <span className="text-[11px] text-[#e5632f]">{formatEstimate(etaMinutes)} remaining</span>
           )}
         </div>
-        <span className="text-[11px] text-[#999]">{Math.round(pct)}%</span>
+        <span className="text-[11px] text-[#a08b78]">{Math.round(pct)}%</span>
       </div>
-      <div className="h-2 bg-[#E2E0DB] rounded-full overflow-hidden">
+      <div className="h-2 bg-[#E2C9A6] rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${pct}%`, backgroundColor: pct === 100 ? "#2E7D32" : "#ff5f1f" }}
+          style={{ width: `${pct}%`, backgroundColor: pct === 100 ? "#2E7D32" : "#e5632f" }}
         />
       </div>
     </div>
@@ -89,8 +89,8 @@ function ShortcutHints() {
         { key: "u", label: "Uncertain" },
         { key: "Enter", label: "Submit" },
       ].map(({ key, label }) => (
-        <span key={key} className="flex items-center gap-1.5 text-[10px] text-[#999]">
-          <kbd className="bg-[#E2E0DB] text-[#555] rounded px-1.5 py-0.5 text-[9px] font-mono leading-none">
+        <span key={key} className="flex items-center gap-1.5 text-[10px] text-[#a08b78]">
+          <kbd className="bg-[#E2C9A6] text-[#5b4a3d] rounded px-1.5 py-0.5 text-[9px] font-mono leading-none">
             {key}
           </kbd>
           {label}
@@ -197,7 +197,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
   if (loading || !examples) {
     return (
       <div className="text-center py-24">
-        <p className="text-sm text-[#777]">Loading review queue...</p>
+        <p className="text-sm text-[#8f7a68]">Loading review queue...</p>
       </div>
     );
   }
@@ -208,8 +208,8 @@ export function ReviewPage({ runId }: ReviewPageProps) {
         <div className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: "#E8F5E9" }}>
           <span className="text-[20px]" style={{ color: "#2E7D32" }}>&#10003;</span>
         </div>
-        <p className="text-[17px] font-semibold text-[#111] tracking-[-0.03em]">All reviews submitted</p>
-        <p className="text-sm text-[#777] mt-2">Retraining triggered. Redirecting...</p>
+        <p className="text-[17px] font-semibold text-[#1a1714] tracking-[-0.03em]">All reviews submitted</p>
+        <p className="text-sm text-[#8f7a68] mt-2">Retraining triggered. Redirecting...</p>
       </div>
     );
   }
@@ -217,9 +217,9 @@ export function ReviewPage({ runId }: ReviewPageProps) {
   if (examples.length === 0) {
     return (
       <div className="text-center py-24">
-        <p className="text-[15px] text-[#777]">No contested examples to review.</p>
+        <p className="text-[15px] text-[#8f7a68]">No contested examples to review.</p>
         <Link href={`/model-service/runs/${runId}`} className="block mt-4">
-          <Button variant="outline" className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 border-[#E2E0DB]">
+          <Button variant="outline" className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 border-[#E2C9A6]">
             Back to Run
           </Button>
         </Link>
@@ -236,11 +236,11 @@ export function ReviewPage({ runId }: ReviewPageProps) {
         <div>
           <Link
             href={`/model-service/runs/${runId}`}
-            className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] hover:text-[#ff5f1f] transition-colors"
+            className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] hover:text-[#e5632f] transition-colors"
           >
             ← Run Detail
           </Link>
-          <h1 className="text-[17px] font-semibold text-[#111] tracking-[-0.03em] mt-2">Label Review</h1>
+          <h1 className="text-[17px] font-semibold text-[#1a1714] tracking-[-0.03em] mt-2">Label Review</h1>
         </div>
         <div className="text-right">
           <ShortcutHints />
@@ -260,7 +260,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2 space-y-4">
           {/* Example card */}
-          <Card className="bg-white border-[#E2E0DB]">
+          <Card className="bg-[#fffaf3] border-[#E2C9A6]">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <Badge variant="outline" className="text-[10px] uppercase tracking-[0.1em]">
@@ -268,24 +268,24 @@ export function ReviewPage({ runId }: ReviewPageProps) {
                 </Badge>
                 <div className="flex items-center gap-2">
                   {reviews[current.id] && (
-                    <Badge style={{ backgroundColor: "#2E7D32", color: "#fff" }} className="text-[9px]">
+                    <Badge style={{ backgroundColor: "#2E7D32", color: "#fffaf3" }} className="text-[9px]">
                       Reviewed
                     </Badge>
                   )}
-                  <span className="text-[10px] text-[#999]">
+                  <span className="text-[10px] text-[#a08b78]">
                     KL: {((current.kl_divergence ?? 0) * 1000).toFixed(0)}e-3
                   </span>
                   {current.model_confidence != null && (
-                    <span className="text-[10px] text-[#999]">
+                    <span className="text-[10px] text-[#a08b78]">
                       Conf: {(current.model_confidence * 100).toFixed(0)}%
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="bg-[#F5F4F0] rounded-lg p-4">
-                <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] mb-2">Input Data</p>
-                <div className="text-sm text-[#111] whitespace-pre-wrap font-sans leading-relaxed">
+              <div className="bg-[#FDEEE1] rounded-lg p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] mb-2">Input Data</p>
+                <div className="text-sm text-[#1a1714] whitespace-pre-wrap font-sans leading-relaxed">
                   {highlightMatches(formatInputData(current.input_data), extractKeywords(current))}
                 </div>
               </div>
@@ -293,7 +293,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
               {current.metadata && Object.keys(current.metadata).length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {Object.entries(current.metadata).map(([key, value]) => (
-                    <span key={key} className="text-[10px] text-[#777] bg-[#F5F4F0] px-2 py-1 rounded">
+                    <span key={key} className="text-[10px] text-[#8f7a68] bg-[#FDEEE1] px-2 py-1 rounded">
                       {key}: {typeof value === "string" ? (value.length > 40 ? value.slice(0, 40) + "..." : value) : String(value)}
                     </span>
                   ))}
@@ -308,9 +308,9 @@ export function ReviewPage({ runId }: ReviewPageProps) {
               variant="outline"
               onClick={handlePrev}
               disabled={currentIdx === 0}
-              className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 border-[#E2E0DB]"
+              className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 border-[#E2C9A6]"
             >
-              ← Prev <kbd className="ml-1 bg-[#E2E0DB] rounded px-1 text-[9px]">k</kbd>
+              ← Prev <kbd className="ml-1 bg-[#E2C9A6] rounded px-1 text-[9px]">k</kbd>
             </Button>
 
             <div className="flex items-center gap-1">
@@ -322,7 +322,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
                     onClick={() => setCurrentIdx(idx)}
                     className="w-2 h-2 rounded-full transition-all"
                     style={{
-                      backgroundColor: idx === currentIdx ? "#ff5f1f" : reviews[ex.id] ? "#2E7D32" : "#E2E0DB",
+                      backgroundColor: idx === currentIdx ? "#e5632f" : reviews[ex.id] ? "#2E7D32" : "#E2C9A6",
                       transform: idx === currentIdx ? "scale(1.2)" : "scale(1)",
                     }}
                   />
@@ -334,41 +334,41 @@ export function ReviewPage({ runId }: ReviewPageProps) {
               variant="outline"
               onClick={handleNext}
               disabled={currentIdx === examples.length - 1}
-              className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 border-[#E2E0DB]"
+              className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 border-[#E2C9A6]"
             >
-              <kbd className="mr-1 bg-[#E2E0DB] rounded px-1 text-[9px]">j</kbd> Next →
+              <kbd className="mr-1 bg-[#E2C9A6] rounded px-1 text-[9px]">j</kbd> Next →
             </Button>
           </div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-4">
-          <Card className="bg-white border-[#E2E0DB]">
+          <Card className="bg-[#fffaf3] border-[#E2C9A6]">
             <CardContent className="p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] mb-3">Labels</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] mb-3">Labels</p>
 
               <div className="space-y-3">
                 <div>
-                  <p className="text-[10px] text-[#999]">Frontier (DeepSeek)</p>
+                  <p className="text-[10px] text-[#a08b78]">Frontier (DeepSeek)</p>
                   <Badge variant="outline" className="mt-1 text-xs">
                     {current.frontier_label || "—"}
                   </Badge>
                 </div>
 
                 <div>
-                  <p className="text-[10px] text-[#999]">Student Model</p>
+                  <p className="text-[10px] text-[#a08b78]">Student Model</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant="secondary" className="text-xs">{current.model_label || "—"}</Badge>
                     {current.model_confidence != null && (
-                      <span className="text-[10px] text-[#999]">{(current.model_confidence * 100).toFixed(0)}%</span>
+                      <span className="text-[10px] text-[#a08b78]">{(current.model_confidence * 100).toFixed(0)}%</span>
                     )}
                   </div>
                 </div>
 
                 {reviews[current.id] && (
                   <div>
-                    <p className="text-[10px] text-[#999]">Your Correction</p>
-                    <Badge className="mt-1 text-xs" style={{ backgroundColor: "#2E7D32", color: "#fff" }}>
+                    <p className="text-[10px] text-[#a08b78]">Your Correction</p>
+                    <Badge className="mt-1 text-xs" style={{ backgroundColor: "#2E7D32", color: "#fffaf3" }}>
                       {reviews[current.id]}
                     </Badge>
                   </div>
@@ -377,22 +377,22 @@ export function ReviewPage({ runId }: ReviewPageProps) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-[#E2E0DB]">
+          <Card className="bg-[#fffaf3] border-[#E2C9A6]">
             <CardContent className="p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] mb-3">
+              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] mb-3">
                 Quick Correct
               </p>
               <div className="space-y-2">
                 {[
                   { label: "Correct", key: "c", color: "#2E7D32" },
                   { label: "Incorrect", key: "w", color: "#D32F2F" },
-                  { label: "Uncertain", key: "u", color: "#999" },
+                  { label: "Uncertain", key: "u", color: "#a08b78" },
                 ].map(({ label, key, color }) => (
                   <Button
                     key={label}
                     onClick={() => handleLabel(label)}
                     className="w-full rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 justify-between px-4"
-                    style={{ backgroundColor: color, color: "#fff" }}
+                    style={{ backgroundColor: color, color: "#fffaf3" }}
                     disabled={!!reviews[current.id]}
                   >
                     {label}
@@ -407,7 +407,7 @@ export function ReviewPage({ runId }: ReviewPageProps) {
             onClick={submitAll}
             disabled={reviewedCount === 0 || submitting}
             className="w-full rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-10"
-            style={{ backgroundColor: "#ff5f1f" }}
+            style={{ backgroundColor: "#e5632f" }}
           >
             {submitting
               ? "Submitting..."

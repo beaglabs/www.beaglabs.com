@@ -4,11 +4,11 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const alertVariants = cva(
-  'relative w-full rounded-lg border border-[#111] px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
+  'relative w-full rounded-lg border border-[#1a1714] px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
   {
     variants: {
       variant: {
-        default: 'bg-white text-[#111]',
+        default: 'bg-[#fffaf3] text-[#1a1714]',
         destructive:
           'bg-[#fee2e2] text-[#7f1d1d] [&>svg]:text-current *:data-[slot=alert-description]:text-[#7f1d1d]',
       },
@@ -55,7 +55,7 @@ function AlertDescription({
     <div
       data-slot="alert-description"
       className={cn(
-        'col-start-2 grid justify-items-start gap-1 text-sm text-[#444] [&_p]:leading-relaxed',
+        'col-start-2 grid justify-items-start gap-1 text-sm text-[#4a3d33] [&_p]:leading-relaxed',
         className,
       )}
       {...props}

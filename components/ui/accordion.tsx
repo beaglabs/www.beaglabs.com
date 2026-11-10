@@ -18,7 +18,7 @@ function AccordionItem({
     <AccordionPrimitive.Item
       data-slot="accordion-item"
       className={cn(
-        'mb-4 overflow-hidden border-2 border-[#111] bg-white shadow-[4px_4px_0px_0px_#111]',
+        'mb-4 overflow-hidden border-2 border-[#1a1714] bg-[#fffaf3] shadow-[4px_4px_0px_0px_#1a1714]',
         className,
       )}
       {...props}
@@ -36,13 +36,13 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          'flex flex-1 items-center justify-between gap-4 p-4 text-left text-[15px] font-extrabold text-[#111] outline-none transition-colors hover:bg-[#fff5ee] focus-visible:ring-[3px] focus-visible:ring-[#ff5f1f] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]]:border-b-2 [&[data-state=open]]:border-[#111] [&[data-state=open]>svg]:rotate-180',
+          'flex flex-1 items-center justify-between gap-4 p-4 text-left text-[15px] font-extrabold text-[#1a1714] outline-none transition-colors hover:bg-[#fff5ee] focus-visible:ring-[3px] focus-visible:ring-[#e5632f] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]]:border-b-2 [&[data-state=open]]:border-[#1a1714] [&[data-state=open]>svg]:rotate-180',
           className,
         )}
         {...props}
       >
         {children}
-        <ChevronDownIcon className="pointer-events-none size-5 shrink-0 text-[#ff5f1f] transition-transform duration-200" />
+        <ChevronDownIcon className="pointer-events-none size-5 shrink-0 text-[#e5632f] transition-transform duration-200" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )
@@ -56,10 +56,10 @@ function AccordionContent({
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden bg-[#FAFAF9]"
+      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden bg-[#FDEEE1]"
       {...props}
     >
-      <div className={cn('p-4 text-[14px] font-medium leading-relaxed text-[#444]', className)}>
+      <div className={cn('p-4 text-[14px] font-medium leading-relaxed text-[#4a3d33]', className)}>
         {children}
       </div>
     </AccordionPrimitive.Content>

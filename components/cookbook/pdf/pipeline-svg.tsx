@@ -28,7 +28,7 @@ export function PipelineSvg({ steps }: PipelineSvgProps) {
           markerHeight="8"
           orient="auto"
         >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="#111111" />
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a1714" />
         </marker>
       </defs>
 
@@ -42,8 +42,8 @@ export function PipelineSvg({ steps }: PipelineSvgProps) {
               y={y}
               width={boxW}
               height={boxH}
-              fill="#FAFAF9"
-              stroke="#111111"
+              fill="#FDEEE1"
+              stroke="#1a1714"
               strokeWidth={2}
               rx={0}
             />
@@ -52,7 +52,7 @@ export function PipelineSvg({ steps }: PipelineSvgProps) {
               y={y + boxH / 2}
               dominantBaseline="middle"
               textAnchor="middle"
-              fill="#111111"
+              fill="#1a1714"
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontSize: 9,
@@ -68,7 +68,7 @@ export function PipelineSvg({ steps }: PipelineSvgProps) {
                 y1={y + boxH / 2}
                 x2={x + boxW + gap}
                 y2={y + boxH / 2}
-                stroke="#111111"
+                stroke="#1a1714"
                 strokeWidth={2}
                 markerEnd="url(#arrow)"
               />

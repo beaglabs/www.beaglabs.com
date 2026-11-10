@@ -655,7 +655,7 @@ function MarkerContent({ children, className }: MarkerContentProps) {
 
 function DefaultMarkerIcon() {
   return (
-    <div className="relative h-4 w-4 rounded-full border-2 border-white bg-blue-500 shadow-lg" />
+    <div className="relative h-4 w-4 rounded-full border-2 border-[#fffaf3] bg-blue-500 shadow-lg" />
   );
 }
 
@@ -1828,8 +1828,8 @@ type MapGeoJSONProps<
 // theme tokens), tuned for a typical light/dark surface. Override via
 // `fillPaint` / `linePaint`.
 const GEOJSON_DEFAULT_COLORS = {
-  light: { fill: "#d4d4d4", line: "#ffffff" },
-  dark: { fill: "#404040", line: "#171717" },
+  light: { fill: "#d4d4d4", line: "#fffaf3" },
+  dark: { fill: "#4a3d33", line: "#171717" },
 } satisfies Record<Theme, { fill: string; line: string }>;
 
 /**
@@ -2491,7 +2491,7 @@ function MapClusterLayer<
           40,
         ],
         "circle-stroke-width": 0.75,
-        "circle-stroke-color": "#fff",
+        "circle-stroke-color": "#fffaf3",
         "circle-opacity": 0.85,
       },
     });
@@ -2508,7 +2508,7 @@ function MapClusterLayer<
         "text-size": 12,
       },
       paint: {
-        "text-color": "#fff",
+        "text-color": "#fffaf3",
       },
     });
 
@@ -2522,7 +2522,7 @@ function MapClusterLayer<
         "circle-color": pointColor,
         "circle-radius": 5,
         "circle-stroke-width": 2,
-        "circle-stroke-color": "#fff",
+        "circle-stroke-color": "#fffaf3",
       },
     });
 

@@ -26,38 +26,38 @@ export function ExtractionReview() {
   return <DemoWindow title="Extraction review · building-permit-2291.pdf">
     <div className="grid gap-0 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
       {/* the source page */}
-      <div className="relative border-b-[3px] border-[#111] bg-[#f4f2ef] p-4 md:border-b-0 md:border-r-[3px]">
-        <div className="relative mx-auto aspect-[8.5/11] w-full max-w-[260px] border-2 border-[#111] bg-white p-3">
-          <div className="h-2 w-1/2 bg-[#111]" />
-          <div className="mt-1.5 h-1 w-1/3 bg-[#bbb]" />
+      <div className="relative border-b-[3px] border-[#1a1714] bg-[#f4f2ef] p-4 md:border-b-0 md:border-r-[3px]">
+        <div className="relative mx-auto aspect-[8.5/11] w-full max-w-[260px] border-2 border-[#1a1714] bg-[#fffaf3] p-3">
+          <div className="h-2 w-1/2 bg-[#1a1714]" />
+          <div className="mt-1.5 h-1 w-1/3 bg-[#b8a28c]" />
           {[18, 30, 42, 54, 60, 74, 80, 86].map((top, i) => <div key={i} className="absolute left-[8%] h-[3%] bg-[#d9d9d9]" style={{ top: `${top + 2}%`, width: `${[52, 30, 40, 76, 60, 70, 46, 30][i]}%` }} />)}
-          <div className="absolute bottom-[6%] right-[8%] h-[6%] w-[28%] border-b-2 border-[#111]" />
+          <div className="absolute bottom-[6%] right-[8%] h-[6%] w-[28%] border-b-2 border-[#1a1714]" />
           {fields.map((f) => <button
             key={f.key} type="button" aria-label={`Show ${f.label} on the page`} onClick={() => setActive(f.key)}
-            className={`absolute transition-all ${active === f.key ? 'border-2 border-[#ff5f1f] bg-[#ff5f1f]/15' : f.confidence < 90 ? 'border-2 border-dashed border-[#c2410c]/60' : 'border border-[#111]/20'}`}
+            className={`absolute transition-all ${active === f.key ? 'border-2 border-[#e5632f] bg-[#e5632f]/15' : f.confidence < 90 ? 'border-2 border-dashed border-[#c2410c]/60' : 'border border-[#1a1714]/20'}`}
             style={{ top: `${f.box.top}%`, left: `${f.box.left}%`, width: `${f.box.width}%`, height: `${f.box.height}%` }}
           />)}
         </div>
-        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[.12em] text-[#555]">Page 1 of 3 · source evidence</p>
+        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[.12em] text-[#5b4a3d]">Page 1 of 3 · source evidence</p>
       </div>
 
       {/* the extracted record */}
       <div className="flex flex-col">
-        <ul className="divide-y-2 divide-[#111]/10">
+        <ul className="divide-y-2 divide-[#1a1714]/10">
           {fields.map((f) => <li key={f.key}>
-            <button type="button" onClick={() => setActive(f.key)} className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 px-4 py-2.5 text-left transition-colors ${active === f.key ? 'bg-[#fff1e9]' : 'hover:bg-[#f7f7f7]'}`}>
+            <button type="button" onClick={() => setActive(f.key)} className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 px-4 py-2.5 text-left transition-colors ${active === f.key ? 'bg-[#fde3c8]' : 'hover:bg-[#f7f7f7]'}`}>
               <span className="min-w-0">
-                <span className="block font-mono text-[10px] uppercase tracking-[.12em] text-[#666]">{f.label}</span>
+                <span className="block font-mono text-[10px] uppercase tracking-[.12em] text-[#6f5a4b]">{f.label}</span>
                 <span className="block truncate text-[14px] font-semibold">{f.value}</span>
               </span>
               <span className="flex items-center gap-2">
-                <span className="h-2 w-16 border border-[#111] bg-white"><span className={`block h-full ${f.confidence < 90 ? 'bg-[#c2410c]' : 'bg-[#111]'}`} style={{ width: `${f.confidence}%` }} /></span>
+                <span className="h-2 w-16 border border-[#1a1714] bg-[#fffaf3]"><span className={`block h-full ${f.confidence < 90 ? 'bg-[#c2410c]' : 'bg-[#1a1714]'}`} style={{ width: `${f.confidence}%` }} /></span>
                 <span className={`w-9 text-right font-mono text-[11px] font-bold ${f.confidence < 90 ? 'text-[#c2410c]' : ''}`}>{f.confidence}%</span>
               </span>
             </button>
           </li>)}
         </ul>
-        <div className="mt-auto border-t-[3px] border-[#111] p-4">
+        <div className="mt-auto border-t-[3px] border-[#1a1714] p-4">
           {current.confidence < 90 && !fixed
             ? <div className="flex flex-wrap items-center gap-3"><p className="flex-1 text-[13px] font-semibold"><span className="text-[#c2410c]">Held for review:</span> one digit is unreadable. Confirm against the state license lookup.</p>
               <button type="button" onClick={() => setFixed(true)} className="nb-btn-white px-3 py-2 font-mono text-[10px] uppercase tracking-[.1em]">Use C-10 884172</button></div>

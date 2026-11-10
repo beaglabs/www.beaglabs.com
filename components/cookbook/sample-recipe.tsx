@@ -12,12 +12,12 @@ export function SampleRecipe() {
     <div className="nb-card p-8">
       <div className="mb-4 flex items-center gap-3">
         <span className="nb-label text-[10px]">Sample Recipe</span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff5f1f]">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#e5632f]">
           {'★'.repeat(sampleRecipe.complexity)}{'☆'.repeat(5 - sampleRecipe.complexity)}
         </span>
       </div>
 
-      <h3 className="mb-3 text-[24px] font-extrabold tracking-[-0.03em] text-[#111]">
+      <h3 className="mb-3 text-[24px] font-extrabold tracking-[-0.03em] text-[#1a1714]">
         {sampleRecipe.title}
       </h3>
 
@@ -29,22 +29,22 @@ export function SampleRecipe() {
         ))}
       </div>
 
-      <p className="mb-6 text-[14px] leading-[1.65] text-[#555]">
+      <p className="mb-6 text-[14px] leading-[1.65] text-[#5b4a3d]">
         {sampleRecipe.coreIdea}
       </p>
 
-      <div className="border-[2px] border-[#111] bg-[#FAFAF9] p-5">
-        <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.14em] text-[#999]">
+      <div className="border-[2px] border-[#1a1714] bg-[#FDEEE1] p-5">
+        <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.14em] text-[#a08b78]">
           Training Pipeline
         </p>
         <div className="flex flex-wrap items-center gap-2">
           {sampleRecipe.pipeline.map((step, i) => (
             <span key={step} className="flex items-center gap-2">
-              <span className="border-[2px] border-[#111] bg-white px-3 py-2 font-mono text-[10px] font-bold text-[#111]">
+              <span className="border-[2px] border-[#1a1714] bg-[#fffaf3] px-3 py-2 font-mono text-[10px] font-bold text-[#1a1714]">
                 {step}
               </span>
               {i < sampleRecipe.pipeline.length - 1 && (
-                <span className="text-[16px] text-[#ff5f1f]">&rarr;</span>
+                <span className="text-[16px] text-[#e5632f]">&rarr;</span>
               )}
             </span>
           ))}

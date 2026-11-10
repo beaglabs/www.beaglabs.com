@@ -6,7 +6,7 @@ export function SignOutButton() {
   return (
     <button
       onClick={() => authClient.signOut()}
-      className="text-sm text-[#777] hover:text-[#ff5f1f] transition-colors"
+      className="text-sm text-[#8f7a68] hover:text-[#e5632f] transition-colors"
     >
       Sign Out
     </button>

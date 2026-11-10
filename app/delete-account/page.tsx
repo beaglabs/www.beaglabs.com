@@ -54,7 +54,7 @@ export default function DeleteAccountPage() {
           </div>
         </div>
 
-        <div className="border border-[#b3ddbb]/20 bg-[#050505] p-8 mb-12 relative">
+        <div className="border border-[#b3ddbb]/20 bg-[#120f0d] p-8 mb-12 relative">
           <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#b3ddbb]/40" />
           <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#b3ddbb]/40" />
           <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#b3ddbb]/40" />
@@ -93,7 +93,7 @@ export default function DeleteAccountPage() {
                 <span className="text-[#b3ddbb]"> DELETE /users/:userId</span>.
                 The bearer token user ID must match the path user ID exactly.
               </p>
-              <div className="bg-[#0a0a0a] border border-[#b3ddbb]/10 p-4 overflow-x-auto">
+              <div className="bg-[#120f0d] border border-[#b3ddbb]/10 p-4 overflow-x-auto">
                 <code className="font-mono text-xs text-[#b3ddbb]/70 whitespace-pre">
                   {`curl -X DELETE "https://<worker-host>/users/<userId>" \\
   -H "Authorization: Bearer <jwt>"`}

@@ -22,7 +22,7 @@ function Pagination({
   const separator = basePath.includes('?') ? '&' : '?'
 
   const linkClass =
-    'nb-btn-white inline-flex items-center px-5 py-2.5 font-mono text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#111]'
+    'nb-btn-white inline-flex items-center px-5 py-2.5 font-mono text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#1a1714]'
 
   return (
     <nav className="mt-14 flex items-center justify-center gap-4">
@@ -31,7 +31,7 @@ function Pagination({
           ← Prev
         </a>
       )}
-      <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#555]">
+      <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#5b4a3d]">
         {currentPage} / {totalPages}
       </span>
       {currentPage < totalPages && (
@@ -49,7 +49,7 @@ export function BlogList({
   emptyMessage = 'No posts found.',
 }: BlogListProps) {
   if (posts && posts.length === 0) {
-    return <p className="py-16 text-center text-sm text-[#999]">{emptyMessage}</p>
+    return <p className="py-16 text-center text-sm text-[#a08b78]">{emptyMessage}</p>
   }
 
   const showFeatured = featured && !!posts && posts.length > 0

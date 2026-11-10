@@ -42,14 +42,14 @@ export default async function ModelServiceLayout({ children }: { children: React
     }
 
     return (
-      <div className="site-page-grid min-h-screen bg-[#F5F4F0]">
-        <header className="mt-20 border-b border-[#E2E0DB] bg-white">
+      <div className="site-page-grid min-h-screen bg-[#FDEEE1]">
+        <header className="mt-20 border-b border-[#E2C9A6] bg-[#fffaf3]">
           <div className="max-w-[1440px] mx-auto px-6 h-14 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-base font-bold tracking-[-0.04em] text-[#111]">B_</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Model Training</span>
+              <img src="/brand/beag-mark.png" alt="Beag Labs" width={32} height={32} className="h-8 w-8" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6F5A4B]">Model Training</span>
             </div>
-            <span className="text-sm text-[#777]">{session.user.name || session.user.email}</span>
+            <span className="text-sm text-[#8f7a68]">{session.user.name || session.user.email}</span>
           </div>
         </header>
         <OrgPicker firstOrgId={orgs[0].id} />
@@ -58,11 +58,11 @@ export default async function ModelServiceLayout({ children }: { children: React
   }
 
   return (
-    <div className="site-page-grid min-h-screen bg-[#F5F4F0]">
-      <header className="mt-20 border-b border-[#E2E0DB] bg-white">
+    <div className="site-page-grid min-h-screen bg-[#FDEEE1]">
+      <header className="mt-20 border-b border-[#E2C9A6] bg-[#fffaf3]">
         <div className="max-w-[1440px] mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/model-service/runs" className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+            <Link href="/model-service/runs" className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#e5632f]">
               Beag Model Training
             </Link>
             <nav className="flex items-center gap-6">
@@ -70,7 +70,7 @@ export default async function ModelServiceLayout({ children }: { children: React
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-sm text-[#555] hover:text-[#111] transition-colors"
+                  className="text-sm text-[#5b4a3d] hover:text-[#1a1714] transition-colors"
                 >
                   {item.label}
                 </Link>
@@ -78,7 +78,7 @@ export default async function ModelServiceLayout({ children }: { children: React
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-[#777]">{session.user.name || session.user.email}</span>
+            <span className="text-sm text-[#8f7a68]">{session.user.name || session.user.email}</span>
             <SignOutButton />
           </div>
         </div>

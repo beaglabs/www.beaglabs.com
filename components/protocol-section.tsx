@@ -70,7 +70,7 @@ export function ProtocolSection() {
               <div
                 key={protocol.id}
                 className={`border-b border-black/10 transition-all ${
-                  activeProtocol === protocol.id ? "bg-white" : ""
+                  activeProtocol === protocol.id ? "bg-[#fffaf3]" : ""
                 }`}
               >
                 <button

@@ -50,9 +50,9 @@ export function DomainModelDiagram() {
         },
         themeVariables: {
           fontFamily: '"Inter", system-ui, sans-serif',
-          primaryColor: "#f6f4ef",
+          primaryColor: "#fdeee1",
           primaryBorderColor: "#8B7355",
-          primaryTextColor: "#111",
+          primaryTextColor: "#1a1714",
           lineColor: "#8B7355",
           entityBorder: "#8B7355",
         },

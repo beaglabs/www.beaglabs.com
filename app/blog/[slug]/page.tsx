@@ -1,3 +1,4 @@
+import { HeroBackdrop } from '@/components/hero-backdrop'
 import { isBackofficePost } from '@/lib/blog/backoffice-content'
 import { notFound } from 'next/navigation'
 import { draftMode } from 'next/headers'
@@ -172,13 +173,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         properties={{ slug, title: post.title, category: post.category }}
       />
 
-      <section className="relative overflow-hidden border-b-[3px] border-[#111] bg-[#111] px-5 py-14" style={{backgroundImage:'radial-gradient(circle at center, #ff5f1f 0 6px, transparent 6.5px), radial-gradient(circle at center, #ffc9b0 0 6px, transparent 6.5px), radial-gradient(circle at center, #fff 0 6px, transparent 6.5px)',backgroundSize:'54px 18px, 54px 18px, 54px 18px',backgroundPosition:'0 0,18px 0,36px 0'}}>
-        <div className="relative mx-auto flex max-w-[1050px] flex-col items-center border-[4px] border-[#111] bg-white px-6 py-12 text-center shadow-[10px_10px_0_#111] sm:px-12">
-          <span className="border-2 border-[#111] bg-[#ff5f1f] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-[.15em] shadow-[3px_3px_0_#111]">{post.category}</span>
-          <h1 className="mt-8 max-w-[960px] font-[family-name:var(--font-roboto-condensed)] text-[length:min(64px,9vw)] font-black uppercase leading-[.97] tracking-[-.04em]">{post.title}</h1>
-          <div className="mt-8 h-[3px] w-full max-w-[460px] bg-[#111]" />
-          <p className="mt-7 max-w-[740px] text-lg font-bold leading-8 text-[#333]">{post.exerpt}</p>
-          <time dateTime={post.publishedAt} className="mt-8 border-b-2 border-[#111] pb-1 font-mono text-xs font-black uppercase tracking-wider">{formattedDate} · Beag Labs</time>
+      <section className="relative overflow-hidden border-b-[3px] border-[#1a1714] bg-[#fdeee1] px-5 py-14">
+        <HeroBackdrop />
+        <div className="relative z-20 mx-auto flex max-w-[1050px] flex-col items-center rounded-[2rem] border-[4px] border-[#1a1714] bg-[#fffaf3] px-6 py-12 text-center shadow-[10px_10px_0_#1a1714] sm:px-12">
+          <span className="rounded-full border-2 border-[#1a1714] bg-[#e5632f] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-[.15em] shadow-[3px_3px_0_#1a1714]">{post.category}</span>
+          <h1 className="mt-8 max-w-[960px] font-display text-[length:min(44px,7.4vw)] font-black uppercase leading-[.97] tracking-[-.01em]">{post.title}</h1>
+          <div className="mt-8 h-[3px] w-full max-w-[460px] bg-[#1a1714]" />
+          <p className="mt-7 max-w-[740px] text-lg font-bold leading-8 text-[#3d2f26]">{post.exerpt}</p>
+          <time dateTime={post.publishedAt} className="mt-8 border-b-2 border-[#1a1714] pb-1 font-mono text-xs font-black uppercase tracking-wider">{formattedDate} · Beag Labs</time>
         </div>
       </section>
 

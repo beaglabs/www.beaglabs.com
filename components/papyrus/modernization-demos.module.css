@@ -1,6 +1,6 @@
 .flow { position: relative; display: flex; align-items: center; justify-content: center; gap: 9px; min-width: 54px; min-height: 52px; }
-.flow::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px solid #111; }
-.dot { position: relative; width: 8px; height: 8px; background: #ff5f1f; border: 1px solid #111; animation: packet 1.8s ease-in-out infinite; }
+.flow::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px solid #1a1714; }
+.dot { position: relative; width: 8px; height: 8px; background: #e5632f; border: 1px solid #1a1714; animation: packet 1.8s ease-in-out infinite; }
 .dot:nth-child(2) { animation-delay: .25s; }
 .dot:nth-child(3) { animation-delay: .5s; }
 @keyframes packet { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.2); } }

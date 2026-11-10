@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 /** The frame every live demo sits in: a black title bar, hard border and offset shadow. */
-export function DemoWindow({ title, meta = 'Live demo · sample data', children, className = '', bodyClassName = '', shadow = '#111' }: {
+export function DemoWindow({ title, meta = 'Live demo · sample data', children, className = '', bodyClassName = '', shadow = '#1a1714' }: {
   title: string
   meta?: ReactNode
   children: ReactNode
@@ -9,14 +9,14 @@ export function DemoWindow({ title, meta = 'Live demo · sample data', children,
   bodyClassName?: string
   shadow?: string
 }) {
-  return <div className={`flex min-w-0 flex-col border-[3px] border-[#111] bg-white text-[#111] ${className}`} style={{ boxShadow: `8px 8px 0 ${shadow}` }}>
-    <div className="flex items-center gap-3 border-b-[3px] border-[#111] bg-[#111] px-3 py-2 text-white">
+  return <div className={`flex min-w-0 flex-col border-[3px] border-[#1a1714] bg-[#fffaf3] text-[#1a1714] ${className}`} style={{ boxShadow: `8px 8px 0 ${shadow}` }}>
+    <div className="flex items-center gap-3 border-b-[3px] border-[#1a1714] bg-[#1a1714] px-3 py-2 text-[#fffaf3]">
       <span aria-hidden="true" className="flex gap-1.5">
-        <i className="block h-2.5 w-2.5 bg-[#ff5f1f]" /><i className="block h-2.5 w-2.5 bg-white" /><i className="block h-2.5 w-2.5 border border-white" />
+        <i className="block h-2.5 w-2.5 bg-[#e5632f]" /><i className="block h-2.5 w-2.5 bg-[#fffaf3]" /><i className="block h-2.5 w-2.5 border border-[#fffaf3]" />
       </span>
       <span className="min-w-0 truncate font-mono text-[11px] font-bold uppercase tracking-[.14em]">{title}</span>
       <span className="ml-auto hidden shrink-0 items-center gap-2 font-mono text-[10px] uppercase tracking-[.12em] text-[#cfcfcf] sm:flex">
-        <i aria-hidden="true" className="block h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff5f1f]" />{meta}
+        <i aria-hidden="true" className="block h-1.5 w-1.5 animate-pulse rounded-full bg-[#e5632f]" />{meta}
       </span>
     </div>
     <div className={`min-w-0 flex-1 ${bodyClassName}`}>{children}</div>
@@ -25,10 +25,10 @@ export function DemoWindow({ title, meta = 'Live demo · sample data', children,
 
 /** A segmented control in the site's style. */
 export function Segmented<T extends string>({ options, value, onChange, label }: { options: readonly (readonly [T, string])[]; value: T; onChange: (value: T) => void; label: string }) {
-  return <div role="tablist" aria-label={label} className="inline-flex border-2 border-[#111] bg-white">
+  return <div role="tablist" aria-label={label} className="inline-flex border-2 border-[#1a1714] bg-[#fffaf3]">
     {options.map(([key, text], i) => <button
       key={key} type="button" role="tab" aria-selected={value === key} onClick={() => onChange(key)}
-      className={`px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[.1em] transition-colors ${i > 0 ? 'border-l-2 border-[#111]' : ''} ${value === key ? 'bg-[#111] text-white' : 'text-[#111] hover:bg-[#ffdfcf]'}`}
+      className={`px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[.1em] transition-colors ${i > 0 ? 'border-l-2 border-[#1a1714]' : ''} ${value === key ? 'bg-[#1a1714] text-[#fffaf3]' : 'text-[#1a1714] hover:bg-[#f7c995]'}`}
     >{text}</button>)}
   </div>
 }

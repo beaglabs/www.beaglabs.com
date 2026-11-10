@@ -50,7 +50,7 @@ export default async function ClaimPage({ params }: ClaimPageProps) {
   if (!claim) notFound()
 
   return (
-    <main className="bg-[#FAFAF9] text-[#111]">
+    <main className="bg-[#FDEEE1] text-[#1a1714]">
       <AnnouncementBanner />
 
       <section className="site-hero px-6 pb-20 pt-16 lg:px-9 lg:pb-28 lg:pt-20">
@@ -62,14 +62,14 @@ export default async function ClaimPage({ params }: ClaimPageProps) {
           ]} />
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <span className="nb-label">{claim.sourceOrganization}</span>
-            <span className="border border-[#111] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em]">{claim.status}</span>
+            <span className="border border-[#1a1714] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em]">{claim.status}</span>
           </div>
           <h1 className="mt-4 text-[length:min(42px,9vw)] font-extrabold leading-[1.02] tracking-[-0.05em] sm:text-[54px] lg:text-[64px]">
-            {claim.claimId}<span className="text-[#ff5f1f]">.</span>
+            {claim.claimId}<span className="text-[#e5632f]">.</span>
           </h1>
-          <p className="mt-4 max-w-[800px] text-[18px] font-semibold leading-[1.65] text-[#333]">{claim.claim}</p>
+          <p className="mt-4 max-w-[800px] text-[18px] font-semibold leading-[1.65] text-[#3d2f26]">{claim.claim}</p>
           <ClaimDiagram claim={claim} />
-          <dl className="mt-8 grid gap-px border-2 border-[#111] bg-[#111] sm:grid-cols-2">
+          <dl className="mt-8 grid gap-px border-2 border-[#1a1714] bg-[#1a1714] sm:grid-cols-2">
             {[
               ['Source', <a key="s" href={claim.source} rel="noopener noreferrer" target="_blank" className="break-all font-bold underline underline-offset-4">{claim.source.replace(/^https?:\/\//, '')} ↗</a>],
               ['Where in the source', claim.sourceLocator || 'Not recorded'],
@@ -81,21 +81,21 @@ export default async function ClaimPage({ params }: ClaimPageProps) {
               ['Scope and caveats', claim.scopeCaveat],
               ['Do not infer', claim.prohibitedInference],
             ].map(([label, value], index) => (
-              <div key={String(label)} className={`bg-white p-5 ${index >= 6 ? 'sm:col-span-2' : ''}`}>
-                <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#666]">{label}</dt>
+              <div key={String(label)} className={`bg-[#fffaf3] p-5 ${index >= 6 ? 'sm:col-span-2' : ''}`}>
+                <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#6f5a4b]">{label}</dt>
                 <dd className="mt-2 text-sm font-medium leading-7">{value}</dd>
               </div>
             ))}
           </dl>
           {claim.usedOn && <div className="mt-6 flex flex-wrap items-center gap-4">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#666]">Cited on</span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#6f5a4b]">Cited on</span>
             {claim.usedOn.map(path => <Link key={path} href={path} className="text-sm font-bold underline underline-offset-4">{usedOnLabel(path)} ↗</Link>)}
           </div>}
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t-[2px] border-[#111] pt-5">
-            <Link href="/claims" className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] underline decoration-2 underline-offset-4 hover:text-[#b33d0d]">
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t-[2px] border-[#1a1714] pt-5">
+            <Link href="/claims" className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] underline decoration-2 underline-offset-4 hover:text-[#b2391a]">
               ← All claims
             </Link>
-            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#666]">Record {claim.claimId}</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6f5a4b]">Record {claim.claimId}</span>
           </div>
         </div>
       </section>

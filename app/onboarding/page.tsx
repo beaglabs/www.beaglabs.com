@@ -61,16 +61,16 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="site-page-grid min-h-screen bg-[#F5F4F0]">
-      <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b bg-white sticky top-0 z-40 mt-20"
-        style={{ borderColor: '#E2E0DB' }}>
+    <div className="site-page-grid min-h-screen bg-[#FDEEE1]">
+      <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b bg-[#fffaf3] sticky top-0 z-40 mt-20"
+        style={{ borderColor: '#E2C9A6' }}>
         <div className="flex items-center gap-3">
-          <span className="text-base font-bold tracking-[-0.04em] text-[#111]">B_</span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Model Training</span>
+          <img src="/brand/beag-mark.png" alt="Beag Labs" width={32} height={32} className="h-8 w-8" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6F5A4B]">Model Training</span>
         </div>
         {step >= 0 && (
           <button onClick={handleComplete}
-            className="font-mono text-xs text-[#6B6B6B] hover:text-[#111] transition-colors">
+            className="font-mono text-xs text-[#6F5A4B] hover:text-[#1a1714] transition-colors">
             Skip onboarding
           </button>
         )}
@@ -84,20 +84,20 @@ export default function OnboardingPage() {
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono transition-colors"
                   style={{
                     backgroundColor: i <= step ? '#ff5f1f15' : 'transparent',
-                    color: i <= step ? '#ff5f1f' : '#6B6B6B',
-                    border: `1px solid ${i <= step ? '#ff5f1f30' : '#E2E0DB'}`,
+                    color: i <= step ? '#e5632f' : '#6F5A4B',
+                    border: `1px solid ${i <= step ? '#ff5f1f30' : '#E2C9A6'}`,
                   }}>
                   <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono"
                     style={{
-                      backgroundColor: i < step ? '#ff5f1f' : 'transparent',
-                      color: i < step ? '#fff' : i === step ? '#ff5f1f' : '#6B6B6B',
-                      border: i === step ? '1px solid #ff5f1f' : i < step ? 'none' : '1px solid #E2E0DB',
+                      backgroundColor: i < step ? '#e5632f' : 'transparent',
+                      color: i < step ? '#fffaf3' : i === step ? '#e5632f' : '#6F5A4B',
+                      border: i === step ? '1px solid #e5632f' : i < step ? 'none' : '1px solid #E2C9A6',
                     }}>
                     {i < step ? '✓' : i + 1}
                   </span>
                   {s}
                 </div>
-                {i < steps.length - 2 && <div className="w-8 h-px mx-1" style={{ backgroundColor: step > i ? '#ff5f1f' : '#E2E0DB' }} />}
+                {i < steps.length - 2 && <div className="w-8 h-px mx-1" style={{ backgroundColor: step > i ? '#e5632f' : '#E2C9A6' }} />}
               </div>
             ))}
           </div>
@@ -109,15 +109,15 @@ export default function OnboardingPage() {
             <div className="w-16 h-16 rounded-full bg-[#ff5f1f10] border border-[#ff5f1f20] flex items-center justify-center text-2xl mx-auto mb-6">
               B_
             </div>
-            <h1 className="text-[32px] font-bold tracking-[-0.045em] text-[#111]">
+            <h1 className="text-[32px] font-bold tracking-[-0.045em] text-[#1a1714]">
               Create your workspace
             </h1>
-            <p className="text-[17px] text-[#404040] mt-4 max-w-md mx-auto leading-relaxed">
+            <p className="text-[17px] text-[#4a3d33] mt-4 max-w-md mx-auto leading-relaxed">
               Set up your organization to start training models on your data.
             </p>
             <form onSubmit={handleCreateOrg} className="mt-10 max-w-sm mx-auto space-y-4 text-left">
               <div>
-                <label className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#777] mb-2">
+                <label className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#8f7a68] mb-2">
                   Organization name
                 </label>
                 <input
@@ -126,11 +126,11 @@ export default function OnboardingPage() {
                   value={orgName}
                   onChange={(e) => handleOrgNameChange(e.target.value)}
                   required
-                  className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#ff5f1f] bg-white"
+                  className="w-full border border-[#E2C9A6] px-4 py-3 text-[14px] text-[#1a1714] placeholder:text-[#a08b78] outline-none focus:border-[#e5632f] bg-[#fffaf3]"
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#777] mb-2">
+                <label className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#8f7a68] mb-2">
                   Slug
                 </label>
                 <input
@@ -140,9 +140,9 @@ export default function OnboardingPage() {
                   onChange={(e) => setSlug(e.target.value)}
                   required
                   pattern="[a-z0-9-]+"
-                  className="w-full border border-[#E2E0DB] px-4 py-3 text-[14px] text-[#111] placeholder:text-[#999] outline-none focus:border-[#ff5f1f] bg-white font-mono"
+                  className="w-full border border-[#E2C9A6] px-4 py-3 text-[14px] text-[#1a1714] placeholder:text-[#a08b78] outline-none focus:border-[#e5632f] bg-[#fffaf3] font-mono"
                 />
-                <p className="text-[11px] text-[#999] mt-1">Used in URLs</p>
+                <p className="text-[11px] text-[#a08b78] mt-1">Used in URLs</p>
               </div>
               {orgError && (
                 <p className="text-[13px] text-red-600 bg-red-50 border border-red-200 px-4 py-3">
@@ -152,7 +152,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={orgLoading || !orgName}
-                className="w-full bg-[#111] text-white px-4 py-3 text-[13px] font-bold uppercase tracking-[0.06em] hover:bg-[#2a2a2a] transition-colors disabled:opacity-50"
+                className="w-full bg-[#1a1714] text-[#fffaf3] px-4 py-3 text-[13px] font-bold uppercase tracking-[0.06em] hover:bg-[#2e2620] transition-colors disabled:opacity-50"
               >
                 {orgLoading ? "Creating..." : "Create workspace"}
               </button>
@@ -166,10 +166,10 @@ export default function OnboardingPage() {
             <div className="w-16 h-16 rounded-full bg-[#ff5f1f10] border border-[#ff5f1f20] flex items-center justify-center text-2xl mx-auto mb-6">
               B_
             </div>
-            <h1 className="text-[32px] lg:text-[40px] font-bold tracking-[-0.045em] text-[#111]">
+            <h1 className="text-[32px] lg:text-[40px] font-bold tracking-[-0.045em] text-[#1a1714]">
               Welcome to Beag
             </h1>
-            <p className="text-[17px] text-[#404040] mt-4 max-w-lg mx-auto leading-relaxed">
+            <p className="text-[17px] text-[#4a3d33] mt-4 max-w-lg mx-auto leading-relaxed">
               Turn your domain data into a fine-tuned model. Upload your data, define what to predict, and get an ONNX model in under 24 hours.
             </p>
             <div className="grid grid-cols-3 gap-4 mt-12 max-w-xl mx-auto">
@@ -178,15 +178,15 @@ export default function OnboardingPage() {
                 { label: 'Train', desc: 'Cold start + LoRA', icon: '⚡' },
                 { label: 'Export', desc: 'ONNX model', icon: '⊡' },
               ].map(c => (
-                <div key={c.label} className="bg-white border rounded-lg p-5 text-center" style={{ borderColor: '#E2E0DB' }}>
+                <div key={c.label} className="bg-[#fffaf3] border rounded-lg p-5 text-center" style={{ borderColor: '#E2C9A6' }}>
                   <span className="text-xl">{c.icon}</span>
-                  <p className="text-sm font-bold text-[#111] mt-2">{c.label}</p>
-                  <p className="font-mono text-[10px] text-[#6B6B6B] mt-0.5">{c.desc}</p>
+                  <p className="text-sm font-bold text-[#1a1714] mt-2">{c.label}</p>
+                  <p className="font-mono text-[10px] text-[#6F5A4B] mt-0.5">{c.desc}</p>
                 </div>
               ))}
             </div>
             <button onClick={() => setStep(1)}
-              className="mt-10 rounded-full bg-[#111] px-10 py-4 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white hover:bg-[#2a2a2a] transition-all duration-200 active:scale-[0.98]">
+              className="mt-10 rounded-full bg-[#1a1714] px-10 py-4 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#fffaf3] hover:bg-[#2e2620] transition-all duration-200 active:scale-[0.98]">
               Get Started
             </button>
           </div>
@@ -195,28 +195,28 @@ export default function OnboardingPage() {
         {/* Step 1: Upload data */}
         {step === 1 && (
           <div>
-            <h2 className="text-xl font-bold tracking-[-0.03em] text-[#111]">Upload your dataset</h2>
-            <p className="text-sm text-[#404040] mt-1 mb-8">Drop a CSV or Parquet file. We'll detect the columns and let you pick which one to predict.</p>
+            <h2 className="text-xl font-bold tracking-[-0.03em] text-[#1a1714]">Upload your dataset</h2>
+            <p className="text-sm text-[#4a3d33] mt-1 mb-8">Drop a CSV or Parquet file. We'll detect the columns and let you pick which one to predict.</p>
 
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all hover:bg-[#F5F4F0] hover:border-[#ff5f1f]"
-              style={{ borderColor: uploadedFile ? '#ff5f1f' : '#E2E0DB' }}
+              className="border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all hover:bg-[#FDEEE1] hover:border-[#e5632f]"
+              style={{ borderColor: uploadedFile ? '#e5632f' : '#E2C9A6' }}
             >
               {uploadedFile ? (
                 <div>
-                  <p className="text-sm font-semibold text-[#111]">{uploadedFile.name}</p>
-                  <p className="font-mono text-[11px] text-[#6B6B6B] mt-1">
+                  <p className="text-sm font-semibold text-[#1a1714]">{uploadedFile.name}</p>
+                  <p className="font-mono text-[11px] text-[#6F5A4B] mt-1">
                     {(uploadedFile.size / 1024).toFixed(1)} KB
                     {uploadPreview.length > 0 && ` · ${uploadPreview.length - 1} rows · ${uploadPreview[0]?.length || 0} columns`}
                   </p>
-                  <p className="font-mono text-[10px] text-[#999] mt-2">Click to replace</p>
+                  <p className="font-mono text-[10px] text-[#a08b78] mt-2">Click to replace</p>
                 </div>
               ) : (
                 <div>
                   <span className="text-2xl">⊞</span>
-                  <p className="text-sm font-medium text-[#111] mt-2">Drop CSV or Parquet here</p>
-                  <p className="font-mono text-[11px] text-[#6B6B6B] mt-1">or click to browse</p>
+                  <p className="text-sm font-medium text-[#1a1714] mt-2">Drop CSV or Parquet here</p>
+                  <p className="font-mono text-[11px] text-[#6F5A4B] mt-1">or click to browse</p>
                 </div>
               )}
               <input
@@ -242,25 +242,25 @@ export default function OnboardingPage() {
 
             {uploadPreview.length > 0 && (
               <div className="mt-6">
-                <label className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#777] mb-2">
+                <label className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#8f7a68] mb-2">
                   Label column (what to predict)
                 </label>
                 <select
                   value={labelColumn}
                   onChange={(e) => setLabelColumn(e.target.value)}
-                  className="w-full border border-[#E2E0DB] px-4 py-2 text-[14px] text-[#111] outline-none focus:border-[#ff5f1f] bg-white"
+                  className="w-full border border-[#E2C9A6] px-4 py-2 text-[14px] text-[#1a1714] outline-none focus:border-[#e5632f] bg-[#fffaf3]"
                 >
                   {uploadPreview[0]?.map((col) => (
                     <option key={col} value={col}>{col}</option>
                   ))}
                 </select>
 
-                <div className="mt-6 overflow-x-auto border rounded-lg" style={{ borderColor: '#E2E0DB' }}>
+                <div className="mt-6 overflow-x-auto border rounded-lg" style={{ borderColor: '#E2C9A6' }}>
                   <table className="w-full text-left text-sm">
                     <thead>
-                      <tr className="bg-[#F5F4F0] border-b" style={{ borderColor: '#E2E0DB' }}>
+                      <tr className="bg-[#FDEEE1] border-b" style={{ borderColor: '#E2C9A6' }}>
                         {uploadPreview[0]?.map((col) => (
-                          <th key={col} className={`px-4 py-2 font-mono text-[11px] font-medium ${col === labelColumn ? 'text-[#ff5f1f]' : 'text-[#6B6B6B]'}`}>
+                          <th key={col} className={`px-4 py-2 font-mono text-[11px] font-medium ${col === labelColumn ? 'text-[#e5632f]' : 'text-[#6F5A4B]'}`}>
                             {col}{col === labelColumn ? ' (label)' : ''}
                           </th>
                         ))}
@@ -268,9 +268,9 @@ export default function OnboardingPage() {
                     </thead>
                     <tbody>
                       {uploadPreview.slice(1).map((row, i) => (
-                        <tr key={i} className="border-b" style={{ borderColor: '#F5F4F0' }}>
+                        <tr key={i} className="border-b" style={{ borderColor: '#FDEEE1' }}>
                           {row.map((cell, j) => (
-                            <td key={j} className="px-4 py-1.5 font-mono text-[12px] text-[#404040] truncate max-w-[200px]">
+                            <td key={j} className="px-4 py-1.5 font-mono text-[12px] text-[#4a3d33] truncate max-w-[200px]">
                               {cell.length > 60 ? cell.slice(0, 60) + '...' : cell}
                             </td>
                           ))}
@@ -283,17 +283,17 @@ export default function OnboardingPage() {
             )}
 
             <div className="flex items-center justify-between mt-8">
-              <span className="font-mono text-[11px] text-[#6B6B6B]">
+              <span className="font-mono text-[11px] text-[#6F5A4B]">
                 {uploadedFile ? `${uploadedFile.name}` : 'No file selected'}
               </span>
               <div className="flex gap-3">
                 <button onClick={() => setStep(0)}
                   className="rounded-full px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors"
-                  style={{ color: '#6B6B6B', border: '1px solid #E2E0DB' }}>
+                  style={{ color: '#6F5A4B', border: '1px solid #E2C9A6' }}>
                   Back
                 </button>
                 <button onClick={() => setStep(2)}
-                  className="rounded-full bg-[#111] px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-white hover:bg-[#2a2a2a] transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="rounded-full bg-[#1a1714] px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-[#fffaf3] hover:bg-[#2e2620] transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
                   disabled={!uploadedFile}>
                   Continue
                 </button>
@@ -305,38 +305,38 @@ export default function OnboardingPage() {
         {/* Step 2: Define task */}
         {step === 2 && (
           <div>
-            <h2 className="text-xl font-bold tracking-[-0.03em] text-[#111]">Define your task</h2>
-            <p className="text-sm text-[#404040] mt-1 mb-8">What should the model learn? The task determines how we structure labels and train.</p>
+            <h2 className="text-xl font-bold tracking-[-0.03em] text-[#1a1714]">Define your task</h2>
+            <p className="text-sm text-[#4a3d33] mt-1 mb-8">What should the model learn? The task determines how we structure labels and train.</p>
             <div className="space-y-3">
               {tasks.map(t => (
                 <div key={t.key}
                   onClick={() => setTaskType(t.key)}
-                  className="bg-white border rounded-lg px-5 py-4 flex items-start gap-4 cursor-pointer transition-all hover:bg-[#F5F4F0]"
+                  className="bg-[#fffaf3] border rounded-lg px-5 py-4 flex items-start gap-4 cursor-pointer transition-all hover:bg-[#FDEEE1]"
                   style={{
-                    borderColor: taskType === t.key ? '#ff5f1f' : '#E2E0DB',
-                    boxShadow: taskType === t.key ? '0 0 0 1px #ff5f1f' : 'none',
+                    borderColor: taskType === t.key ? '#e5632f' : '#E2C9A6',
+                    boxShadow: taskType === t.key ? '0 0 0 1px #e5632f' : 'none',
                   }}>
                   <span className="text-lg mt-0.5">{t.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#111]">{t.name}</p>
-                    <p className="text-xs text-[#6B6B6B] mt-0.5">{t.desc}</p>
+                    <p className="text-sm font-medium text-[#1a1714]">{t.name}</p>
+                    <p className="text-xs text-[#6F5A4B] mt-0.5">{t.desc}</p>
                   </div>
                   {taskType === t.key && (
-                    <span className="w-5 h-5 rounded-full bg-[#ff5f1f] flex items-center justify-center text-white text-[10px] font-bold mt-0.5">✓</span>
+                    <span className="w-5 h-5 rounded-full bg-[#e5632f] flex items-center justify-center text-[#fffaf3] text-[10px] font-bold mt-0.5">✓</span>
                   )}
                 </div>
               ))}
             </div>
             <div className="flex items-center justify-between mt-8">
-              <span className="font-mono text-[11px] text-[#6B6B6B]">{uploadedFile?.name || 'No file'}</span>
+              <span className="font-mono text-[11px] text-[#6F5A4B]">{uploadedFile?.name || 'No file'}</span>
               <div className="flex gap-3">
                 <button onClick={() => setStep(1)}
                   className="rounded-full px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors"
-                  style={{ color: '#6B6B6B', border: '1px solid #E2E0DB' }}>
+                  style={{ color: '#6F5A4B', border: '1px solid #E2C9A6' }}>
                   Back
                 </button>
                 <button onClick={() => setStep(3)}
-                  className="rounded-full bg-[#111] px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-white hover:bg-[#2a2a2a] transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="rounded-full bg-[#1a1714] px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-[#fffaf3] hover:bg-[#2e2620] transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
                   disabled={!taskType}>
                   Continue
                 </button>
@@ -348,18 +348,18 @@ export default function OnboardingPage() {
         {/* Step 3: Review */}
         {step === 3 && (
           <div>
-            <h2 className="text-xl font-bold tracking-[-0.03em] text-[#111]">First review — sample disagreements</h2>
-            <p className="text-sm text-[#404040] mt-1 mb-6">
+            <h2 className="text-xl font-bold tracking-[-0.03em] text-[#1a1714]">First review — sample disagreements</h2>
+            <p className="text-sm text-[#4a3d33] mt-1 mb-6">
               This is how the loop works. DeepSeek labels everything first. Your model flags where it disagrees. You only verify those — typically 2-5% of data.
             </p>
 
-            <div className="bg-white border rounded-lg p-6 mb-6" style={{ borderColor: '#E2E0DB' }}>
+            <div className="bg-[#fffaf3] border rounded-lg p-6 mb-6" style={{ borderColor: '#E2C9A6' }}>
               <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Sample contested example</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6F5A4B]">Sample contested example</span>
                 <span className="font-mono text-xs text-[#B8860B]">confidence: 32%</span>
               </div>
-              <div className="bg-[#F5F4F0] border rounded-lg p-4 mb-4 text-sm font-mono text-[#404040] leading-relaxed" style={{ borderColor: '#E2E0DB' }}>
-                <span className="text-[#6B6B6B]">// src/api/billing.ts:142-158</span><br />
+              <div className="bg-[#FDEEE1] border rounded-lg p-4 mb-4 text-sm font-mono text-[#4a3d33] leading-relaxed" style={{ borderColor: '#E2C9A6' }}>
+                <span className="text-[#6F5A4B]">// src/api/billing.ts:142-158</span><br />
                 export async function handleInvoiceWebhook(req: Request) {'{'}
                 <br />&nbsp;&nbsp;const sig = req.headers[&apos;stripe-signature&apos;]
                 <br />&nbsp;&nbsp;const event = stripe.webhooks.constructEvent(req.body, sig, secret)
@@ -372,20 +372,20 @@ export default function OnboardingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-lg px-4 py-3" style={{ backgroundColor: '#FFF8E1' }}>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">DeepSeek Label</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6F5A4B]">DeepSeek Label</p>
                   <p className="font-mono text-sm font-bold mt-1" style={{ color: '#B8860B' }}>clean</p>
                 </div>
                 <div className="rounded-lg px-4 py-3" style={{ backgroundColor: '#FFF0E8' }}>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6B6B6B]">Model Prediction</p>
-                  <p className="font-mono text-sm font-bold mt-1" style={{ color: '#ff5f1f' }}>bug — missing try/catch</p>
-                  <p className="font-mono text-[10px] text-[#6B6B6B] mt-0.5">low confidence — needs your judgment</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#6F5A4B]">Model Prediction</p>
+                  <p className="font-mono text-sm font-bold mt-1" style={{ color: '#e5632f' }}>bug — missing try/catch</p>
+                  <p className="font-mono text-[10px] text-[#6F5A4B] mt-0.5">low confidence — needs your judgment</p>
                 </div>
               </div>
             </div>
 
             <div className="rounded-lg p-5 flex items-start gap-3"
               style={{ backgroundColor: '#ff5f1f08', border: '1px solid #ff5f1f20' }}>
-              <p className="text-sm text-[#404040] leading-relaxed">
+              <p className="text-sm text-[#4a3d33] leading-relaxed">
                 Whether it&apos;s code, contracts, emails, or lab reports — the loop is the same.
                 Cheap frontier labels → model flags disagreements → you review 2-5% → retrain → ONNX.
               </p>
@@ -394,11 +394,11 @@ export default function OnboardingPage() {
             <div className="flex items-center justify-between mt-8">
               <button onClick={() => setStep(2)}
                 className="rounded-full px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors"
-                style={{ color: '#6B6B6B', border: '1px solid #E2E0DB' }}>
+                style={{ color: '#6F5A4B', border: '1px solid #E2C9A6' }}>
                 Back
               </button>
               <button onClick={handleComplete}
-                className="rounded-full bg-[#111] px-10 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white hover:bg-[#2a2a2a] transition-all duration-200 active:scale-[0.98]">
+                className="rounded-full bg-[#1a1714] px-10 py-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#fffaf3] hover:bg-[#2e2620] transition-all duration-200 active:scale-[0.98]">
                 Start Training
               </button>
             </div>

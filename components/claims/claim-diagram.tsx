@@ -10,7 +10,7 @@ interface ClaimDiagramProps {
   claim: ClaimRecord
 }
 
-const orange = '#ff5f1f'
+const orange = '#e5632f'
 function MetricsChart({ claim, title, metrics, note }: { claim: ClaimRecord; title: string; metrics: ClaimMetric[]; note: string }) {
   const max = Math.max(...metrics.map(({ value }) => value))
   const data = metrics.map((metric) => ({
@@ -21,22 +21,22 @@ function MetricsChart({ claim, title, metrics, note }: { claim: ClaimRecord; tit
   const isSingle = metrics.length === 1
 
   return (
-    <figure className="overflow-hidden border-[2px] border-[#111] bg-white">
-      <figcaption className="flex flex-wrap items-start justify-between gap-4 border-b-[2px] border-[#111] bg-[#ff5f1f] px-5 py-4 sm:px-7">
+    <figure className="overflow-hidden border-[2px] border-[#1a1714] bg-[#fffaf3]">
+      <figcaption className="flex flex-wrap items-start justify-between gap-4 border-b-[2px] border-[#1a1714] bg-[#e5632f] px-5 py-4 sm:px-7">
         <div>
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]">{claim.claimId} / Recorded data</p>
           <h3 className="mt-1 text-[21px] font-extrabold leading-tight tracking-[-0.03em] sm:text-[25px]">{title}</h3>
         </div>
-        <span className="border-[1.5px] border-[#111] bg-white px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em]">Source-linked</span>
+        <span className="border-[1.5px] border-[#1a1714] bg-[#fffaf3] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em]">Source-linked</span>
       </figcaption>
 
       <div className="grid gap-5 p-4 sm:p-7">
         <div className={`grid gap-3 ${metrics.length > 1 ? 'sm:grid-cols-3' : 'sm:grid-cols-1'}`}>
           {metrics.map((metric) => (
-            <div key={metric.label} className="border-l-[4px] border-[#ff5f1f] bg-[#f5f3ee] px-4 py-3">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#555]">{metric.label}</div>
+            <div key={metric.label} className="border-l-[4px] border-[#e5632f] bg-[#fdeee1] px-4 py-3">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#5b4a3d]">{metric.label}</div>
               <div className="mt-1 text-[30px] font-extrabold leading-none tracking-[-0.06em] tabular-nums">{metric.displayValue}</div>
-              <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.08em] text-[#666]">{metric.unit}{metric.derived ? ' · derived' : ''}</div>
+              <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.08em] text-[#6f5a4b]">{metric.unit}{metric.derived ? ' · derived' : ''}</div>
             </div>
           ))}
         </div>
@@ -61,10 +61,10 @@ function MetricsChart({ claim, title, metrics, note }: { claim: ClaimRecord; tit
             {metrics[0].qualifier === 'more-than' && <span className="sr-only">The displayed value is a lower bound.</span>}
           </div>
         ) : (
-          <p className="border-t border-[#bcbab5] pt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#777]">Reported measures are shown separately because dollars, agencies, and programs use different units.</p>
+          <p className="border-t border-[#c9b298] pt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8f7a68]">Reported measures are shown separately because dollars, agencies, and programs use different units.</p>
         )}
       </div>
-      <p className="border-t border-[#bcbab5] px-5 py-4 text-[12px] leading-[1.6] text-[#444] sm:px-7">{note}</p>
+      <p className="border-t border-[#c9b298] px-5 py-4 text-[12px] leading-[1.6] text-[#4a3d33] sm:px-7">{note}</p>
     </figure>
   )
 }
@@ -74,11 +74,11 @@ function SplitChart({ claim, title, metrics, note }: { claim: ClaimRecord; title
   const total = metrics.reduce((sum, metric) => sum + metric.value, 0)
   const pieConfig = Object.fromEntries(metrics.map((metric, index) => [metric.label, {
     label: metric.label,
-    colors: { light: [index === 0 ? orange : '#111111'] },
+    colors: { light: [index === 0 ? orange : '#1a1714'] },
   }]))
   return (
-    <figure className="overflow-hidden border-[2px] border-[#111] bg-white">
-      <figcaption className="border-b-[2px] border-[#111] bg-[#ff5f1f] px-5 py-4 sm:px-7">
+    <figure className="overflow-hidden border-[2px] border-[#1a1714] bg-[#fffaf3]">
+      <figcaption className="border-b-[2px] border-[#1a1714] bg-[#e5632f] px-5 py-4 sm:px-7">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]">{claim.claimId} / Composition</p>
         <h3 className="mt-1 text-[21px] font-extrabold leading-tight tracking-[-0.03em] sm:text-[25px]">{title}</h3>
       </figcaption>
@@ -89,26 +89,26 @@ function SplitChart({ claim, title, metrics, note }: { claim: ClaimRecord; title
             <EvilPieChart.Tooltip />
           </EvilPieChart>
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#666]">Total estimate</span>
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#6f5a4b]">Total estimate</span>
             <span className="mt-1 text-[26px] font-extrabold tracking-[-0.06em]">~${total}B</span>
           </div>
         </div>
         <div className="space-y-3">
           {metrics.map((metric, index) => (
             <div key={metric.label} className="flex items-start gap-3 border-b border-[#d0cec8] pb-3 last:border-0">
-              <span className="mt-1.5 h-3 w-3 shrink-0" style={{ backgroundColor: index === 0 ? orange : '#111111' }} />
+              <span className="mt-1.5 h-3 w-3 shrink-0" style={{ backgroundColor: index === 0 ? orange : '#1a1714' }} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">{metric.label}</span>
                   <span className="text-[22px] font-extrabold tabular-nums">{metric.displayValue}</span>
                 </div>
-                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#666]">{metric.derived ? 'Derived by subtraction' : 'Reported estimate'}</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6f5a4b]">{metric.derived ? 'Derived by subtraction' : 'Reported estimate'}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
-      <p className="border-t border-[#bcbab5] px-5 py-4 text-[12px] leading-[1.6] text-[#444] sm:px-7">{note}</p>
+      <p className="border-t border-[#c9b298] px-5 py-4 text-[12px] leading-[1.6] text-[#4a3d33] sm:px-7">{note}</p>
     </figure>
   )
 }
@@ -118,39 +118,39 @@ function RelationshipDiagram({ claim, title, nodes, caption }: { claim: ClaimRec
   const isBoundary = claim.claimId === 'BL-CLM-9'
   const [lead, ...related] = nodes
   return (
-    <figure className="overflow-hidden border-[2px] border-[#111] bg-white">
-      <figcaption className="border-b-[2px] border-[#111] bg-[#ff5f1f] px-5 py-4 sm:px-7">
+    <figure className="overflow-hidden border-[2px] border-[#1a1714] bg-[#fffaf3]">
+      <figcaption className="border-b-[2px] border-[#1a1714] bg-[#e5632f] px-5 py-4 sm:px-7">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]">{claim.claimId} / Relationship</p>
         <h3 className="mt-1 text-[21px] font-extrabold leading-tight tracking-[-0.03em] sm:text-[25px]">{title}</h3>
       </figcaption>
       <div className="p-5 sm:p-7">
         {isLifecycle ? (
-          <div className="border-[2px] border-dashed border-[#777] p-4 sm:p-6">
-            <div className="mb-4 flex items-center justify-between gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#666]"><span>Resource coverage</span><span>AI lifecycle</span></div>
+          <div className="border-[2px] border-dashed border-[#8f7a68] p-4 sm:p-6">
+            <div className="mb-4 flex items-center justify-between gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#6f5a4b]"><span>Resource coverage</span><span>AI lifecycle</span></div>
             <div className="grid gap-3 sm:grid-cols-2">
-              {related.map((node, index) => <div key={node} className={`min-h-[104px] border-[2px] border-[#111] p-4 ${index === 0 ? 'bg-[#ff5f1f]' : 'bg-[#f5f3ee]'}`}><span className="font-mono text-[9px] uppercase tracking-[0.12em]">{index === 0 ? 'Framework' : 'Companion profile'}</span><p className="mt-2 text-[16px] font-extrabold leading-tight">{node}</p></div>)}
+              {related.map((node, index) => <div key={node} className={`min-h-[104px] border-[2px] border-[#1a1714] p-4 ${index === 0 ? 'bg-[#e5632f]' : 'bg-[#fdeee1]'}`}><span className="font-mono text-[9px] uppercase tracking-[0.12em]">{index === 0 ? 'Framework' : 'Companion profile'}</span><p className="mt-2 text-[16px] font-extrabold leading-tight">{node}</p></div>)}
             </div>
           </div>
         ) : isBoundary ? (
-          <div className="border-[2px] border-dashed border-[#777] p-4 sm:p-6">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2"><span className="font-mono text-[10px] font-bold uppercase tracking-[0.1em]">In-scope boundary</span><span className="border border-[#111] bg-[#ff5f1f] px-2 py-1 font-mono text-[9px] uppercase">CUI</span></div>
-            <div className="mb-4 border-[2px] border-[#111] bg-[#f5f3ee] p-4 text-center text-[15px] font-bold">{lead}</div>
+          <div className="border-[2px] border-dashed border-[#8f7a68] p-4 sm:p-6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2"><span className="font-mono text-[10px] font-bold uppercase tracking-[0.1em]">In-scope boundary</span><span className="border border-[#1a1714] bg-[#e5632f] px-2 py-1 font-mono text-[9px] uppercase">CUI</span></div>
+            <div className="mb-4 border-[2px] border-[#1a1714] bg-[#fdeee1] p-4 text-center text-[15px] font-bold">{lead}</div>
             <div className="grid gap-3 sm:grid-cols-3">
-              {related.map((node) => <div key={node} className="flex min-h-[78px] items-center justify-center border-[2px] border-[#111] bg-white px-3 text-center font-mono text-[11px] font-bold uppercase tracking-[0.06em]">{node}</div>)}
+              {related.map((node) => <div key={node} className="flex min-h-[78px] items-center justify-center border-[2px] border-[#1a1714] bg-[#fffaf3] px-3 text-center font-mono text-[11px] font-bold uppercase tracking-[0.06em]">{node}</div>)}
             </div>
           </div>
         ) : (
           <div className="relative">
-            <div className="mx-auto max-w-[480px] border-[2px] border-[#111] bg-[#111] px-4 py-4 text-center text-[15px] font-extrabold text-white shadow-[4px_4px_0_#ff5f1f]">{lead}</div>
-            <div className="mx-auto h-6 w-[2px] bg-[#111]" />
-            <div className="mx-auto mb-[-1px] hidden h-[2px] w-[calc(100%-16.666%)] bg-[#111] sm:block" />
+            <div className="mx-auto max-w-[480px] border-[2px] border-[#1a1714] bg-[#1a1714] px-4 py-4 text-center text-[15px] font-extrabold text-[#fffaf3] shadow-[4px_4px_0_#e5632f]">{lead}</div>
+            <div className="mx-auto h-6 w-[2px] bg-[#1a1714]" />
+            <div className="mx-auto mb-[-1px] hidden h-[2px] w-[calc(100%-16.666%)] bg-[#1a1714] sm:block" />
             <div className={`grid gap-3 ${related.length > 2 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
-              {related.map((node) => <div key={node} className="relative flex min-h-[82px] items-center justify-center border-[2px] border-[#111] bg-[#f5f3ee] px-4 py-3 text-center text-[13px] font-bold leading-snug"><span className="absolute -top-[14px] left-1/2 h-[12px] w-[2px] -translate-x-1/2 bg-[#111] sm:hidden" />{node}</div>)}
+              {related.map((node) => <div key={node} className="relative flex min-h-[82px] items-center justify-center border-[2px] border-[#1a1714] bg-[#fdeee1] px-4 py-3 text-center text-[13px] font-bold leading-snug"><span className="absolute -top-[14px] left-1/2 h-[12px] w-[2px] -translate-x-1/2 bg-[#1a1714] sm:hidden" />{node}</div>)}
             </div>
           </div>
         )}
       </div>
-      <p className="border-t border-[#bcbab5] px-5 py-4 text-[12px] leading-[1.6] text-[#444] sm:px-7">{caption}</p>
+      <p className="border-t border-[#c9b298] px-5 py-4 text-[12px] leading-[1.6] text-[#4a3d33] sm:px-7">{caption}</p>
     </figure>
   )
 }
@@ -160,9 +160,9 @@ export function ClaimDiagram({ claim }: ClaimDiagramProps) {
   return (
     <section className="mt-10" aria-labelledby="claim-map-title">
       <div className="mb-5 flex items-center gap-4">
-        <h2 id="claim-map-title" className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#111]">Claim visualization</h2>
-        <div className="h-[2px] flex-1 bg-[#111]" aria-hidden="true" />
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555]">Actual claim data</span>
+        <h2 id="claim-map-title" className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#1a1714]">Claim visualization</h2>
+        <div className="h-[2px] flex-1 bg-[#1a1714]" aria-hidden="true" />
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#5b4a3d]">Actual claim data</span>
       </div>
       {visualization.kind === 'metrics' ? <MetricsChart claim={claim} {...visualization} /> : null}
       {visualization.kind === 'split' ? <SplitChart claim={claim} {...visualization} /> : null}

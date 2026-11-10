@@ -1,12 +1,12 @@
 export const theme = {
   colors: {
-    black: '#111111',
-    offWhite: '#FAFAF9',
-    white: '#000000',
-    accent: '#ff5f1f',
-    accentLight: '#FFF3E6',
-    gray: '#555555',
-    lightGray: '#999999',
+    black: '#1a1714',
+    offWhite: '#FDEEE1',
+    white: '#1a1714',
+    accent: '#e5632f',
+    accentLight: '#FDE3C8',
+    gray: '#5b4a3d',
+    lightGray: '#a08b78',
     green: '#E6FFF2',
     blue: '#E6F2FF',
     yellow: '#FFF9E6',
@@ -24,13 +24,13 @@ export const theme = {
   },
   border: {
     width: 3,
-    color: '#111111',
+    color: '#1a1714',
     radius: 0,
   },
   shadow: {
     x: 6,
     y: 6,
-    color: '#111111',
+    color: '#1a1714',
   },
   sizes: {
     page: {
