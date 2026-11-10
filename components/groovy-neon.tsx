@@ -1,6 +1,6 @@
 /**
- * A word in pastel neon for the ink slab of a hero headline: each letter cycles through the pastel tubes (pink, sky,
- * mint, butter, lavender) a beat after the one before, so the colour rolls across the word while the letters bob.
+ * A word in tangerine neon for the ink slab of a hero headline: a cream core in an orange glow that breathes, with
+ * each letter bobbing a beat after the one before.
  * Styles live in app/globals.css (`.groovy-neon`). Screen readers get the plain word.
  */
 export function GroovyNeon({ text }: { text: string }) {

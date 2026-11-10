@@ -398,23 +398,29 @@
   .hero-lane { animation: none; stroke-dashoffset: 0; }
 }
 
-/* ── pastel neon word on the hero slab (components/groovy-neon.tsx): neon only ever sits on the ink ground ── */
+/* ── tangerine neon word on the hero slab (components/groovy-neon.tsx): a warm cream core in an orange glow,
+   as in the Beag Labs banner. The glow breathes and each letter bobs a beat after the one before. ── */
 .groovy-neon {
   display: inline-flex;
-  filter: drop-shadow(0 0 6px rgb(255 157 226 / 0.55)) drop-shadow(0 0 18px rgb(184 245 255 / 0.35));
 }
 .groovy-neon-letter {
   display: inline-block;
-  color: #ff9de2;
-  text-shadow: 0 0 2px #fffaf3;
-  animation: groovy-hue 3.5s linear infinite, groovy-bob 1.8s ease-in-out infinite;
+  color: #fff1c9;
+  text-shadow:
+    0 0 1px #fffaf3,
+    0 0 6px #ffb347,
+    0 0 14px #ff8a1f,
+    0 0 28px #ff6a13,
+    0 0 48px rgb(255 106 19 / 0.7);
+  animation: groovy-glow 2.8s ease-in-out infinite, groovy-bob 1.8s ease-in-out infinite;
 }
-@keyframes groovy-hue {
-  0%, 100% { color: #ff9de2; }
-  20% { color: #a5f0ff; }
-  40% { color: #b8ffcc; }
-  60% { color: #fff59e; }
-  80% { color: #d9b8ff; }
+@keyframes groovy-glow {
+  0%, 100% {
+    text-shadow: 0 0 1px #fffaf3, 0 0 6px #ffb347, 0 0 14px #ff8a1f, 0 0 28px #ff6a13, 0 0 48px rgb(255 106 19 / 0.7);
+  }
+  50% {
+    text-shadow: 0 0 1px #fffaf3, 0 0 4px #ffb347, 0 0 9px #ff8a1f, 0 0 18px #ff6a13, 0 0 30px rgb(255 106 19 / 0.45);
+  }
 }
 @keyframes groovy-bob {
   0%, 100% { transform: translateY(0) rotate(0deg); }
