@@ -378,8 +378,34 @@
     linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
   background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
 }
+.hero-sun {
+  transform-box: view-box;
+  animation: sun-rise 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero-sun-disc {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sun-breathe 6s ease-in-out 1.6s infinite alternate;
+}
+.hero-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sparkle-twinkle 2.6s ease-in-out 1.8s infinite;
+}
 .hero-ribbon {
   animation: ribbon-breathe 9s ease-in-out 2s infinite alternate;
+}
+@keyframes sun-rise {
+  from { transform: translateY(90px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes sun-breathe {
+  from { transform: scale(1); }
+  to { transform: scale(1.035); }
+}
+@keyframes sparkle-twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(0.6) rotate(45deg); opacity: 0.6; }
 }
 .hero-lane {
   stroke-dasharray: 2400;
@@ -391,38 +417,49 @@
 }
 @keyframes ribbon-breathe {
   from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-18px, 10px, 0); }
+  to { transform: translate3d(-10px, 8px, 0); }
+}
+/* On narrow screens the hero stacks into one column, so the sun and ribbon would sit behind the text: leave the paper. */
+@media (max-width: 1279px) {
+  .hero-sun, .hero-ribbon { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-ribbon { animation: none; }
+  .hero-ribbon, .hero-sun, .hero-sun-disc, .hero-sparkle { animation: none; }
   .hero-lane { animation: none; stroke-dashoffset: 0; }
 }
 
-/* ── tangerine neon tubes on the hero slab (components/groovy-neon.tsx), after the Beag Labs banner: a monoline
-   script, a cream-hot core inside an orange glass wall, and a glow that hums with the odd flicker. ── */
+/* ── tangerine neon tubes (components/groovy-neon.tsx), hung bare on the paper like a shop sign: a monoline script
+   with a warm cream core inside an orange glass wall, a deeper outline so it reads on cream, and a glow that hums
+   with the odd flicker. ── */
+.hero-neon-line {
+  display: block;
+  width: fit-content;
+  margin: -0.12em 0 0.02em 0.3em;
+  transform: rotate(-4deg);
+  transform-origin: left center;
+}
 .groovy-neon {
   display: inline-flex;
   align-items: baseline;
-  /* Room for the script's tall loops and descenders, so the slab grows to hold the tubes. */
-  padding: 0.12em 0.14em 0.24em;
+  padding: 0 0.06em 0.1em;
   font-family: var(--font-neon), 'Neonderthaw', cursive;
   font-weight: 400;
-  font-size: 1.5em;
-  line-height: 1.05;
+  font-size: 1.85em;
+  line-height: 1;
   letter-spacing: 0;
   text-transform: none;
 }
 .groovy-neon-letter {
   display: inline-block;
-  color: #fff4d6;
-  -webkit-text-stroke: 0.045em #ff8a1f;
+  color: #ffd58a;
+  -webkit-text-stroke: 0.075em #ea580c;
   paint-order: stroke fill;
   text-shadow:
-    0 0 2px #ffd08a,
-    0 0 8px #ff8a1f,
-    0 0 18px #ff6a13,
-    0 0 36px rgb(255 106 19 / 0.75),
-    0 0 64px rgb(255 90 10 / 0.45);
+    0 0 1px #c2410c,
+    0 0 6px #ff8a1f,
+    0 0 14px rgb(255 106 19 / 0.85),
+    0 0 30px rgb(255 106 19 / 0.55),
+    0 0 56px rgb(255 120 30 / 0.35);
   animation: neon-hum 3.2s ease-in-out infinite, neon-flicker 7s linear infinite;
 }
 @keyframes neon-hum {

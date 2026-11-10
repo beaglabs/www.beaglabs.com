@@ -2,16 +2,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const footerColumns = [
-  { title: 'Solutions', links: [
-    { label: 'Agentic Back Office', href: '/solutions/agentic-back-office' },
-    { label: 'Modernization Factory', href: '/solutions/agentic-modernization-factory' },
-    { label: 'Document Automation', href: '/products/papyrus#documents' },
-    { label: 'Internal App Factory', href: '/products/papyrus#factory' },
-    { label: 'Agentic Modernization', href: '/capability/modernization' },
-    { label: 'All Capabilities', href: '/capabilities' },
-  ] },
   { title: 'Explore', links: [
-    { label: 'Papyrus', href: '/products/papyrus' },
+    { label: 'Papyrus', href: 'https://papyrus.beaglabs.com' },
     { label: 'Use Cases', href: '/use-cases' },
     { label: 'Comparisons', href: '/compare' },
   ] },
@@ -38,7 +30,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_repeat(4,1fr)] lg:gap-7">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_repeat(3,1fr)] lg:gap-7">
           <div>
             <div className="mb-4 flex items-center gap-3">
               <Image src="/brand/beag-mark-walnut.png" alt="" width={56} height={56} className="h-14 w-14" />

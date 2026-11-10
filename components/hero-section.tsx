@@ -15,9 +15,10 @@ export function HeroSection() {
       eyebrow="Beag Labs · Federal + SLED"
       before="Building"
       slab={<GroovyNeon text="groovy" />}
+      slabStyle="neon"
       after="superintelligence"
       description="Our firm uses deep expertise and solutioneering paired with agentic support to deploy advanced solutions for federal and SLED. Our main product is Papyrus, the STIG-hardened superintelligent harness runtime built for the ATO from commit #001."
-      next={{ href: "#capabilities", label: "How we work" }}
+      asideWidth="below"
       asideLabel="Solution brief · 4-page PDF"
       aside={<>
         <BriefRequestForm briefType="services" placement="hero" stacked />
