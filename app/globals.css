@@ -398,33 +398,41 @@
   .hero-lane { animation: none; stroke-dashoffset: 0; }
 }
 
-/* ── tangerine neon word on the hero slab (components/groovy-neon.tsx): a warm cream core in an orange glow,
-   as in the Beag Labs banner. The glow breathes and each letter bobs a beat after the one before. ── */
+/* ── tangerine neon tubes on the hero slab (components/groovy-neon.tsx), after the Beag Labs banner: a monoline
+   script, a cream-hot core inside an orange glass wall, and a glow that hums with the odd flicker. ── */
 .groovy-neon {
   display: inline-flex;
+  align-items: baseline;
+  /* Room for the script's tall loops and descenders, so the slab grows to hold the tubes. */
+  padding: 0.12em 0.14em 0.24em;
+  font-family: var(--font-neon), 'Neonderthaw', cursive;
+  font-weight: 400;
+  font-size: 1.5em;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-transform: none;
 }
 .groovy-neon-letter {
   display: inline-block;
-  color: #fff1c9;
+  color: #fff4d6;
+  -webkit-text-stroke: 0.045em #ff8a1f;
+  paint-order: stroke fill;
   text-shadow:
-    0 0 1px #fffaf3,
-    0 0 6px #ffb347,
-    0 0 14px #ff8a1f,
-    0 0 28px #ff6a13,
-    0 0 48px rgb(255 106 19 / 0.7);
-  animation: groovy-glow 2.8s ease-in-out infinite, groovy-bob 1.8s ease-in-out infinite;
+    0 0 2px #ffd08a,
+    0 0 8px #ff8a1f,
+    0 0 18px #ff6a13,
+    0 0 36px rgb(255 106 19 / 0.75),
+    0 0 64px rgb(255 90 10 / 0.45);
+  animation: neon-hum 3.2s ease-in-out infinite, neon-flicker 7s linear infinite;
 }
-@keyframes groovy-glow {
-  0%, 100% {
-    text-shadow: 0 0 1px #fffaf3, 0 0 6px #ffb347, 0 0 14px #ff8a1f, 0 0 28px #ff6a13, 0 0 48px rgb(255 106 19 / 0.7);
-  }
-  50% {
-    text-shadow: 0 0 1px #fffaf3, 0 0 4px #ffb347, 0 0 9px #ff8a1f, 0 0 18px #ff6a13, 0 0 30px rgb(255 106 19 / 0.45);
-  }
+@keyframes neon-hum {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(0.9); }
 }
-@keyframes groovy-bob {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-0.06em) rotate(-2deg); }
+/* Mostly steady; a quick stutter now and then, staggered per letter by its animation delay. */
+@keyframes neon-flicker {
+  0%, 91%, 93.5%, 95%, 100% { opacity: 1; }
+  92%, 94% { opacity: 0.35; }
 }
 @media (prefers-reduced-motion: reduce) {
   .groovy-neon-letter { animation: none; }
