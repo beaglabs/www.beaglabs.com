@@ -19,24 +19,24 @@ export function ReviewProgress({
     <div className={className}>
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-[#111]">
+          <span className="text-sm font-semibold text-[#1a1714]">
             {reviewed} / {total}
           </span>
-          <span className="text-[11px] text-[#999]">reviewed</span>
+          <span className="text-[11px] text-[#a08b78]">reviewed</span>
         </div>
-        <span className="text-[11px] text-[#999]">{Math.round(pct)}%</span>
+        <span className="text-[11px] text-[#a08b78]">{Math.round(pct)}%</span>
       </div>
-      <div className="h-1.5 bg-[#E2E0DB] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-[#e2c9a6] rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500 ease-out"
           style={{
             width: `${pct}%`,
-            backgroundColor: pct === 100 ? "#2E7D32" : "#ff5f1f",
+            backgroundColor: pct === 100 ? "#2E7D32" : "#e5632f",
           }}
         />
       </div>
       {etaMinutes != null && etaMinutes > 0 && (
-        <p className="text-[10px] text-[#ff5f1f] mt-1">
+        <p className="text-[10px] text-[#e5632f] mt-1">
           ~{etaMinutes} min remaining
         </p>
       )}

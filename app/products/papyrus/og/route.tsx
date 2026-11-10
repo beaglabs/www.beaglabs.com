@@ -7,8 +7,8 @@ export const runtime = 'edge'
 
 export async function GET() {
   return renderOgImage({
-    title: 'Papyrus Agentic ERP',
-    description: 'Data-model-aware orchestration, enterprise Classes, durable agents and governed workflows over existing systems of record.',
-    label: 'PAPYRUS',
+    title: 'Keep your ERP. Automate what happens between systems.',
+    description: 'Papyrus is the data-model-aware orchestration layer for complex, multi-entity workflows with heavy legacy dependencies.',
+    label: 'Papyrus',
   })
 }

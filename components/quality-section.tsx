@@ -63,7 +63,7 @@ export function QualitySection() {
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="bg-white border border-black/10 p-8 group hover:border-black/30 transition-all"
+              className="bg-[#fffaf3] border border-black/10 p-8 group hover:border-black/30 transition-all"
             >
               <div className="flex items-start justify-between mb-6">
                 <span className="font-mono text-xs tracking-[0.2em] text-black/40">

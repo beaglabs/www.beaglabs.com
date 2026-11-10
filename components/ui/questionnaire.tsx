@@ -52,21 +52,21 @@ export { DEFAULT_CONTROLS } from "@/lib/questionnaire"
 /* -------------------------------------------------------------------------- */
 
 const INPUT_CLASS =
-  "w-full border-2 border-[#111] bg-white px-3 py-2 text-[14px] font-semibold text-[#111] outline-none transition-shadow placeholder:font-normal placeholder:text-[#b5b0a8] focus:shadow-[3px_3px_0px_0px_#111]"
+  "w-full border-2 border-[#1a1714] bg-[#fffaf3] px-3 py-2 text-[14px] font-semibold text-[#1a1714] outline-none transition-shadow placeholder:font-normal placeholder:text-[#b5b0a8] focus:shadow-[3px_3px_0px_0px_#1a1714]"
 
 const OPTION_BASE =
-  "flex w-full cursor-pointer items-start gap-3 border-[3px] border-[#111] bg-white px-3 py-2.5 text-left shadow-[4px_4px_0px_0px_#111]"
+  "flex w-full cursor-pointer items-start gap-3 border-[3px] border-[#1a1714] bg-[#fffaf3] px-3 py-2.5 text-left shadow-[4px_4px_0px_0px_#1a1714]"
 
-const OPTION_SELECTED = "border-[#ff5f1f] bg-[#fff5ee]"
+const OPTION_SELECTED = "border-[#e5632f] bg-[#fff5ee]"
 
 const PRIMARY_BUTTON =
-  "border-[3px] border-[#111] bg-[#ff5f1f] px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
+  "border-[3px] border-[#1a1714] bg-[#e5632f] px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#1a1714] shadow-[4px_4px_0px_0px_#1a1714] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#1a1714] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#1a1714] disabled:cursor-not-allowed disabled:opacity-50"
 
 const SECONDARY_BUTTON =
-  "border-[3px] border-[#111] bg-white px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#111] shadow-[4px_4px_0px_0px_#111] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#111] disabled:cursor-not-allowed disabled:opacity-50"
+  "border-[3px] border-[#1a1714] bg-[#fffaf3] px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#1a1714] shadow-[4px_4px_0px_0px_#1a1714] transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[6px_6px_0px_0px_#1a1714] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#1a1714] disabled:cursor-not-allowed disabled:opacity-50"
 
 const PANEL =
-  "border-[3px] border-[#111] bg-white shadow-[4px_4px_0px_0px_#111]"
+  "border-[3px] border-[#1a1714] bg-[#fffaf3] shadow-[4px_4px_0px_0px_#1a1714]"
 
 /* -------------------------------------------------------------------------- */
 /* Built-in controls                                                           */
@@ -108,7 +108,7 @@ const SelectControl: React.FC<ControlProps> = ({ field, value, onChange, disable
     value={typeof value === "string" ? value : ""}
     disabled={disabled}
     onChange={(event) => onChange(event.target.value)}
-    className={cn(INPUT_CLASS, "appearance-none bg-white")}
+    className={cn(INPUT_CLASS, "appearance-none bg-[#fffaf3]")}
   >
     {field.placeholder ? (
       <option value="" disabled>
@@ -151,11 +151,11 @@ function OptionLabel({
         checked={checked}
         disabled={disabled}
         onChange={onChange}
-        className="mt-1 h-4 w-4 shrink-0 accent-[#ff5f1f]"
+        className="mt-1 h-4 w-4 shrink-0 accent-[#e5632f]"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="text-[15px] font-bold text-[#111]">{label}</span>
-        {description ? <span className="text-[13px] font-medium text-[#6b6b6b]">{description}</span> : null}
+        <span className="text-[15px] font-bold text-[#1a1714]">{label}</span>
+        {description ? <span className="text-[13px] font-medium text-[#6f5a4b]">{description}</span> : null}
       </span>
     </label>
   )
@@ -219,18 +219,18 @@ const SwitchControl: React.FC<ControlProps> = ({ field, value, onChange, disable
         disabled={disabled}
         onClick={() => onChange(!on)}
         className={cn(
-          "relative h-7 w-12 shrink-0 rounded-full border-2 border-[#111] transition-colors",
-          on ? "bg-[#ff5f1f]" : "bg-white",
+          "relative h-7 w-12 shrink-0 rounded-full border-2 border-[#1a1714] transition-colors",
+          on ? "bg-[#e5632f]" : "bg-[#fffaf3]",
         )}
       >
         <span
           className={cn(
-            "absolute top-0.5 left-0.5 block h-5 w-5 rounded-full bg-[#111] transition-transform",
+            "absolute top-0.5 left-0.5 block h-5 w-5 rounded-full bg-[#1a1714] transition-transform",
             on && "translate-x-5",
           )}
         />
       </button>
-      <label htmlFor={field.name} className="cursor-pointer text-[15px] font-bold text-[#111]">
+      <label htmlFor={field.name} className="cursor-pointer text-[15px] font-bold text-[#1a1714]">
         {field.placeholder ?? "Yes"}
       </label>
     </div>
@@ -249,9 +249,9 @@ const SliderControl: React.FC<ControlProps> = ({ field, value, onChange, disable
         step={field.step ?? 1}
         disabled={disabled}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="h-2 w-full cursor-pointer accent-[#ff5f1f]"
+        className="h-2 w-full cursor-pointer accent-[#e5632f]"
       />
-      <span className="w-8 shrink-0 border-2 border-[#111] bg-white py-1 text-center font-mono text-[14px] font-bold text-[#111]">
+      <span className="w-8 shrink-0 border-2 border-[#1a1714] bg-[#fffaf3] py-1 text-center font-mono text-[14px] font-bold text-[#1a1714]">
         {current}
       </span>
     </div>
@@ -405,7 +405,7 @@ export function Questionnaire({
   if (done) {
     return (
       <div role="status" className={cn(PANEL, "p-6 sm:p-8", className)}>
-        <p className="text-[15px] font-bold text-[#111]">{successMessage}</p>
+        <p className="text-[15px] font-bold text-[#1a1714]">{successMessage}</p>
       </div>
     )
   }
@@ -414,12 +414,12 @@ export function Questionnaire({
     <div data-slot="questionnaire" className={cn("flex w-full min-w-0 flex-col gap-4", className)}>
       {showProgress && resolvedSteps.length > 1 ? (
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#e5632f]">
             Step {stepIndex + 1} of {resolvedSteps.length}
           </span>
-          <div className="h-2 w-full border-[3px] border-[#111] bg-white">
+          <div className="h-2 w-full border-[3px] border-[#1a1714] bg-[#fffaf3]">
             <div
-              className="h-full bg-[#ff5f1f] transition-all"
+              className="h-full bg-[#e5632f] transition-all"
               style={{ width: `${((stepIndex + 1) / resolvedSteps.length) * 100}%` }}
             />
           </div>
@@ -430,11 +430,11 @@ export function Questionnaire({
         <div className="flex min-w-0 flex-col gap-4">
           {current.title ? (
             <header className="flex flex-col gap-2">
-              <h2 id={`${current.id}-title`} className="text-lg font-extrabold tracking-[-0.02em] text-[#111]">
+              <h2 id={`${current.id}-title`} className="text-lg font-extrabold tracking-[-0.02em] text-[#1a1714]">
                 {current.title}
               </h2>
               {current.description ? (
-                <p className="text-[14px] font-medium leading-relaxed text-[#555]">{current.description}</p>
+                <p className="text-[14px] font-medium leading-relaxed text-[#5b4a3d]">{current.description}</p>
               ) : null}
             </header>
           ) : null}
@@ -463,14 +463,14 @@ export function Questionnaire({
                   data-slot="questionnaire-field"
                   className={cn("flex min-w-0 flex-col gap-1.5", field.span === 2 && "sm:col-span-2")}
                 >
-                  <label htmlFor={field.name} className="text-[14px] font-bold text-[#111]">
+                  <label htmlFor={field.name} className="text-[14px] font-bold text-[#1a1714]">
                     {field.label}
                     {field.required && field.kind !== "switch" && field.kind !== "single" ? (
-                      <span aria-hidden="true" className="text-[#ff5f1f]"> *</span>
+                      <span aria-hidden="true" className="text-[#e5632f]"> *</span>
                     ) : null}
                   </label>
                   {field.description ? (
-                    <p id={hintId} className="text-[13px] font-medium leading-relaxed text-[#6b6b6b]">
+                    <p id={hintId} className="text-[13px] font-medium leading-relaxed text-[#6f5a4b]">
                       {field.description}
                     </p>
                   ) : null}
@@ -501,7 +501,7 @@ export function Questionnaire({
             </p>
           ) : null}
 
-          <div className="flex items-center justify-between gap-2 border-t-[3px] border-[#111] pt-4">
+          <div className="flex items-center justify-between gap-2 border-t-[3px] border-[#1a1714] pt-4">
             <button
               type="button"
               disabled={stepIndex === 0 || pending}

@@ -24,6 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: `Machine-readable security posture for Papyrus: ${requirements.length} OSCAL controls implemented across ${controlFamilies.length} control families, a CycloneDX SBOM of ${components.length} components, and third-party license reporting.`,
     path: '/trust/papyrus',
     label: 'Trust Center',
+    headline: 'Security evidence, published in the open.',
   })
 }
 
@@ -252,19 +253,19 @@ const pluginLifecycle = [
 
 export default function PapyrusTrustCenter() {
   return (
-    <main className="min-h-screen bg-[#FAFAF9] text-[#111]">
+    <main className="min-h-screen bg-[#FDEEE1] text-[#1a1714]">
 
 
-      <section className="site-hero border-b-[3px] border-[#111]">
+      <section className="site-hero border-b-[3px] border-[#1a1714]">
         <div className="mx-auto max-w-[1440px] px-6 py-8 lg:px-9 lg:py-10">
-          <div className="overflow-hidden border-[3px] border-[#111] bg-white">
+          <div className="overflow-hidden border-[3px] border-[#1a1714] bg-[#fffaf3]">
             <div className="grid min-h-[440px] lg:grid-cols-[.92fr_1.08fr]">
               <div className="flex flex-col justify-center px-7 py-14 lg:px-14">
                 <span className="nb-label mb-6 w-fit">Papyrus / Trust Center</span>
                 <h1 className="max-w-[700px] text-[length:min(46px,9vw)] font-extrabold leading-[1.02] tracking-[-0.055em] sm:text-[58px]">
                   Security evidence, published in the open.
                 </h1>
-                <p className="mt-6 max-w-[650px] text-[17px] font-medium leading-[1.65] text-[#404040]">
+                <p className="mt-6 max-w-[650px] text-[17px] font-medium leading-[1.65] text-[#4a3d33]">
                   Papyrus is a customer-hosted durable agent runtime powered by Mastra. Entra ID is the identity
                   authority. The product surface is a Mastra-native agent runtime with governed plugin lifecycle,
                   offline licensing, sandboxed execution, and zero-inline-secrets architecture.
@@ -278,17 +279,17 @@ export default function PapyrusTrustCenter() {
                   </a>
                 </div>
               </div>
-              <div className="relative min-h-[300px] border-t-[3px] border-[#111] lg:border-l-[3px] lg:border-t-0">
+              <div className="relative min-h-[300px] border-t-[3px] border-[#1a1714] lg:border-l-[3px] lg:border-t-0">
                 <img
                   src="https://jamesnaderblog.co.uk/wp-content/uploads/2024/07/james-nader-banner.jpg"
                   alt="Abstract reflective green and orange forms"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#ff5f1f]/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#e5632f]/20 to-transparent" />
               </div>
             </div>
-            <div className="border-t-[3px] border-[#111] bg-[#fff3e6] px-6 py-4">
-              <p className="text-xs font-semibold leading-5 text-[#444]">
+            <div className="border-t-[3px] border-[#1a1714] bg-[#fde3c8] px-6 py-4">
+              <p className="text-xs font-semibold leading-5 text-[#4a3d33]">
                 Scope: potential software control contributions only. These materials are not a FedRAMP authorization, ATO, SSP, certification, or independent assessment.
                 Papyrus is not an authorization to operate, a cross-domain solution, or a claim of GCC High, DoD, IL4, IL6, or SIPR accreditation.
               </p>
@@ -297,26 +298,26 @@ export default function PapyrusTrustCenter() {
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#FDEEE1]">
         <div className="mx-auto max-w-[1440px] px-6 py-12 lg:px-9">
           <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Architecture</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">Architecture</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">Six pillars</h2>
             </div>
-            <p className="max-w-xl text-xs font-medium leading-5 text-[#666]">
+            <p className="max-w-xl text-xs font-medium leading-5 text-[#6f5a4b]">
               Papyrus is a licensed daemon for durable, event-driven agent work. Mastra owns sessions; plugins are adapters; Entra is authoritative.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {architecturePillars.map((pillar) => (
-              <article key={pillar.title} className="flex min-h-40 items-start gap-5 border-[3px] border-[#111] bg-white p-5">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-[#111] bg-white">
-                  <pillar.icon className="h-6 w-6 text-[#ff5f1f]" strokeWidth={2.2} />
+              <article key={pillar.title} className="flex min-h-40 items-start gap-5 border-[3px] border-[#1a1714] bg-[#fffaf3] p-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-[#1a1714] bg-[#fffaf3]">
+                  <pillar.icon className="h-6 w-6 text-[#e5632f]" strokeWidth={2.2} />
                 </div>
                 <div>
                   <h3 className="text-lg font-extrabold">{pillar.title}</h3>
-                  <p className="mt-2 text-xs font-medium leading-5 text-[#666]">{pillar.detail}</p>
+                  <p className="mt-2 text-xs font-medium leading-5 text-[#6f5a4b]">{pillar.detail}</p>
                 </div>
               </article>
             ))}
@@ -324,33 +325,33 @@ export default function PapyrusTrustCenter() {
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-white">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#fffaf3]">
         <div className="mx-auto max-w-[1440px] px-6 py-12 lg:px-9">
           <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Governed plugin lifecycle</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">Governed plugin lifecycle</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">Draft → Tested → Awaiting Approval → Active → Degraded / Disabled</h2>
             </div>
-            <p className="max-w-xl text-xs font-medium leading-5 text-[#666]">
+            <p className="max-w-xl text-xs font-medium leading-5 text-[#6f5a4b]">
               Credential values never enter model context. The card sends credential references directly to the daemon.
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
             {pluginLifecycle.map((stage) => (
-              <article key={stage.label} className="flex-1 min-w-[200px] border-[3px] border-[#111] bg-white p-5">
+              <article key={stage.label} className="flex-1 min-w-[200px] border-[3px] border-[#1a1714] bg-[#fffaf3] p-5">
                 <div className="flex items-center gap-3">
-                  <span className="border-2 border-[#111] bg-white px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#111]">
+                  <span className="border-2 border-[#1a1714] bg-[#fffaf3] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#1a1714]">
                     {stage.label}
                   </span>
                 </div>
-                <p className="mt-4 text-sm font-medium leading-[1.5] text-[#444]">{stage.detail}</p>
+                <p className="mt-4 text-sm font-medium leading-[1.5] text-[#4a3d33]">{stage.detail}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-[#111] text-white">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#1a1714] text-[#fffaf3]">
         <div className="mx-auto grid max-w-[1440px] grid-cols-2 divide-x divide-white/20 lg:grid-cols-4">
           {[
             ['Components', String(components.length)],
@@ -359,72 +360,72 @@ export default function PapyrusTrustCenter() {
             ['SBOM generated', new Date(bom.metadata?.timestamp ?? '').toLocaleDateString('en-US')],
           ].map(([label, value]) => (
             <div key={label} className="px-6 py-7 lg:px-9">
-              <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/55">{label}</p>
-              <p className="mt-2 text-2xl font-extrabold tracking-[-0.035em] text-[#ff5f1f]">{value}</p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#fffaf3]/55">{label}</p>
+              <p className="mt-2 text-2xl font-extrabold tracking-[-0.035em] text-[#e5632f]">{value}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-white">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#fffaf3]">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-24">
           <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
                 Machine-readable controls
               </p>
               <h2 className="mt-4 text-[length:min(2.25rem,9vw)] font-extrabold leading-[1.02] tracking-[-0.05em] lg:text-6xl">
                 The model is explicit about ownership.
               </h2>
-              <p className="mt-6 text-base font-medium leading-7 text-[#555]">
+              <p className="mt-6 text-base font-medium leading-7 text-[#5b4a3d]">
                 The OSCAL component definition separates behavior provided by Papyrus from
                 configuration, infrastructure, and inherited services owned by the customer.
               </p>
-              <div className="mt-8 border-[3px] border-[#111] bg-white p-5">
-                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#777]">
+              <div className="mt-8 border-[3px] border-[#1a1714] bg-[#fffaf3] p-5">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#8f7a68]">
                   Mapping status
                 </p>
                 <div className="mt-4 flex items-end gap-8">
                   <div>
                     <p className="text-4xl font-extrabold">{statusCounts.partial ?? 0}</p>
-                    <p className="mt-1 text-xs font-bold text-[#555]">Partial</p>
+                    <p className="mt-1 text-xs font-bold text-[#5b4a3d]">Partial</p>
                   </div>
                   <div>
                     <p className="text-4xl font-extrabold">{statusCounts['customer-configured'] ?? 0}</p>
-                    <p className="mt-1 text-xs font-bold text-[#555]">Customer-configured</p>
+                    <p className="mt-1 text-xs font-bold text-[#5b4a3d]">Customer-configured</p>
                   </div>
                 </div>
-                <p className="mt-5 border-t-2 border-[#111] pt-4 text-xs font-medium leading-5 text-[#666]">
+                <p className="mt-5 border-t-2 border-[#1a1714] pt-4 text-xs font-medium leading-5 text-[#6f5a4b]">
                   No mapping is represented as fully implemented or assessed. "Partial" records a
                   potential Papyrus contribution; "customer-configured" depends on the deployed boundary.
                 </p>
               </div>
             </div>
             <div>
-              <div className="grid grid-cols-2 border-[3px] border-[#111] bg-white sm:grid-cols-4">
+              <div className="grid grid-cols-2 border-[3px] border-[#1a1714] bg-[#fffaf3] sm:grid-cols-4">
                 {['papyrus', 'shared', 'customer', 'inherited'].map((owner, index) => (
                   <div
                     key={owner}
-                    className={`p-5 ${index ? 'border-l-[3px] border-[#111]' : ''}`}
+                    className={`p-5 ${index ? 'border-l-[3px] border-[#1a1714]' : ''}`}
                   >
-                    <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#777]">{owner}</p>
+                    <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#8f7a68]">{owner}</p>
                     <p className="mt-2 text-3xl font-extrabold">{responsibilityCounts[owner] ?? 0}</p>
                   </div>
                 ))}
               </div>
               <div className="mt-7 space-y-4">
                 {controlFamilies.map(([family, controls]) => (
-                  <details key={family} className="group border-[3px] border-[#111] bg-white" open={family === 'AC'}>
+                  <details key={family} className="group border-[3px] border-[#1a1714] bg-[#fffaf3]" open={family === 'AC'}>
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-5 px-5 py-4">
                       <span>
-                        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#ff5f1f]">
+                        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#e5632f]">
                           {family} family
                         </span>
                         <span className="ml-3 text-sm font-extrabold">{controls.length} mappings</span>
                       </span>
                       <span className="font-mono text-lg font-bold group-open:rotate-45">+</span>
                     </summary>
-                    <div className="border-t-[3px] border-[#111] divide-y-2 divide-[#111]">
+                    <div className="border-t-[3px] border-[#1a1714] divide-y-2 divide-[#1a1714]">
                       {controls.map((requirement) => {
                         const title = requirement.props?.find((prop) => prop.name === 'control-title')?.value
                         const responsibility = requirement.props?.find((prop) => prop.name === 'responsibility')?.value ?? 'unspecified'
@@ -435,7 +436,7 @@ export default function PapyrusTrustCenter() {
                             href={`https://csf.tools/reference/nist-sp-800-53/r5/${requirement['control-id'].split('-')[0]}/${requirement['control-id']}/`}
                             target="_blank"
                             rel="noreferrer"
-                            className="block px-5 py-5 transition-colors hover:bg-[#fff3e6]"
+                            className="block px-5 py-5 transition-colors hover:bg-[#fde3c8]"
                           >
                             <div className="flex flex-wrap items-start justify-between gap-3">
                               <div>
@@ -443,15 +444,15 @@ export default function PapyrusTrustCenter() {
                                 <h3 className="mt-1 text-sm font-extrabold">{title}</h3>
                               </div>
                               <div className="flex flex-wrap gap-2">
-                                <span className="border-2 border-[#111] bg-[#FAFAF9] px-2 py-1 font-mono text-[9px] font-bold uppercase">
+                                <span className="border-2 border-[#1a1714] bg-[#FDEEE1] px-2 py-1 font-mono text-[9px] font-bold uppercase">
                                   {responsibility}
                                 </span>
-                                <span className={`border-2 border-[#111] px-2 py-1 font-mono text-[9px] font-bold uppercase ${status === 'customer-configured' ? 'bg-white' : 'bg-[#fff3e6]'}`}>
+                                <span className={`border-2 border-[#1a1714] px-2 py-1 font-mono text-[9px] font-bold uppercase ${status === 'customer-configured' ? 'bg-[#fffaf3]' : 'bg-[#fde3c8]'}`}>
                                   {status}
                                 </span>
                               </div>
                             </div>
-                            <p className="mt-3 text-xs font-medium leading-5 text-[#666]">{requirement.description}</p>
+                            <p className="mt-3 text-xs font-medium leading-5 text-[#6f5a4b]">{requirement.description}</p>
                           </a>
                         )
                       })}
@@ -464,60 +465,60 @@ export default function PapyrusTrustCenter() {
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-white">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#fffaf3]">
         <div className="mx-auto max-w-[1440px] px-6 py-20 lg:px-9 lg:py-24">
           <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
                 Software bill of materials
               </p>
               <h2 className="mt-4 text-[length:min(2.25rem,9vw)] leading-[1.1] font-extrabold tracking-[-0.05em] lg:text-6xl">
                 {components.length} inspectable components.
               </h2>
             </div>
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-bold text-[#555]">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-bold text-[#5b4a3d]">
               {primaryLicenses.map(([license, count]) => (
                 <span key={license}>
-                  <strong className="text-[#111]">{count}</strong> {license}
+                  <strong className="text-[#1a1714]">{count}</strong> {license}
                 </span>
               ))}
             </div>
           </div>
 
-          <div className="mt-10 overflow-hidden border-[3px] border-[#111]">
-            <div className="hidden grid-cols-[minmax(0,1.5fr)_140px_180px_36px] gap-5 border-b-[3px] border-[#111] bg-[#FAFAF9] px-5 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#666] md:grid">
+          <div className="mt-10 overflow-hidden border-[3px] border-[#1a1714]">
+            <div className="hidden grid-cols-[minmax(0,1.5fr)_140px_180px_36px] gap-5 border-b-[3px] border-[#1a1714] bg-[#FDEEE1] px-5 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#6f5a4b] md:grid">
               <span>Component</span>
               <span>Version</span>
               <span>License</span>
               <span />
             </div>
-            <ol className="divide-y-2 divide-[#111]">
+            <ol className="divide-y-2 divide-[#1a1714]">
               {components.map((component) => (
                 <li key={component.purl ?? `${component.name}-${component.displayVersion}`}>
                   <a
                     href={component.projectUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="group grid gap-4 bg-white px-5 py-4 transition-colors hover:bg-[#fff3e6] md:grid-cols-[minmax(0,1.5fr)_140px_180px_36px] md:items-center md:gap-5"
+                    className="group grid gap-4 bg-[#fffaf3] px-5 py-4 transition-colors hover:bg-[#fde3c8] md:grid-cols-[minmax(0,1.5fr)_140px_180px_36px] md:items-center md:gap-5"
                   >
                     <span className="flex min-w-0 items-center gap-4">
-                      <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border-2 border-[#111] bg-white font-mono text-xs font-black uppercase">
+                      <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border-2 border-[#1a1714] bg-[#fffaf3] font-mono text-xs font-black uppercase">
                         {component.name.slice(0, 1)}
                         <img
                           src={component.logoUrl}
                           alt=""
                           loading="lazy"
-                          className="absolute inset-0 h-full w-full bg-white object-contain p-1"
+                          className="absolute inset-0 h-full w-full bg-[#fffaf3] object-contain p-1"
                         />
                       </span>
                       <span className="min-w-0 truncate font-extrabold tracking-[-0.015em]">
                         {component.name}
                       </span>
                     </span>
-                    <span className="font-mono text-[11px] font-semibold text-[#555]">
+                    <span className="font-mono text-[11px] font-semibold text-[#5b4a3d]">
                       {component.displayVersion}
                     </span>
-                    <span className="text-xs font-bold text-[#555]">{component.displayLicenses}</span>
+                    <span className="text-xs font-bold text-[#5b4a3d]">{component.displayLicenses}</span>
                     <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </a>
                 </li>
@@ -525,7 +526,7 @@ export default function PapyrusTrustCenter() {
             </ol>
           </div>
 
-          <p className="mt-5 max-w-3xl text-xs font-medium leading-5 text-[#666]">
+          <p className="mt-5 max-w-3xl text-xs font-medium leading-5 text-[#6f5a4b]">
             Component names, versions, and declared licenses are read from the published CycloneDX
             SBOM. Project links are taken from each component&apos;s repository metadata, with npm as the
             fallback. Marks identify their respective projects or maintainers and do not imply
@@ -534,26 +535,26 @@ export default function PapyrusTrustCenter() {
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-[#FAFAF9]">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#FDEEE1]">
         <div className="mx-auto max-w-[1440px] px-6 py-12 lg:px-9">
           <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">Deployment alignment</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">Deployment alignment</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">Aligned with</h2>
             </div>
-            <p className="max-w-xl text-xs font-medium leading-5 text-[#666]">
+            <p className="max-w-xl text-xs font-medium leading-5 text-[#6f5a4b]">
               Alignment describes supported deployment profiles and documented mappings—not government approval or authorization.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {alignedWith.map((item) => (
-              <article key={item.title} className="flex min-h-32 items-center gap-5 border-[3px] border-[#111] bg-white p-5">
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-white p-2">
+              <article key={item.title} className="flex min-h-32 items-center gap-5 border-[3px] border-[#1a1714] bg-[#fffaf3] p-5">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-[#fffaf3] p-2">
                   <img src={item.logo} alt="" className="max-h-full max-w-full object-contain" />
                 </div>
                 <div>
                   <h3 className="text-lg font-extrabold">{item.title}</h3>
-                  <p className="mt-2 text-xs font-medium leading-5 text-[#666]">{item.detail}</p>
+                  <p className="mt-2 text-xs font-medium leading-5 text-[#6f5a4b]">{item.detail}</p>
                 </div>
               </article>
             ))}
@@ -561,8 +562,8 @@ export default function PapyrusTrustCenter() {
         </div>
       </section>
 
-      <section className="border-b-[3px] border-[#111] bg-white">
-        <div className="mx-auto grid max-w-[1440px] divide-y-[3px] divide-[#111] lg:grid-cols-3 lg:divide-x-[3px] lg:divide-y-0">
+      <section className="border-b-[3px] border-[#1a1714] bg-[#fffaf3]">
+        <div className="mx-auto grid max-w-[1440px] divide-y-[3px] divide-[#1a1714] lg:grid-cols-3 lg:divide-x-[3px] lg:divide-y-0">
           {artifacts.map((artifact) => {
             const Icon = artifact.icon
             return (
@@ -571,14 +572,14 @@ export default function PapyrusTrustCenter() {
                 {'logo' in artifact ? (
                   <img src={artifact.logo} alt="FOSSA" className="h-10 w-10 rounded-md object-contain" />
                 ) : (
-                  <Icon className="h-7 w-7 text-[#ff5f1f]" strokeWidth={2.2} />
+                  <Icon className="h-7 w-7 text-[#e5632f]" strokeWidth={2.2} />
                 )}
-                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#777]">
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#8f7a68]">
                   Published artifact
                 </span>
               </div>
               <h2 className="mt-8 text-xl font-extrabold tracking-[-0.025em]">{artifact.title}</h2>
-              <p className="mt-2 text-sm font-medium text-[#555]">{artifact.detail}</p>
+              <p className="mt-2 text-sm font-medium text-[#5b4a3d]">{artifact.detail}</p>
               <div className="mt-6 flex flex-wrap gap-4">
                 <a
                   href={artifact.href}
@@ -590,7 +591,7 @@ export default function PapyrusTrustCenter() {
                   href={artifact.source}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em] text-[#555]"
+                  className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.08em] text-[#5b4a3d]"
                 >
                   Source <ArrowUpRight className="h-4 w-4" />
                 </a>
@@ -604,7 +605,7 @@ export default function PapyrusTrustCenter() {
       <section className="px-6 py-20 lg:px-9 lg:py-24">
         <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
               Need deployment evidence?
             </p>
             <h2 className="mt-4 max-w-4xl text-[length:min(2.25rem,9vw)] font-extrabold leading-[1.04] tracking-[-0.05em] lg:text-6xl">

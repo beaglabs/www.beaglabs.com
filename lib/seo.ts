@@ -1,5 +1,5 @@
 export const BASE_URL = 'https://beaglabs.com'
-const OG_IMAGE_VERSION = '2026-10-19-dotted-card-v2'
+const OG_IMAGE_VERSION = '2026-11-10-retro'
 
 export function canonical(path: string) {
   return {
@@ -32,6 +32,8 @@ export function pageMetadata(opts: {
   description: string
   path: string
   label?: string
+  /** The page's own headline, drawn on the OG image; defaults to the title. */
+  headline?: string
   ogTitle?: string
   ogDescription?: string
   type?: 'website' | 'article'
@@ -42,7 +44,7 @@ export function pageMetadata(opts: {
   const ogImage = [
     {
       url: ogImageUrl({
-        title: opts.title,
+        title: opts.headline || opts.title,
         description: ogDescription,
         label: opts.label,
       }),

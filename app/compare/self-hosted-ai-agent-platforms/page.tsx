@@ -49,7 +49,7 @@ export default function SelfHostedPlatformsPage() {
   }
 
   return (
-    <main className="bg-[#FAFAF9] text-[#111]">
+    <main className="bg-[#FDEEE1] text-[#1a1714]">
       <AnnouncementBanner />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }} />
@@ -63,29 +63,29 @@ export default function SelfHostedPlatformsPage() {
           ]} />
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <span className="nb-label">Comparison</span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">Verified {verifiedOn}</span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#555]">{citedCount} cited claims</span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#5b4a3d]">Verified {verifiedOn}</span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#5b4a3d]">{citedCount} cited claims</span>
           </div>
           <h1 className="max-w-[1040px] text-[length:min(40px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[56px] lg:text-[72px]">
-            Self-hosted AI agent platforms, compared<span className="text-[#ff5f1f]">.</span>
+            Self-hosted AI agent platforms, compared<span className="text-[#e5632f]">.</span>
           </h1>
-          <p className="mt-6 max-w-[820px] text-[18px] font-medium leading-[1.7] text-[#333]">
+          <p className="mt-6 max-w-[820px] text-[18px] font-medium leading-[1.7] text-[#3d2f26]">
             {platforms.length} platforms for organizations that want to keep agents, data and credentials in their own environment, compared on how they deploy, how they are sold, whether people can approve agent actions, how they are licensed and which security controls they document.
           </p>
-          <p className="mt-4 max-w-[820px] border-l-[4px] border-[#ff5f1f] pl-4 text-[14px] font-semibold leading-[1.7] text-[#333]">
+          <p className="mt-4 max-w-[820px] border-l-[4px] border-[#e5632f] pl-4 text-[14px] font-semibold leading-[1.7] text-[#3d2f26]">
             Disclosure: Beag Labs makes Papyrus, one of the platforms below. Papyrus is cited from our own pages and labelled first-party, and the alternatives are given the same evidence rules and a fair account of where they may fit better. See the <a className="underline underline-offset-2" href="#methodology">methodology</a>.
           </p>
         </div>
       </section>
 
-      <section id="matrix" className="scroll-mt-12 border-y-[3px] border-[#111] bg-[#f3f1ec] px-6 py-14 lg:px-9">
+      <section id="matrix" className="scroll-mt-12 border-y-[3px] border-[#1a1714] bg-[#f3f1ec] px-6 py-14 lg:px-9">
         <div className="mx-auto max-w-[1440px]">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Comparison table</p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b2391a]">Comparison table</p>
           <h2 className="mt-3 max-w-[760px] text-[30px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[40px]">Filter by how you need to deploy and buy.</h2>
-          <p className="mt-3 mb-8 max-w-[760px] text-[14px] font-medium leading-[1.7] text-[#444]">
+          <p className="mt-3 mb-8 max-w-[760px] text-[14px] font-medium leading-[1.7] text-[#4a3d33]">
             Each cell shows its evidence status and links to the Claim Ledger record that holds the source. Open “sources checked” on a Not documented cell to see where we looked.
           </p>
-          <p className="mb-6 max-w-[760px] border-l-[4px] border-[#111] pl-4 text-[13px] font-semibold leading-[1.7] text-[#333]">
+          <p className="mb-6 max-w-[760px] border-l-[4px] border-[#1a1714] pl-4 text-[13px] font-semibold leading-[1.7] text-[#3d2f26]">
             Known limitation: Microsoft Marketplace pages did not load for our automated checks. Marketplace cells therefore rest on vendor pages, and a Not documented Marketplace cell means we found no listing in the sources we could read. Confirm offer details on the listing itself before buying.
           </p>
           <PlatformMatrix platforms={platforms} filters={filters} />
@@ -94,38 +94,38 @@ export default function SelfHostedPlatformsPage() {
 
       <section id="fit" className="px-6 py-16 lg:px-9">
         <div className="mx-auto max-w-[1440px]">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Where each one may fit</p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b2391a]">Where each one may fit</p>
           <h2 className="mt-3 max-w-[820px] text-[30px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[40px]">No platform wins every comparison.</h2>
-          <p className="mt-3 max-w-[760px] text-[14px] font-medium leading-[1.7] text-[#444]">
+          <p className="mt-3 max-w-[760px] text-[14px] font-medium leading-[1.7] text-[#4a3d33]">
             Fit statements below are derived only from cells in the table, and each lists the cells it rests on. They are not rankings.
           </p>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {platforms.map((platform) => (
-              <article key={platform.slug} id={platform.slug} className="scroll-mt-12 border-[3px] border-[#111] bg-white p-6 shadow-[5px_5px_0_#111]">
+              <article key={platform.slug} id={platform.slug} className="scroll-mt-12 border-[3px] border-[#1a1714] bg-[#fffaf3] p-6 shadow-[5px_5px_0_#1a1714]">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Link href={productHref(platform)} className="flex items-center gap-3 hover:text-[#b33d0d]">
+                  <Link href={productHref(platform)} className="flex items-center gap-3 hover:text-[#b2391a]">
                     <ProductLogo name={platform.name} src={logoUrl(platform)} />
                     <h3 className="text-[24px] font-extrabold tracking-[-0.03em] underline decoration-2 underline-offset-4">{platform.name}</h3>
                   </Link>
-                  {platform.isBeag && <span className="border border-[#111] bg-[#ffdeca] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.1em]">Made by Beag Labs</span>}
+                  {platform.isBeag && <span className="border border-[#1a1714] bg-[#fde3c8] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.1em]">Made by Beag Labs</span>}
                 </div>
-                <p className="mt-2 text-[14px] font-medium leading-[1.65] text-[#444]">{platform.summary}</p>
-                <div className="mt-5 grid gap-5 border-t-2 border-[#111] pt-5">
+                <p className="mt-2 text-[14px] font-medium leading-[1.65] text-[#4a3d33]">{platform.summary}</p>
+                <div className="mt-5 grid gap-5 border-t-2 border-[#1a1714] pt-5">
                   <div>
-                    <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#b33d0d]">May fit well when</h4>
+                    <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#b2391a]">May fit well when</h4>
                     <FitNotes platform={platform} notes={platform.bestFor} empty="Not enough verified evidence to say." />
                   </div>
                   <div>
-                    <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#666]">May fit less well when</h4>
+                    <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#6f5a4b]">May fit less well when</h4>
                     <FitNotes platform={platform} notes={platform.lessSuitedFor} empty="Nothing in the verified evidence points to a gap." />
                   </div>
                 </div>
-                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[#bbb] pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.1em]">
+                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[#b8a28c] pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.1em]">
                   <Link href={productHref(platform)} className="underline underline-offset-4">Full profile →</Link>
                   <a href={platform.officialUrl} rel="noopener noreferrer" target="_blank" className="underline underline-offset-4">Official site ↗</a>
                   {platform.marketplaceUrl && <a href={platform.marketplaceUrl} rel="noopener noreferrer" target="_blank" className="underline underline-offset-4">Marketplace listing ↗</a>}
                   {guides.filter((item) => item.versus === platform.slug).map((item) => (
-                    <Link key={item.slug} href={`/compare/${item.slug}`} className="text-[#b33d0d] underline underline-offset-4">vs Papyrus →</Link>
+                    <Link key={item.slug} href={`/compare/${item.slug}`} className="text-[#b2391a] underline underline-offset-4">vs Papyrus →</Link>
                   ))}
                 </div>
               </article>

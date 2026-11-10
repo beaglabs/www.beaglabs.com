@@ -7,6 +7,7 @@ export const metadata: Metadata = pageMetadata({
   description: "Preserve trusted legacy systems while exposing their workflows through modern APIs and interfaces.",
   path: '/solutions/agentic-modernization',
   label: "Agentic Modernization",
+  headline: "Modern interfaces for systems that still work.",
 })
 
 export default function Page() {

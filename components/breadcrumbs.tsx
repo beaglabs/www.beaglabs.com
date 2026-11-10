@@ -30,22 +30,22 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <nav aria-label="breadcrumb" className="mb-8">
-        <ol className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#6B6B6B]">
+        <ol className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f5a4b]">
           {items.map((item, i) => {
             const isLast = i === items.length - 1
             return (
               <li key={item.url} className="flex items-center gap-2">
                 {isLast ? (
-                  <span className="text-[#111] font-bold">{item.name}</span>
+                  <span className="text-[#1a1714] font-bold">{item.name}</span>
                 ) : (
                   <>
                     <Link
                       href={item.url}
-                      className="transition-colors hover:text-[#ff5f1f]"
+                      className="transition-colors hover:text-[#e5632f]"
                     >
                       {item.name}
                     </Link>
-                    <span className="text-[#6B6B6B]">/</span>
+                    <span className="text-[#6f5a4b]">/</span>
                   </>
                 )}
               </li>

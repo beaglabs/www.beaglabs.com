@@ -39,7 +39,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
 
   return (
     <figure className="my-8">
-      <div className="overflow-x-auto rounded-[20px] border-[3px] border-[#111] shadow-[4px_4px_0px_0px_#111]">
+      <div className="overflow-x-auto rounded-[20px] border-[3px] border-[#1a1714] shadow-[4px_4px_0px_0px_#1a1714]">
         <table className="w-full border-collapse text-sm">
           {headers.length > 0 && (
             <thead>
@@ -47,7 +47,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                 {headers.map((h, i) => (
                   <th
                     key={i}
-                    className="border-b-[3px] border-[#111] bg-[#ff5f1f] px-4 py-3 text-left text-xs font-bold text-[#111] uppercase tracking-wider"
+                    className="border-b-[3px] border-[#1a1714] bg-[#e5632f] px-4 py-3 text-left text-xs font-bold text-[#1a1714] uppercase tracking-wider"
                   >
                     {h}
                   </th>
@@ -56,7 +56,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                   (_, i) => (
                     <th
                       key={`empty-${i}`}
-                      className="border-b-[3px] border-[#111] bg-[#ff5f1f] px-4 py-3"
+                      className="border-b-[3px] border-[#1a1714] bg-[#e5632f] px-4 py-3"
                     />
                   )
                 )}
@@ -68,7 +68,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
               <tr>
                 <td
                   colSpan={maxCols || 1}
-                  className="px-4 py-8 text-center text-[#999]"
+                  className="px-4 py-8 text-center text-[#a08b78]"
                 >
                   No data
                 </td>
@@ -79,14 +79,14 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
                   key={ri}
                   className={
                     ri % 2 === 0
-                      ? 'bg-white'
+                      ? 'bg-[#fffaf3]'
                       : 'bg-[#f9f8f7]'
                   }
                 >
                   {row.map((cell, ci) => (
                     <td
                       key={ci}
-                      className="border-b border-[rgba(17,17,17,0.12)] px-4 py-2.5 text-[#333]"
+                      className="border-b border-[rgba(17,17,17,0.12)] px-4 py-2.5 text-[#3d2f26]"
                     >
                       {cell}
                     </td>
@@ -106,7 +106,7 @@ export function TableBlockRenderer({ block }: TableBlockProps) {
         </table>
       </div>
       {block.label && (
-        <figcaption className="text-center text-xs text-[#999] mt-2 font-mono">
+        <figcaption className="text-center text-xs text-[#a08b78] mt-2 font-mono">
           {block.label}
         </figcaption>
       )}

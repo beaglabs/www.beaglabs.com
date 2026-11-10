@@ -158,11 +158,11 @@ export function FluidRendering({
         { x: 114, label: 'Excel / CSV', file: 'xlsx.png' },
       ].map(({ x, label, file }) => (
         <g key={label}>
-          <rect x={x + 3} y="57" width="49" height="91" fill="#111" />
-          <rect x={x} y="54" width="49" height="91" fill="white" stroke="#111" strokeWidth="2" />
+          <rect x={x + 3} y="57" width="49" height="91" fill="#1a1714" />
+          <rect x={x} y="54" width="49" height="91" fill="white" stroke="#1a1714" strokeWidth="2" />
           <image href={`/products/papyrus/${file}`} x={x + 7} y="64" width="35" height="35" />
           {label === 'Excel / CSV' && <image href="/products/papyrus/csv.png" x={x + 22} y="90" width="23" height="23" />}
-          <text x={x + 24.5} y="130" textAnchor="middle" fontSize="8" fontWeight="800" fill="#111">{label}</text>
+          <text x={x + 24.5} y="130" textAnchor="middle" fontSize="8" fontWeight="800" fill="#1a1714">{label}</text>
         </g>
       ))}
 
@@ -201,7 +201,7 @@ export function FluidRendering({
 
       {/* Actual AgentFS artwork supplied by the user. */}
       <image href="/products/papyrus/agentfs.png" x="196" y="65" width="56" height="56" />
-      <text x="224" y="141" textAnchor="middle" fill="#111" fontSize="11" fontWeight="900">AgentFS</text>
+      <text x="224" y="141" textAnchor="middle" fill="#1a1714" fontSize="11" fontWeight="900">AgentFS</text>
 
       {/* Destination card 4 - Bottom (Vercel Store) */}
       <rect x="312.5" y="155.54" width="134" height="35.95" fill={cardFill} />

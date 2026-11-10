@@ -6,13 +6,13 @@ const SHOW_ANNOUNCEMENT = false
 export function AnnouncementBanner() {
   if (!SHOW_ANNOUNCEMENT) return null
   return (
-    <div data-site-announcement className="fixed top-0 inset-x-0 z-[60] border-b-[3px] border-[#111] bg-[#111] text-white">
+    <div data-site-announcement className="fixed top-0 inset-x-0 z-[60] border-b-[3px] border-[#1a1714] bg-[#1a1714] text-[#fffaf3]">
       <div className="mx-auto flex max-w-[1440px] items-center justify-center gap-3 px-6 py-2.5 text-center lg:px-9">
         <p className="text-[12px] leading-[1.5] text-[#C9C9C9]">
           Looking for a AI enablement partner? Learn about our collaboration offerings {" "}
           <Link
             href="/contact"
-            className="font-extrabold text-[#ff5f1f] underline decoration-[#ff5f1f] decoration-2 underline-offset-3 transition-colors hover:text-[#FF7A1A]"
+            className="font-extrabold text-[#e5632f] underline decoration-[#e5632f] decoration-2 underline-offset-3 transition-colors hover:text-[#FF7A1A]"
           >
             Learn More &rarr;
           </Link>

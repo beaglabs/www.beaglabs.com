@@ -58,12 +58,12 @@ function ProgressBar({ status }: { status: RunStatus }) {
   const pct = failed ? 100 : complete ? 100 : Math.max(5, ((idx + 1) / STATUS_ORDER.length) * 100);
 
   return (
-    <div className="h-1.5 bg-[#E2E0DB] rounded-full overflow-hidden">
+    <div className="h-1.5 bg-[#e2c9a6] rounded-full overflow-hidden">
       <div
         className="h-full rounded-full transition-all duration-700"
         style={{
           width: `${pct}%`,
-          backgroundColor: failed ? "#D32F2F" : pct === 100 && !failed ? "#2E7D32" : "#ff5f1f",
+          backgroundColor: failed ? "#D32F2F" : pct === 100 && !failed ? "#2E7D32" : "#e5632f",
         }}
       />
     </div>
@@ -74,7 +74,7 @@ export function RunsDashboard({ initialRuns = [] }: { initialRuns?: TrainingRun[
   const router = useRouter();
   const orgId = useOrgId()
   const { runs: polledRuns, loading } = useRunList(orgId ?? "", { intervalMs: 10000 });
-  if (!orgId) return <div className="text-center py-16 text-sm text-[#777]">Loading workspace...</div>
+  if (!orgId) return <div className="text-center py-16 text-sm text-[#8f7a68]">Loading workspace...</div>
   const runs = polledRuns.length > 0 ? polledRuns : initialRuns;
 
   const stats = {
@@ -88,11 +88,11 @@ export function RunsDashboard({ initialRuns = [] }: { initialRuns?: TrainingRun[
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-[17px] font-semibold text-[#111] tracking-[-0.03em]">Training Runs</h1>
-          <p className="text-sm text-[#777] mt-1">Manage your model training pipelines</p>
+          <h1 className="text-[17px] font-semibold text-[#1a1714] tracking-[-0.03em]">Training Runs</h1>
+          <p className="text-sm text-[#8f7a68] mt-1">Manage your model training pipelines</p>
         </div>
         <Link href="/model-service/runs/create">
-          <Button className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5" style={{ backgroundColor: "#111" }}>
+          <Button className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5" style={{ backgroundColor: "#1a1714" }}>
             + New Run
           </Button>
         </Link>
@@ -105,35 +105,35 @@ export function RunsDashboard({ initialRuns = [] }: { initialRuns?: TrainingRun[
           { label: "Complete", value: stats.complete },
           { label: "Needing Review", value: stats.review },
         ].map((stat) => (
-          <Card key={stat.label} className="bg-white border-[#E2E0DB]">
+          <Card key={stat.label} className="bg-[#fffaf3] border-[#e2c9a6]">
             <CardContent className="p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999]">{stat.label}</p>
-              <p className="text-[24px] font-semibold text-[#111] mt-1 tracking-[-0.03em]">{stat.value}</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78]">{stat.label}</p>
+              <p className="text-[24px] font-semibold text-[#1a1714] mt-1 tracking-[-0.03em]">{stat.value}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       {runs.length === 0 ? (
-        <Card className="bg-white border-[#E2E0DB]">
+        <Card className="bg-[#fffaf3] border-[#e2c9a6]">
           <CardContent className="p-12 text-center">
-            <p className="text-[15px] text-[#777]">No training runs yet.</p>
+            <p className="text-[15px] text-[#8f7a68]">No training runs yet.</p>
           <Link href="/model-service/runs/create">
-            <Button className="mt-4 rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5" style={{ backgroundColor: "#ff5f1f" }}>
+            <Button className="mt-4 rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5" style={{ backgroundColor: "#e5632f" }}>
               Create your first run
             </Button>
           </Link>
           </CardContent>
         </Card>
       ) : (
-        <div className="bg-white rounded-xl border border-[#E2E0DB] overflow-hidden">
+        <div className="bg-[#fffaf3] rounded-xl border border-[#e2c9a6] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#E2E0DB]">
+              <tr className="border-b border-[#e2c9a6]">
                 {["Name", "Task", "Tier", "Status", "Samples", "Accuracy", "Cost", ""].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] font-normal"
+                    className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] font-normal"
                   >
                     {h}
                   </th>
@@ -144,15 +144,15 @@ export function RunsDashboard({ initialRuns = [] }: { initialRuns?: TrainingRun[
               {runs.map((run) => (
                 <tr
                   key={run.id}
-                  className="border-b border-[#E2E0DB] last:border-b-0 hover:bg-[#F5F4F0] cursor-pointer transition-colors"
+                  className="border-b border-[#e2c9a6] last:border-b-0 hover:bg-[#FDEEE1] cursor-pointer transition-colors"
                   onClick={() => router.push(`/model-service/runs/${run.id}`)}
                 >
                   <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-[#111]">{run.name}</p>
+                    <p className="text-sm font-medium text-[#1a1714]">{run.name}</p>
                     <ProgressBar status={run.status} />
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-[11px] uppercase tracking-[0.15em] text-[#777]">
+                    <span className="text-[11px] uppercase tracking-[0.15em] text-[#8f7a68]">
                       {run.task_type}
                     </span>
                   </td>
@@ -166,15 +166,15 @@ export function RunsDashboard({ initialRuns = [] }: { initialRuns?: TrainingRun[
                       {STATUS_LABELS[run.status] || run.status}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#777]">{run.total_examples}</td>
-                  <td className="px-4 py-3 text-sm text-[#777]">
+                  <td className="px-4 py-3 text-sm text-[#8f7a68]">{run.total_examples}</td>
+                  <td className="px-4 py-3 text-sm text-[#8f7a68]">
                     {run.estimated_accuracy != null ? `${(run.estimated_accuracy * 100).toFixed(1)}%` : "—"}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#777]">
+                  <td className="px-4 py-3 text-sm text-[#8f7a68]">
                     {run.training_cost != null ? `$${run.training_cost}` : "—"}
                   </td>
                   <td className="px-4 py-3">
-                    <Button variant="ghost" size="sm" className="text-[#ff5f1f] text-xs">
+                    <Button variant="ghost" size="sm" className="text-[#e5632f] text-xs">
                       View →
                     </Button>
                   </td>

@@ -53,7 +53,7 @@ export const ReviewCard = memo(function ReviewCard({
 
   return (
     <Card
-      className="bg-white border-[#E2E0DB] focus-within:border-[#ff5f1f] transition-colors outline-none"
+      className="bg-[#fffaf3] border-[#e2c9a6] focus-within:border-[#e5632f] transition-colors outline-none"
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
@@ -64,42 +64,42 @@ export const ReviewCard = memo(function ReviewCard({
               {index + 1} of {total}
             </Badge>
             {reviewed && (
-              <Badge style={{ backgroundColor: "#2E7D32", color: "#fff" }} className="text-[9px]">
+              <Badge style={{ backgroundColor: "#2E7D32", color: "#fffaf3" }} className="text-[9px]">
                 Done
               </Badge>
             )}
           </div>
           <div className="flex items-center gap-2">
             {example.kl_divergence != null && (
-              <span className="text-[10px] text-[#999]">
+              <span className="text-[10px] text-[#a08b78]">
                 KL: {((example.kl_divergence ?? 0) * 1000).toFixed(0)}e-3
               </span>
             )}
             {example.model_confidence != null && (
-              <span className="text-[10px] text-[#999]">
+              <span className="text-[10px] text-[#a08b78]">
                 Conf: {(example.model_confidence * 100).toFixed(0)}%
               </span>
             )}
           </div>
         </div>
 
-        <div className="bg-[#F5F4F0] rounded-lg p-3 mb-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] mb-1">Input</p>
-          <p className="text-sm text-[#111] whitespace-pre-wrap font-sans leading-relaxed max-h-32 overflow-y-auto">
+        <div className="bg-[#FDEEE1] rounded-lg p-3 mb-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] mb-1">Input</p>
+          <p className="text-sm text-[#1a1714] whitespace-pre-wrap font-sans leading-relaxed max-h-32 overflow-y-auto">
             {text}
           </p>
         </div>
 
         <div className="flex items-center gap-3 mb-3">
           <div>
-            <p className="text-[9px] text-[#999] uppercase">Frontier</p>
-            <Badge variant="outline" className={hasBothLabels ? "border-[#ff5f1f] text-[#ff5f1f]" : ""}>
+            <p className="text-[9px] text-[#a08b78] uppercase">Frontier</p>
+            <Badge variant="outline" className={hasBothLabels ? "border-[#e5632f] text-[#e5632f]" : ""}>
               {example.frontier_label || "—"}
             </Badge>
           </div>
           {hasBothLabels && <span className="text-[#D32F2F] text-sm">vs</span>}
           <div>
-            <p className="text-[9px] text-[#999] uppercase">Student</p>
+            <p className="text-[9px] text-[#a08b78] uppercase">Student</p>
             <Badge variant="secondary">{example.model_label || "—"}</Badge>
           </div>
         </div>
@@ -109,12 +109,12 @@ export const ReviewCard = memo(function ReviewCard({
             {[
               { label: "Correct", key: "c", color: "#2E7D32", action: onCorrect },
               { label: "Incorrect", key: "w", color: "#D32F2F", action: onIncorrect },
-              { label: "Uncertain", key: "u", color: "#999", action: onUncertain },
+              { label: "Uncertain", key: "u", color: "#a08b78", action: onUncertain },
             ].map(({ label, key, color, action }) => (
               <button
                 key={label}
                 onClick={action}
-                className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-white rounded-full px-3 py-1.5 flex items-center gap-1.5 transition-transform hover:scale-105 active:scale-95"
+                className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#fffaf3] rounded-full px-3 py-1.5 flex items-center gap-1.5 transition-transform hover:scale-105 active:scale-95"
                 style={{ backgroundColor: color }}
               >
                 {label}

@@ -25,15 +25,15 @@ const robotoCondensed = Roboto_Condensed({
 })
 
 const homeDescription =
-  'Papyrus by Beag Labs is an agentic ERP orchestration layer for complex multi-entity operations. Keep existing ERP and legacy systems of record while automating governed workflows.'
+  'Your existing ERP stays the system of record. Papyrus orchestrates complex operations across entities, teams, and legacy systems.'
 
-const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-10-19-dotted-card-v2'
+const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-11-10-retro'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs | Agentic ERP & Model-Aware Orchestration',
+    default: 'Beag Labs | Building the Superintelligent ERP',
   },
   description:
     homeDescription,
@@ -41,14 +41,14 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   icons: {
-    icon: [{ url: '/favicon-demo.svg', type: 'image/svg+xml' }, { url: '/favicon.png', type: 'image/png' }],
-    shortcut: '/favicon-demo.svg',
+    icon: [{ url: '/favicon.ico', sizes: '48x48' }, { url: '/favicon.png', type: 'image/png', sizes: '96x96' }],
+    shortcut: '/favicon.ico',
     apple: '/apple-icon.png',
   },
   applicationName: 'Beag Labs',
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: 'Papyrus Agentic ERP — Beag Labs',
+    title: 'Building the Superintelligent ERP — Beag Labs',
     description: homeDescription,
     url: 'https://beaglabs.com',
     siteName: 'Beag Labs',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
         url: homeOgImage,
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Agentic ERP & Model-Aware Orchestration',
+        alt: 'Beag Labs — Building the Superintelligent ERP',
         type: 'image/png',
       },
     ],
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Agentic Solutions for SLED and Federal — Beag Labs',
+    title: 'Building the Superintelligent ERP — Beag Labs',
     description: homeDescription,
     images: [homeOgImage],
     creator: '@beaglabs',
@@ -87,7 +87,7 @@ const organizationJsonLd = {
   '@type': 'Organization',
   name: 'Beag Labs',
   url: 'https://beaglabs.com',
-  logo: 'https://beaglabs.com/favicon-demo.svg',
+  logo: 'https://beaglabs.com/brand/beag-mark.png',
   description: homeDescription,
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [

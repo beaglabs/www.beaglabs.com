@@ -29,15 +29,15 @@ function DomainCard({ stat, onMerge }: { stat: DomainStats; onMerge: (domain: st
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
-    <Card className="bg-white border-[#E2E0DB]">
+    <Card className="bg-[#fffaf3] border-[#e2c9a6]">
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <p className="text-sm font-medium text-[#111]">{displayName}</p>
-            <p className="text-[10px] text-[#999] mt-0.5">{stat.domain}</p>
+            <p className="text-sm font-medium text-[#1a1714]">{displayName}</p>
+            <p className="text-[10px] text-[#a08b78] mt-0.5">{stat.domain}</p>
           </div>
           {stat.ready_to_merge ? (
-            <Badge style={{ backgroundColor: "#2E7D32", color: "#fff" }} className="text-[9px]">
+            <Badge style={{ backgroundColor: "#2E7D32", color: "#fffaf3" }} className="text-[9px]">
               Ready to Merge
             </Badge>
           ) : (
@@ -49,31 +49,31 @@ function DomainCard({ stat, onMerge }: { stat: DomainStats; onMerge: (domain: st
 
         <div className="grid grid-cols-3 gap-3 mb-3">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999]">Adapters</p>
-            <p className="text-[20px] font-semibold text-[#111] tracking-[-0.03em]">
+            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78]">Adapters</p>
+            <p className="text-[20px] font-semibold text-[#1a1714] tracking-[-0.03em]">
               {stat.adapter_count}
             </p>
           </div>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999]">Avg Acc</p>
-            <p className="text-[20px] font-semibold text-[#111] tracking-[-0.03em]">
+            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78]">Avg Acc</p>
+            <p className="text-[20px] font-semibold text-[#1a1714] tracking-[-0.03em]">
               {stat.avg_accuracy != null ? `${(stat.avg_accuracy * 100).toFixed(1)}%` : "—"}
             </p>
           </div>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999]">Best</p>
-            <p className="text-[20px] font-semibold text-[#111] tracking-[-0.03em]">
+            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78]">Best</p>
+            <p className="text-[20px] font-semibold text-[#1a1714] tracking-[-0.03em]">
               {stat.best_accuracy != null ? `${(stat.best_accuracy * 100).toFixed(1)}%` : "—"}
             </p>
           </div>
         </div>
 
-        <div className="h-1.5 bg-[#E2E0DB] rounded-full overflow-hidden mb-3">
+        <div className="h-1.5 bg-[#e2c9a6] rounded-full overflow-hidden mb-3">
           <div
             className="h-full rounded-full transition-all"
             style={{
               width: `${Math.min(100, (stat.adapter_count / 3) * 100)}%`,
-              backgroundColor: stat.adapter_count >= 3 ? "#2E7D32" : "#ff5f1f",
+              backgroundColor: stat.adapter_count >= 3 ? "#2E7D32" : "#e5632f",
             }}
           />
         </div>
@@ -82,7 +82,7 @@ function DomainCard({ stat, onMerge }: { stat: DomainStats; onMerge: (domain: st
           <Button
             onClick={() => onMerge(stat.domain)}
             className="w-full rounded-full text-[11px] font-extrabold uppercase tracking-[0.08em] h-8"
-            style={{ backgroundColor: "#ff5f1f" }}
+            style={{ backgroundColor: "#e5632f" }}
           >
             Merge Domain
           </Button>
@@ -121,7 +121,7 @@ export function LibraryPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-16"><p className="text-sm text-[#777]">Loading...</p></div>;
+    return <div className="text-center py-16"><p className="text-sm text-[#8f7a68]">Loading...</p></div>;
   }
 
   const totalAdapters = domains.reduce((s, d) => s + d.adapter_count, 0);
@@ -131,8 +131,8 @@ export function LibraryPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-[17px] font-semibold text-[#111] tracking-[-0.03em]">Base Model Library</h1>
-          <p className="text-sm text-[#777] mt-1">
+          <h1 className="text-[17px] font-semibold text-[#1a1714] tracking-[-0.03em]">Base Model Library</h1>
+          <p className="text-sm text-[#8f7a68] mt-1">
             Domain-adapted checkpoints built from anonymized customer adapters
           </p>
         </div>
@@ -145,10 +145,10 @@ export function LibraryPage() {
           { label: "Ready to Merge", value: mergeReady },
           { label: "Warm Start Eligible", value: mergeReady, subtitle: "domains with >=3 adapters" },
         ].map((stat) => (
-          <Card key={stat.label} className="bg-white border-[#E2E0DB]">
+          <Card key={stat.label} className="bg-[#fffaf3] border-[#e2c9a6]">
             <CardContent className="p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999]">{stat.label}</p>
-              <p className="text-[24px] font-semibold text-[#111] mt-1 tracking-[-0.03em]">{stat.value}</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78]">{stat.label}</p>
+              <p className="text-[24px] font-semibold text-[#1a1714] mt-1 tracking-[-0.03em]">{stat.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -156,22 +156,22 @@ export function LibraryPage() {
 
       {candidates.length > 0 && (
         <div className="mb-8">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] mb-3">Merge Candidates</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] mb-3">Merge Candidates</p>
           <div className="bg-[#FFF5EC] border border-[#FFE0C0] rounded-lg p-4">
             {candidates.map((c) => (
               <div key={c.domain} className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-[#111]">
+                  <p className="text-sm font-medium text-[#1a1714]">
                     {c.domain.replace(/-/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase())}
                   </p>
-                  <p className="text-[10px] text-[#777]">
+                  <p className="text-[10px] text-[#8f7a68]">
                     {c.adapter_count} adapters from {c.source_customers.length} customers · Avg accuracy: {(c.avg_accuracy * 100).toFixed(1)}%
                   </p>
                 </div>
                 <Button
                   onClick={() => handleMerge(c.domain)}
                   className="rounded-full text-[11px] font-extrabold uppercase tracking-[0.08em] h-8 px-4"
-                  style={{ backgroundColor: "#ff5f1f" }}
+                  style={{ backgroundColor: "#e5632f" }}
                 >
                   Merge Now
                 </Button>
@@ -182,11 +182,11 @@ export function LibraryPage() {
       )}
 
       <div>
-        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] mb-3">All Domains</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] mb-3">All Domains</p>
         {domains.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#E2E0DB] bg-white p-12 text-center">
-            <p className="text-[15px] text-[#777]">No adapters collected yet.</p>
-            <p className="text-xs text-[#999] mt-1">Adapters are collected after each successful training run and stored here for domain merging.</p>
+          <div className="rounded-xl border border-dashed border-[#e2c9a6] bg-[#fffaf3] p-12 text-center">
+            <p className="text-[15px] text-[#8f7a68]">No adapters collected yet.</p>
+            <p className="text-xs text-[#a08b78] mt-1">Adapters are collected after each successful training run and stored here for domain merging.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
@@ -197,24 +197,24 @@ export function LibraryPage() {
         )}
       </div>
 
-      <div className="mt-8 bg-[#F5F4F0] rounded-lg p-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] mb-2">How It Works</p>
+      <div className="mt-8 bg-[#FDEEE1] rounded-lg p-4">
+        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] mb-2">How It Works</p>
         <div className="grid grid-cols-3 gap-6">
           <div>
-            <p className="text-xs font-medium text-[#111]">1. Collect</p>
-            <p className="text-[11px] text-[#777] mt-1">
+            <p className="text-xs font-medium text-[#1a1714]">1. Collect</p>
+            <p className="text-[11px] text-[#8f7a68] mt-1">
               After each successful training run, the LoRA adapter is de-identified and stored in S3.
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium text-[#111]">2. Merge</p>
-            <p className="text-[11px] text-[#777] mt-1">
+            <p className="text-xs font-medium text-[#1a1714]">2. Merge</p>
+            <p className="text-[11px] text-[#8f7a68] mt-1">
               When 3+ customers train in the same domain, adapters are distilled into a single checkpoint.
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium text-[#111]">3. Warm Start</p>
-            <p className="text-[11px] text-[#777] mt-1">
+            <p className="text-xs font-medium text-[#1a1714]">3. Warm Start</p>
+            <p className="text-[11px] text-[#8f7a68] mt-1">
               Future customers in that domain start from the merged checkpoint — 30% fewer examples needed.
             </p>
           </div>

@@ -13,7 +13,7 @@ export function IntegrationPipelineDiagram() {
   return (
     <div className="relative overflow-hidden">
       <div className="mb-5 flex items-center justify-between">
-        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#ff5f1f]">
+        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#e5632f]">
           Data flow
         </div>
         <div className="flex items-center gap-1.5">
@@ -31,7 +31,7 @@ export function IntegrationPipelineDiagram() {
               className="flex flex-col items-center gap-1.5 rounded-xl border border-[rgba(17,17,17,0.08)] bg-[rgba(255,255,255,0.6)] px-2 py-3"
             >
               <src.icon className="h-5 w-5 text-[#8B7355]" strokeWidth={1.5} />
-              <span className="font-mono text-[10px] text-[#555]">{src.label}</span>
+              <span className="font-mono text-[10px] text-[#5b4a3d]">{src.label}</span>
               <span className="h-1 w-1 rounded-full bg-[#22c55e]" />
             </div>
           ))}
@@ -50,13 +50,13 @@ export function IntegrationPipelineDiagram() {
 
         {/* Kafka center */}
         <div className="flex justify-center pb-3">
-          <div className="relative flex items-center gap-3 rounded-2xl bg-[#111] px-5 py-3">
+          <div className="relative flex items-center gap-3 rounded-2xl bg-[#1a1714] px-5 py-3">
             <img
               src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/kafka.svg"
               alt="Kafka"
               className="h-7 w-7 brightness-0 invert"
             />
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-[#fffaf3]">
               Kafka
             </span>
             <div className="absolute -inset-[2px] rounded-2xl border border-[#8B7355]/30 animate-pulse" />
@@ -67,9 +67,9 @@ export function IntegrationPipelineDiagram() {
         <div className="flex justify-center gap-2 pb-3">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-0.5" style={{ width: "25%" }}>
-              <span className="h-1 w-1 rounded-full bg-[#ff5f1f] flow-dot" style={{ animationDelay: `${i * 0.15}s` }} />
-              <span className="h-1 w-1 rounded-full bg-[#ff5f1f] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.2}s` }} />
-              <span className="h-1 w-1 rounded-full bg-[#ff5f1f] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.4}s` }} />
+              <span className="h-1 w-1 rounded-full bg-[#e5632f] flow-dot" style={{ animationDelay: `${i * 0.15}s` }} />
+              <span className="h-1 w-1 rounded-full bg-[#e5632f] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.2}s` }} />
+              <span className="h-1 w-1 rounded-full bg-[#e5632f] flow-dot" style={{ animationDelay: `${i * 0.15 + 0.4}s` }} />
             </div>
           ))}
         </div>
@@ -78,17 +78,17 @@ export function IntegrationPipelineDiagram() {
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col items-center gap-1.5 rounded-xl border border-[rgba(17,17,17,0.08)] bg-[rgba(255,255,255,0.6)] px-2 py-3">
             <Brain className="h-5 w-5 text-[#8B7355]" strokeWidth={1.5} />
-            <span className="font-mono text-[10px] text-[#555]">Domain Schema</span>
+            <span className="font-mono text-[10px] text-[#5b4a3d]">Domain Schema</span>
           </div>
           <div className="flex flex-col items-center gap-1.5 rounded-xl border border-[rgba(17,17,17,0.08)] bg-[rgba(255,255,255,0.6)] px-2 py-3">
             <Brain className="h-5 w-5 text-[#8B7355]" strokeWidth={1.5} />
-            <span className="font-mono text-[10px] text-[#555]">Entities</span>
+            <span className="font-mono text-[10px] text-[#5b4a3d]">Entities</span>
           </div>
           <div className="flex flex-col items-center gap-1.5 rounded-xl border border-[rgba(17,17,17,0.08)] bg-[rgba(255,255,255,0.6)] px-2 py-3">
             <Brain className="h-5 w-5 text-[#8B7355]" strokeWidth={1.5} />
-            <span className="font-mono text-[10px] text-[#555]">Transforms</span>
+            <span className="font-mono text-[10px] text-[#5b4a3d]">Transforms</span>
           </div>
-          <div className="flex flex-col items-center gap-1.5 rounded-xl bg-[#111] px-2 py-3">
+          <div className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1a1714] px-2 py-3">
             <Brain className="h-5 w-5 text-[#FFB074]" strokeWidth={1.5} />
             <span className="font-mono text-[10px] font-semibold text-[#FFB074]">
               YourModel&trade;

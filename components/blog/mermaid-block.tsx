@@ -45,7 +45,7 @@ export function MermaidBlockRenderer({ block }: MermaidBlockProps) {
         />
       )}
       {block.label && (
-        <figcaption className="text-center text-xs text-[#999] mt-2 font-mono">
+        <figcaption className="text-center text-xs text-[#a08b78] mt-2 font-mono">
           {block.label}
         </figcaption>
       )}

@@ -112,7 +112,7 @@ export function ModelsSection() {
           </p>
 
           {/* Bit layout visualization */}
-          <div className="bg-[#050505] border border-[#1a2a1f] p-6 mb-4 font-mono">
+          <div className="bg-[#120f0d] border border-[#1a2a1f] p-6 mb-4 font-mono">
             <div className="text-xs text-[#4a6653] mb-4">BIT LAYOUT (17 bits)</div>
             <div className="flex items-center gap-0 mb-4 overflow-x-auto">
               <div className="bg-[#0a1a10] border border-[#1a3a22] px-3 py-2 text-center min-w-[60px]">
@@ -149,7 +149,7 @@ export function ModelsSection() {
           </div>
 
           {/* Example */}
-          <div className="bg-[#050505] border border-[#1a2a1f] p-6 font-mono text-sm overflow-x-auto">
+          <div className="bg-[#120f0d] border border-[#1a2a1f] p-6 font-mono text-sm overflow-x-auto">
             <div className="text-xs text-[#4a6653] mb-4">EXAMPLE</div>
             <div className="text-[#8bc49a] mb-1">
               hash = 30173 = 0b 00111 010111 011 1 0 1
@@ -193,7 +193,7 @@ export function ModelsSection() {
         </div>
 
         {/* Status banner */}
-        <div className="bg-[#050505] border border-[#1a2a1f] p-8 flex items-start gap-4">
+        <div className="bg-[#120f0d] border border-[#1a2a1f] p-8 flex items-start gap-4">
           <span className="relative flex h-3 w-3 mt-0.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#b3ddbb] opacity-75" />
             <span className="relative inline-flex rounded-full h-3 w-3 bg-[#b3ddbb]" />

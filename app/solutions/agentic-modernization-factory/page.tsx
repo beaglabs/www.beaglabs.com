@@ -3,9 +3,9 @@ import { AgenticGuide } from '@/components/backoffice/agentic-guide'
 
 export const metadata = pageMetadata({
   title: 'Agentic Modernization Factory',
-  description: 'Explore a visual terminal-to-browser modernization workflow with screen mapping, controlled tools, validation, and human approval.',
+  description: 'Make the systems you already depend on easier to use. Follow the work from a legacy screen to a controlled operation, a browser interface, and a release decision.',
   path: '/solutions/agentic-modernization-factory',
-  label: 'Papyrus / Back office',
+  label: 'Papyrus / Modernization',
 })
 
 export default function Page() {

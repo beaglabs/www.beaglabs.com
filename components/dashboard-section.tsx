@@ -80,7 +80,7 @@ export function DashboardSection() {
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[#1a2a1f] mb-px">
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-[#050505] p-6">
+            <div key={stat.label} className="bg-[#120f0d] p-6">
               <div className="font-mono text-[10px] tracking-[0.12em] text-[#4a6653] mb-2">
                 {stat.label}
               </div>
@@ -97,7 +97,7 @@ export function DashboardSection() {
         {/* Charts row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-[#1a2a1f] mb-px">
           {/* Accuracy over time */}
-          <div className="bg-[#050505] p-6">
+          <div className="bg-[#120f0d] p-6">
             <div className="font-mono text-[10px] tracking-[0.12em] text-[#4a6653] mb-6">
               SPECIALIST ACCURACY OVER TIME
             </div>
@@ -108,7 +108,7 @@ export function DashboardSection() {
                 <YAxis stroke="#3d5a44" domain={[88, 100]} tick={{ fontSize: 10, fontFamily: "JetBrains Mono" }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#0a0a0a",
+                    backgroundColor: "#120f0d",
                     border: "1px solid #1a2a1f",
                     borderRadius: 4,
                     fontFamily: "JetBrains Mono",
@@ -125,7 +125,7 @@ export function DashboardSection() {
           </div>
 
           {/* Cost savings */}
-          <div className="bg-[#050505] p-6">
+          <div className="bg-[#120f0d] p-6">
             <div className="font-mono text-[10px] tracking-[0.12em] text-[#4a6653] mb-6">
               MONTHLY OPERATIONAL COST
             </div>
@@ -136,7 +136,7 @@ export function DashboardSection() {
                 <YAxis stroke="#3d5a44" tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 10, fontFamily: "JetBrains Mono" }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#0a0a0a",
+                    backgroundColor: "#120f0d",
                     border: "1px solid #1a2a1f",
                     borderRadius: 4,
                     fontFamily: "JetBrains Mono",
@@ -163,7 +163,7 @@ export function DashboardSection() {
         </div>
 
         {/* Task throughput bar */}
-        <div className="bg-[#050505] p-6 mb-px">
+        <div className="bg-[#120f0d] p-6 mb-px">
           <div className="font-mono text-[10px] tracking-[0.12em] text-[#4a6653] mb-6">
             TASK THROUGHPUT BY SPECIALIST
           </div>
@@ -174,7 +174,7 @@ export function DashboardSection() {
               <YAxis dataKey="name" type="category" stroke="#3d5a44" tick={{ fontSize: 10, fontFamily: "JetBrains Mono" }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#0a0a0a",
+                  backgroundColor: "#120f0d",
                   border: "1px solid #1a2a1f",
                   borderRadius: 4,
                   fontFamily: "JetBrains Mono",
@@ -189,7 +189,7 @@ export function DashboardSection() {
         </div>
 
         {/* Recent activity table */}
-        <div className="bg-[#050505] overflow-x-auto">
+        <div className="bg-[#120f0d] overflow-x-auto">
           <div className="p-6 border-b border-[#1a2a1f]">
             <div className="font-mono text-[10px] tracking-[0.12em] text-[#4a6653]">
               RECENT SPECIALIST ACTIVITY

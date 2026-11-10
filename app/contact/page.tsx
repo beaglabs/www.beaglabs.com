@@ -21,28 +21,28 @@ export default function ContactPage() {
   return (
     <>
 
-      <main className="site-page-grid min-h-screen bg-[#FAFAF9] px-6 pb-20 pt-12 lg:px-9 lg:pb-28 lg:pt-16">
+      <main className="site-page-grid min-h-screen bg-[#FDEEE1] px-6 pb-20 pt-12 lg:px-9 lg:pb-28 lg:pt-16">
         <div className="mx-auto w-full max-w-[1180px]">
           <div className="mx-auto mb-9 max-w-[760px] text-center">
-            <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-[#ff5f1f]">
+            <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-[#e5632f]">
               Contact / Schedule
             </p>
-            <h1 className="mt-3 text-[length:min(42px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] text-[#111] sm:text-[58px]">
+            <h1 className="mt-3 text-[length:min(42px,9vw)] font-extrabold leading-[0.98] tracking-[-0.05em] text-[#1a1714] sm:text-[58px]">
               Talk with Beag Labs.
             </h1>
-            <p className="mx-auto mt-5 max-w-[650px] text-[16px] font-medium leading-7 text-[#555]">
+            <p className="mx-auto mt-5 max-w-[650px] text-[16px] font-medium leading-7 text-[#5b4a3d]">
               Pick a time to discuss Papyrus, back office automation, legacy workflows,
               or delivery partnerships.
             </p>
           </div>
 
-          <section className="overflow-hidden border-[3px] border-[#111] bg-white shadow-[8px_8px_0_#111]">
-            <div className="flex flex-col gap-3 border-b-[3px] border-[#111] bg-[#fff1e9] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <section className="overflow-hidden border-[3px] border-[#1a1714] bg-[#fffaf3] shadow-[8px_8px_0_#1a1714]">
+            <div className="flex flex-col gap-3 border-b-[3px] border-[#1a1714] bg-[#fde3c8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="font-mono text-[9px] font-black uppercase tracking-[0.14em] text-[#ff5f1f]">
+                <p className="font-mono text-[9px] font-black uppercase tracking-[0.14em] text-[#e5632f]">
                   Microsoft Bookings
                 </p>
-                <p className="mt-1 text-[14px] font-extrabold text-[#111]">Choose an available time</p>
+                <p className="mt-1 text-[14px] font-extrabold text-[#1a1714]">Choose an available time</p>
               </div>
               <a
                 href={BOOKING_URL}
@@ -55,20 +55,20 @@ export default function ContactPage() {
               </a>
             </div>
 
-            <div className="h-[1050px] w-full bg-white sm:h-[1120px]">
+            <div className="h-[1050px] w-full bg-[#fffaf3] sm:h-[1120px]">
               <iframe
                 src={BOOKING_URL}
                 title="Schedule a meeting with Beag Labs"
                 width="100%"
                 height="100%"
                 scrolling="yes"
-                className="block h-full w-full border-0 bg-white"
+                className="block h-full w-full border-0 bg-[#fffaf3]"
               />
             </div>
           </section>
 
           <div className="mx-auto mt-8 max-w-[760px] text-center">
-            <p className="text-[12px] leading-6 text-[#666]">
+            <p className="text-[12px] leading-6 text-[#6f5a4b]">
               Prefer email?{' '}
               <a
                 href="mailto:james@beaglabs.com"

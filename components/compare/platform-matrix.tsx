@@ -45,15 +45,15 @@ export function PlatformMatrix({ platforms, filters }: { platforms: Platform[]; 
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-end gap-4 border-[3px] border-[#111] bg-white p-4">
+      <div className="mb-5 flex flex-wrap items-end gap-4 border-[3px] border-[#1a1714] bg-[#fffaf3] p-4">
         {filters.map(({ key, label, options }) => (
-          <label key={key} htmlFor={`${id}-${key}`} className="grid gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#555]">
+          <label key={key} htmlFor={`${id}-${key}`} className="grid gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#5b4a3d]">
             {label}
             <select
               id={`${id}-${key}`}
               value={selected[key] ?? ''}
               onChange={(event) => setSelected((current) => ({ ...current, [key]: event.target.value || undefined }))}
-              className="min-w-[180px] border-2 border-[#111] bg-white px-3 py-2 text-[13px] font-bold normal-case tracking-normal text-[#111]"
+              className="min-w-[180px] border-2 border-[#1a1714] bg-[#fffaf3] px-3 py-2 text-[13px] font-bold normal-case tracking-normal text-[#1a1714]"
             >
               <option value="">Any</option>
               {options.map((option) => (
@@ -62,8 +62,8 @@ export function PlatformMatrix({ platforms, filters }: { platforms: Platform[]; 
             </select>
           </label>
         ))}
-        <label className="flex items-center gap-2 border-2 border-[#111] px-3 py-2 text-[13px] font-bold">
-          <input type="checkbox" checked={approvalOnly} onChange={(event) => setApprovalOnly(event.target.checked)} className="h-4 w-4 accent-[#ff5f1f]" />
+        <label className="flex items-center gap-2 border-2 border-[#1a1714] px-3 py-2 text-[13px] font-bold">
+          <input type="checkbox" checked={approvalOnly} onChange={(event) => setApprovalOnly(event.target.checked)} className="h-4 w-4 accent-[#e5632f]" />
           Human approval documented
         </label>
         {active > 0 && (
@@ -78,33 +78,33 @@ export function PlatformMatrix({ platforms, filters }: { platforms: Platform[]; 
             Clear filters
           </button>
         )}
-        <p aria-live="polite" className="ml-auto font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#555]">
+        <p aria-live="polite" className="ml-auto font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#5b4a3d]">
           Showing {visible.length} of {platforms.length}
         </p>
       </div>
 
-      <div className="overflow-x-auto border-[3px] border-[#111] bg-white shadow-[6px_6px_0_#111]">
+      <div className="overflow-x-auto border-[3px] border-[#1a1714] bg-[#fffaf3] shadow-[6px_6px_0_#1a1714]">
         <table className="w-full min-w-[1180px] border-collapse text-left">
           <caption className="sr-only">Self-hosted AI agent platforms compared by attribute, with a source link on every verified cell</caption>
           <thead>
-            <tr className="border-b-[3px] border-[#111] bg-[#fafaf9]">
-              <th scope="col" className="sticky left-0 z-10 w-[220px] bg-[#fafaf9] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em]">Platform</th>
+            <tr className="border-b-[3px] border-[#1a1714] bg-[#fdeee1]">
+              <th scope="col" className="sticky left-0 z-10 w-[220px] bg-[#fdeee1] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em]">Platform</th>
               {COLUMNS.map(({ key, label }) => (
-                <th key={key} scope="col" className="min-w-[190px] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#555]">{label}</th>
+                <th key={key} scope="col" className="min-w-[190px] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#5b4a3d]">{label}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {visible.map((platform) => (
-              <tr key={platform.slug} className="border-b border-[#bbb] align-top last:border-b-0">
-                <th scope="row" className="sticky left-0 z-10 bg-white px-4 py-4 align-top">
-                  <Link href={productHref(platform)} className="flex items-center gap-3 hover:text-[#b33d0d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff5f1f]">
+              <tr key={platform.slug} className="border-b border-[#b8a28c] align-top last:border-b-0">
+                <th scope="row" className="sticky left-0 z-10 bg-[#fffaf3] px-4 py-4 align-top">
+                  <Link href={productHref(platform)} className="flex items-center gap-3 hover:text-[#b2391a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#e5632f]">
                     <ProductLogo name={platform.name} src={logoUrl(platform)} size="sm" />
                     <span className="block text-[17px] font-extrabold leading-tight tracking-[-0.02em] underline decoration-1 underline-offset-4">{platform.name}</span>
                   </Link>
-                  <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.08em] text-[#666]">{platform.vendor}</span>
-                  {platform.isBeag && <span className="mt-2 inline-block border border-[#111] bg-[#ffdeca] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.1em]">Made by Beag Labs</span>}
-                  <span className="mt-2 block text-[12px] font-medium leading-[1.5] text-[#444]">{platform.summary}</span>
+                  <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.08em] text-[#6f5a4b]">{platform.vendor}</span>
+                  {platform.isBeag && <span className="mt-2 inline-block border border-[#1a1714] bg-[#fde3c8] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.1em]">Made by Beag Labs</span>}
+                  <span className="mt-2 block text-[12px] font-medium leading-[1.5] text-[#4a3d33]">{platform.summary}</span>
                 </th>
                 {COLUMNS.map(({ key }) => (
                   <td key={key} className="px-4 py-4"><EvidenceCell cell={platform.cells[key]} /></td>
@@ -112,7 +112,7 @@ export function PlatformMatrix({ platforms, filters }: { platforms: Platform[]; 
               </tr>
             ))}
             {visible.length === 0 && (
-              <tr><td colSpan={COLUMNS.length + 1} className="px-4 py-10 text-center text-[14px] font-medium text-[#555]">No platform matches every selected filter.</td></tr>
+              <tr><td colSpan={COLUMNS.length + 1} className="px-4 py-10 text-center text-[14px] font-medium text-[#5b4a3d]">No platform matches every selected filter.</td></tr>
             )}
           </tbody>
         </table>

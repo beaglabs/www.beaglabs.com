@@ -47,7 +47,7 @@ export function FooterCTA() {
 
 export function Footer() {
   return (
-    <footer className="bg-white py-16 px-8 lg:px-16 border-t border-black/10">
+    <footer className="bg-[#fffaf3] py-16 px-8 lg:px-16 border-t border-black/10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row items-start justify-between gap-12">
           {/* Logo and info */}

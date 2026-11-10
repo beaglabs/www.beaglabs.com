@@ -7,6 +7,7 @@ export const metadata: Metadata = pageMetadata({
   description: "Turn process requirements into useful interfaces, forms and workflows, with human oversight and controls.",
   path: '/solutions/internal-app-factory',
   label: "Internal App Factory",
+  headline: "Build the internal apps you actually need.",
 })
 
 export default function Page() {

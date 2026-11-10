@@ -32,7 +32,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="bg-white py-32 px-8 lg:px-16">
+    <section className="bg-[#fffaf3] py-32 px-8 lg:px-16">
       {/* Section header */}
       <div className="max-w-7xl mx-auto mb-20">
         <div className="flex items-center gap-4 mb-6">
@@ -51,7 +51,7 @@ export function FeaturesSection() {
         {features.map((feature, index) => (
           <div
             key={feature.title}
-            className="bg-white p-8 lg:p-12 group hover:bg-neutral-50 transition-colors"
+            className="bg-[#fffaf3] p-8 lg:p-12 group hover:bg-neutral-50 transition-colors"
           >
             <div className="flex items-start justify-between mb-8">
               <div className="w-12 h-12 border border-black/30 flex items-center justify-center group-hover:border-black/60 group-hover:bg-black/5 transition-all">

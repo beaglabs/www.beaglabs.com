@@ -7,6 +7,7 @@ export const metadata: Metadata = pageMetadata({
   description: "Extract useful information from PDFs and office files, review results, and turn content into repeatable workflows.",
   path: '/solutions/document-automation',
   label: "Document Automation",
+  headline: "Turn documents into structured work.",
 })
 
 export default function Page() {

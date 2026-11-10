@@ -26,7 +26,7 @@ export default async function RunDetailPage({ params }: { params: Params }) {
   if (!run) {
     return (
       <div className="text-center py-24">
-        <p className="text-[15px] text-[#777]">Run not found.</p>
+        <p className="text-[15px] text-[#8f7a68]">Run not found.</p>
       </div>
     );
   }

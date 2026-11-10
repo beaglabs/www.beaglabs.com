@@ -93,10 +93,10 @@ export default async function BlogTagPage({
       <div className="mx-auto max-w-[1440px]">
         <div className="mb-14 grid grid-cols-1 gap-8 border-b border-[rgba(0,0,0,0.08)] pb-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <div>
-            <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.26em] text-[#ff5f1f]">
+            <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.26em] text-[#e5632f]">
               Blog Tag
             </div>
-            <h1 className="mb-3 text-[42px] font-bold tracking-[-0.05em] text-[#111] lg:text-[54px]">
+            <h1 className="mb-3 text-[42px] font-bold tracking-[-0.05em] text-[#1a1714] lg:text-[54px]">
               #{decoded}
             </h1>
           </div>
