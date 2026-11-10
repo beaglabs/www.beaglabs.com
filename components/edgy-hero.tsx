@@ -31,6 +31,8 @@ export type EdgyHeroProps = {
   /** The headline in three parts; `slab` sits on the black tilted slab. Any part may be omitted. */
   before?: ReactNode
   slab?: ReactNode
+  /** `ink` sets the slab on the tilted ink block; `neon` hangs it bare on the paper, like a sign. */
+  slabStyle?: "ink" | "neon"
   after?: ReactNode
   /** White-on-black strip under the headline. */
   description?: ReactNode
@@ -58,14 +60,14 @@ export type EdgyHeroProps = {
 
 const HEADLINE = {
   // Sized for Fraunces, which runs much wider than the condensed face these were first set for.
-  xl: "text-[length:min(34px,8.2vw)] sm:text-[52px] lg:text-[56px] xl:text-[66px] 2xl:text-[74px]",
+  xl: "text-[length:min(34px,6.6vw)] sm:text-[52px] lg:text-[56px] xl:text-[66px] 2xl:text-[74px]",
   lg: "text-[length:min(30px,7.6vw)] sm:text-[44px] lg:text-[50px] xl:text-[58px]",
   md: "text-[length:min(26px,7vw)] sm:text-[36px] lg:text-[42px] xl:text-[48px]",
 }
 
 /** The edgy hero: big headline on Papyrus paper with the B_ ribbon, ink strip, frosted side panel, crop marks. */
 export function EdgyHero({
-  eyebrow, before, slab, after, description, breadcrumb, actions, aside, asideLabel, asideBare = false, asideWidth = "narrow",
+  eyebrow, before, slab, slabStyle = "ink", after, description, breadcrumb, actions, aside, asideLabel, asideBare = false, asideWidth = "narrow",
   background = "ember", coordinates = "38.8977° N · 77.0365° W", status = "Agents online · humans in charge", next,
   height = "page", size = "lg", id,
 }: EdgyHeroProps) {
@@ -95,7 +97,8 @@ export function EdgyHero({
           </span>
           <h1 className={`display-black leading-[.88] [overflow-wrap:normal] ${HEADLINE[size]} ${bg.dark ? "text-[#fffaf3]" : "text-[#1a1714]"}`}>
             {before && <span className="block">{before}</span>}
-            {slab && <span className={`my-2 block w-fit max-w-full -rotate-1 rounded-xl px-3 pb-1 sm:px-5 ${bg.dark ? "bg-[#fffaf3] text-[#1a1714] shadow-[5px_5px_0_#e5632f] sm:shadow-[8px_8px_0_#e5632f]" : "bg-[#1a1714] text-[#e5632f] shadow-[5px_5px_0_#fde3c8] sm:shadow-[8px_8px_0_#fde3c8]"}`}>{slab}</span>}
+            {slab && slabStyle === "neon" && <span className="hero-neon-line">{slab}</span>}
+            {slab && slabStyle === "ink" && <span className={`my-2 block w-fit max-w-full -rotate-1 rounded-xl px-3 pb-1 sm:px-5 ${bg.dark ? "bg-[#fffaf3] text-[#1a1714] shadow-[5px_5px_0_#e5632f] sm:shadow-[8px_8px_0_#e5632f]" : "bg-[#1a1714] text-[#e5632f] shadow-[5px_5px_0_#fde3c8] sm:shadow-[8px_8px_0_#fde3c8]"}`}>{slab}</span>}
             {after && <span className="block">{after}</span>}
           </h1>
           {description && <div className={`mt-9 max-w-[660px] rounded-r-2xl border-l-[6px] border-[#e5632f] px-5 py-4 text-[16px] font-semibold leading-[1.6] sm:text-[18px] ${bg.dark ? "bg-[#fde3c8] text-[#1a1714]" : "bg-[#1a1714] text-[#fffaf3]"}`}>{description}</div>}
@@ -104,7 +107,7 @@ export function EdgyHero({
 
         {aside && (asideBare
           ? <div className="min-w-0">{aside}</div>
-          : <div className="mr-2 max-w-[560px] rounded-[1.5rem] border-[3px] border-[#1a1714] bg-[#fde3c8]/80 p-5 shadow-[6px_6px_0_#1a1714] backdrop-blur-md sm:mr-0 sm:p-7 sm:shadow-[10px_10px_0_#1a1714]">
+          : <div className="relative mr-2 max-w-[560px] rounded-[1.5rem] border-[3px] border-[#1a1714] bg-[#fffaf3] p-5 shadow-[6px_6px_0_#1a1714] sm:mr-0 sm:p-7 sm:shadow-[10px_10px_0_#1a1714]">
             {asideLabel && <p className="mb-4 font-mono text-[11px] font-bold uppercase tracking-[.16em] text-[#c2410c]">{asideLabel}</p>}
             {aside}
           </div>)}
