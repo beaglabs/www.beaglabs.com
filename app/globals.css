@@ -397,3 +397,29 @@
   .hero-ribbon { animation: none; }
   .hero-lane { animation: none; stroke-dashoffset: 0; }
 }
+
+/* ── pastel neon word on the hero slab (components/groovy-neon.tsx): neon only ever sits on the ink ground ── */
+.groovy-neon {
+  display: inline-flex;
+  filter: drop-shadow(0 0 6px rgb(255 157 226 / 0.55)) drop-shadow(0 0 18px rgb(184 245 255 / 0.35));
+}
+.groovy-neon-letter {
+  display: inline-block;
+  color: #ff9de2;
+  text-shadow: 0 0 2px #fffaf3;
+  animation: groovy-hue 3.5s linear infinite, groovy-bob 1.8s ease-in-out infinite;
+}
+@keyframes groovy-hue {
+  0%, 100% { color: #ff9de2; }
+  20% { color: #a5f0ff; }
+  40% { color: #b8ffcc; }
+  60% { color: #fff59e; }
+  80% { color: #d9b8ff; }
+}
+@keyframes groovy-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-0.06em) rotate(-2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .groovy-neon-letter { animation: none; }
+}

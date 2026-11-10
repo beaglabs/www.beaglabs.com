@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react"
 import { EdgyHero } from "@/components/edgy-hero"
+import { GroovyNeon } from "@/components/groovy-neon"
 import { BriefRequestForm } from "@/components/brief-request-form"
 
 export function HeroSection() {
@@ -13,7 +14,7 @@ export function HeroSection() {
       background="ember"
       eyebrow="Beag Labs · Federal + SLED"
       before="Building"
-      slab="groovy"
+      slab={<GroovyNeon text="groovy" />}
       after="superintelligence"
       description="Our firm uses deep expertise and solutioneering paired with agentic support to deploy advanced solutions for federal and SLED. Our main product is Papyrus, the STIG-hardened superintelligent harness runtime built for the ATO from commit #001."
       next={{ href: "#capabilities", label: "How we work" }}
