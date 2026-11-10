@@ -6,7 +6,7 @@ import { claims } from '@/lib/claims'
 import { pageMetadata } from '@/lib/seo'
 
 const claimsDescription =
-  'Verified statements with approved wording, source links, and clear boundaries for how each claim should be used.'
+  'A source-linked ledger of verified claims, approved language, and usage boundaries.'
 
 export const metadata: Metadata = pageMetadata({
   title: 'Claim Ledger',

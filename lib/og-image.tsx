@@ -14,9 +14,9 @@ const MONO = 'JetBrains Mono'
 
 // Must stay in sync with the homepage <h1> in components/hero-section.tsx.
 export const HOME_OG = {
-  title: 'Building the Superintelligent ERP',
+  title: 'Building groovy superintelligence',
   description:
-    'Your existing ERP stays the system of record. Papyrus orchestrates complex operations across entities, teams, and legacy systems.',
+    'Our firm uses deep expertise and solutioneering paired with agentic support to deploy advanced solutions for federal and SLED. Our main product is Papyrus, the STIG-hardened superintelligent harness runtime built for the ATO from commit #001.',
   label: 'Papyrus · Customer-hosted software',
 } as const
 

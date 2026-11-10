@@ -32,8 +32,6 @@ export function pageMetadata(opts: {
   description: string
   path: string
   label?: string
-  /** The page's own headline, drawn on the OG image; defaults to the title. */
-  headline?: string
   ogTitle?: string
   ogDescription?: string
   type?: 'website' | 'article'
@@ -44,7 +42,7 @@ export function pageMetadata(opts: {
   const ogImage = [
     {
       url: ogImageUrl({
-        title: opts.headline || opts.title,
+        title: opts.title,
         description: ogDescription,
         label: opts.label,
       }),

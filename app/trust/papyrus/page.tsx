@@ -24,7 +24,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description: `Machine-readable security posture for Papyrus: ${requirements.length} OSCAL controls implemented across ${controlFamilies.length} control families, a CycloneDX SBOM of ${components.length} components, and third-party license reporting.`,
     path: '/trust/papyrus',
     label: 'Trust Center',
-    headline: 'Security evidence, published in the open.',
   })
 }
 

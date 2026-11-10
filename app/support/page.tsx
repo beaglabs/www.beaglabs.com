@@ -11,7 +11,6 @@ export const metadata: Metadata = pageMetadata({
     'Papyrus support for commercial and government deployments, with dedicated mailboxes, response targets, diagnostics, and support scope.',
   path: '/support',
   label: 'Support',
-  headline: 'Support starts with the right channel.',
   ogDescription:
     'Choose commercial or government Papyrus support and see the correct support channel for your deployment.',
 })

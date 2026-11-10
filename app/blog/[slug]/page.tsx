@@ -175,7 +175,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <section className="relative overflow-hidden border-b-[3px] border-[#1a1714] bg-[#1a1714] px-5 py-14" style={{backgroundImage:'radial-gradient(circle at center, #e5632f 0 6px, transparent 6.5px), radial-gradient(circle at center, #f7c995 0 6px, transparent 6.5px), radial-gradient(circle at center, #fffaf3 0 6px, transparent 6.5px)',backgroundSize:'54px 18px, 54px 18px, 54px 18px',backgroundPosition:'0 0,18px 0,36px 0'}}>
         <div className="relative mx-auto flex max-w-[1050px] flex-col items-center border-[4px] border-[#1a1714] bg-[#fffaf3] px-6 py-12 text-center shadow-[10px_10px_0_#1a1714] sm:px-12">
           <span className="border-2 border-[#1a1714] bg-[#e5632f] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-[.15em] shadow-[3px_3px_0_#1a1714]">{post.category}</span>
-          <h1 className="mt-8 max-w-[960px] font-[family-name:var(--font-roboto-condensed)] text-[length:min(64px,9vw)] font-black uppercase leading-[.97] tracking-[-.04em]">{post.title}</h1>
+          <h1 className="mt-8 max-w-[960px] font-display text-[length:min(64px,9vw)] font-black uppercase leading-[.97] tracking-[-.04em]">{post.title}</h1>
           <div className="mt-8 h-[3px] w-full max-w-[460px] bg-[#1a1714]" />
           <p className="mt-7 max-w-[740px] text-lg font-bold leading-8 text-[#3d2f26]">{post.exerpt}</p>
           <time dateTime={post.publishedAt} className="mt-8 border-b-2 border-[#1a1714] pb-1 font-mono text-xs font-black uppercase tracking-wider">{formattedDate} · Beag Labs</time>

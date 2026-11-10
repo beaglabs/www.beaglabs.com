@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
+import { Fraunces, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Navbar } from '@/components/navbar'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
@@ -7,10 +7,11 @@ import { CustomerIoPageViews } from '@/components/customerio-page-views'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const workSans = Work_Sans({
+// Fraunces is the site's main face, for body and headlines alike; JetBrains Mono stays for labels and code.
+const fraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-work-sans',
-  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-fraunces',
+  axes: ['opsz', 'SOFT', 'WONK'],
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -18,14 +19,8 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
 })
 
-const robotoCondensed = Roboto_Condensed({
-  subsets: ['latin'],
-  variable: '--font-roboto-condensed',
-  weight: ['700', '800', '900'],
-})
-
 const homeDescription =
-  'Your existing ERP stays the system of record. Papyrus orchestrates complex operations across entities, teams, and legacy systems.'
+  'Our firm uses deep expertise and solutioneering paired with agentic support to deploy advanced solutions for federal and SLED. Our main product is Papyrus, the STIG-hardened superintelligent harness runtime built for the ATO from commit #001.'
 
 const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-11-10-retro'
 
@@ -33,7 +28,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs | Building the Superintelligent ERP',
+    default: 'Beag Labs | Building groovy superintelligence',
   },
   description:
     homeDescription,
@@ -48,7 +43,7 @@ export const metadata: Metadata = {
   applicationName: 'Beag Labs',
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: 'Building the Superintelligent ERP — Beag Labs',
+    title: 'Building groovy superintelligence — Beag Labs',
     description: homeDescription,
     url: 'https://beaglabs.com',
     siteName: 'Beag Labs',
@@ -57,7 +52,7 @@ export const metadata: Metadata = {
         url: homeOgImage,
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — Building the Superintelligent ERP',
+        alt: 'Beag Labs — Building groovy superintelligence',
         type: 'image/png',
       },
     ],
@@ -66,7 +61,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Building the Superintelligent ERP — Beag Labs',
+    title: 'Building groovy superintelligence — Beag Labs',
     description: homeDescription,
     images: [homeOgImage],
     creator: '@beaglabs',
@@ -115,10 +110,10 @@ export default function RootLayout({
         {/* The same three families by plain stylesheet: the Cloudflare (vinext) build doesn't run next/font. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Roboto+Condensed:wght@700;800;900&family=Work+Sans:wght@300;400;500;600;700;800&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" />
       </head>
       <body
-        className={`${workSans.variable} ${jetbrainsMono.variable} ${robotoCondensed.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
+        className={`${fraunces.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
       >
         <script
           type="application/ld+json"

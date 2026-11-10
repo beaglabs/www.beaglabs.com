@@ -54,14 +54,14 @@ export function HeroSection() {
         <div className="w-full rounded-[2rem] border-[3px] border-[#1a1714] bg-[#fffaf3] px-6 py-10 text-center shadow-[10px_10px_0_#1a1714] sm:px-12 sm:py-12">
           <span className="nb-label mb-6 inline-block !bg-[#e5632f]">Papyrus · Customer-hosted software</span>
 
-          <h1 className="display-black mb-6 text-[length:min(48px,9.2vw)] leading-[.92] [overflow-wrap:normal] sm:text-[64px] lg:text-[76px]">
-            Building the Superintelligent ERP
+          <h1 className="display-black mb-6 text-[length:min(40px,7.6vw)] leading-[.98] [overflow-wrap:normal] sm:text-[50px] lg:text-[60px]">
+            Building groovy superintelligence
           </h1>
 
           <div className="mx-auto mb-6 h-[3px] w-full max-w-[420px] bg-[#1a1714]" />
 
           <p className="mx-auto mb-8 max-w-[580px] text-[16px] font-semibold leading-[1.65] text-[#3d2f26] sm:text-[18px]">
-            Your existing ERP stays the system of record. Papyrus orchestrates complex operations across entities, teams, and legacy systems.
+            Our firm uses deep expertise and solutioneering paired with agentic support to deploy advanced solutions for federal and SLED. Our main product is Papyrus, the STIG-hardened superintelligent harness runtime built for the ATO from commit #001.
           </p>
 
           {state === "done" ? (
