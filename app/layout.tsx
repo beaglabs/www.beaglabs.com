@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Fraunces, JetBrains_Mono } from 'next/font/google'
+import { Fraunces, JetBrains_Mono, Neonderthaw } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Navbar } from '@/components/navbar'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
@@ -12,6 +12,13 @@ const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-fraunces',
   axes: ['opsz', 'SOFT', 'WONK'],
+})
+
+// A monoline script drawn like bent glass tubing, for the neon word in the home hero.
+const neonScript = Neonderthaw({
+  subsets: ['latin'],
+  variable: '--font-neon',
+  weight: '400',
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -110,10 +117,10 @@ export default function RootLayout({
         {/* The same three families by plain stylesheet: the Cloudflare (vinext) build doesn't run next/font. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=Neonderthaw&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" />
       </head>
       <body
-        className={`${fraunces.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
+        className={`${fraunces.variable} ${neonScript.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
       >
         <script
           type="application/ld+json"
