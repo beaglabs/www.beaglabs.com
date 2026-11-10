@@ -29,8 +29,8 @@ export function BlogCategoryFilter({
             href={href}
             className={`rounded-full px-4 py-2 text-[12px] font-bold uppercase tracking-[0.08em] transition-all ${
               isActive
-                ? 'border-[3px] border-[#111] bg-[#ff5f1f] text-[#111] shadow-[3px_3px_0px_0px_#111]'
-                : 'border-[3px] border-[#111] bg-white text-[#555] shadow-[3px_3px_0px_0px_#111] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#111]'
+                ? 'border-[3px] border-[#1a1714] bg-[#e5632f] text-[#1a1714] shadow-[3px_3px_0px_0px_#1a1714]'
+                : 'border-[3px] border-[#1a1714] bg-[#fffaf3] text-[#5b4a3d] shadow-[3px_3px_0px_0px_#1a1714] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1a1714]'
             }`}
             onClick={() => posthog.capture('blog_category_filtered', { category: cat.label })}
           >

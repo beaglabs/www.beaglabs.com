@@ -26,16 +26,16 @@ export function PostCtaSocial({ title, url }: PostCtaSocialProps) {
   }
 
   return (
-    <section className="mt-14 border-t-[3px] border-[#111] pt-8" aria-label="Share this article or book a call">
-      <div className="rounded-[24px] border-[3px] border-[#111] bg-[#ff5f1f] p-6 shadow-[5px_5px_0px_0px_#111] sm:p-8">
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#111]">Have a challenge we can help with?</p>
+    <section className="mt-14 border-t-[3px] border-[#1a1714] pt-8" aria-label="Share this article or book a call">
+      <div className="rounded-[24px] border-[3px] border-[#1a1714] bg-[#e5632f] p-6 shadow-[5px_5px_0px_0px_#1a1714] sm:p-8">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#1a1714]">Have a challenge we can help with?</p>
         <div className="mt-3 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="max-w-xl text-2xl font-extrabold leading-tight tracking-[-0.03em] text-[#111] sm:text-3xl">Let’s talk about what’s next.</h2>
+          <h2 className="max-w-xl text-2xl font-extrabold leading-tight tracking-[-0.03em] text-[#1a1714] sm:text-3xl">Let’s talk about what’s next.</h2>
           <a
             href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full border-[2px] border-[#111] bg-[#111] px-6 py-3 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+            className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full border-[2px] border-[#1a1714] bg-[#1a1714] px-6 py-3 text-sm font-bold text-[#fffaf3] transition-transform hover:-translate-y-0.5"
           >
             Book a call <span className="ml-2" aria-hidden="true">↗</span>
           </a>
@@ -43,12 +43,12 @@ export function PostCtaSocial({ title, url }: PostCtaSocialProps) {
       </div>
 
       <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-[#111]">Share this article</span>
+        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-[#1a1714]">Share this article</span>
         <div className="flex flex-wrap gap-2">
-          <a className="rounded-full border-2 border-[#111] px-4 py-2 text-sm font-semibold text-[#111] transition-colors hover:bg-[#111] hover:text-white" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a className="rounded-full border-2 border-[#111] px-4 py-2 text-sm font-semibold text-[#111] transition-colors hover:bg-[#111] hover:text-white" href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`} target="_blank" rel="noopener noreferrer">X</a>
-          <a className="rounded-full border-2 border-[#111] px-4 py-2 text-sm font-semibold text-[#111] transition-colors hover:bg-[#111] hover:text-white" href={`mailto:?subject=${encodedTitle}&body=${encodedUrl}`}>Email</a>
-          <button className="rounded-full border-2 border-[#111] px-4 py-2 text-sm font-semibold text-[#111] transition-colors hover:bg-[#111] hover:text-white" type="button" onClick={copyLink}>{copied ? 'Copied!' : 'Copy link'}</button>
+          <a className="rounded-full border-2 border-[#1a1714] px-4 py-2 text-sm font-semibold text-[#1a1714] transition-colors hover:bg-[#1a1714] hover:text-[#fffaf3]" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a className="rounded-full border-2 border-[#1a1714] px-4 py-2 text-sm font-semibold text-[#1a1714] transition-colors hover:bg-[#1a1714] hover:text-[#fffaf3]" href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`} target="_blank" rel="noopener noreferrer">X</a>
+          <a className="rounded-full border-2 border-[#1a1714] px-4 py-2 text-sm font-semibold text-[#1a1714] transition-colors hover:bg-[#1a1714] hover:text-[#fffaf3]" href={`mailto:?subject=${encodedTitle}&body=${encodedUrl}`}>Email</a>
+          <button className="rounded-full border-2 border-[#1a1714] px-4 py-2 text-sm font-semibold text-[#1a1714] transition-colors hover:bg-[#1a1714] hover:text-[#fffaf3]" type="button" onClick={copyLink}>{copied ? 'Copied!' : 'Copy link'}</button>
         </div>
       </div>
     </section>

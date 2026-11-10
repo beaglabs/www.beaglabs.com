@@ -6,16 +6,16 @@ import { EmailCapture } from "@/components/cookbook/email-capture"
 export function CookbookHero({ recipeCount, partCount }: { recipeCount: number; partCount: number }) {
   return (
     <HeroLiquidMetalRoot
-      className="bg-[#FAFAF9]"
+      className="bg-[#FDEEE1]"
       srTitle="ML Cookbook 2026"
-      title={<span className="text-[#111]">ML Cookbook</span>}
-      subtitle={<span className="text-[#ff5f1f]">2026</span>}
+      title={<span className="text-[#1a1714]">ML Cookbook</span>}
+      subtitle={<span className="text-[#e5632f]">2026</span>}
       description={`${recipeCount} Modern Training Recipes Every AI Engineer Should Know`}
       showCta={false}
       showBadges={false}
       image="/cookbook-icon.svg"
       colorBack="#00000000"
-      colorTint="#ff5f1f"
+      colorTint="#e5632f"
       repetition={4}
       softness={0.85}
       shiftRed={1.2}

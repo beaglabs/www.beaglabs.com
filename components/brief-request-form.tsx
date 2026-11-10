@@ -43,12 +43,12 @@ export function BriefRequestForm({ briefType, placement, stacked = false }: { br
   }
 
   if (state === 'done') {
-    return <div role="status" className="w-full border-[3px] border-[#111] bg-white text-left shadow-[5px_5px_0_#111]">
-      <div className="flex items-center gap-3 bg-[#16a34a] px-5 py-4 text-white">
+    return <div role="status" className="w-full border-[3px] border-[#1a1714] bg-[#fffaf3] text-left shadow-[5px_5px_0_#1a1714]">
+      <div className="flex items-center gap-3 bg-[#16a34a] px-5 py-4 text-[#fffaf3]">
         <Check className="h-5 w-5 shrink-0" strokeWidth={3} />
         <p className="text-sm font-extrabold uppercase tracking-wide">Your brief is on its way to {email.trim()}{founder ? ' · James will be in touch' : ''}</p>
       </div>
-      <a href={BRIEF_PDF[briefType]} target="_blank" rel="noopener" className="flex items-center gap-2 border-t-[3px] border-[#111] px-5 py-3 text-[12px] font-extrabold uppercase tracking-[.06em] text-[#111] hover:bg-[#ffdfcf]">
+      <a href={BRIEF_PDF[briefType]} target="_blank" rel="noopener" className="flex items-center gap-2 border-t-[3px] border-[#1a1714] px-5 py-3 text-[12px] font-extrabold uppercase tracking-[.06em] text-[#1a1714] hover:bg-[#f7c995]">
         <Download className="h-4 w-4" strokeWidth={3} /> Or download it now
       </a>
     </div>
@@ -58,18 +58,18 @@ export function BriefRequestForm({ briefType, placement, stacked = false }: { br
   const hint = state === 'invalid' ? 'Enter a work email like you@agency.gov.' : state === 'error' ? "That didn't go through. Check the email and try again." : 'One email with the PDF · No spam'
 
   return <form onSubmit={submit} noValidate aria-label="Request a solution brief" className="w-full text-left">
-    <label htmlFor={id} className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.14em] text-[#111]">Work email</label>
-    <div className={`flex flex-col border-[3px] bg-white shadow-[5px_5px_0_#111] transition-shadow focus-within:shadow-[7px_7px_0_#ff5f1f] ${stacked ? '' : 'sm:flex-row'} ${problem ? 'border-[#c2410c]' : 'border-[#111]'}`}>
+    <label htmlFor={id} className="mb-2 block font-mono text-[10px] font-black uppercase tracking-[.14em] text-[#1a1714]">Work email</label>
+    <div className={`flex flex-col border-[3px] bg-[#fffaf3] shadow-[5px_5px_0_#1a1714] transition-shadow focus-within:shadow-[7px_7px_0_#e5632f] ${stacked ? '' : 'sm:flex-row'} ${problem ? 'border-[#c2410c]' : 'border-[#1a1714]'}`}>
       <div className="flex min-w-0 flex-1 items-center gap-3 px-4">
-        <Mail className="h-5 w-5 shrink-0 text-[#111]" strokeWidth={2.5} aria-hidden="true" />
+        <Mail className="h-5 w-5 shrink-0 text-[#1a1714]" strokeWidth={2.5} aria-hidden="true" />
         <input
           id={id} type="email" inputMode="email" required autoComplete="email" spellCheck={false}
           placeholder="you@agency.gov" value={email} aria-invalid={problem || undefined} aria-describedby={`${id}-hint`}
           onChange={(event) => { setEmail(event.target.value); if (problem) setState('idle') }}
-          className="h-[56px] min-w-0 flex-1 bg-transparent text-[16px] font-semibold text-[#111] placeholder:font-medium placeholder:text-[#8a8a8a] focus:outline-none"
+          className="h-[56px] min-w-0 flex-1 bg-transparent text-[16px] font-semibold text-[#1a1714] placeholder:font-medium placeholder:text-[#8a8a8a] focus:outline-none"
         />
       </div>
-      <button type="submit" disabled={state === 'loading'} className={`inline-flex h-[56px] shrink-0 items-center justify-center gap-2 border-t-[3px] border-[#111] bg-[#ff5f1f] px-5 text-[12px] font-black uppercase tracking-[.06em] text-[#111] transition-colors hover:bg-[#111] hover:text-white focus-visible:bg-[#111] focus-visible:text-white focus-visible:outline-none disabled:cursor-wait disabled:opacity-80 ${stacked ? '' : 'sm:border-l-[3px] sm:border-t-0'}`}>
+      <button type="submit" disabled={state === 'loading'} className={`inline-flex h-[56px] shrink-0 items-center justify-center gap-2 border-t-[3px] border-[#1a1714] bg-[#e5632f] px-5 text-[12px] font-black uppercase tracking-[.06em] text-[#1a1714] transition-colors hover:bg-[#1a1714] hover:text-[#fffaf3] focus-visible:bg-[#1a1714] focus-visible:text-[#fffaf3] focus-visible:outline-none disabled:cursor-wait disabled:opacity-80 ${stacked ? '' : 'sm:border-l-[3px] sm:border-t-0'}`}>
         {state === 'loading'
           ? <><LoaderCircle className="h-4 w-4 animate-spin" strokeWidth={3} aria-hidden="true" /> Sending…</>
           : <>Request a solution brief <ArrowRight className="h-4 w-4" strokeWidth={3} aria-hidden="true" /></>}
@@ -78,16 +78,16 @@ export function BriefRequestForm({ briefType, placement, stacked = false }: { br
     <fieldset className={`mt-4 flex flex-col gap-2 ${stacked ? '' : 'sm:flex-row sm:items-center sm:gap-5'}`}>
       <legend className="sr-only">Marketing emails</legend>
       {([['yes', 'Yes, send me Beag Labs updates'], ['no', 'No, just the brief']] as const).map(([value, label]) => (
-        <label key={value} className="flex cursor-pointer items-center gap-2 text-[13px] font-semibold text-[#111]">
-          <input type="radio" name={`${id}-marketing`} value={value} checked={marketing === value} onChange={() => setMarketing(value)} className="h-4 w-4 accent-[#ff5f1f]" />
+        <label key={value} className="flex cursor-pointer items-center gap-2 text-[13px] font-semibold text-[#1a1714]">
+          <input type="radio" name={`${id}-marketing`} value={value} checked={marketing === value} onChange={() => setMarketing(value)} className="h-4 w-4 accent-[#e5632f]" />
           {label}
         </label>
       ))}
     </fieldset>
-    <label className="mt-3 flex cursor-pointer items-center gap-2 text-[13px] font-semibold text-[#111]">
-      <input type="checkbox" checked={founder} onChange={(event) => setFounder(event.target.checked)} className="h-4 w-4 accent-[#ff5f1f]" />
+    <label className="mt-3 flex cursor-pointer items-center gap-2 text-[13px] font-semibold text-[#1a1714]">
+      <input type="checkbox" checked={founder} onChange={(event) => setFounder(event.target.checked)} className="h-4 w-4 accent-[#e5632f]" />
       Have our founder reach out about this
     </label>
-    <p id={`${id}-hint`} role={problem ? 'alert' : undefined} className={`mt-3 font-mono text-[10px] font-bold uppercase tracking-wide ${problem ? 'text-[#c2410c]' : 'text-[#555]'}`}>{hint}</p>
+    <p id={`${id}-hint`} role={problem ? 'alert' : undefined} className={`mt-3 font-mono text-[10px] font-bold uppercase tracking-wide ${problem ? 'text-[#c2410c]' : 'text-[#5b4a3d]'}`}>{hint}</p>
   </form>
 }

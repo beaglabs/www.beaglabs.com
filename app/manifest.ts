@@ -8,10 +8,10 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: '/',
     scope: '/',
     display: 'browser',
-    background_color: '#FAFAF9',
-    theme_color: '#ff5f1f',
+    background_color: '#fdeee1',
+    theme_color: '#fdeee1',
     icons: [
-      { src: '/favicon-demo.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+      { src: '/web-app-manifest-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
       { src: '/web-app-manifest-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
     ],
   }

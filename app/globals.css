@@ -4,47 +4,62 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #FAFAF9;
-  --foreground: #111111;
-  --card: #000000;
-  --card-foreground: #111111;
-  --popover: #000000;
-  --popover-foreground: #111111;
-  --primary: #111111;
-  --primary-foreground: #000000;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #111111;
-  --muted: #555555;
-  --muted-foreground: #999999;
-  --accent: #ff5f1f;
-  --accent-foreground: #111111;
+  /* Mid-century drafting paper, shared with Papyrus: cream stock with a thin rust grid, warm ink, the rust-to-sand
+     palette, and the ribbon colours from the B_ mark (tangerine, coral, marigold, blush) for stripes and accents. */
+  --paper: #fdeee1;
+  --surface: #fffaf3;
+  --ink: #1a1714;
+  --rust: #b2391a;
+  --peach: #fde3c8;
+  --peach-glow: #f7c995;
+  --sand: #e2c9a6;
+  --ribbon-tangerine: #ff6a13;
+  --ribbon-coral: #ff6f61;
+  --ribbon-marigold: #ffb81c;
+  --ribbon-blush: #fbbba0;
+  --grid-minor: color-mix(in srgb, #e2541d 10%, transparent);
+  --grid-major: color-mix(in srgb, #e2541d 22%, transparent);
+  --background: #FDEEE1;
+  --foreground: #1a1714;
+  --card: #fffaf3;
+  --card-foreground: #1a1714;
+  --popover: #fffaf3;
+  --popover-foreground: #1a1714;
+  --primary: #1a1714;
+  --primary-foreground: #fffaf3;
+  --secondary: #f5e1cc;
+  --secondary-foreground: #1a1714;
+  --muted: #5b4a3d;
+  --muted-foreground: #a08b78;
+  --accent: #e5632f;
+  --accent-foreground: #1a1714;
   --destructive: #dc2626;
-  --destructive-foreground: #000000;
-  --border: #111111;
-  --input: #111111;
-  --ring: #ff5f1f;
-  --chart-1: #ff5f1f;
+  --destructive-foreground: #fffaf3;
+  --border: #1a1714;
+  --input: #1a1714;
+  --ring: #e5632f;
+  --chart-1: #e5632f;
   --chart-2: #8B7355;
-  --chart-3: #555555;
-  --chart-4: #111111;
-  --chart-5: #999999;
-  --radius: 0rem;
-  --sidebar: #FAFAF9;
-  --sidebar-foreground: #111111;
-  --sidebar-primary: #111111;
-  --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #FFF3E6;
-  --sidebar-accent-foreground: #111111;
-  --sidebar-border: #111111;
-  --sidebar-ring: #ff5f1f;
+  --chart-3: #5b4a3d;
+  --chart-4: #1a1714;
+  --chart-5: #a08b78;
+  --radius: 1rem;
+  --sidebar: #FDEEE1;
+  --sidebar-foreground: #1a1714;
+  --sidebar-primary: #1a1714;
+  --sidebar-primary-foreground: #fffaf3;
+  --sidebar-accent: #FDE3C8;
+  --sidebar-accent-foreground: #1a1714;
+  --sidebar-border: #1a1714;
+  --sidebar-ring: #e5632f;
 }
 
 @theme inline {
   /* next/font's variables when it ran, else the Google Fonts stylesheet in app/layout.tsx. Never self-referencing:
      a var that names itself is invalid, and every font falls back to the browser default. */
-  --font-sans: var(--font-work-sans, 'Work Sans'), 'Work Sans', sans-serif;
+  --font-sans: var(--font-fraunces, 'Fraunces'), 'Fraunces', Georgia, serif;
   --font-mono: var(--font-jetbrains-mono, 'JetBrains Mono'), 'JetBrains Mono', monospace;
-  --font-display: var(--font-roboto-condensed, 'Roboto Condensed'), 'Roboto Condensed', 'Arial Narrow', sans-serif;
+  --font-display: var(--font-fraunces, 'Fraunces'), 'Fraunces', Georgia, serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -69,10 +84,20 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: 0rem;
-  --radius-md: 0rem;
-  --radius-lg: 0rem;
-  --radius-xl: 0rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-rust: var(--rust);
+  --color-peach: var(--peach);
+  --color-sand: var(--sand);
+  --color-ribbon-tangerine: var(--ribbon-tangerine);
+  --color-ribbon-coral: var(--ribbon-coral);
+  --color-ribbon-marigold: var(--ribbon-marigold);
+  --color-ribbon-blush: var(--ribbon-blush);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -98,10 +123,16 @@
   body {
     @apply bg-background text-foreground;
     overscroll-behavior-y: none;
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid-minor) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
   }
   ::selection {
-    background: #111111;
-    color: #ffffff;
+    background: #1a1714;
+    color: #fffaf3;
   }
   .maplibregl-popup-content {
     @apply bg-transparent! shadow-none! p-0! rounded-none!;
@@ -125,18 +156,22 @@
 
 @utility marketing-grid {
   background-image:
-    linear-gradient(to right, rgb(17 17 17 / 0.11) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(17 17 17 / 0.11) 1px, transparent 1px);
-  background-size: 42px 42px;
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
 }
 
 /* The homepage grid, shared only by route introductions. */
 @utility site-hero {
-  background-color: #fff;
+  background-color: var(--paper);
   background-image:
-    linear-gradient(to right, rgb(17 17 17 / 0.11) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(17 17 17 / 0.11) 1px, transparent 1px);
-  background-size: 42px 42px;
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
 }
 
 @utility site-page-grid {
@@ -150,9 +185,11 @@
     z-index: -1;
     pointer-events: none;
     background-image:
-      linear-gradient(to right, rgb(17 17 17 / 0.11) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(17 17 17 / 0.11) 1px, transparent 1px);
-    background-size: 42px 42px;
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid-minor) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
   }
 }
 
@@ -160,119 +197,126 @@
   font-family: var(--font-display);
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.01em;
 }
 
 /* ── neobrutalist utilities ── */
 
 @utility nb-card {
-  border: 3px solid #111;
-  box-shadow: 6px 6px 0px 0px #111;
+  border-radius: 1rem;
+  border: 3px solid #1a1714;
+  box-shadow: 6px 6px 0px 0px #1a1714;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
   &:hover {
-    box-shadow: 8px 8px 0px 0px #111;
+    box-shadow: 8px 8px 0px 0px #1a1714;
     transform: translate(-2px, -2px);
   }
 }
 
 @utility nb-btn {
-  border: 3px solid #111;
-  box-shadow: 4px 4px 0px 0px #111;
+  border-radius: 999px;
+  border: 3px solid #1a1714;
+  box-shadow: 4px 4px 0px 0px #1a1714;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
   &:hover {
-    box-shadow: 6px 6px 0px 0px #111;
+    box-shadow: 6px 6px 0px 0px #1a1714;
     transform: translate(-2px, -2px);
   }
   &:active {
-    box-shadow: 2px 2px 0px 0px #111;
+    box-shadow: 2px 2px 0px 0px #1a1714;
     transform: translate(2px, 2px);
   }
 }
 
 @utility nb-btn-orange {
-  border: 3px solid #111;
-  box-shadow: 4px 4px 0px 0px #111;
-  background: #ff5f1f;
-  color: #111;
+  border-radius: 999px;
+  border: 3px solid #1a1714;
+  box-shadow: 4px 4px 0px 0px #1a1714;
+  background: #e5632f;
+  color: #1a1714;
   font-weight: 800;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
   &:hover {
-    box-shadow: 6px 6px 0px 0px #111;
+    box-shadow: 6px 6px 0px 0px #1a1714;
     transform: translate(-2px, -2px);
   }
   &:active {
-    box-shadow: 2px 2px 0px 0px #111;
+    box-shadow: 2px 2px 0px 0px #1a1714;
     transform: translate(2px, 2px);
   }
 }
 
 @utility nb-btn-white {
-  border: 3px solid #111;
-  box-shadow: 4px 4px 0px 0px #111;
-  background: #ffffff;
-  color: #111;
+  border-radius: 999px;
+  border: 3px solid #1a1714;
+  box-shadow: 4px 4px 0px 0px #1a1714;
+  background: #fffaf3;
+  color: #1a1714;
   font-weight: 800;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
   &:hover {
-    box-shadow: 6px 6px 0px 0px #111;
+    box-shadow: 6px 6px 0px 0px #1a1714;
     transform: translate(-2px, -2px);
   }
   &:active {
-    box-shadow: 2px 2px 0px 0px #111;
+    box-shadow: 2px 2px 0px 0px #1a1714;
     transform: translate(2px, 2px);
   }
 }
 
 @utility nb-btn-outline {
-  border: 3px solid #111;
-  box-shadow: 4px 4px 0px 0px #111;
-  background: #fff;
-  color: #111;
+  border-radius: 999px;
+  border: 3px solid #1a1714;
+  box-shadow: 4px 4px 0px 0px #1a1714;
+  background: #fffaf3;
+  color: #1a1714;
   font-weight: 800;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
   &:hover {
-    box-shadow: 6px 6px 0px 0px #111;
+    box-shadow: 6px 6px 0px 0px #1a1714;
     transform: translate(-2px, -2px);
   }
   &:active {
-    box-shadow: 2px 2px 0px 0px #111;
+    box-shadow: 2px 2px 0px 0px #1a1714;
     transform: translate(2px, 2px);
   }
 }
 
 @utility nb-section-divider {
-  border-top: 3px solid #111;
+  border-top: 3px solid #1a1714;
 }
 
 @utility nb-input {
-  border: 2px solid #111;
-  background: #fff;
-  color: #111;
+  border-radius: 0.75rem;
+  border: 2px solid #1a1714;
+  background: #fffaf3;
+  color: #1a1714;
   font-size: 14px;
   font-weight: 600;
   padding: 10px 14px;
   outline: none;
   transition: box-shadow 0.15s ease;
   &:focus {
-    box-shadow: 3px 3px 0px 0px #111;
+    box-shadow: 3px 3px 0px 0px #1a1714;
   }
   &::placeholder {
-    color: #bbb;
+    color: #b8a28c;
     font-weight: 400;
   }
 }
 
 @utility nb-label {
+  border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  background: #ff5f1f;
-  color: #111;
+  background: #e5632f;
+  color: #1a1714;
   display: inline-block;
   padding: 3px 10px;
-  border: 2px solid #111;
-  box-shadow: 3px 3px 0px 0px #111;
+  border: 2px solid #1a1714;
+  box-shadow: 3px 3px 0px 0px #1a1714;
 }
 
 @keyframes slide-up {
@@ -291,21 +335,23 @@
 }
 
 @utility nb-chip {
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
-  border: 2px solid #111;
-  background: #fff;
-  color: #111;
+  border: 2px solid #1a1714;
+  background: #fffaf3;
+  color: #1a1714;
   font-size: 12px;
   font-weight: 700;
   padding: 6px 14px;
-  box-shadow: 3px 3px 0px 0px #111;
+  box-shadow: 3px 3px 0px 0px #1a1714;
 }
 
 @utility nb-panel {
-  border: 3px solid #111;
-  background: #fff;
-  box-shadow: 6px 6px 0px 0px #111;
+  border-radius: 1rem;
+  border: 3px solid #1a1714;
+  background: #fffaf3;
+  box-shadow: 6px 6px 0px 0px #1a1714;
 }
 
 /* ── live demo motion (homepage project gallery, product demos) ── */
@@ -320,4 +366,34 @@
 @keyframes demo-blink {
   0%, 49% { opacity: 1; }
   50%, 100% { opacity: 0; }
+}
+
+/* ── hero ribbon: the B_ mark's lanes drawn across drafting paper (components/hero-backdrop.tsx) ── */
+.hero-paper {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+}
+.hero-ribbon {
+  animation: ribbon-breathe 9s ease-in-out 2s infinite alternate;
+}
+.hero-lane {
+  stroke-dasharray: 2400;
+  stroke-dashoffset: 2400;
+  animation: ribbon-draw 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes ribbon-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes ribbon-breathe {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-18px, 10px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-ribbon { animation: none; }
+  .hero-lane { animation: none; stroke-dashoffset: 0; }
 }

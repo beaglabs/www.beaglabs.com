@@ -24,39 +24,39 @@ const principles = [
 
 export function Methodology({ compact = false }: { compact?: boolean }) {
   return (
-    <section id="methodology" className="scroll-mt-12 border-[3px] border-[#111] bg-white p-6 shadow-[6px_6px_0_#111] sm:p-8">
-      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b33d0d]">Methodology and disclosure</p>
+    <section id="methodology" className="scroll-mt-12 border-[3px] border-[#1a1714] bg-[#fffaf3] p-6 shadow-[6px_6px_0_#1a1714] sm:p-8">
+      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#b2391a]">Methodology and disclosure</p>
       <h2 className="mt-3 max-w-[760px] text-[28px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[36px]">
         How these comparisons are built and checked.
       </h2>
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         {principles.map((item) => (
-          <div key={item.title} className="border-t-[3px] border-[#ff5f1f] pt-4">
+          <div key={item.title} className="border-t-[3px] border-[#e5632f] pt-4">
             <h3 className="text-[16px] font-extrabold">{item.title}</h3>
-            <p className="mt-2 text-[14px] font-medium leading-[1.7] text-[#444]">{item.body}</p>
+            <p className="mt-2 text-[14px] font-medium leading-[1.7] text-[#4a3d33]">{item.body}</p>
           </div>
         ))}
       </div>
-      <dl className="mt-8 grid gap-4 border-t-2 border-[#111] pt-6 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="mt-8 grid gap-4 border-t-2 border-[#1a1714] pt-6 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-2">
           <dt><StatusBadge status="Verified" /></dt>
-          <dd className="text-[13px] font-medium leading-[1.6] text-[#444]">An official source we fetched states it. The cell links to the claim record.</dd>
+          <dd className="text-[13px] font-medium leading-[1.6] text-[#4a3d33]">An official source we fetched states it. The cell links to the claim record.</dd>
         </div>
         <div className="space-y-2">
           <dt><StatusBadge status="Partially supported" /></dt>
-          <dd className="text-[13px] font-medium leading-[1.6] text-[#444]">An official source documents the capability but states a limit: one surface, a subset of actions, or an explicit exclusion. The cell says what the limit is.</dd>
+          <dd className="text-[13px] font-medium leading-[1.6] text-[#4a3d33]">An official source documents the capability but states a limit: one surface, a subset of actions, or an explicit exclusion. The cell says what the limit is.</dd>
         </div>
         <div className="space-y-2">
           <dt><StatusBadge status="Not documented" /></dt>
-          <dd className="text-[13px] font-medium leading-[1.6] text-[#444]">We checked official sources and found nothing either way. This is not evidence the capability is absent.</dd>
+          <dd className="text-[13px] font-medium leading-[1.6] text-[#4a3d33]">We checked official sources and found nothing either way. This is not evidence the capability is absent.</dd>
         </div>
         <div className="space-y-2">
           <dt><StatusBadge status="Not supported" /></dt>
-          <dd className="text-[13px] font-medium leading-[1.6] text-[#444]">An official source explicitly says the capability is absent or unsupported.</dd>
+          <dd className="text-[13px] font-medium leading-[1.6] text-[#4a3d33]">An official source explicitly says the capability is absent or unsupported.</dd>
         </div>
       </dl>
       {!compact && (
-        <p className="mt-8 border-t-2 border-[#111] pt-5 text-[13px] font-medium leading-[1.7] text-[#444]">
+        <p className="mt-8 border-t-2 border-[#1a1714] pt-5 text-[13px] font-medium leading-[1.7] text-[#4a3d33]">
           Last verified {verifiedOn}. Vendors change products and pricing; treat these pages as a starting point and confirm
           anything decisive with the vendor. If we got something wrong or a vendor has newer documentation, write to{' '}
           <a className="font-bold underline underline-offset-2" href={`mailto:${company.email}`}>{company.email}</a> and we will

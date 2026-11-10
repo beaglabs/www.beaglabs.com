@@ -50,15 +50,15 @@ export function DeployTerminal() {
   }, [shown, lines.length])
 
   return <DemoWindow title="Deploy · papyrus" meta="Illustrative output">
-    <div className="border-b-[3px] border-[#111] px-4 py-3">
+    <div className="border-b-[3px] border-[#1a1714] px-4 py-3">
       <Segmented label="Environment" value={target} onChange={setTarget} options={[['commercial', 'Commercial'], ['government', 'Gov cloud'], ['dod', 'DoD + offline']]} />
     </div>
     <pre aria-live="polite" className="min-h-[230px] overflow-x-auto bg-[#0b0b0b] p-4 font-mono text-[12px] leading-[1.75] text-[#d6d6d6]">
       {lines.slice(0, shown).map(([kind, text], i) => <div key={`${target}-${i}`}>
-        {kind === 'cmd' ? <span className="text-[#ff8a5c]">$ </span> : kind === 'ok' ? <span className="text-[#4ade80]">✓ </span> : <span className="text-[#777]">· </span>}
-        <span className={kind === 'cmd' ? 'text-white' : ''}>{text}</span>
+        {kind === 'cmd' ? <span className="text-[#ff8a5c]">$ </span> : kind === 'ok' ? <span className="text-[#4ade80]">✓ </span> : <span className="text-[#8f7a68]">· </span>}
+        <span className={kind === 'cmd' ? 'text-[#fffaf3]' : ''}>{text}</span>
       </div>)}
-      <span className="motion-safe:animate-[demo-blink_1s_steps(1)_infinite] text-[#ff5f1f]">▌</span>
+      <span className="motion-safe:animate-[demo-blink_1s_steps(1)_infinite] text-[#e5632f]">▌</span>
     </pre>
   </DemoWindow>
 }

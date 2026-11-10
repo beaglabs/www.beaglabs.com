@@ -12,8 +12,8 @@ export function OrgPicker({ firstOrgId }: { firstOrgId: string }) {
 
   return (
     <div className="max-w-[480px] mx-auto py-24 text-center">
-      <p className="text-[17px] font-semibold text-[#111]">Setting up your workspace...</p>
-      <p className="text-sm text-[#777] mt-2">One moment while we get things ready.</p>
+      <p className="text-[17px] font-semibold text-[#1a1714]">Setting up your workspace...</p>
+      <p className="text-sm text-[#8f7a68] mt-2">One moment while we get things ready.</p>
     </div>
   )
 }

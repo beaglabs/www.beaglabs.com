@@ -91,15 +91,15 @@ export function CookieConsentBanner() {
       className="fixed bottom-0 left-0 right-0 z-50 animate-slide-up"
     >
       <div className="mx-auto max-w-[1440px] px-4 pb-4 sm:px-6 lg:px-9">
-        <div className="border-[3px] border-[#111] bg-[#FAFAF9] p-5 shadow-[4px_4px_0px_0px_#111] sm:p-6">
+        <div className="border-[3px] border-[#1a1714] bg-[#FDEEE1] p-5 shadow-[4px_4px_0px_0px_#1a1714] sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1">
-              <p className="text-[14px] font-bold leading-[1.4] text-[#111] sm:text-[15px]">
+              <p className="text-[14px] font-bold leading-[1.4] text-[#1a1714] sm:text-[15px]">
                 We use cookies and analytics to improve your experience.
               </p>
-              <p className="mt-1 text-[12px] leading-[1.5] text-[#555] sm:text-[13px]">
+              <p className="mt-1 text-[12px] leading-[1.5] text-[#5b4a3d] sm:text-[13px]">
                 Posthog helps us understand usage patterns. No personal data is shared with third parties.{" "}
-                <a href="/privacy" className="underline underline-offset-2 hover:text-[#ff5f1f]">
+                <a href="/privacy" className="underline underline-offset-2 hover:text-[#e5632f]">
                   Privacy Policy
                 </a>.
               </p>
@@ -107,13 +107,13 @@ export function CookieConsentBanner() {
             <div className="flex shrink-0 flex-wrap gap-2">
               <button
                 onClick={handleReject}
-                className="border-[3px] border-[#111] bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-[0.05em] text-[#111] hover:bg-[#FFF3E6]"
+                className="border-[3px] border-[#1a1714] bg-[#fffaf3] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.05em] text-[#1a1714] hover:bg-[#FDE3C8]"
               >
                 Reject All
               </button>
               <button
                 onClick={handleAccept}
-                className="border-[3px] border-[#111] bg-[#ff5f1f] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.05em] text-white hover:bg-[#e05012]"
+                className="border-[3px] border-[#1a1714] bg-[#e5632f] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.05em] text-[#fffaf3] hover:bg-[#e05012]"
               >
                 Accept All
               </button>

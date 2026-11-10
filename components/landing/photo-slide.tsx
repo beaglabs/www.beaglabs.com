@@ -49,7 +49,7 @@ export function PhotoSlide({ slides }: { slides: PhotoSlideItem[] }) {
 
   return (
     <div>
-      <div className="relative aspect-[4/3.4] w-full overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[8px_8px_0_#111] sm:aspect-[16/12] lg:aspect-[4/3.6]">
+      <div className="relative aspect-[4/3.4] w-full overflow-hidden border-[3px] border-[#1a1714] bg-[#1a1714] shadow-[8px_8px_0_#1a1714] sm:aspect-[16/12] lg:aspect-[4/3.6]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           key={slide.src}
@@ -57,9 +57,9 @@ export function PhotoSlide({ slides }: { slides: PhotoSlideItem[] }) {
           alt={slide.alt}
           className="absolute inset-0 h-full w-full object-cover grayscale contrast-[1.05]"
         />
-        <div className="pointer-events-none absolute inset-0 bg-[#ff5f1f] mix-blend-multiply opacity-75" />
+        <div className="pointer-events-none absolute inset-0 bg-[#e5632f] mix-blend-multiply opacity-75" />
         {!reduce && <DitherWipe run={wipe} />}
-        <span className="nb-label absolute bottom-3 left-3 z-10 !bg-white">{slide.label}</span>
+        <span className="nb-label absolute bottom-3 left-3 z-10 !bg-[#fffaf3]">{slide.label}</span>
       </div>
       <div className="mt-4 flex items-center justify-between gap-4">
         <div className="flex gap-1.5" role="tablist" aria-label="Photo slide">
@@ -71,11 +71,11 @@ export function PhotoSlide({ slides }: { slides: PhotoSlideItem[] }) {
               aria-selected={i === active}
               aria-label={s.label}
               onClick={() => i !== active && goTo(i)}
-              className={`h-2.5 w-8 border-2 border-[#111] transition-colors ${i === active ? "bg-[#ff5f1f]" : "bg-white hover:bg-[#ffdfcf]"}`}
+              className={`h-2.5 w-8 border-2 border-[#1a1714] transition-colors ${i === active ? "bg-[#e5632f]" : "bg-[#fffaf3] hover:bg-[#f7c995]"}`}
             />
           ))}
         </div>
-        <p className="text-right font-mono text-[10px] font-semibold uppercase leading-4 tracking-wide text-[#555]">
+        <p className="text-right font-mono text-[10px] font-semibold uppercase leading-4 tracking-wide text-[#5b4a3d]">
           Photo: {slide.credit} ·{" "}
           <a
             href={slide.sourceUrl}

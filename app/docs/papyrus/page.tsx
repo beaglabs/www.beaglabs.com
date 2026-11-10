@@ -70,18 +70,18 @@ export default function PapyrusDocs() {
         </div>
       </aside>
       <article className="min-w-0 max-w-[850px]">
-        <header id="overview" className="relative scroll-mt-28 overflow-hidden rounded-2xl border border-[#e1e6ef] bg-white px-6 py-12 sm:px-12 sm:py-16">
+        <header id="overview" className="relative scroll-mt-28 overflow-hidden rounded-2xl border border-[#e1e6ef] bg-[#fffaf3] px-6 py-12 sm:px-12 sm:py-16">
           <div className="pointer-events-none absolute inset-0 opacity-60" style={{backgroundImage:'radial-gradient(#d5ddeb 0.75px, transparent 0.75px)',backgroundSize:'17px 17px',maskImage:'linear-gradient(90deg,transparent 20%,black)'}} />
           <div className="relative">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded bg-[#111b29] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-white">Papyrus / Docs</span>
+              <span className="rounded bg-[#111b29] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#fffaf3]">Papyrus / Docs</span>
               <span className="font-mono text-[11px] text-[#7b8798]">Verified against Papyrus source · October 2026</span>
             </div>
             <h1 className="mt-7 text-[clamp(2.7rem,5.5vw,5.2rem)] font-semibold leading-[1.06] tracking-[-.065em]">Build inside<br />your boundary<span className="text-[#ef5b2b]">.</span></h1>
             <p className="mt-7 max-w-[620px] text-lg leading-8 text-[#687587]">A practical reference for Papyrus configuration, governed workflows, identity, and deployment-specific API access.</p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <a href="#configuration" className="rounded-lg bg-[#182338] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#324467]">Configure Papyrus ↓</a>
-              <a href="#api" className="rounded-lg border border-[#cfd7e4] bg-white px-4 py-2.5 text-sm font-semibold text-[#24344d] hover:bg-[#f1f5fb]">Explore the API ↓</a>
+              <a href="#configuration" className="rounded-lg bg-[#182338] px-4 py-2.5 text-sm font-semibold text-[#fffaf3] hover:bg-[#324467]">Configure Papyrus ↓</a>
+              <a href="#api" className="rounded-lg border border-[#cfd7e4] bg-[#fffaf3] px-4 py-2.5 text-sm font-semibold text-[#24344d] hover:bg-[#f1f5fb]">Explore the API ↓</a>
             </div>
           </div>
         </header>
@@ -110,7 +110,7 @@ secrets:
         </Section>
         <Section id="schema" eyebrow="02 / Validation" title="Typed, inspectable settings">
           <p>Unknown properties, invalid types, and out-of-range values fail validation. Secrets must use <code>{'{ file: ... }'}</code> or <code>{'{ env: ... }'}</code> references, never inline strings. Relative secret file paths resolve relative to the configuration file.</p>
-          <div className="overflow-x-auto rounded-xl border border-[#e0e6ee] bg-white"><table className="w-full min-w-[540px] text-left text-[13px]"><thead className="bg-[#f4f7fa] text-[#334155]"><tr><th className="px-4 py-3">YAML property</th><th className="px-4 py-3">Type / values</th><th className="px-4 py-3">Purpose</th></tr></thead><tbody>{settings.map(([key, type, purpose])=><tr key={key} className="border-t border-[#ebeff3]"><td className="px-4 py-3 font-mono text-[12px] text-[#2b4d88]">{key}</td><td className="px-4 py-3">{type}</td><td className="px-4 py-3">{purpose}</td></tr>)}</tbody></table></div>
+          <div className="overflow-x-auto rounded-xl border border-[#e0e6ee] bg-[#fffaf3]"><table className="w-full min-w-[540px] text-left text-[13px]"><thead className="bg-[#f4f7fa] text-[#334155]"><tr><th className="px-4 py-3">YAML property</th><th className="px-4 py-3">Type / values</th><th className="px-4 py-3">Purpose</th></tr></thead><tbody>{settings.map(([key, type, purpose])=><tr key={key} className="border-t border-[#ebeff3]"><td className="px-4 py-3 font-mono text-[12px] text-[#2b4d88]">{key}</td><td className="px-4 py-3">{type}</td><td className="px-4 py-3">{purpose}</td></tr>)}</tbody></table></div>
           <p>The full schema contains additional identity, audit, package mirror, session, signing, channel, and egress settings. The downloadable JSON Schema is the complete field-level reference.</p>
           <Code>{`# Run from the Papyrus application checkout after building:
 node apps/server/dist/index.js --check-config`}</Code>
@@ -131,7 +131,7 @@ curl -H "Authorization: Bearer <pap_key_token>" \\
         </Section>
         <Section id="operations" eyebrow="05 / Selected routes" title="Endpoint examples">
           <p>These routes are present in the Papyrus source-owned API reference. This is a curated index, not an exhaustive copy of the caller-scoped OpenAPI document.</p>
-          <div className="overflow-hidden rounded-xl border border-[#e1e6ed] bg-white">{endpoints.map(([method,path,description])=><div key={path+method} className="flex flex-col gap-2 border-b border-[#e9edf2] px-4 py-4 last:border-0 sm:flex-row sm:items-center sm:gap-4"><div className="flex min-w-0 items-center gap-3"><span className={`w-[54px] shrink-0 rounded px-2 py-1 text-center font-mono text-[10px] font-bold ${method==='GET'?'bg-[#e8f6f0] text-[#15774e]':'bg-[#e9edff] text-[#3656b1]'}`}>{method}</span><code className="break-all font-mono text-[12px] font-semibold text-[#293956]">{path}</code></div><span className="text-[12px] text-[#7a8798] sm:ml-auto sm:max-w-[210px]">{description}</span></div>)}</div>
+          <div className="overflow-hidden rounded-xl border border-[#e1e6ed] bg-[#fffaf3]">{endpoints.map(([method,path,description])=><div key={path+method} className="flex flex-col gap-2 border-b border-[#e9edf2] px-4 py-4 last:border-0 sm:flex-row sm:items-center sm:gap-4"><div className="flex min-w-0 items-center gap-3"><span className={`w-[54px] shrink-0 rounded px-2 py-1 text-center font-mono text-[10px] font-bold ${method==='GET'?'bg-[#e8f6f0] text-[#15774e]':'bg-[#e9edff] text-[#3656b1]'}`}>{method}</span><code className="break-all font-mono text-[12px] font-semibold text-[#293956]">{path}</code></div><span className="text-[12px] text-[#7a8798] sm:ml-auto sm:max-w-[210px]">{description}</span></div>)}</div>
         </Section>
         <Section id="deployment" eyebrow="06 / Operations" title="Deploy with evidence">
           <p>Configuration can be version controlled and reviewed without storing secret values. Papyrus exposes configuration provenance, server-side audit events, offline licensing, and profile controls; customers remain responsible for authorized networks, identity configuration, approved cryptography, model endpoints, storage protection, and operational accreditation.</p>

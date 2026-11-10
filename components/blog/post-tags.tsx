@@ -22,7 +22,7 @@ export function PostTags({ tags }: PostTagsProps) {
   if (normalized.length === 0) return null
 
   return (
-    <div className="mt-14 border-t-[3px] border-[#111] pt-6">
+    <div className="mt-14 border-t-[3px] border-[#1a1714] pt-6">
       <span className="nb-label mb-4 inline-block">
         Tagged
       </span>

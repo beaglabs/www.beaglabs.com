@@ -41,15 +41,15 @@ export function CompareFaq() {
   return (
     <section aria-labelledby="compare-faq" className="mx-auto max-w-[1120px]">
       <h2 id="compare-faq" className="text-[28px] font-extrabold leading-[1.05] tracking-[-0.04em] sm:text-[36px]">Questions about this page</h2>
-      <div className="mt-6 border-y-[3px] border-[#111]">
+      <div className="mt-6 border-y-[3px] border-[#1a1714]">
         {compareFaqs.map((faq, index) => (
-          <details key={faq.question} className={`group px-1 py-4 ${index > 0 ? 'border-t border-[#bbb]' : ''}`}>
+          <details key={faq.question} className={`group px-1 py-4 ${index > 0 ? 'border-t border-[#b8a28c]' : ''}`}>
             <summary className="cursor-pointer list-none text-[16px] font-extrabold leading-snug marker:hidden">
-              <span aria-hidden="true" className="mr-2 font-mono text-[#ff5f1f] group-open:hidden">+</span>
-              <span aria-hidden="true" className="mr-2 hidden font-mono text-[#ff5f1f] group-open:inline">−</span>
+              <span aria-hidden="true" className="mr-2 font-mono text-[#e5632f] group-open:hidden">+</span>
+              <span aria-hidden="true" className="mr-2 hidden font-mono text-[#e5632f] group-open:inline">−</span>
               {faq.question}
             </summary>
-            <p className="mt-3 max-w-[820px] pl-5 text-[14px] font-medium leading-[1.75] text-[#444]">{faq.answer}</p>
+            <p className="mt-3 max-w-[820px] pl-5 text-[14px] font-medium leading-[1.75] text-[#4a3d33]">{faq.answer}</p>
           </details>
         ))}
       </div>

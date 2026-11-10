@@ -204,12 +204,12 @@ export function DitherWipe({ run }: { run: number }) {
 
 function ProductStage({ animate }: { animate: boolean }) {
   return (
-    <div className="absolute inset-0 flex flex-col bg-white">
-      <div className="flex items-center gap-2 border-b-2 border-[#111] bg-[#fafaf9] px-3 py-2">
-        <span className="h-2.5 w-2.5 rounded-full border border-[#111] bg-[#ff5f1f]" />
-        <span className="h-2.5 w-2.5 rounded-full border border-[#111] bg-[#fff0a6]" />
-        <span className="h-2.5 w-2.5 rounded-full border border-[#111] bg-white" />
-        <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-wide text-[#555]">Papyrus / Canvas</span>
+    <div className="absolute inset-0 flex flex-col bg-[#fffaf3]">
+      <div className="flex items-center gap-2 border-b-2 border-[#1a1714] bg-[#fdeee1] px-3 py-2">
+        <span className="h-2.5 w-2.5 rounded-full border border-[#1a1714] bg-[#e5632f]" />
+        <span className="h-2.5 w-2.5 rounded-full border border-[#1a1714] bg-[#fff0a6]" />
+        <span className="h-2.5 w-2.5 rounded-full border border-[#1a1714] bg-[#fffaf3]" />
+        <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-wide text-[#5b4a3d]">Papyrus / Canvas</span>
       </div>
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <motion.img
@@ -261,7 +261,7 @@ export function HeroShowcase() {
 
   return (
     <div>
-      <div className="relative aspect-[4/3.4] w-full overflow-hidden border-[3px] border-[#111] bg-[#111] shadow-[8px_8px_0_#111] sm:aspect-[16/10] lg:aspect-[16/9]">
+      <div className="relative aspect-[4/3.4] w-full overflow-hidden border-[3px] border-[#1a1714] bg-[#1a1714] shadow-[8px_8px_0_#1a1714] sm:aspect-[16/10] lg:aspect-[16/9]">
         {stage.kind === "dither" && <DitherImage src="/hero/brunel.jpg" animate={!reduce} />}
         {stage.kind === "video" && (
           <>
@@ -277,13 +277,13 @@ export function HeroShowcase() {
               preload="auto"
               aria-hidden="true"
             />
-            <div className="pointer-events-none absolute inset-0 bg-[#ff5f1f] mix-blend-multiply opacity-25" />
+            <div className="pointer-events-none absolute inset-0 bg-[#e5632f] mix-blend-multiply opacity-25" />
           </>
         )}
         {stage.kind === "product" && <ProductStage animate={!reduce} />}
         {!reduce && <DitherWipe run={wipe} />}
         {stage.kind !== "product" && (
-          <span className="nb-label absolute bottom-3 left-3 z-10 !bg-white">{stage.label}</span>
+          <span className="nb-label absolute bottom-3 left-3 z-10 !bg-[#fffaf3]">{stage.label}</span>
         )}
       </div>
       <div className="mt-4 flex items-center justify-between gap-4">
@@ -296,11 +296,11 @@ export function HeroShowcase() {
               aria-selected={i === active}
               aria-label={s.label}
               onClick={() => i !== active && goTo(i)}
-              className={`h-2.5 w-8 border-2 border-[#111] transition-colors ${i === active ? "bg-[#ff5f1f]" : "bg-white hover:bg-[#ffdfcf]"}`}
+              className={`h-2.5 w-8 border-2 border-[#1a1714] transition-colors ${i === active ? "bg-[#e5632f]" : "bg-[#fffaf3] hover:bg-[#f7c995]"}`}
             />
           ))}
         </div>
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-[#555]">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-[#5b4a3d]">
           {stage.kind === "product" ? "Papyrus · Current workspace UI" : stage.label}
         </span>
       </div>

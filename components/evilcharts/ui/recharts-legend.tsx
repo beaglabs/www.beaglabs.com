@@ -175,9 +175,9 @@ function getLegendFillStyle(dataKey: string, colorsCount: number): React.CSSProp
 function getLegendOutlineStyle(dataKey: string, colorsCount: number): React.CSSProperties {
   const maskStyle: React.CSSProperties = {
     WebkitMask:
-      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+      "linear-gradient(#fffaf3 0 0) content-box, linear-gradient(#fffaf3 0 0)",
     WebkitMaskComposite: "xor",
-    mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+    mask: "linear-gradient(#fffaf3 0 0) content-box, linear-gradient(#fffaf3 0 0)",
     maskComposite: "exclude",
   };
 

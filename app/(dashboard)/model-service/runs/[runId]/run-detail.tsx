@@ -78,16 +78,16 @@ function AnimatedPipeline({
   }, [startedAt]);
 
   return (
-    <Card className="bg-white border-[#E2E0DB] overflow-hidden">
+    <Card className="bg-[#fffaf3] border-[#E2C9A6] overflow-hidden">
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999]">Pipeline</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78]">Pipeline</p>
           <div className="flex items-center gap-3">
             {startedAt && !complete && !failed && (
-              <span className="text-[11px] text-[#777]">{elapsed} elapsed</span>
+              <span className="text-[11px] text-[#8f7a68]">{elapsed} elapsed</span>
             )}
             {!complete && !failed && (
-              <span className="text-[11px] text-[#ff5f1f]">
+              <span className="text-[11px] text-[#e5632f]">
                 ETA: {formatEstimate(getRemainingEstimate(status))}
               </span>
             )}
@@ -105,8 +105,8 @@ function AnimatedPipeline({
                 <div
                   className="relative w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center"
                   style={{
-                    backgroundColor: isFailed ? "#D32F2F" : active ? "#ff5f1f" : done ? "#2E7D32" : "transparent",
-                    borderColor: isFailed ? "#D32F2F" : active ? "#ff5f1f" : done ? "#2E7D32" : "#E2E0DB",
+                    backgroundColor: isFailed ? "#D32F2F" : active ? "#e5632f" : done ? "#2E7D32" : "transparent",
+                    borderColor: isFailed ? "#D32F2F" : active ? "#e5632f" : done ? "#2E7D32" : "#E2C9A6",
                     transform: active ? "scale(1.3)" : "scale(1)",
                     transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                     boxShadow: active ? "0 0 0 4px rgba(199, 102, 29, 0.2)" : "none",
@@ -116,7 +116,7 @@ function AnimatedPipeline({
                   {active && (
                     <span
                       className="absolute inset-0 rounded-full animate-ping opacity-30"
-                      style={{ backgroundColor: "#ff5f1f" }}
+                      style={{ backgroundColor: "#e5632f" }}
                     />
                   )}
                 </div>
@@ -124,7 +124,7 @@ function AnimatedPipeline({
                   <div
                     className="h-0.5 w-4 flex-shrink-0 transition-all duration-700"
                     style={{
-                      backgroundColor: done ? "#ff5f1f" : "#E2E0DB",
+                      backgroundColor: done ? "#e5632f" : "#E2C9A6",
                       width: active ? "12px" : "8px",
                     }}
                   />
@@ -135,12 +135,12 @@ function AnimatedPipeline({
         </div>
 
         <div className="flex items-center justify-between mt-3">
-          <p className={`text-[12px] font-medium ${failed ? "text-[#D32F2F]" : "text-[#ff5f1f]"}`}>
+          <p className={`text-[12px] font-medium ${failed ? "text-[#D32F2F]" : "text-[#e5632f]"}`}>
             {PIPELINE_STAGES[currentIdx >= 0 ? currentIdx : 0].icon}{" "}
             {STATUS_LABELS[status] || status}
           </p>
           {!failed && !complete && currentIdx > 0 && (
-            <span className="text-[10px] text-[#999]">
+            <span className="text-[10px] text-[#a08b78]">
               {currentIdx} of {PIPELINE_STAGES.length - 2} stages complete
             </span>
           )}
@@ -153,13 +153,13 @@ function AnimatedPipeline({
 function StatCard({ label, value, highlight }: { label: string; value: React.ReactNode; highlight?: boolean }) {
   return (
     <Card
-      className={`bg-white transition-colors duration-300 ${highlight ? "border-[#ff5f1f]" : "border-[#E2E0DB]"}`}
+      className={`bg-[#fffaf3] transition-colors duration-300 ${highlight ? "border-[#e5632f]" : "border-[#E2C9A6]"}`}
     >
       <CardContent className="p-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999]">{label}</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78]">{label}</p>
         <p
           className="text-[24px] font-semibold mt-1 tracking-[-0.03em] transition-colors duration-300"
-          style={{ color: highlight ? "#ff5f1f" : "#111" }}
+          style={{ color: highlight ? "#e5632f" : "#1a1714" }}
         >
           {value}
         </p>
@@ -209,12 +209,12 @@ export function RunDetail({ initialRun }: { initialRun?: TrainingRun }) {
         <div>
           <Link
             href="/model-service/runs"
-            className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#999] hover:text-[#ff5f1f] transition-colors"
+            className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#a08b78] hover:text-[#e5632f] transition-colors"
           >
             ← All Runs
           </Link>
           <div className="flex items-center gap-3 mt-1">
-            <h1 className="text-[17px] font-semibold text-[#111] tracking-[-0.03em]">{display.name}</h1>
+            <h1 className="text-[17px] font-semibold text-[#1a1714] tracking-[-0.03em]">{display.name}</h1>
             <Badge variant={STATUS_VARIANTS[display.status] || "secondary"}>
               {STATUS_LABELS[display.status] || display.status}
             </Badge>
@@ -225,7 +225,7 @@ export function RunDetail({ initialRun }: { initialRun?: TrainingRun }) {
             <Link href={`/model-service/runs/${display.id}/review`}>
               <Button
                 className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5"
-                style={{ backgroundColor: "#ff5f1f" }}
+                style={{ backgroundColor: "#e5632f" }}
               >
                 Review Labels ({display.contested_examples - display.reviewed_examples})
               </Button>
@@ -234,7 +234,7 @@ export function RunDetail({ initialRun }: { initialRun?: TrainingRun }) {
           {isComplete && display.onnx_s3_uri && (
             <Button
               variant="outline"
-              className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5 border-[#ff5f1f] text-[#ff5f1f]"
+              className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5 border-[#e5632f] text-[#e5632f]"
             >
               Download ONNX
             </Button>
@@ -316,7 +316,7 @@ export function RunDetail({ initialRun }: { initialRun?: TrainingRun }) {
               </Button>
               <Button
                 variant="outline"
-                className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5 border-[#ff5f1f] text-[#ff5f1f]"
+                className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-9 px-5 border-[#e5632f] text-[#e5632f]"
               >
                 Train Again
               </Button>
@@ -334,7 +334,7 @@ export function RunDetail({ initialRun }: { initialRun?: TrainingRun }) {
               <Link href={`/model-service/runs/create`}>
                 <Button
                   className="rounded-full text-[12px] font-extrabold uppercase tracking-[0.08em] h-8 px-4"
-                  style={{ backgroundColor: "#ff5f1f" }}
+                  style={{ backgroundColor: "#e5632f" }}
                 >
                   Start New Run
                 </Button>

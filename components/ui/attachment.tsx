@@ -18,7 +18,7 @@ function Attachment({
       data-slot="attachment"
       data-state={state}
       className={cn(
-        'flex items-center gap-3 border-2 border-[#111] bg-white p-3 shadow-[3px_3px_0_#111]',
+        'flex items-center gap-3 border-2 border-[#1a1714] bg-[#fffaf3] p-3 shadow-[3px_3px_0_#1a1714]',
         'data-[state=error]:bg-[#fee2e2] data-[state=done]:bg-[#f7fee7]',
         className,
       )}
@@ -33,7 +33,7 @@ function AttachmentMedia({ className, children, ...props }: React.ComponentProps
   return (
     <div
       data-slot="attachment-media"
-      className={cn('flex h-10 w-10 shrink-0 items-center justify-center border-2 border-[#111] bg-[#ff5f1f]', className)}
+      className={cn('flex h-10 w-10 shrink-0 items-center justify-center border-2 border-[#1a1714] bg-[#e5632f]', className)}
       {...props}
     >
       {children}
@@ -46,11 +46,11 @@ function AttachmentContent({ className, ...props }: React.ComponentProps<'div'>)
 }
 
 function AttachmentTitle({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div data-slot="attachment-title" className={cn('truncate text-[13px] font-extrabold text-[#111]', className)} {...props} />
+  return <div data-slot="attachment-title" className={cn('truncate text-[13px] font-extrabold text-[#1a1714]', className)} {...props} />
 }
 
 function AttachmentDescription({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div data-slot="attachment-description" className={cn('mt-1 text-[11px] font-medium text-[#666]', className)} {...props} />
+  return <div data-slot="attachment-description" className={cn('mt-1 text-[11px] font-medium text-[#6f5a4b]', className)} {...props} />
 }
 
 function AttachmentActions({ className, ...props }: React.ComponentProps<'div'>) {
@@ -62,7 +62,7 @@ function AttachmentAction({ className, ...props }: React.ComponentProps<'button'
     <button
       type="button"
       data-slot="attachment-action"
-      className={cn('inline-flex h-8 items-center justify-center border-2 border-[#111] bg-white px-2 font-mono text-[9px] font-black uppercase shadow-[2px_2px_0_#111] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none', className)}
+      className={cn('inline-flex h-8 items-center justify-center border-2 border-[#1a1714] bg-[#fffaf3] px-2 font-mono text-[9px] font-black uppercase shadow-[2px_2px_0_#1a1714] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none', className)}
       {...props}
     />
   )

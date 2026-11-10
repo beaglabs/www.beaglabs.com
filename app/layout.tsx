@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Work_Sans, JetBrains_Mono, Roboto_Condensed } from 'next/font/google'
+import { Fraunces, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Navbar } from '@/components/navbar'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
@@ -7,10 +7,11 @@ import { CustomerIoPageViews } from '@/components/customerio-page-views'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const workSans = Work_Sans({
+// Fraunces is the site's main face, for body and headlines alike; JetBrains Mono stays for labels and code.
+const fraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-work-sans',
-  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-fraunces',
+  axes: ['opsz', 'SOFT', 'WONK'],
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -18,16 +19,10 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
 })
 
-const robotoCondensed = Roboto_Condensed({
-  subsets: ['latin'],
-  variable: '--font-roboto-condensed',
-  weight: ['700', '800', '900'],
-})
-
 const homeDescription =
   'Beag Labs builds superintelligent solutions for federal and SLED: deep expertise and solutioneering paired with superintelligent agents, delivered as running software inside your environment.'
 
-const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-10-22-edgy-grain'
+const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-11-10-retro'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
@@ -41,8 +36,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   icons: {
-    icon: [{ url: '/favicon-demo.svg', type: 'image/svg+xml' }, { url: '/favicon.png', type: 'image/png' }],
-    shortcut: '/favicon-demo.svg',
+    icon: [{ url: '/favicon.ico', sizes: '48x48' }, { url: '/favicon.png', type: 'image/png', sizes: '96x96' }],
+    shortcut: '/favicon.ico',
     apple: '/apple-icon.png',
   },
   applicationName: 'Beag Labs',
@@ -87,7 +82,7 @@ const organizationJsonLd = {
   '@type': 'Organization',
   name: 'Beag Labs',
   url: 'https://beaglabs.com',
-  logo: 'https://beaglabs.com/favicon-demo.svg',
+  logo: 'https://beaglabs.com/brand/beag-mark.png',
   description: homeDescription,
   sameAs: ['https://x.com/beaglabs'],
   knowsAbout: [
@@ -115,10 +110,10 @@ export default function RootLayout({
         {/* The same three families by plain stylesheet: the Cloudflare (vinext) build doesn't run next/font. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Roboto+Condensed:wght@700;800;900&family=Work+Sans:wght@300;400;500;600;700;800&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" />
       </head>
       <body
-        className={`${workSans.variable} ${jetbrainsMono.variable} ${robotoCondensed.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
+        className={`${fraunces.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
       >
         <script
           type="application/ld+json"

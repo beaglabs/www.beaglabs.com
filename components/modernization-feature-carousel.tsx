@@ -41,45 +41,45 @@ export function ModernizationFeatureCarousel() {
     document.getElementById(`solution-tab-${next}`)?.focus()
   }
 
-  return <section id="capabilities" className="site-hero relative border-b-[3px] border-[#111] px-6 py-20 text-[#111] lg:px-9 lg:py-28" aria-label="How we work">
+  return <section id="capabilities" className="site-hero relative border-b-[3px] border-[#1a1714] px-6 py-20 text-[#1a1714] lg:px-9 lg:py-28" aria-label="How we work">
     <div className="relative mx-auto max-w-[1440px]">
       <div className="mb-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-end lg:gap-16">
         <div>
           <span className="nb-label mb-5 inline-block">How we work</span>
           <h2 className="display-black text-[length:min(45px,9vw)] leading-[.95] sm:text-[64px] lg:text-[76px]">We work the problem. Then we ship the system.</h2>
         </div>
-        <p className="border-l-[3px] border-[#ff5f1f] bg-white pl-4 text-base font-medium leading-relaxed text-[#111]">Every engagement starts by understanding the mission and the systems behind it. Then our engineers and superintelligent agents turn that understanding into software your team runs, again and again.</p>
+        <p className="border-l-[3px] border-[#e5632f] bg-[#fffaf3] pl-4 text-base font-medium leading-relaxed text-[#1a1714]">Every engagement starts by understanding the mission and the systems behind it. Then our engineers and superintelligent agents turn that understanding into software your team runs, again and again.</p>
       </div>
 
-      <div className="border-[3px] border-[#111] bg-white shadow-[8px_8px_0_#111]">
-        <div role="tablist" aria-label="Solutions" onKeyDown={onKey} className="grid grid-cols-1 border-b-[3px] border-[#111] sm:grid-cols-3">
+      <div className="border-[3px] border-[#1a1714] bg-[#fffaf3] shadow-[8px_8px_0_#1a1714]">
+        <div role="tablist" aria-label="Solutions" onKeyDown={onKey} className="grid grid-cols-1 border-b-[3px] border-[#1a1714] sm:grid-cols-3">
           {FEATURES.map((item, i) => {
             const on = i === active
             return <button
               key={item.number} id={`solution-tab-${i}`} type="button" role="tab" aria-selected={on} aria-controls="solution-panel" tabIndex={on ? 0 : -1}
               onClick={() => setActive(i)}
-              className={`flex items-center gap-4 px-5 py-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-6px] focus-visible:outline-[#ff5f1f] ${i > 0 ? 'border-t-[3px] border-[#111] sm:border-l-[3px] sm:border-t-0' : ''} ${on ? 'bg-[#111] text-white' : 'bg-white text-[#111] hover:bg-[#fff1e9]'}`}
+              className={`flex items-center gap-4 px-5 py-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-6px] focus-visible:outline-[#e5632f] ${i > 0 ? 'border-t-[3px] border-[#1a1714] sm:border-l-[3px] sm:border-t-0' : ''} ${on ? 'bg-[#1a1714] text-[#fffaf3]' : 'bg-[#fffaf3] text-[#1a1714] hover:bg-[#fde3c8]'}`}
             >
-              <span className={`font-mono text-[28px] font-bold leading-none ${on ? 'text-[#ff5f1f]' : 'text-[#c2410c]'}`}>{item.number}</span>
+              <span className={`font-mono text-[28px] font-bold leading-none ${on ? 'text-[#e5632f]' : 'text-[#c2410c]'}`}>{item.number}</span>
               <span className="min-w-0">
                 <span className="block text-[16px] font-extrabold leading-tight">{item.kicker}</span>
-                <span className={`mt-0.5 block truncate text-[12px] ${on ? 'text-[#cfcfcf]' : 'text-[#555]'}`}>{item.result}</span>
+                <span className={`mt-0.5 block truncate text-[12px] ${on ? 'text-[#cfcfcf]' : 'text-[#5b4a3d]'}`}>{item.result}</span>
               </span>
-              <item.Icon aria-hidden="true" size={20} strokeWidth={2.5} className={`ml-auto hidden shrink-0 lg:block ${on ? 'text-[#ff5f1f]' : 'text-[#111]/40'}`} />
+              <item.Icon aria-hidden="true" size={20} strokeWidth={2.5} className={`ml-auto hidden shrink-0 lg:block ${on ? 'text-[#e5632f]' : 'text-[#1a1714]/40'}`} />
             </button>
           })}
         </div>
 
         <div id="solution-panel" role="tabpanel" aria-labelledby={`solution-tab-${active}`} className="grid gap-10 p-6 md:p-10 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-12">
           <div className="flex flex-col">
-            <div className="mb-4 flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-wider text-[#222]">
-              <f.Icon size={18} strokeWidth={2.5} className="text-[#ff5f1f]" /> {f.number} / {f.kicker}
+            <div className="mb-4 flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-wider text-[#2a221c]">
+              <f.Icon size={18} strokeWidth={2.5} className="text-[#e5632f]" /> {f.number} / {f.kicker}
             </div>
             <h3 className="text-balance text-[30px] font-extrabold leading-[1.08] tracking-tight sm:text-[36px]">{f.title}</h3>
-            <p className="mt-4 text-base leading-7 text-[#222]">{f.copy}</p>
+            <p className="mt-4 text-base leading-7 text-[#2a221c]">{f.copy}</p>
             <ol className="mt-7 space-y-2">
-              {f.steps.map((step, n) => <li key={step} className="flex items-center gap-3 border-2 border-[#111] bg-[#fff1e9] px-3 py-2 text-[13px] font-bold">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-[#111] font-mono text-[11px] text-white">{n + 1}</span>{step}
+              {f.steps.map((step, n) => <li key={step} className="flex items-center gap-3 border-2 border-[#1a1714] bg-[#fde3c8] px-3 py-2 text-[13px] font-bold">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-[#1a1714] font-mono text-[11px] text-[#fffaf3]">{n + 1}</span>{step}
               </li>)}
             </ol>
             <div className="mt-8 lg:mt-auto lg:pt-8">

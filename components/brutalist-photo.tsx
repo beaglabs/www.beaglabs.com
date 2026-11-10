@@ -20,24 +20,24 @@ const ASPECT: Record<NonNullable<Props['aspect']>, string> = {
 }
 
 const SHADOW: Record<NonNullable<Props['shadowSize']>, string> = {
-  sm: 'shadow-[6px_6px_0px_0px_#ff5f1f]',
-  md: 'shadow-[8px_8px_0px_0px_#ff5f1f]',
-  lg: 'shadow-[10px_10px_0px_0px_#ff5f1f]',
-  xl: 'shadow-[14px_14px_0px_0px_#ff5f1f]',
+  sm: 'shadow-[6px_6px_0px_0px_#e5632f]',
+  md: 'shadow-[8px_8px_0px_0px_#e5632f]',
+  lg: 'shadow-[10px_10px_0px_0px_#e5632f]',
+  xl: 'shadow-[14px_14px_0px_0px_#e5632f]',
 }
 
 const BADGE_OFFSET: Record<NonNullable<Props['shadowSize']>, string> = {
-  sm: '-top-3 -left-3 shadow-[3px_3px_0px_0px_#111]',
-  md: '-top-3 -left-4 shadow-[4px_4px_0px_0px_#111]',
-  lg: '-top-4 -left-4 shadow-[4px_4px_0px_0px_#111]',
-  xl: '-top-5 -left-5 shadow-[5px_5px_0px_0px_#111]',
+  sm: '-top-3 -left-3 shadow-[3px_3px_0px_0px_#1a1714]',
+  md: '-top-3 -left-4 shadow-[4px_4px_0px_0px_#1a1714]',
+  lg: '-top-4 -left-4 shadow-[4px_4px_0px_0px_#1a1714]',
+  xl: '-top-5 -left-5 shadow-[5px_5px_0px_0px_#1a1714]',
 }
 
 const META_OFFSET: Record<NonNullable<Props['shadowSize']>, string> = {
-  sm: '-bottom-3 -right-3 shadow-[3px_3px_0px_0px_#111]',
-  md: '-bottom-3 -right-3 shadow-[4px_4px_0px_0px_#111]',
-  lg: '-bottom-3 -right-3 shadow-[4px_4px_0px_0px_#111]',
-  xl: '-bottom-4 -right-4 shadow-[5px_5px_0px_0px_#111]',
+  sm: '-bottom-3 -right-3 shadow-[3px_3px_0px_0px_#1a1714]',
+  md: '-bottom-3 -right-3 shadow-[4px_4px_0px_0px_#1a1714]',
+  lg: '-bottom-3 -right-3 shadow-[4px_4px_0px_0px_#1a1714]',
+  xl: '-bottom-4 -right-4 shadow-[5px_5px_0px_0px_#1a1714]',
 }
 
 export function BrutalistPhoto({
@@ -56,7 +56,7 @@ export function BrutalistPhoto({
       {badge && (
         <div
           className={cn(
-            'absolute z-10 border-[3px] border-[#111] bg-[#ff5f1f] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#111]',
+            'absolute z-10 border-[3px] border-[#1a1714] bg-[#e5632f] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#1a1714]',
             BADGE_OFFSET[shadowSize],
           )}
         >
@@ -66,7 +66,7 @@ export function BrutalistPhoto({
       <div
         className={cn(
           ASPECT[aspect],
-          'overflow-hidden border-[3px] border-[#111] bg-[#111]',
+          'overflow-hidden border-[3px] border-[#1a1714] bg-[#1a1714]',
           SHADOW[shadowSize],
           rounded && 'rounded-[2rem]',
         )}
@@ -84,7 +84,7 @@ export function BrutalistPhoto({
       {meta && (
         <div
           className={cn(
-            'absolute z-10 border-[3px] border-[#111] bg-white px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#111]',
+            'absolute z-10 border-[3px] border-[#1a1714] bg-[#fffaf3] px-3 py-1.5 font-mono text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#1a1714]',
             META_OFFSET[shadowSize],
           )}
         >

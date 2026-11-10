@@ -75,7 +75,7 @@ class Dot {
  * blocks the content above it.
  */
 export function InteractiveDots({
-  colors = ["#ff5f1f", "#ff8a5c", "#ffb894", "#111111", "#ffc9b0"],
+  colors = ["#e5632f", "#ff8a5c", "#ffb894", "#1a1714", "#f7c995"],
   spacing = 20,
   dotRadius = 9,
   repelForce = 0.6,

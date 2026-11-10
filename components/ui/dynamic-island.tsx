@@ -374,7 +374,7 @@ const DynamicIslandContent = ({
   return (
     <motion.div
       id={id}
-      className="mx-auto max-w-full items-center justify-center border-[3px] border-[#111] bg-[#ff5f1f] text-center text-[#111] shadow-[4px_4px_0_#111]"
+      className="mx-auto max-w-full items-center justify-center border-[3px] border-[#1a1714] bg-[#e5632f] text-center text-[#1a1714] shadow-[4px_4px_0_#1a1714]"
       animate={{
         width: dimensions.width,
         height: dimensions.height,
