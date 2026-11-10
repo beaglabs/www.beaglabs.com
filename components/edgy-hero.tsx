@@ -44,8 +44,8 @@ export type EdgyHeroProps = {
   aside?: ReactNode
   asideLabel?: string
   asideBare?: boolean
-  /** `wide` gives the aside more than half the row, for live demos. */
-  asideWidth?: "narrow" | "wide"
+  /** `wide` gives the aside more than half the row, for live demos; `below` stacks it under the copy in one column. */
+  asideWidth?: "narrow" | "wide" | "below"
   background?: HeroBackground
   /** Frame readouts. */
   coordinates?: string
@@ -89,7 +89,7 @@ export function EdgyHero({
         {next.label} <ArrowDown className="h-3.5 w-3.5" strokeWidth={3} />
       </a>}
 
-      <div className={`relative z-20 mx-auto grid max-w-[1440px] content-center gap-10 px-6 lg:px-14 ${aside ? (asideWidth === "wide" ? "xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:items-center xl:gap-12" : "xl:grid-cols-[minmax(0,1fr)_minmax(0,440px)] xl:items-end xl:gap-14") : ""} ${height === "full" ? "min-h-[calc(100svh-67px)] py-24" : "min-h-[560px] py-20 lg:py-24"}`}>
+      <div className={`relative z-20 mx-auto grid max-w-[1440px] content-center gap-10 px-6 lg:px-14 ${aside && asideWidth !== "below" ? (asideWidth === "wide" ? "xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:items-center xl:gap-12" : "xl:grid-cols-[minmax(0,1fr)_minmax(0,440px)] xl:items-end xl:gap-14") : ""} ${height === "full" ? "min-h-[calc(100svh-67px)] py-24" : "min-h-[560px] py-20 lg:py-24"}`}>
         <div className="min-w-0">
           {breadcrumb && <div className={`mb-5 font-mono text-[11px] font-bold uppercase tracking-[.14em] ${light ? "text-[#3d2f26]" : "text-[#fffaf3]"}`}>{breadcrumb}</div>}
           <span className={`mb-7 inline-flex items-center gap-2 rounded-full border-[3px] border-[#1a1714] px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[.18em] ${bg.dark ? "bg-[#fffaf3] text-[#1a1714]" : "bg-[#1a1714] text-[#fffaf3]"}`}>
