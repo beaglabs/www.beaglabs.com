@@ -1,13 +1,13 @@
 import { AnnouncementBanner } from "@/components/announcement-banner"
-import { HeroSection } from "@/components/hero-section"
+import { HomePage } from "@/components/home/home-page"
 import { SiteFooter } from "@/components/site-footer"
 
 export default function Home() {
   return (
-    <main className="bg-background text-foreground">
+    <main className="hero-paper text-foreground">
       <AnnouncementBanner />
 
-      <HeroSection />
+      <HomePage />
       <SiteFooter />
     </main>
   )
