@@ -35,7 +35,7 @@ const jetbrainsMono = JetBrains_Mono({
 const homeDescription =
   'Beag Labs is a GovCon solutions and product studio (NAICS 541511). We build custom software and AI agents for federal, defense and SLED teams, inside your boundary and through the ATO.'
 
-const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-11-20-studio'
+const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-11-20-neon'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),

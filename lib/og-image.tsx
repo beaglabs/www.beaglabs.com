@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { FRAUNCES_700_ITALIC_B64, FRAUNCES_800_B64, JETBRAINS_MONO_700_B64, WORK_SANS_400_B64, decodeFont } from '@/lib/og-fonts'
+import { FRAUNCES_700_ITALIC_B64, FRAUNCES_800_B64, JETBRAINS_MONO_700_B64, NEONDERTHAW_GROOVY_B64, WORK_SANS_400_B64, decodeFont } from '@/lib/og-fonts'
 import { splitHeadline } from '@/lib/headline'
 
 export const OG_SIZE = { width: 1200, height: 630 } as const
@@ -12,6 +12,7 @@ const PAPER = '#fdeee1'
 const DISPLAY = 'Fraunces'
 const BODY = 'Work Sans'
 const MONO = 'JetBrains Mono'
+const NEON = 'Neonderthaw'
 
 // Must stay in sync with the home hero in components/home/home-page.tsx.
 export const HOME_OG = {
@@ -19,6 +20,7 @@ export const HOME_OG = {
   before: 'We build groovy software',
   slab: 'for the public mission.',
   after: '',
+  neon: 'groovy',
   description: 'A small-business studio for custom software and AI agents. We build inside your boundary and carry it through the ATO.',
   label: 'GovCon studio · NAICS 541511',
 } as const
@@ -29,19 +31,22 @@ export type OgImageInput = {
   before?: string
   slab?: string
   after?: string
+  /** A word in the roman run set as tangerine neon tubing, like the home hero. The font only carries "groovy". */
+  neon?: string
   description?: string
   label?: string
   date?: string
 }
 
 // Decoded lazily per request: Workers forbid I/O at global scope, and these are embedded (no network).
-let fontCache: { display: ArrayBuffer; italic: ArrayBuffer; body: ArrayBuffer; mono: ArrayBuffer } | null = null
+let fontCache: { display: ArrayBuffer; italic: ArrayBuffer; body: ArrayBuffer; mono: ArrayBuffer; neon: ArrayBuffer } | null = null
 function getFonts() {
   fontCache ??= {
     display: decodeFont(FRAUNCES_800_B64),
     italic: decodeFont(FRAUNCES_700_ITALIC_B64),
     body: decodeFont(WORK_SANS_400_B64),
     mono: decodeFont(JETBRAINS_MONO_700_B64),
+    neon: decodeFont(NEONDERTHAW_GROOVY_B64),
   }
   return fontCache
 }
@@ -94,9 +99,25 @@ function Scenery() {
   )
 }
 
-/** One word per box so a roman run and an italic run wrap together like inline text. */
-function words(text: string, style: Record<string, string | number>) {
-  return text.split(/\s+/).filter(Boolean).map((word, index) => <span key={`${word}${index}`} style={{ marginRight: '0.24em', ...style }}>{word}</span>)
+/** The home hero's neon (app/globals.css `.groovy-neon`): a cream-hot core inside an orange glass wall, glowing, tilted. */
+// Satori paints a text stroke over the fill (no paint-order), so the wall and the core are two stacked copies:
+// a thick orange stroke with the glow underneath, then the cream core on top.
+function NeonWord({ word }: { word: string }) {
+  const text = { fontFamily: NEON, fontWeight: 400, letterSpacing: 0 }
+  return (
+    <span style={{ display: 'flex', position: 'relative', fontSize: '1.4em', lineHeight: 0.8, marginTop: '-0.12em', marginRight: '0.2em', transform: 'rotate(-4deg)' }}>
+      <span style={{ display: 'flex', ...text, color: '#ea580c', WebkitTextStroke: '0.075em #ea580c',
+        textShadow: '0 0 6px #ff8a1f, 0 0 14px rgba(255,106,19,0.85), 0 0 30px rgba(255,106,19,0.55), 0 0 56px rgba(255,120,30,0.35)' }}>{word}</span>
+      <span style={{ display: 'flex', position: 'absolute', top: 0, left: 0, ...text, color: '#ffd58a' }}>{word}</span>
+    </span>
+  )
+}
+
+/** One word per box so a roman run and an italic run wrap together like inline text; `neon` picks out one word. */
+function words(text: string, style: Record<string, string | number>, neon?: string) {
+  return text.split(/\s+/).filter(Boolean).map((word, index) => neon && word.toLowerCase() === neon.toLowerCase()
+    ? <NeonWord key={`${word}${index}`} word={word} />
+    : <span key={`${word}${index}`} style={{ marginRight: '0.24em', ...style }}>{word}</span>)
 }
 
 /** The social card, in the home page's style: drafting paper, mono tag, Fraunces headline with an orange italic run. */
@@ -127,10 +148,10 @@ export async function renderOgImage(input: OgImageInput) {
         <div style={{ display: 'flex', alignSelf: 'flex-start', alignItems: 'center', backgroundColor: ORANGE, border: `2px solid ${INK}`, borderRadius: 3, boxShadow: `4px 4px 0 ${INK}`, padding: '7px 14px', fontFamily: MONO, fontSize: 15, letterSpacing: 2.6, textTransform: 'uppercase' }}>
           <div style={{ display: 'flex', width: 9, height: 9, backgroundColor: INK, marginRight: 11 }} />{label}
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: 30, fontFamily: DISPLAY, fontWeight: 800, fontSize: size, lineHeight: 1.02, letterSpacing: -1.6 }}>
-          {words(before, {})}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', marginTop: 30, fontFamily: DISPLAY, fontWeight: 800, fontSize: size, lineHeight: 1.02, letterSpacing: -1.6 }}>
+          {words(before, {}, input.neon)}
           {words(slab, { fontStyle: 'italic', fontWeight: 700, color: ORANGE })}
-          {words(after, {})}
+          {words(after, {}, input.neon)}
         </div>
         {description ? <div style={{ display: 'flex', maxWidth: 760, marginTop: 22, fontSize: 24, lineHeight: 1.4, color: CHARCOAL }}>{description}</div> : null}
       </div>
@@ -142,6 +163,7 @@ export async function renderOgImage(input: OgImageInput) {
         { name: DISPLAY, data: fonts.italic, weight: 700 as const, style: 'italic' as const },
         { name: BODY, data: fonts.body, weight: 400 as const, style: 'normal' as const },
         { name: MONO, data: fonts.mono, weight: 700 as const, style: 'normal' as const },
+        { name: NEON, data: fonts.neon, weight: 400 as const, style: 'normal' as const },
       ],
       headers: { 'Cache-Control': 'public, max-age=3600' },
     }
