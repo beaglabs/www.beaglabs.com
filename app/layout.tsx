@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Fraunces, JetBrains_Mono, Neonderthaw } from 'next/font/google'
+import { Fraunces, JetBrains_Mono, Neonderthaw, Work_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Navbar } from '@/components/navbar'
 import { CookieConsentBanner, PosthogConsentGate } from '@/components/cookie-consent-banner'
@@ -7,11 +7,17 @@ import { CustomerIoPageViews } from '@/components/customerio-page-views'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-// Fraunces is the site's main face, for body and headlines alike; JetBrains Mono stays for labels and code.
+// Same three faces as the Papyrus capability statements: Fraunces (soft, wonky) for headlines,
+// Work Sans for body, JetBrains Mono for labels and code.
 const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-fraunces',
   axes: ['opsz', 'SOFT', 'WONK'],
+})
+
+const workSans = Work_Sans({
+  subsets: ['latin'],
+  variable: '--font-work-sans',
 })
 
 // A monoline script drawn like bent glass tubing, for the neon word in the home hero.
@@ -27,15 +33,15 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 const homeDescription =
-  'Beag Labs builds superintelligent solutions for federal and SLED: deep expertise and solutioneering paired with superintelligent agents, delivered as running software inside your environment.'
+  'Beag Labs is a GovCon solutions and product studio (NAICS 541511). We build custom software and AI agents for federal, defense and SLED teams, inside your boundary and through the ATO.'
 
-const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-11-10-retro'
+const homeOgImage = 'https://beaglabs.com/og?variant=home&v=2026-11-20-studio'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://beaglabs.com'),
   title: {
     template: '%s — Beag Labs',
-    default: 'Beag Labs | Superintelligent Solutions for Federal and SLED',
+    default: 'Beag Labs | GovCon Solutions and Product Studio',
   },
   description:
     homeDescription,
@@ -50,7 +56,7 @@ export const metadata: Metadata = {
   applicationName: 'Beag Labs',
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: 'We build superintelligent solutions — Beag Labs',
+    title: 'We build software for the public mission — Beag Labs',
     description: homeDescription,
     url: 'https://beaglabs.com',
     siteName: 'Beag Labs',
@@ -59,7 +65,7 @@ export const metadata: Metadata = {
         url: homeOgImage,
         width: 1200,
         height: 630,
-        alt: 'Beag Labs — We build superintelligent solutions',
+        alt: 'Beag Labs — We build groovy software for the public mission',
         type: 'image/png',
       },
     ],
@@ -68,7 +74,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'We build superintelligent solutions — Beag Labs',
+    title: 'We build software for the public mission — Beag Labs',
     description: homeDescription,
     images: [homeOgImage],
     creator: '@beaglabs',
@@ -114,13 +120,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* The same three families by plain stylesheet: the Cloudflare (vinext) build doesn't run next/font. */}
+        {/* The same families by plain stylesheet: the Cloudflare (vinext) build doesn't run next/font.
+            Fraunces must request SOFT and WONK here too, or production renders it without them. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=Neonderthaw&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,100..900,0..100,0..1&family=Work+Sans:wght@100..900&family=Neonderthaw&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" />
       </head>
       <body
-        className={`${fraunces.variable} ${neonScript.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
+        className={`${fraunces.variable} ${workSans.variable} ${neonScript.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground pt-[67px]`}
       >
         <script
           type="application/ld+json"

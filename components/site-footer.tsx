@@ -26,7 +26,7 @@ export function SiteFooter() {
       <div className="relative mx-auto max-w-[1440px]">
         <div className="mb-12 border-b-[3px] border-[#1a1714] pb-8">
           <div className="display-black max-w-[900px] text-[44px] leading-[0.95] sm:text-[58px] lg:text-[72px]">
-            Documents to decisions. Legacy systems to modern apps.
+            Mission problems in. Running software out.
           </div>
         </div>
 
@@ -39,7 +39,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="max-w-[280px] text-[14px] font-semibold leading-[1.7] text-[#1a1714]">
-              Document automation, internal apps, and legacy modernization—on your infrastructure.
+              A GovCon solutions and product studio. Custom software and AI agents for federal, defense and SLED, built inside your boundary.
             </p>
             <div className="mt-5 flex items-center gap-4">
               <a
